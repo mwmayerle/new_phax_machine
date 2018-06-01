@@ -23,9 +23,6 @@ before_install:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
 
-before_script:
-  - cp config/database.yml.travis config/database.yml
-
 # 4. OPTIONAL Only customize the `script` option if needed.
 
 # The `script` option is an optional list of the main build task(s). `rake` is
