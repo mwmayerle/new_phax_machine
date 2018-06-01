@@ -31,6 +31,9 @@ gem 'jbuilder', '~> 2.5'
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 
+# Prettying Up
+gem 'bootstrap'
+
 # Telephony/faxing goodies
 gem 'phaxio'
 gem 'phonelib'
