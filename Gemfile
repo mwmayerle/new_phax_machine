@@ -31,9 +31,13 @@ gem 'bcrypt', '~> 3.1.7'
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 
+# Test coverage percentage
+gem 'simplecov', require: false, group: :test
+
+# Environment variables
 gem 'dotenv-rails'
 
-# Prettying Up
+# Prettying up
 gem 'bootstrap'
 
 # Telephony/faxing goodies
