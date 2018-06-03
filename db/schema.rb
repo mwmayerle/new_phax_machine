@@ -10,13 +10,39 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_06_01_150635) do
+ActiveRecord::Schema.define(version: 2018_06_02_182832) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
+  create_table "admins", force: :cascade do |t|
+    t.string "admin_email", null: false
+    t.string "password_digest", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "fax_numbers", force: :cascade do |t|
+    t.string "fax_number", null: false
+    t.string "fax_number_label"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "super_users", force: :cascade do |t|
+    t.integer "admin_id"
+    t.string "super_user_email", null: false
+    t.string "fax_tag"
+    t.string "password_digest", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "users", force: :cascade do |t|
-    t.string "email"
+    t.integer "super_user_id", null: false
+    t.string "user_email", null: false
+    t.string "fax_tag"
+    t.string "password_digest", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
