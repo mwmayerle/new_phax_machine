@@ -5,7 +5,6 @@ class SuperUser < ApplicationRecord
 	has_many :users
 
 	validates :admin_id, numericality: {only_integer: true}
-
 	validates :super_user_email, presence: true, uniqueness: {case_sensitve: false}
 	validates :super_user_email, :fax_tag, length: {maximum: 60}
 	

@@ -1,7 +1,7 @@
 class FaxNumber < ApplicationRecord
 	
 	validates :fax_number, presence: true, length: {maximum: 60}, phone: {possible: true}, uniqueness: true
-	validates :fax_number_label, length: {maximum: 48}
+	validates :fax_number_label, length: {maximum: 60}
 
 	before_validation :format_fax_number
 
