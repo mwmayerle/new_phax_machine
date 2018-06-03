@@ -3,8 +3,7 @@ require 'rails_helper'
 RSpec.describe SuperUser, type: :model do
   describe "creating a SuperUser with valid input" do
   	before(:each) do
-    	@admin = Admin.create!(admin_email: 'tom@tom.com', password: 'tomtom')
-    	@super_user = SuperUser.new(admin_id: @admin.id, super_user_email: 'tom@tom.com', password: 'tomtom')
+    	@super_user = SuperUser.new(super_user_email: 'tom@tom.com', password: 'tomtom')
   	end
 
   	it "has valid attributes" do
@@ -25,16 +24,7 @@ RSpec.describe SuperUser, type: :model do
 
   describe "creating a SuperUser with invalid input" do
   	before(:each) do
-    	@admin = Admin.create!(admin_email: 'tom@tom.com', password: 'tomtom')
-    	@super_user = SuperUser.new(admin_id: @admin.id, super_user_email: 'tom@tom.com', password: 'tomtom')
-  	end
-  	# learned that @super_user.admin_id = '1' will persist...
-  	it "does not persist if an admin_id is not present or is not a number" do
-  		@super_user.admin_id = 'one'
-  		expect(@super_user).to be_invalid
-
-  		@super_user.admin_id = nil
-  		expect(@super_user).to be_invalid
+    	@super_user = SuperUser.new(super_user_email: 'tom@tom.com', password: 'tomtom')
   	end
 
   	it "does not persist if a password is not present" do
@@ -47,7 +37,7 @@ RSpec.describe SuperUser, type: :model do
   		expect(@super_user).to be_invalid
   	end
 
-  	it "does not persist if a user_email is longer than 60 characters" do
+  	it "does not persist if a super_user_email is longer than 60 characters" do
   		@super_user.super_user_email = ("A" * 60).concat('@aol.com')
   		expect(@super_user).to be_invalid
   	end
@@ -59,7 +49,7 @@ RSpec.describe SuperUser, type: :model do
 
   	it "does not persist if the super_user already exists" do
   		@super_user.save
-  		@super_user2 = SuperUser.new(admin_id: @admin.id, super_user_email: 'tom@tom.com', password: 'tomtom')
+  		@super_user2 = SuperUser.new(super_user_email: 'tom@tom.com', password: 'tomtom')
   		expect(@super_user2).to be_invalid
   	end
   end

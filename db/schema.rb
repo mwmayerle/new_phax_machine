@@ -10,17 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_06_02_182832) do
+ActiveRecord::Schema.define(version: 2018_06_03_195758) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-
-  create_table "admins", force: :cascade do |t|
-    t.string "admin_email", null: false
-    t.string "password_digest", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
 
   create_table "fax_numbers", force: :cascade do |t|
     t.string "fax_number", null: false
@@ -29,8 +22,17 @@ ActiveRecord::Schema.define(version: 2018_06_02_182832) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "groups", force: :cascade do |t|
+    t.bigint "super_user_id"
+    t.string "fax_tag"
+    t.string "group_name"
+    t.string "display_name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["super_user_id"], name: "index_groups_on_super_user_id"
+  end
+
   create_table "super_users", force: :cascade do |t|
-    t.integer "admin_id"
     t.string "super_user_email", null: false
     t.string "fax_tag"
     t.string "password_digest", null: false
@@ -38,13 +40,24 @@ ActiveRecord::Schema.define(version: 2018_06_02_182832) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "user_groups", force: :cascade do |t|
+    t.bigint "group_id"
+    t.bigint "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["group_id"], name: "index_user_groups_on_group_id"
+    t.index ["user_id"], name: "index_user_groups_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
-    t.integer "super_user_id", null: false
-    t.string "user_email", null: false
+    t.bigint "super_user_id"
+    t.boolean "is_admin", default: false
+    t.string "email", null: false
     t.string "fax_tag"
     t.string "password_digest", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["super_user_id"], name: "index_users_on_super_user_id"
   end
 
 end

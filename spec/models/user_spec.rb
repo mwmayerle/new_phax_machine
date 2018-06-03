@@ -4,9 +4,8 @@ RSpec.describe User, type: :model do
 
   describe "creating a User with valid input" do
   	before(:each) do
-    	@admin = Admin.create!(admin_email: 'tom@tom.com', password: 'tomtom')
-    	@super_user = SuperUser.create!(admin_id: @admin.id, super_user_email: 'tom@tom.com', password: 'tomtom')
-    	@user = User.new(super_user_id: @super_user.id, user_email: 'tom@tom.com', password: 'tomtom')
+    	@super_user = SuperUser.create!(super_user_email: 'tom@tom.com', password: 'tomtom')
+    	@user = User.new(super_user_id: @super_user.id, email: 'tom@tom.com', password: 'tomtom')
   	end
 
   	it "has valid attributes" do
@@ -27,21 +26,23 @@ RSpec.describe User, type: :model do
 
   describe "creating a User with invalid input" do
   	before(:each) do
-    	@admin = Admin.create!(admin_email: 'tom@tom.com', password: 'tomtom')
-    	@super_user = SuperUser.new(admin_id: @admin.id, super_user_email: 'tom@tom.com', password: 'tomtom')
-    	@user = User.new(super_user_id: @super_user.id, user_email: 'tom@tom.com', password: 'tomtom')
+  		@admin = User.create!(email: 'tom@tom.com', password: 'tomtom', is_admin: true)
+    	@super_user = SuperUser.new(super_user_email: 'tom@tom.com', password: 'tomtom')
+    	@user = User.new(super_user_id: @super_user.id, email: 'tom@tom.com', password: 'tomtom')
   	end
   	# learned that @user.super_user_id = '1' will persist...
-  	it "does not persist if a super_user_id is not present or is not a number" do
+  	it "does not persist if a super_user_id is not a number" do
   		@user.super_user_id = 'one'
   		expect(@user).to be_invalid
+  	end
 
-  		@user.super_user_id = nil
+  	it "does not persist if a super_user_email is not present" do
+  		@user.email = nil
   		expect(@user).to be_invalid
   	end
 
   	it "does not persist if a user_email is longer than 60 characters" do
-  		@user.user_email = ("A" * 60).concat('@aol.com')
+  		@user.email = ("A" * 60).concat('@aol.com')
   		expect(@user).to be_invalid
   	end
 
@@ -55,15 +56,16 @@ RSpec.describe User, type: :model do
   		expect(@user).to be_invalid
   	end
 
-  	it "does not persist if a super_user_email is not present" do
-  		@user.user_email = nil
-  		expect(@user).to be_invalid
-  	end
-
   	it "does not persist if the super_user already exists" do
   		@user.save
-  		@user2 = User.new(super_user_id: @super_user.id, user_email: 'tom@tom.com', password: 'tomtom')
+  		@user2 = User.new(super_user_id: @super_user.id, email: 'tom@tom.com', password: 'tomtom')
   		expect(@user2).to be_invalid
+  	end
+
+  	it "the 'is_admin' boolean attribute cannot be updated and is read-only" do
+  		@admin.update_attributes({is_admin: false, email: 'edited_email@tom.com'})
+  		expect(@admin.reload.is_admin).to be(true)
+  		expect(@admin.reload.email).to eq('edited_email@tom.com')
   	end
   end
 end
