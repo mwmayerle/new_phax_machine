@@ -6,7 +6,8 @@ RSpec.describe FaxNumber, type: :model do
 
   describe "valid fax number formatting" do
   	before(:each) do
-    	@fax_number = FaxNumber.new(fax_number: '12248675309', fax_number_label: "Fake Testing Number")
+  		@admin = User.create!(email: 'tom@tom.com', password: 'tomtom', is_admin: true)
+    	@fax_number = FaxNumber.new(fax_number: '12248675309', fax_number_label: "Fake Testing Number", admin_id: @admin.id)
   	end
 
   	it "persists to the database with valid attributes" do
@@ -30,8 +31,16 @@ RSpec.describe FaxNumber, type: :model do
   	end
 
   	it "fax number label cannot be more than 60 characters long" do
+  		@fax_number.admin_id = 1
   		@fax_number.fax_number = '12248675309'
   		@fax_number.fax_number_label = "A" * 61
+  		expect(@fax_number).to be_invalid
+  	end
+
+  	it "does not persist without an admin_id" do
+  		@fax_number.admin_id = nil
+  		@fax_number.fax_number = '12248675309'
+  		@fax_number.fax_number_label = "totally rad label"
   		expect(@fax_number).to be_invalid
   	end
 
