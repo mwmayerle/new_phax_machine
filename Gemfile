@@ -36,6 +36,7 @@ gem 'bcrypt', '~> 3.1.7'
 gem 'dotenv-rails'
 
 # Prettying up
+gem 'jquery-rails'
 gem 'bootstrap'
 
 # Telephony/faxing goodies

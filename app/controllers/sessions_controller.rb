@@ -3,7 +3,7 @@ class SessionsController < ApplicationController
 
 	def new
 		if logged_in?
-			flash.now[:alert] = "You must log out before you can log in."
+			flash[:alert] = "You must log out before you can log in."
 			redirect_to root_path
 		end
 		@user = User.new
@@ -24,11 +24,14 @@ class SessionsController < ApplicationController
 	def destroy
 		if logged_in? && authorized?(session_params)
 			session[:user_id] = nil
-			flash.now[:notice] = "You've been logged out."
+			flash[:notice] = "You've been logged out."
 		else
 			flash.now[:alert] = "Something went wrong."
 		end
 		redirect_to root_path
+	end
+
+	def homepage
 	end
 
 	private
