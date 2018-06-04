@@ -1,6 +1,6 @@
 class User < ApplicationRecord
 	include FaxTags
- 	# attr_readonly prevents other users from updating the "is_admin" boolean if they somehow bypass param whitelisting
+ 	# attr_readonly prevents other users from updating the "is_admin" or "is_group_leader" boolean if they somehow bypass the param whitelisting
 	attr_readonly :is_admin
 	attr_readonly :is_group_leader
 

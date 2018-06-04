@@ -3,7 +3,7 @@ class FaxNumber < ApplicationRecord
 	
 	validates :fax_number, presence: true, length: {maximum: 60}, phone: {possible: true}, uniqueness: true
 	validates :fax_number_label, length: {maximum: 60}
-	validates :admin_id, numericality: {integer_only: true}
+	validates :admin_id, presence: true, numericality: {integer_only: true}
 
 	before_validation :format_fax_number, :ensure_is_admin?
 
