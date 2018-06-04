@@ -4,8 +4,8 @@ RSpec.describe User, type: :model do
 
   describe "creating a User with valid input" do
   	before(:each) do
-    	@super_user = SuperUser.create!(super_user_email: 'tom@tom.com', password: 'tomtom')
-    	@user = User.new(super_user_id: @super_user.id, email: 'tom@tom.com', password: 'tomtom')
+    	@group_leader = User.create!(email: 'tiom@tim.com', password: 'timtim', is_group_leader: true)
+    	@user = User.new(group_leader_id: @group_leader.id, email: 'tom@tom.com', password: 'tomtom')
   	end
 
   	it "has valid attributes" do
@@ -27,16 +27,16 @@ RSpec.describe User, type: :model do
   describe "creating a User with invalid input" do
   	before(:each) do
   		@admin = User.create!(email: 'tom@tom.com', password: 'tomtom', is_admin: true)
-    	@super_user = SuperUser.new(super_user_email: 'tom@tom.com', password: 'tomtom')
-    	@user = User.new(super_user_id: @super_user.id, email: 'tom@tom.com', password: 'tomtom')
+    	@group_leader = User.new(email: 'tim@tim.com', password: 'tomtom', is_group_leader: true)
+    	@user = User.new(group_leader_id: @group_leader.id, email: 'tam@tam.com', password: 'tomtom')
   	end
-  	# learned that @user.super_user_id = '1' will persist...
-  	it "does not persist if a super_user_id is not a number" do
-  		@user.super_user_id = 'one'
+  	# learned that @user.group_leader_id = '1' will persist...
+  	it "does not persist if a group_leader_id is not a number" do
+  		@user.group_leader_id = 'one'
   		expect(@user).to be_invalid
   	end
 
-  	it "does not persist if a super_user_email is not present" do
+  	it "does not persist if a group_leader_email is not present" do
   		@user.email = nil
   		expect(@user).to be_invalid
   	end
@@ -56,16 +56,25 @@ RSpec.describe User, type: :model do
   		expect(@user).to be_invalid
   	end
 
-  	it "does not persist if the super_user already exists" do
+  	it "does not persist if the group_leader already exists" do
   		@user.save
-  		@user2 = User.new(super_user_id: @super_user.id, email: 'tom@tom.com', password: 'tomtom')
+  		@user2 = User.new(group_leader_id: @group_leader.id, email: 'tom@tom.com', password: 'tomtom')
   		expect(@user2).to be_invalid
   	end
 
   	it "the 'is_admin' boolean attribute cannot be updated and is read-only" do
-  		@admin.update_attributes({is_admin: false, email: 'edited_email@tom.com'})
+  		@admin.update_attributes({is_admin: false, email: 'edited_email@tom.com', password: "changed!"})
   		expect(@admin.reload.is_admin).to be(true)
   		expect(@admin.reload.email).to eq('edited_email@tom.com')
+  		expect(@admin.reload.password).to eq('changed!')
+  	end
+
+  	it "the 'is_group_leader' boolean attribute cannot be updated and is read-only" do
+  		@group_leader = User.create!(email: 'leader@leader.com', password: 'leader', is_group_leader: true)
+  		@group_leader.update_attributes({email: 'edited_email@tom.com', password: "changed!", is_group_leader: false})
+  		expect(@group_leader.reload.is_group_leader).to be(true)
+  		expect(@group_leader.reload.email).to eq('edited_email@tom.com')
+  		expect(@group_leader.reload.password).to eq('changed!')
   	end
   end
 end

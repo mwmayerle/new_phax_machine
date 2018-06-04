@@ -3,9 +3,9 @@ require 'rails_helper'
 RSpec.describe UserGroup, type: :model do
 	describe "creating a UserGroup with valid input" do
 		before(:each) do
-			@super_user = SuperUser.create!(super_user_email: 'tom@tom.com', password: 'tomtom')
-			@user = User.create!(super_user_id: @super_user.id, email: 'tom@tom.com', password: 'tomtom')
-			@group = Group.create!(group_name: "Phaxio Accounting", display_name: "Accounting", super_user_id: @super_user.id)
+			@group_leader = User.create!(is_group_leader: true, email: 'tim@tim.com', password: 'timtim')
+			@user = User.create!(group_leader_id: @group_leader.id, email: 'tom@tom.com', password: 'tomtom')
+			@group = Group.create!(group_name: "Phaxio Accounting", display_name: "Accounting", group_leader_id: @group_leader.id)
 			@user_group = UserGroup.new(group_id: @group.id, user_id: @user.id)
 		end
 
@@ -16,9 +16,9 @@ RSpec.describe UserGroup, type: :model do
 
 	describe "creating a UserGroup with invalid input" do
 		before(:each) do
-			@super_user = SuperUser.create!(super_user_email: 'tom@tom.com', password: 'tomtom')
-			@user = User.create!(super_user_id: @super_user.id, email: 'tom@tom.com', password: 'tomtom')
-			@group = Group.create!(group_name: "Phaxio Accounting", display_name: "Accounting", super_user_id: @super_user.id)
+			@group_leader = User.create!(is_group_leader: true, email: 'tim@tim.com', password: 'timtim')
+			@user = User.create!(email: 'tom@tom.com', password: 'tomtom', is_group_leader: true)
+			@group = Group.create!(group_name: "Phaxio Accounting", display_name: "Accounting", group_leader_id: @group_leader.id)
 			@user_group = UserGroup.new(group_id: @group.id, user_id: @user.id)
 		end
 

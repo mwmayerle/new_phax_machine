@@ -23,13 +23,12 @@ ActiveRecord::Schema.define(version: 2018_06_03_195758) do
   end
 
   create_table "groups", force: :cascade do |t|
-    t.bigint "super_user_id"
-    t.string "fax_tag"
+    t.bigint "group_leader_id"
     t.string "group_name"
     t.string "display_name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["super_user_id"], name: "index_groups_on_super_user_id"
+    t.index ["group_leader_id"], name: "index_groups_on_group_leader_id"
   end
 
   create_table "super_users", force: :cascade do |t|
@@ -50,14 +49,15 @@ ActiveRecord::Schema.define(version: 2018_06_03_195758) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.bigint "super_user_id"
+    t.bigint "group_leader_id"
     t.boolean "is_admin", default: false
+    t.boolean "is_group_leader", default: false
     t.string "email", null: false
     t.string "fax_tag"
     t.string "password_digest", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["super_user_id"], name: "index_users_on_super_user_id"
+    t.index ["group_leader_id"], name: "index_users_on_group_leader_id"
   end
 
 end
