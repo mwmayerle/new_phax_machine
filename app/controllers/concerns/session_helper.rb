@@ -3,13 +3,13 @@ module SessionsHelper
 		session[:user_id] = user.id
 	end
 
-	def logout
-		session[:user_id] = nil
-	end
-
 	def current_user
 		return if session[:user_id].nil?
 		@current_user ||= User.find(session[:user_id])
+	end
+
+	def authorized?(session_params)
+		current_user.id == session_params[:id].to_i
 	end
 
 	def logged_in?

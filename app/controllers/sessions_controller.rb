@@ -1,7 +1,11 @@
 class SessionsController < ApplicationController
-	include SessionsHelper
+	include SessionsHelper # contains logged_in?, current_user, login(user), authorized?, is_admin?, is_group_leader?
 
 	def new
+		if logged_in?
+			flash.now[:alert] = "You must log out before you can log in."
+			redirect_to root_path
+		end
 		@user = User.new
 	end
 
@@ -9,19 +13,26 @@ class SessionsController < ApplicationController
 		user = User.find_by(email: session_params[:email])
 		if user && user.authenticate(session_params[:password])
 			login(user)
+			flash.now[:notice] = "You've been logged in."
 			render :template => "users/show"
 		else
-			p "lol invalid"
+			flash.now[:alert] = "Invalid username or password. Please try again."
 			render :new
 		end
 	end
 
 	def destroy
-
+		if logged_in? && authorized?(session_params)
+			session[:user_id] = nil
+			flash.now[:notice] = "You've been logged out."
+		else
+			flash.now[:alert] = "Something went wrong."
+		end
+		redirect_to root_path
 	end
 
 	private
 		def session_params
-			params.require(:session).permit(:password, :email)
+			params.require(:session).permit(:password, :email, :id)
 		end
 end
