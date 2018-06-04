@@ -18,5 +18,5 @@ usergroup4 = UserGroup.create!(user_id: admin.id, group_id: group2.id)
 usergroup5 = UserGroup.create!(user_id: user3.id, group_id: group2.id)
 usergroup6 = UserGroup.create!(user_id: user4.id, group_id: group2.id)
 
-fax1 = FaxNumber.create!(fax_number: '12096904545', fax_number_label: 'Modesto, California')
-fax2 = FaxNumber.create!(fax_number: '18777115706', fax_number_label: 'Toll Free Number')
+fax1 = FaxNumber.create!(fax_number: '12096904545', fax_number_label: 'Modesto, California', admin_id: admin.id)
+fax2 = FaxNumber.create!(fax_number: '18777115706', fax_number_label: 'Toll Free Number', admin_id: admin.id)

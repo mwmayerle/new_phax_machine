@@ -4,8 +4,10 @@ class User < ApplicationRecord
 	attr_readonly :is_admin
 	attr_readonly :is_group_leader
 
+	belongs_to :admin, class_name: "User", optional: true
 	belongs_to :group_leader, class_name: "User", optional: true
-
+	
+	has_many :fax_numbers
 	has_many :user_groups
 	has_many :groups, through: :user_groups
 

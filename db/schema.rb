@@ -18,13 +18,15 @@ ActiveRecord::Schema.define(version: 2018_06_03_195758) do
   create_table "fax_numbers", force: :cascade do |t|
     t.string "fax_number", null: false
     t.string "fax_number_label"
+    t.bigint "admin_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["admin_id"], name: "index_fax_numbers_on_admin_id"
   end
 
   create_table "groups", force: :cascade do |t|
-    t.bigint "group_leader_id"
-    t.string "group_name"
+    t.bigint "group_leader_id", null: false
+    t.string "group_name", null: false
     t.string "display_name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -32,8 +34,8 @@ ActiveRecord::Schema.define(version: 2018_06_03_195758) do
   end
 
   create_table "user_groups", force: :cascade do |t|
-    t.bigint "group_id"
-    t.bigint "user_id"
+    t.bigint "group_id", null: false
+    t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["group_id"], name: "index_user_groups_on_group_id"

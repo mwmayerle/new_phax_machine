@@ -6,7 +6,8 @@ RSpec.describe FaxNumber, type: :model do
 
   describe "valid fax number formatting" do
   	before(:each) do
-    	@fax_number = FaxNumber.new(fax_number: '12248675309', fax_number_label: "Fake Testing Number")
+  		@admin = User.create!(email: 'tom@tom.com', password: 'tomtom', admin: true)
+    	@fax_number = FaxNumber.new(fax_number: '12248675309', fax_number_label: "Fake Testing Number", admin_id: @admin.id)
   	end
 
   	it "persists to the database with valid attributes" do
