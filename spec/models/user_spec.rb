@@ -22,6 +22,14 @@ RSpec.describe User, type: :model do
   		@user.save
   		expect(@user.fax_tag).to eq("Custom fax tag")
   	end
+
+  	it "the 'is_admin' attribute defaults to false" do
+  		expect(@user.is_admin).to be(false)
+  	end
+
+  	it "the 'is_group_leader' attribute defaults to false" do
+  		expect(@user.is_group_leader).to be(false)
+  	end
   end
 
   describe "creating a User with invalid input" do

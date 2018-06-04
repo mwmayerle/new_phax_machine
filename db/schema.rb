@@ -31,14 +31,6 @@ ActiveRecord::Schema.define(version: 2018_06_03_195758) do
     t.index ["group_leader_id"], name: "index_groups_on_group_leader_id"
   end
 
-  create_table "super_users", force: :cascade do |t|
-    t.string "super_user_email", null: false
-    t.string "fax_tag"
-    t.string "password_digest", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "user_groups", force: :cascade do |t|
     t.bigint "group_id"
     t.bigint "user_id"

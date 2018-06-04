@@ -1,0 +1,47 @@
+<main id="faxLogs">
+	<h1>Fax Logs</h1>
+
+	<table id="fax-log-table" class="table">
+		<thead>
+			<th>File</th>
+			<th>ID</th>
+			<th>Num Pages</th>
+			<th>Cost</th>
+			<th>Direction</th>
+			<th>Status</th>
+			<th>Type</th>
+			<th>Requested At</th>
+			<th>Recipients</th>
+			<th>Delete</th>
+		</thead>
+		<tbody>
+			<tr id="loading-row">
+				<td colspan="8">Loading...</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<div id="recipientsDataModal" class="modal fade" tabindex="-1">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">Fax Recipients</h4>
+				</div>
+				<div class="modal-body">
+					<table id="recipientsDataTable" class="table">
+						<thead>
+							<th>Bitrate</th>
+							<th>Completed At</th>
+							<th>Number</th>
+							<th>Resolution</th>
+							<th>Status</th>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
