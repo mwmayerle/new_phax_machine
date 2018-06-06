@@ -3,7 +3,7 @@ class User < ApplicationRecord
 
 	attr_readonly :type
 
-	before_destroy :ensure_not_admin
+	before_destroy :ensure_admin
 	before_validation :generate_fax_tag, :ensure_user_type
 
 	validates :email, presence: true
@@ -21,8 +21,8 @@ class User < ApplicationRecord
 	has_secure_password
 	private
 
-  def ensure_not_admin
-  	self.errors.add(:base, "Permission denied") if self.type == :admin
+  def ensure_admin
+  	self.errors.add(:base, "Permission denied") if self.type != :admin
   end
 
   def ensure_user_type
