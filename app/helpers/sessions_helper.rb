@@ -4,7 +4,6 @@ module SessionsHelper
 	end
 
 	def current_user
-		p "WAS ACCESSED"
 		return if session[:user_id].nil?
 		@current_user ||= User.find(session[:user_id])
 	end

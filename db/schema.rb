@@ -16,18 +16,19 @@ ActiveRecord::Schema.define(version: 2018_06_05_211211) do
   enable_extension "plpgsql"
 
   create_table "clients", force: :cascade do |t|
-    t.integer "admin_id"
+    t.integer "admin_id", null: false
     t.integer "client_manager_id"
     t.string "client_label"
+    t.string "fax_tag"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
   create_table "fax_numbers", force: :cascade do |t|
     t.string "fax_number_label"
-    t.string "fax_number"
-    t.string "faxable_type"
-    t.integer "faxable_id"
+    t.string "fax_number", null: false
+    t.string "faxable_type", null: false
+    t.integer "faxable_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
