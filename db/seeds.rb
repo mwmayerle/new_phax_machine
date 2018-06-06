@@ -14,13 +14,15 @@ phaxio_user1 = User.create!(type: :User, email: 'marketing1@phaxio.com', passwor
 phaxio_user2 = User.create!(type: :User, email: 'marketing2@phaxio.com', password: 'mattmatt', client_id: phaxio.id)
 phaxio_user5 = User.create!(type: :User, email: 'developer1@phaxio.com', password: 'mattmatt', client_id: phaxio.id)
 phaxio_user6 = User.create!(type: :User, email: 'developer2@phaxio.com', password: 'mattmatt', client_id: phaxio.id)
+phaxio_user7 = User.create!(type: :User, email: 'matt@phaxio.com', password: 'mattmatt', client_id: phaxio.id)
 
 fake1 = User.create!(type: :User, email: 'faker1@aol.com', password: 'mattmatt', client_id: fakers.id)
 fake2 = User.create!(type: :User, email: 'faker2@aol.com', password: 'mattmatt', client_id: fakers.id)
 fake3 = User.create!(type: :User, email: 'faker3@aol.com', password: 'mattmatt', client_id: fakers.id)
 
 phaxio_founders = Group.create!(group_label: "Phaxio Founders Group", client_id: phaxio.id, display_label: "Phaxio Founders")
-phaxio_other = Group.create!(group_label: "Phaxio Employees", client_id: phaxio.id)
+
+phaxio_other = Group.create!(group_label: "Phaxio Devs", client_id: phaxio.id)
 fake_people = Group.create!(group_label: "Fake People", client_id: fakers.id, display_label: "lol")
 
 UserGroup.create!([
@@ -28,8 +30,9 @@ UserGroup.create!([
 {user_id: phaxio_user3.id, group_id: phaxio_founders.id},
 {user_id: phaxio_user1.id, group_id: phaxio.id},
 {user_id: phaxio_user2.id, group_id: phaxio.id},
-{user_id: phaxio_user5.id, group_id: phaxio.id},
-{user_id: phaxio_user6.id, group_id: phaxio.id},
+{user_id: phaxio_user5.id, group_id: phaxio_other.id},
+{user_id: phaxio_user6.id, group_id: phaxio_other.id},
+{user_id: phaxio_user7.id, group_id: phaxio_other.id},
 {user_id: fake1.id, group_id: fakers.id},
 {user_id: fake2.id, group_id: fakers.id},
 {user_id: fake3.id, group_id: fakers.id}
