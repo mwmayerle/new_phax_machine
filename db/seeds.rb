@@ -1,7 +1,7 @@
 admin = User.create!(type: :Admin, email: 'tom@tom.com', password: 'tomtom')
 
 phaxio_manager = User.create!(type: :ClientManager, email: 'phaxio_manager@phaxio.com', password: 'mattmatt')
-fake_manager = User.create!(type: :ClientManager, email: 'faker1@aol.com', password: 'mattmatt')
+fake_manager = User.create!(type: :ClientManager, email: 'faker_manager@aol.com', password: 'mattmatt')
 
 phaxio = Client.create!(client_label: "Phaxio", client_manager_id: phaxio_manager.id, admin_id: admin.id )
 fakers = Client.create!(client_label: "Fake Number Corporation", client_manager_id: fake_manager.id, admin_id: admin.id)
@@ -15,8 +15,8 @@ phaxio_user2 = User.create!(type: :User, email: 'marketing2@phaxio.com', passwor
 phaxio_user5 = User.create!(type: :User, email: 'developer1@phaxio.com', password: 'mattmatt', client_id: phaxio.id)
 phaxio_user6 = User.create!(type: :User, email: 'developer2@phaxio.com', password: 'mattmatt', client_id: phaxio.id)
 
-fake1 = User.create!(type: :User, email: 'faker2@aol.com', password: 'mattmatt', client_id: fakers.id)
-fake2 = User.create!(type: :User, email: 'faker3@aol.com', password: 'mattmatt', client_id: fakers.id)
+fake1 = User.create!(type: :User, email: 'faker1@aol.com', password: 'mattmatt', client_id: fakers.id)
+fake2 = User.create!(type: :User, email: 'faker2@aol.com', password: 'mattmatt', client_id: fakers.id)
 fake3 = User.create!(type: :User, email: 'faker3@aol.com', password: 'mattmatt', client_id: fakers.id)
 
 phaxio_founders = Group.create!(group_label: "Phaxio Founders Group", client_id: phaxio.id)
