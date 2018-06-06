@@ -24,10 +24,6 @@ class User < ApplicationRecord
 
 	private
 
-  # def ensure_admin
-  # 	self.errors.add(:base, "Permission denied") if self.type != :admin
-  # end
-
   def ensure_user_type
   	self.type = "User" if self.type.nil?
   end
@@ -35,4 +31,8 @@ class User < ApplicationRecord
   def is_generic_user?
   	self.type == "User"
   end
+  
+  # def ensure_admin
+  # 	self.errors.add(:base, "Permission denied") if self.type != :admin
+  # end
 end
