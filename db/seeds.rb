@@ -19,9 +19,9 @@ fake1 = User.create!(type: :User, email: 'faker1@aol.com', password: 'mattmatt',
 fake2 = User.create!(type: :User, email: 'faker2@aol.com', password: 'mattmatt', client_id: fakers.id)
 fake3 = User.create!(type: :User, email: 'faker3@aol.com', password: 'mattmatt', client_id: fakers.id)
 
-phaxio_founders = Group.create!(group_label: "Phaxio Founders Group", client_id: phaxio.id)
+phaxio_founders = Group.create!(group_label: "Phaxio Founders Group", client_id: phaxio.id, display_label: "Phaxio Founders")
 phaxio_other = Group.create!(group_label: "Phaxio Employees", client_id: phaxio.id)
-fake_people = Group.create!(group_label: "Fake People", client_id: fakers.id)
+fake_people = Group.create!(group_label: "Fake People", client_id: fakers.id, display_label: "lol")
 
 UserGroup.create!([
 {user_id: phaxio_user4.id, group_id: phaxio_founders.id},

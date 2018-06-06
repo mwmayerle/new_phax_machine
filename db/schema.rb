@@ -17,8 +17,8 @@ ActiveRecord::Schema.define(version: 2018_06_05_211211) do
 
   create_table "clients", force: :cascade do |t|
     t.integer "admin_id", null: false
-    t.integer "client_manager_id"
-    t.string "client_label"
+    t.integer "client_manager_id", null: false
+    t.string "client_label", null: false
     t.string "fax_tag"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -35,6 +35,8 @@ ActiveRecord::Schema.define(version: 2018_06_05_211211) do
 
   create_table "groups", force: :cascade do |t|
     t.string "group_label"
+    t.string "display_label"
+    t.string "fax_tag"
     t.integer "client_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
