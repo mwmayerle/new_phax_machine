@@ -17,10 +17,10 @@ module SessionsHelper
 	end
 
 	def is_admin?
-		current_user.is_admin
+		current_user.type == "Admin"
 	end
 
-	def is_group_leader?
-		current_user.is_group_leader #this does not verify a user is the group leader of a particular group, just the ability to be one
+	def is_client_manager?
+		current_user.type == "ClientManager"
 	end
 end

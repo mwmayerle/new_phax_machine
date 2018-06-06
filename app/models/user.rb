@@ -1,21 +1,38 @@
 class User < ApplicationRecord
 	include FaxTags
- 	# attr_readonly prevents other users from updating the "is_admin" or "is_group_leader" boolean if they somehow bypass the param whitelisting
-	attr_readonly :is_admin
-	attr_readonly :is_group_leader
 
-	belongs_to :admin, class_name: "User", optional: true
-	belongs_to :group_leader, class_name: "User", optional: true
-	
-	has_many :fax_numbers
+	attr_readonly :type
+
+	before_destroy :ensure_admin
+	before_validation :generate_fax_tag, :ensure_user_type
+
+	validates :email, presence: true
+	validates :email, length: {maximum: 60}, uniqueness: {case_sensitive: false}
+	validates :fax_tag, length: {maximum: 60}, uniqueness: {case_sensitve: false}
+	validates :client_id, presence: true, numericality: {integer_only: true}, if: :is_generic_user?
+
+	belongs_to :client, optional: true
+
 	has_many :user_groups
 	has_many :groups, through: :user_groups
 
-	validates :group_leader_id, numericality: {only_integer: true, allow_blank: true}
-	validates :email, presence: true, uniqueness: {case_sensitve: false}
-	validates :email, :fax_tag, length: {maximum: 60}
+	has_one :admin, through: :client
+	has_one :client_manager, through: :client
 
-	before_save :generate_fax_tag
 
-	has_secure_password	
+	has_secure_password
+
+	private
+
+  # def ensure_admin
+  # 	self.errors.add(:base, "Permission denied") if self.type != :admin
+  # end
+
+  def ensure_user_type
+  	self.type = "User" if self.type.nil?
+  end
+
+  def is_generic_user?
+  	self.type == "User"
+  end
 end

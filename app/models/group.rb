@@ -1,18 +1,22 @@
 class Group < ApplicationRecord
+	include FaxTags
 
-	has_one :group_leader, class_name: "User", foreign_key: "group_leader_id"
+	belongs_to :client
 
 	has_many :user_groups
 	has_many :users, through: :user_groups
 
-	validates :group_name, presence: true, uniqueness: true, length: {in: 1..60}
-	validates :group_leader_id, numericality: {only_integer: true}
-	validates :display_name, length: {in: 1..60}
+	has_one :admin, through: :client
+	has_one :client_manager, through: :client
 
-	before_validation :ensure_display_name_exists
+	validates :group_label, :display_label, :fax_tag, length: {maximum: 60}
+	validates :client_id, numericality: {integer_only: true}, presence: true
+	validates :group_label, :fax_tag, presence: true, uniqueness: true
 
-	def ensure_display_name_exists
-		return if self.display_name.present?
-		self.display_name = self.group_name
+	before_validation :ensure_display_label_exists, :generate_fax_tag
+
+  def ensure_display_label_exists
+		return if self.display_label.present?
+		self.display_label = self.group_label
 	end
 end
