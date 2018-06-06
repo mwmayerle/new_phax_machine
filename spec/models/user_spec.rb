@@ -3,9 +3,8 @@ require 'rails_helper'
 RSpec.describe User, type: :model do
 
   describe "creating a User with valid input" do
-  	before(:each) do
-    	@group_leader = User.create!(email: 'tiom@tim.com', password: 'timtim', is_group_leader: true)
-    	@user = User.new(group_leader_id: @group_leader.id, email: 'tom@tom.com', password: 'tomtom')
+    	let(:group_leader) { User.create!(email: 'tim@tim.com', password: 'timtim', is_group_leader: true) }
+    	let(:user) { User.new(group_leader_id: @group_leader.id, email: 'tom@tom.com', password: 'tomtom') }
   	end
 
   	it "has valid attributes" do

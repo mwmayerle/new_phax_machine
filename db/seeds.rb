@@ -1,22 +1,36 @@
-admin = User.create!(email: 'tom@tom.com', password: "tomtom", is_admin: true)
+admin = User.create!(type: :Admin, email: 'tom@tom.com', password: 'tomtom')
 
-group_leader1 = User.create!(email: 'matt@phaxio.com', password: 'mattmatt', is_group_leader: true)
-group_leader2 = User.create!(email: 'mwmayerle@gmail.com', password: 'mattmatt', is_group_leader: true)
+phaxio_manager = User.create!(type: :ClientManager, email: 'phaxio_manager@phaxio.com', password: 'mattmatt')
+fake_manager = User.create!(type: :ClientManager, email: 'faker1@aol.com', password: 'mattmatt')
 
-user1 = User.create!(group_leader_id: group_leader1.id, email: 'matt+v1runscopeprod@phaxio.com', password: 'mattmatt')
-user2 = User.create!(group_leader_id: group_leader1.id, email: 'matt+v2runscopeprod@phaxio.com', password: 'mattmatt')
-user3 = User.create!(group_leader_id: group_leader2.id, email: 'accounting@email.com', password: 'mattmatt')
-user4 = User.create!(group_leader_id: group_leader2.id, email: 'fakeaccountant@email.com', password: 'mattmatt')
+phaxio = Client.create!(client_label: "Phaxio", client_manager_id: phaxio_manager.id, admin_id: admin.id )
+fakers = Client.create!(client_label: "Fake Number Corporation", client_manager_id: fake_manager.id, admin_id: admin.id)
+fakers.fax_numbers.create!([{ fax_number_label: 'Fake Number 1', fax_number: '12025550141' }, { fax_number_label: 'Fake Number 2', fax_number: '12025550163' }, { fax_number_label: 'Fake Number 3', fax_number: '12025550126' }])
+phaxio.fax_numbers.create!([{ fax_number: '12096904545', fax_number_label: 'Modesto, California' }, { fax_number: '18777115706', fax_number_label: 'Toll Free Number' }])
 
-group1 = Group.create!(group_leader_id: group_leader1.id, group_name: "Phaxio People", display_name: "Developers")
-group2 = Group.create!(group_leader_id: group_leader2.id, group_name: "Phaxio Accounting Dept", display_name: "Accounting")
+phaxio_user3 = User.create!(type: :User, email: 'ceo@phaxio.com', password: 'mattmatt', client_id: phaxio.id)
+phaxio_user4 = User.create!(type: :User, email: 'cto@phaxio.com', password: 'mattmatt', client_id: phaxio.id)
+phaxio_user1 = User.create!(type: :User, email: 'marketing1@phaxio.com', password: 'mattmatt', client_id: phaxio.id)
+phaxio_user2 = User.create!(type: :User, email: 'marketing2@phaxio.com', password: 'mattmatt', client_id: phaxio.id)
+phaxio_user5 = User.create!(type: :User, email: 'developer1@phaxio.com', password: 'mattmatt', client_id: phaxio.id)
+phaxio_user6 = User.create!(type: :User, email: 'developer2@phaxio.com', password: 'mattmatt', client_id: phaxio.id)
 
-usergroup1 = UserGroup.create!(user_id: user1.id, group_id: group1.id)
-usergroup2 = UserGroup.create!(user_id: user2.id, group_id: group1.id)
-usergroup3 = UserGroup.create!(user_id: admin.id, group_id: group1.id)
-usergroup4 = UserGroup.create!(user_id: admin.id, group_id: group2.id)
-usergroup5 = UserGroup.create!(user_id: user3.id, group_id: group2.id)
-usergroup6 = UserGroup.create!(user_id: user4.id, group_id: group2.id)
+fake1 = User.create!(type: :User, email: 'faker2@aol.com', password: 'mattmatt', client_id: fakers.id)
+fake2 = User.create!(type: :User, email: 'faker3@aol.com', password: 'mattmatt', client_id: fakers.id)
+fake3 = User.create!(type: :User, email: 'faker3@aol.com', password: 'mattmatt', client_id: fakers.id)
 
-fax1 = FaxNumber.create!(fax_number: '12096904545', fax_number_label: 'Modesto, California', admin_id: admin.id)
-fax2 = FaxNumber.create!(fax_number: '18777115706', fax_number_label: 'Toll Free Number', admin_id: admin.id)
+phaxio_founders = Group.create!(group_label: "Phaxio Founders Group", client_id: phaxio.id)
+phaxio_other = Group.create!(group_label: "Phaxio Employees", client_id: phaxio.id)
+fake_people = Group.create!(group_label: "Fake People", client_id: fakers.id)
+
+UserGroup.create!([
+{user_id: phaxio_user4.id, group_id: phaxio_founders.id},
+{user_id: phaxio_user3.id, group_id: phaxio_founders.id},
+{user_id: phaxio_user1.id, group_id: phaxio.id},
+{user_id: phaxio_user2.id, group_id: phaxio.id},
+{user_id: phaxio_user5.id, group_id: phaxio.id},
+{user_id: phaxio_user6.id, group_id: phaxio.id},
+{user_id: fake1.id, group_id: fakers.id},
+{user_id: fake2.id, group_id: fakers.id},
+{user_id: fake3.id, group_id: fakers.id}
+])

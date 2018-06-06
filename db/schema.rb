@@ -10,48 +10,50 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_06_03_195758) do
+ActiveRecord::Schema.define(version: 2018_06_05_211211) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "fax_numbers", force: :cascade do |t|
-    t.string "fax_number", null: false
-    t.string "fax_number_label"
-    t.bigint "admin_id"
+  create_table "clients", force: :cascade do |t|
+    t.integer "admin_id"
+    t.integer "client_manager_id"
+    t.string "client_label"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["admin_id"], name: "index_fax_numbers_on_admin_id"
+  end
+
+  create_table "fax_numbers", force: :cascade do |t|
+    t.string "fax_number_label"
+    t.string "fax_number"
+    t.string "faxable_type"
+    t.integer "faxable_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "groups", force: :cascade do |t|
-    t.bigint "group_leader_id", null: false
-    t.string "group_name", null: false
-    t.string "display_name"
+    t.string "group_label"
+    t.integer "client_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["group_leader_id"], name: "index_groups_on_group_leader_id"
   end
 
   create_table "user_groups", force: :cascade do |t|
-    t.bigint "group_id", null: false
-    t.bigint "user_id", null: false
+    t.integer "user_id"
+    t.integer "group_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["group_id"], name: "index_user_groups_on_group_id"
-    t.index ["user_id"], name: "index_user_groups_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
-    t.bigint "group_leader_id"
-    t.boolean "is_admin", default: false
-    t.boolean "is_group_leader", default: false
+    t.integer "client_id"
+    t.string "type", null: false
     t.string "email", null: false
-    t.string "fax_tag"
     t.string "password_digest", null: false
+    t.string "fax_tag"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["group_leader_id"], name: "index_users_on_group_leader_id"
   end
 
 end
