@@ -21,16 +21,23 @@ RSpec.describe User, type: :model do
   	end
 
   	it "the 'type' attribute defaults to User" do
-  		user2 = User.create!(email: 'user2@aol.com', password: 'passwordia')
+  		user2 = User.create!(email: 'user2@aol.com', password: 'passwordia', client_id: 1)
   		expect(user2.type).to eq("User")
   	end
   end
 
   describe "creating a User with invalid input" do
-  	let!(:user) { User.new(email: 'hello@aol.com', password: 'hellohello', fax_tag: 'hello I am a fax tag') }
+  	let!(:user) { User.new(email: 'hello@aol.com', password: 'hellohello', fax_tag: 'hello I am a fax tag', client_id: 1) }
 
   	it "does not persist if a user_email is longer than 60 characters" do
   		user.email = ("A" * 60).concat('@aol.com')
+  		expect(user).to be_invalid
+  	end
+
+  	it "'client_id' attribute must be present and an integer if the User 'type' attribute is 'User'" do
+  		user.client_id = nil
+  		expect(user).to be_invalid
+  		user.client_id = 'hello!'
   		expect(user).to be_invalid
   	end
 

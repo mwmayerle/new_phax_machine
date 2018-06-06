@@ -43,8 +43,8 @@ ActiveRecord::Schema.define(version: 2018_06_05_211211) do
   end
 
   create_table "user_groups", force: :cascade do |t|
-    t.integer "user_id"
-    t.integer "group_id"
+    t.integer "user_id", null: false
+    t.integer "group_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

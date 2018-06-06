@@ -9,6 +9,7 @@ class User < ApplicationRecord
 	validates :email, presence: true
 	validates :email, length: {maximum: 60}, uniqueness: {case_sensitive: false}
 	validates :fax_tag, length: {maximum: 60}, uniqueness: {case_sensitve: false}
+	validates :client_id, presence: true, numericality: {integer_only: true}, if: :is_generic_user?
 
 	belongs_to :client, optional: true
 
@@ -18,14 +19,20 @@ class User < ApplicationRecord
 	has_one :admin, through: :client
 	has_one :client_manager, through: :client
 
+
 	has_secure_password
+
 	private
 
-  def ensure_admin
-  	self.errors.add(:base, "Permission denied") if self.type != :admin
-  end
+  # def ensure_admin
+  # 	self.errors.add(:base, "Permission denied") if self.type != :admin
+  # end
 
   def ensure_user_type
-  	self.type = :User if self.type.nil?
+  	self.type = "User" if self.type.nil?
+  end
+
+  def is_generic_user?
+  	self.type == "User"
   end
 end

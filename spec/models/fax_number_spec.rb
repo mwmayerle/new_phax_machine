@@ -1,7 +1,5 @@
 require 'rails_helper'
 
-# not testing the validity of numbers due to Phonelib's inclusion
-
 RSpec.describe FaxNumber, type: :model do
 	let!(:admin) {User.create!(type: :Admin, email: 'testadmin@aol.com', password: 'testadmin')}
 	let!(:client_manager) { User.create!(type: :ClientManager, email: 'test_manager@aol.com', password: "testmanager") }

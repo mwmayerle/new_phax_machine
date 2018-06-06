@@ -3,8 +3,8 @@ require 'rails_helper'
 RSpec.describe UserGroup, type: :model do
 	let!(:admin) {User.create!(type: :Admin, email: 'testadmin@aol.com', password: 'testadmin')}
 	let!(:client_manager) { User.create!(type: :ClientManager, email: 'test_manager@aol.com', password: "testmanager") }
-	let!(:user) { User.create!(email: 'tom@tom.com', password: "tomtom", fax_tag: "tomtag") }
 	let!(:client) {Client.create!(admin_id: admin.id, client_manager_id: client_manager.id, client_label: "Client Model Test Client", fax_tag: "Test Fax Tag")}
+	let!(:user) { User.create!(email: 'tom@tom.com', password: "tomtom", fax_tag: "tomtag", client_id: client.id) }
 	let!(:group) { Group.create!(group_label: "Phaxio Accounting", display_label: "Accounting", client_id: client.id, fax_tag: "Group Testing Fax Tag") }
 	let!(:user_group) {UserGroup.new(user_id: user.id, group_id: group.id)}
 
