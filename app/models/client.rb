@@ -3,12 +3,12 @@ class Client < ApplicationRecord
 
 	attr_readonly :admin_id
 
-	has_one :admin, class_name: :User
+	belongs_to :admin, class_name: :User
 	belongs_to :client_manager
 
 	has_many :groups
-	has_many :users
-	has_many :fax_numbers, as: :faxable
+	has_many :fax_numbers
+	has_many :emails, through: :groups
 
 	validates :admin_id, :client_manager_id, presence: true, numericality: {integer_only: true}
 	validates :client_label, :fax_tag, uniqueness: true, length: {maximum: 60, presence: true}

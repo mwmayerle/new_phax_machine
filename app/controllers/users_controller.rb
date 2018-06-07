@@ -1,5 +1,6 @@
 class UsersController < ApplicationController
 	include SessionsHelper
+
 	before_action :set_user, only: [:show]
 
 	def admin_console
@@ -7,7 +8,6 @@ class UsersController < ApplicationController
 	end
 
 	def show
-		
 	end
 
 	private
@@ -15,8 +15,8 @@ class UsersController < ApplicationController
 			@user ||= User.find(params[:id])
 		end
 
-		def user_params
-			params.require(:user).permit([:id])
-		end
+		# def user_params
+		# 	params.require(:user).permit([:id])
+		# end
 
 end

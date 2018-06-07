@@ -1,1 +1,19 @@
 <h1>Admin Console Page</h1>
+
+<% if logged_in? && is_admin? %>
+	<% if current_user.clients %>
+		<ul class="list-unstyled">
+		<% current_user.clients.each do |client|%>
+			<br>
+			<li><%= client.client_label %> - <%= client.client_manager.email %></li>
+			<% if client.fax_numbers %>
+			<ul class="list-unstyled">
+				<% client.fax_numbers.each do |fax_number| %>
+					<li><%= fax_number.fax_number_label %> | <%= fax_number.fax_number %></li>
+				<% end %>
+			</ul>
+			<% end %>
+		<% end %>
+		</ul>
+	<% end %>
+<% end %>

@@ -26,8 +26,8 @@ class SessionsController < ApplicationController
 
 	def destroy
 		if logged_in? && authorized?(session_params)
-			flash[:notice] = "You've been logged out."
 			session[:user_id] = nil
+			flash[:notice] = "You've been logged out."
 		else
 			flash.now[:alert] = "Something went wrong."
 		end
