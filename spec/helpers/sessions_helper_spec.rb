@@ -1,8 +1,8 @@
 RSpec.describe SessionsHelper, type: :helper do
   describe "SessionsHelper methods:" do
-		let!(:admin) { User.create!(email: "admin@gmail.com", password: "admin!", type: "Admin") }
-		let!(:manager) { User.create!(email: "manager@gmail.com", password: "admin!", type: "ClientManager") }
-  	let!(:user) { User.create!(email: 'tom@tom.com', password: 'tomtom', client_id: 1, type: :User) }
+		let!(:admin) { User.create!(username: "Admin", password: "admin!", type: "Admin") }
+		let!(:manager) { User.create!(username: "Manager", password: "admin!", type: "ClientManager") }
+  	let!(:user) { User.create!(username: "Generic", password: 'tomtom', client_id: 1, type: :User) }
 
 		it "#login(user) adds the user_id to the session object" do
 			login(user)
@@ -20,14 +20,16 @@ RSpec.describe SessionsHelper, type: :helper do
 
 		it "#authorized? returns false if the current_user does not match the id in params" do
 			login(user)
-			session_params = {id: user.id + 1}
-			expect(authorized?(session_params)).to be(false)
+			expect(authorized?({id: user.id + 1})).to be(false)
 		end
 
 		it "#authorized? returns true if the current_user matches the id in params" do
 			login(user)
-			session_params = {id: user.id}
-			expect(authorized?(session_params)).to be(true)
+			expect(authorized?({id: user.id})).to be(true)
+		end
+
+		it "#authorized returns false if a user is not logged in" do
+			expect(authorized?({id: 'totally false data'})).to be(false)
 		end
 
 		it "#logged_in? returns false if a user is not logged in" do

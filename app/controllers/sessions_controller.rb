@@ -1,6 +1,9 @@
 class SessionsController < ApplicationController
-	include SessionsHelper # contains logged_in?, current_user, login(user), authorized?, is_admin?, is_group_leader?
+	include SessionsHelper #in helpers and not concerns
 
+	def index
+	end
+	
 	def new
 		if logged_in?
 			flash[:alert] = "You must log out before you can log in."
@@ -10,10 +13,10 @@ class SessionsController < ApplicationController
 	end
 
 	def create
-		user = User.find_by(email: session_params[:email])
+		user = User.find_by(username: session_params[:username])
 		if user && user.authenticate(session_params[:password])
 			login(user)
-			flash.now[:notice] = "You've been logged in."
+			flash.now[:notice] = "Welcome #{user.username}. You've been logged in."
 			render :template => "users/show"
 		else
 			flash.now[:alert] = "Invalid username or password. Please try again."
@@ -31,11 +34,8 @@ class SessionsController < ApplicationController
 		redirect_to root_path
 	end
 
-	def homepage
-	end
-
 	private
 		def session_params
-			params.require(:session).permit(:password, :email, :id)
+			params.require(:session).permit(:password, :username, :id)
 		end
 end

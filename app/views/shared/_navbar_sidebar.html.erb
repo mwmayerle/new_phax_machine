@@ -8,6 +8,7 @@
       	<% if is_admin? %>
       		<%= link_to "Admin Console", admin_path, class: "nav-link" %>
       	<% end %>
+      		<%= link_to "My Profile", user_path(current_user), class: "nav-link" %>
       	<li class="nav-item">
 	      	<%= link_to "Log Out", logout_path(session: {id: current_user.id}), class: "nav-link", method: :delete %>
 	      </li>
