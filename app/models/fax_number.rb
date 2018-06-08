@@ -1,4 +1,6 @@
 class FaxNumber < ApplicationRecord
+	include FaxOperations
+
 	belongs_to :client, optional: true
 
 	has_one :group
@@ -9,4 +11,6 @@ class FaxNumber < ApplicationRecord
 
 	validates :fax_number, presence: true, length: { maximum: 60 }, phone: {possible: true}, uniqueness: true
 	validates :fax_number_label, length: { maximum: 60 }
+	
+	before_validation :fax_number, :format_fax_number
 end

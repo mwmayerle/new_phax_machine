@@ -1,5 +1,5 @@
 class Client < ApplicationRecord
-	include FaxTags
+	include FaxOperations
 
 	attr_readonly :admin_id
 
@@ -7,8 +7,8 @@ class Client < ApplicationRecord
 	belongs_to :client_manager
 
 	has_many :groups
-	has_many :fax_numbers
 	has_many :emails, through: :groups
+	has_many :fax_numbers
 	has_many :users
 
 	validates :admin_id, :client_manager_id, presence: true, numericality: { integer_only: true }

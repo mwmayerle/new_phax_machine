@@ -1,10 +1,11 @@
 class Group < ApplicationRecord
-	include FaxTags
+	include FaxOperations
 
 	belongs_to :client
 	belongs_to :fax_number
 	
-	has_many :emails
+	has_many :email_groups
+	has_many :emails, through: :email_groups
 	has_many :users, through: :client
 
 	has_one :admin, through: :client

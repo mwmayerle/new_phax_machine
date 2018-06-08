@@ -1,5 +1,6 @@
 module SessionsHelper
 	def login(user)
+		return false if user.id.nil?
 		session[:user_id] = user.id
 	end
 
@@ -8,8 +9,9 @@ module SessionsHelper
 		@current_user ||= User.find(session[:user_id])
 	end
 
-	def authorized?(session_params)
-		current_user.id == session_params[:id].to_i
+	def authorized?(input)
+		return false if current_user.nil?
+		current_user.id == input[:id].to_i
 	end
 
 	def logged_in?
@@ -17,10 +19,12 @@ module SessionsHelper
 	end
 
 	def is_admin?
+		return false if current_user.nil?
 		current_user.type == "Admin"
 	end
 
 	def is_client_manager?
+		return false if current_user.nil?
 		current_user.type == "ClientManager"
 	end
 end

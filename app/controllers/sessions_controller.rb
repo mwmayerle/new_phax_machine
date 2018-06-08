@@ -1,5 +1,5 @@
 class SessionsController < ApplicationController
-	include SessionsHelper # contains logged_in?, current_user, login(user), authorized?, is_admin?, is_group_leader?
+	include SessionsHelper #in helpers and not concerns
 
 	def index
 	end
