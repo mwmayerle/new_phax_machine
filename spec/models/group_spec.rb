@@ -1,10 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe Group, type: :model do
-	let!(:admin) {User.create!(type: :Admin, email: 'testadmin@aol.com', password: 'testadmin')}
-	let!(:client_manager) { User.create!(type: :ClientManager, email: 'test_manager@aol.com', password: "testmanager") }
+	let!(:admin) {User.create!(type: :Admin, username: "Admin", password: 'testadmin')}
+	let!(:client_manager) { User.create!(type: :ClientManager, username: "Client Manager", password: "testmanager") }
 	let!(:client) {Client.create!(admin_id: admin.id, client_manager_id: client_manager.id, client_label: "Client Model Test Client", fax_tag: "Test Fax Tag")}
-	let!(:group) { Group.new(group_label: "Phaxio Accounting", display_label: "Accounting", client_id: client.id, fax_tag: "Group Testing Fax Tag") }
+	let!(:fax_number) { FaxNumber.create!(fax_number: '12248675309', fax_number_label: "Fake Testing Number", client_id: client.id) }
+	let!(:group) { Group.new(group_label: "Phaxio Accounting", display_label: "Accounting", client_id: client.id, fax_tag: "Group Testing Fax Tag", fax_number_id: fax_number.id) }
 
 	describe "creating a Group with valid input" do
 		it "is valid with valid attributes" do
@@ -24,7 +25,7 @@ RSpec.describe Group, type: :model do
 	end
 
 	describe "creating a Group with invalid input" do
-		it "is invalid if a 'client_id' attribute is not present or an invalid format" do
+		it "is invalid if the 'client_id' attribute is not present or an invalid format" do
 			group.client_id = nil
 			expect(group).to be_invalid
 			group.client_id = "hello world!"
@@ -33,7 +34,16 @@ RSpec.describe Group, type: :model do
 			expect(group).to be_invalid
 		end
 
-		it "is invalid if a group_label is absent or too long" do
+		it "is invalid if the 'fax_number_id' attribute is not present or an invalid format" do
+			group.fax_number_id = nil
+			expect(group).to be_invalid
+			group.fax_number_id = "hello world!"
+			expect(group).to be_invalid
+			group.fax_number_id = 11.111
+			expect(group).to be_invalid
+		end
+
+		it "is invalid if the group_label is absent or too long" do
 			group.group_label = nil
 			expect(group).to be_invalid
 
@@ -41,12 +51,12 @@ RSpec.describe Group, type: :model do
 			expect(group).to be_invalid
 		end
 
-		it "is invalid if a fax_tag is too long" do
+		it "is invalid if the fax_tag is too long" do
 			group.fax_tag = "A" * 61
 			expect(group).to be_invalid
 		end
 
-		it "is invalid if a display_label is too long" do
+		it "is invalid if the display_label is too long" do
 			group.display_label = "A" * 61
 			expect(group).to be_invalid
 		end
@@ -58,14 +68,14 @@ RSpec.describe Group, type: :model do
 		end
 
 		it "converts a blank display_label to the group_label if it is blank" do
-			group2 = Group.new(group_label: "Phaxio Developers", client_id: client.id)
+			group2 = Group.new(group_label: "Phaxio Developers", client_id: client.id, fax_number_id: fax_number.id)
 			expect(group2).to be_valid
 			expect(group2.display_label).to eq("Phaxio Developers")
 		end
 
 		it "requires a fax tag to be unique" do
 			group.save
-			group2 = Group.new(fax_tag: group.fax_tag, group_label: "Phaxio Developers", client_id: client.id)
+			group2 = Group.new(fax_tag: group.fax_tag, group_label: "Phaxio Developers", client_id: client.id, fax_number_id: fax_number.id)
 			expect(group2).to be_invalid
 		end
 	end

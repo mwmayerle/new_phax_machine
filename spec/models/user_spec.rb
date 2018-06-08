@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe User, type: :model do
 
   describe "creating a User with valid input" do
-  	let!(:user) { User.new(type: :User, email: 'tom@tom.com', password: 'tomtom', client_id: 1) }
+  	let!(:user) { User.new(type: :User, username: "Admin", password: 'tomtom', client_id: 1) }
 
   	it "has valid attributes" do
   		expect(user).to be_valid
@@ -21,16 +21,16 @@ RSpec.describe User, type: :model do
   	end
 
   	it "the 'type' attribute defaults to User" do
-  		user2 = User.create!(email: 'user2@aol.com', password: 'passwordia', client_id: 1)
+  		user2 = User.create!(username: "Test User 2", password: 'passwordia', client_id: 1)
   		expect(user2.type).to eq("User")
   	end
   end
 
   describe "creating a User with invalid input" do
-  	let!(:user) { User.new(email: 'hello@aol.com', password: 'hellohello', fax_tag: 'hello I am a fax tag', client_id: 1) }
+  	let!(:user) { User.new(username: "Test User 3", password: 'hellohello', fax_tag: 'hello I am a fax tag', client_id: 1) }
 
-  	it "does not persist if a user_email is longer than 60 characters" do
-  		user.email = ("A" * 60).concat('@aol.com')
+  	it "does not persist if a username is longer than 60 characters" do
+  		user.username = ("A" * 61)
   		expect(user).to be_invalid
   	end
 
@@ -53,9 +53,9 @@ RSpec.describe User, type: :model do
 
   	it "the 'type' boolean attribute cannot be updated and is read-only" do
   		user.save
-  		user.update_attributes({type: :Admin, email: 'edited_email@tom.com', password: "changed!"})
+  		user.update_attributes({type: :Admin, username: "Edited Username", password: "changed!"})
   		expect(user.reload.type).to eq("User")
-  		expect(user.reload.email).to eq('edited_email@tom.com')
+  		expect(user.reload.username).to eq('Edited Username')
   		expect(user.reload.password).to eq('changed!')
   	end
   end

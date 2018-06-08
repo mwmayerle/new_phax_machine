@@ -6,5 +6,5 @@ class Email < ApplicationRecord
 	has_one :admin, through: :client
 
 	validates :email, presence: true
-	validates :email, length: {maximum: 60}, uniqueness: {case_sensitive: false}
+	validates :email, length: { maximum: 60 }, uniqueness: { case_sensitive: false }
 end

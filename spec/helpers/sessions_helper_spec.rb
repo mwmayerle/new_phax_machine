@@ -1,8 +1,8 @@
 RSpec.describe SessionsHelper, type: :helper do
   describe "SessionsHelper methods:" do
-		let!(:admin) { User.create!(email: "admin@gmail.com", password: "admin!", type: "Admin") }
-		let!(:manager) { User.create!(email: "manager@gmail.com", password: "admin!", type: "ClientManager") }
-  	let!(:user) { User.create!(email: 'tom@tom.com', password: 'tomtom', client_id: 1, type: :User) }
+		let!(:admin) { User.create!(username: "Admin", password: "admin!", type: "Admin") }
+		let!(:manager) { User.create!(username: "Manager", password: "admin!", type: "ClientManager") }
+  	let!(:user) { User.create!(username: "Generic", password: 'tomtom', client_id: 1, type: :User) }
 
 		it "#login(user) adds the user_id to the session object" do
 			login(user)

@@ -13,10 +13,10 @@ class SessionsController < ApplicationController
 	end
 
 	def create
-		user = User.find_by(email: session_params[:email])
+		user = User.find_by(username: session_params[:username])
 		if user && user.authenticate(session_params[:password])
 			login(user)
-			flash.now[:notice] = "Welcome #{user.email}. You've been logged in."
+			flash.now[:notice] = "Welcome #{user.username}. You've been logged in."
 			render :template => "users/show"
 		else
 			flash.now[:alert] = "Invalid username or password. Please try again."
@@ -36,6 +36,6 @@ class SessionsController < ApplicationController
 
 	private
 		def session_params
-			params.require(:session).permit(:password, :email, :id)
+			params.require(:session).permit(:password, :username, :id)
 		end
 end

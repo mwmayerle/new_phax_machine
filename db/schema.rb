@@ -33,7 +33,7 @@ ActiveRecord::Schema.define(version: 2018_06_07_202410) do
   end
 
   create_table "fax_numbers", force: :cascade do |t|
-    t.integer "client_id", null: false
+    t.integer "client_id"
     t.string "fax_number_label"
     t.string "fax_number", null: false
     t.datetime "created_at", null: false

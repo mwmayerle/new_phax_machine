@@ -1,7 +1,6 @@
-admin = User.create!(type: :Admin, username: 'admin', password: 'tomtom')
-
-phaxio_manager = User.create!(type: :ClientManager, username: 'Phaxio Manager', password: 'mattmatt')
-fake_manager = User.create!(type: :ClientManager, username: 'Fake Manager' , password: 'mattmatt')
+admin = User.create!(type: :Admin, username: "Admin", password: 'tomtom')
+phaxio_manager = User.create!(type: :ClientManager, username: "Phaxio Manager", password: 'mattmatt')
+fake_manager = User.create!(type: :ClientManager, username: "Fake Manager" , password: 'mattmatt')
 
 phaxio = Client.create!(client_label: "Phaxio", client_manager_id: phaxio_manager.id, admin_id: admin.id)
 fakers = Client.create!(client_label: "Fake Number Corporation", client_manager_id: fake_manager.id, admin_id: admin.id)

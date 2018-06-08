@@ -2,11 +2,11 @@ require 'rails_helper'
 
 RSpec.describe SessionsController, type: :controller do
 
-	let!(:user) { User.create!(type: :User, email: 'tom@tom.com', password: 'tomtom', client_id: 1) }
+	let!(:user) { User.create!(type: :User, username: "Fake User", password: 'tomtom', client_id: 1) }
 
 	describe "logging in and logging out users" do
 		it "does not log in the user when invalid credentials are provided" do
-			post :create, params: {:session => {id: user.id, password: "nope", email: "the_email@aol.com"}}
+			post :create, params: {:session => {id: user.id, password: "nope", username: "Fake User"}}
 			expect(response.status).to eq(200)
 			expect(session[:user_id]).to eq(nil)
 			expect(flash.now[:alert]).to eq("Invalid username or password. Please try again.")
@@ -14,16 +14,16 @@ RSpec.describe SessionsController, type: :controller do
 		end
 
 		it "logs in the user when valid credentials are provided" do
-			post :create, params: {:session => {id: user.id, password: "tomtom", email: "tom@tom.com"}}
+			post :create, params: {:session => {id: user.id, password: "tomtom", username: "Fake User"} }
 			expect(response.status).to eq(200)
 			expect(session[:user_id]).to eq(user.id)
-			expect(flash.now[:notice]).to eq("Welcome #{user.email}. You've been logged in.")
+			expect(flash.now[:notice]).to eq("Welcome #{user.username}. You've been logged in.")
 			expect(response).to render_template('users/show')
 		end
 
 		it "logs the user out when valid credentials are provided" do
 			session[:user_id] = user.id
-			delete :destroy, params: {:session => {id: user.id, email: user.email, password: user.password}}
+			delete :destroy, params: {:session => {id: user.id, username: user.username, password: user.password}}
 			expect(response.status).to eq(302)
 			expect(session[:user_id]).to be_nil
 			expect(flash.now[:notice]).to eq("You've been logged out.")
@@ -32,7 +32,7 @@ RSpec.describe SessionsController, type: :controller do
 
 		it "does not log out the user when invalid/false credentials are provided" do
 			session[:user_id] = user.id
-			delete :destroy, params: {:session => {id: user.id + 1, email: user.email, password: user.password}}
+			delete :destroy, params: {:session => {id: user.id + 1, username: user.username, password: user.password}}
 			expect(response.status).to eq(302)
 			expect(session[:user_id]).to eq(user.id)
 			expect(flash.now[:alert]).to eq("Something went wrong.")
