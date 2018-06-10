@@ -23,8 +23,8 @@ module SessionsHelper
 		current_user.type == "Admin"
 	end
 
-	def is_client_manager?
+	def is_client_manager? #allows admins as well
 		return false if current_user.nil?
-		current_user.type == "ClientManager"
+		current_user.type == "ClientManager" || is_admin?
 	end
 end

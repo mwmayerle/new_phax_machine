@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :fax_numbers
 	resources :users
   resources :sessions, only: [:new, :create, :destroy]
  	

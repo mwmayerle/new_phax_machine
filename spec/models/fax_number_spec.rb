@@ -35,4 +35,14 @@ RSpec.describe FaxNumber, type: :model do
   		expect(fake2).to be_invalid
   	end
   end
+
+  describe "#format_cost method" do
+  	it "returns a properly formatted string" do
+  		expect(FaxNumber.format_cost(1)).to eq("$0.01")
+  		expect(FaxNumber.format_cost(20)).to eq("$0.20")
+  		expect(FaxNumber.format_cost(111)).to eq("$1.11")
+  		expect(FaxNumber.format_cost(1000)).to eq("$10.00")
+  		expect(FaxNumber.format_cost(99999)).to eq("$999.99")
+  	end
+  end
 end

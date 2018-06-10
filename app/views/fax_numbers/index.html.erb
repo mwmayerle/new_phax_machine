@@ -1,0 +1,14 @@
+<h1>Manage Fax Numbers</h1>
+<br>
+<% if @fax_numbers %>
+	<% @fax_numbers.each do |fax_number, info_hash| %>
+		<p><%= fax_number %></p>
+		<p>Client: <%= info_hash[:client] %> - Name: <%= info_hash[:fax_number_label] %></p>
+		<% if info_hash[:phaxio_number] %>
+			<p>Fax Number Location: <%= info_hash[:city] %>, <%= info_hash[:state] %></p>
+			<p>Provisioned On: <%= info_hash[:provisioned_at] %> for <%= info_hash[:cost] %></p>
+			<p>Last Billed At: <%= info_hash[:last_billed_at] %></p>
+		<% end %>
+	<% end %>
+<% end %>
+<%= link_to "Add Fax Number", new_fax_number_path, class: "btn btn-primary" %>

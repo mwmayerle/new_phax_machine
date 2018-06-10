@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe User, type: :model do
 
   describe "creating a User with valid input" do
-  	let!(:user) { User.new(type: :User, username: "Admin", password: 'tomtom', client_id: 1) }
+  	let!(:user) { User.new(type: :User, username: "Test User 1", password: 'tomtom', client_id: 1) }
 
   	it "has valid attributes" do
   		expect(user).to be_valid

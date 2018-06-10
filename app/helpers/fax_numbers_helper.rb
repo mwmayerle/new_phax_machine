@@ -1,0 +1,2 @@
+module FaxNumbersHelper
+end

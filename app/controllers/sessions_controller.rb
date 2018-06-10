@@ -16,7 +16,7 @@ class SessionsController < ApplicationController
 		user = User.find_by(username: session_params[:username])
 		if user && user.authenticate(session_params[:password])
 			login(user)
-			flash.now[:notice] = "Welcome #{user.username}. You've been logged in."
+			flash.now[:notice] = "Welcome #{user.username}."
 			render :template => "users/show"
 		else
 			flash.now[:alert] = "Invalid username or password. Please try again."

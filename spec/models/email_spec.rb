@@ -11,9 +11,6 @@ RSpec.describe Email, type: :model do
 		Client.create!(admin_id: admin.id, client_manager_id: client_manager.id, client_label: "Client Model Test Client", fax_tag: "Test Fax Tag")
 	end
 	let!(:fax_number) { FaxNumber.create!(fax_number: '12248675309', fax_number_label: "Fake Testing Number", client_id: client.id) }
-	let!(:group) do
-		Group.create!(group_label: "Phaxio Accounting", display_label: "Accounting", client_id: client.id, fax_tag: "Group Testing Fax Tag", fax_number_id: fax_number.id)
-	end
 	let!(:persisted_email) { Email.create!(email: 'persisted@phaxio.com', fax_number: fax_number.fax_number, client_id: repeat_client.id) }
 	let!(:email) { Email.new(email: 'test@phaxio.com', fax_number: fax_number.fax_number, client_id: client.id) }
 

@@ -7,6 +7,10 @@ class UsersController < ApplicationController
 		redirect_to root_path if !is_admin?
 	end
 
+	def client_console
+		redirect_to root_path if !is_client_manager?
+	end
+
 	def show
 	end
 
@@ -14,9 +18,4 @@ class UsersController < ApplicationController
 		def set_user
 			@user ||= User.find(params[:id])
 		end
-
-		# def user_params
-		# 	params.require(:user).permit([:id])
-		# end
-
 end

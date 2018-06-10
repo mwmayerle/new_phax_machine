@@ -42,19 +42,30 @@ RSpec.describe SessionsHelper, type: :helper do
 		end
 
 		it "#is_admin? returns true if the user 'type' attribute is 'Admin' " do
-			login(user)
-			expect(is_admin?).to be(false)
+			login(admin)
+			expect(is_admin?).to be(true)
 		end
 
 		it "#is_admin? returns false is a user is not an admin" do
-			login(admin)
-			expect(is_admin?).to be(true)
+			login(user)
+			expect(is_admin?).to be(false)
+			login(manager)
+			expect(is_admin?).to be(false)
+		end
+
+		it "#is_client_manager? returns false if the user is not an admin or client manager" do
+			login(user)
 			expect(is_client_manager?).to be(false)
 		end
 
 		it "#is_client_manager? returns true if a user 'type' attribute is 'ClientManager'" do
 			login(manager)
-			expect(is_admin?).to be(false)
+			expect(is_client_manager?).to be(true)
+		end
+
+		it "#is_client_manager? returns true if a user 'type' attribute is 'Admin'" do
+			login(admin)
+			expect(is_admin?).to be(true)
 			expect(is_client_manager?).to be(true)
 		end
   end
