@@ -43,14 +43,14 @@ RSpec.describe FaxNumbersController, type: :controller do
 			expect(FaxNumber.all.count).to eq(fax_number_amount)
 		end
 
-		it "#edit only accessible if the User is an admin, renders 'new' if invalid inputs are provided" do
-			@fax_number = FaxNumber.find(fax_number.id)
-			session[:user_id] = admin.id
-			@fax_number = FaxNumber.find(fax_number.id)
-			get :edit
-			expect(response.status).to eq(200)
-			expect(response).to render_template(:edit)
-		end
+		# it "#edit only accessible if the User is an admin, renders 'new' if invalid inputs are provided" do
+		# 	@fax_number = FaxNumber.find(fax_number.id)
+		# 	session[:user_id] = admin.id
+		# 	@fax_number = FaxNumber.find(fax_number.id)
+		# 	get :edit
+		# 	expect(response.status).to eq(200)
+		# 	expect(response).to render_template(:edit)
+		# end
 
 		# it "#update only accessible if the User is an admin, renders 'new' if invalid inputs are provided" do
 		# 	session[:user_id] = admin.id
