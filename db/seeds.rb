@@ -5,10 +5,10 @@ fake_manager = User.create!(type: :ClientManager, username: "fake_manager" , pas
 phaxio = Client.create!(client_label: "Phaxio Test Client", client_manager_id: phaxio_manager.id, admin_id: admin.id)
 fakers = Client.create!(client_label: "Fake Number Client", client_manager_id: fake_manager.id, admin_id: admin.id)
 
-fake_num1 = FaxNumber.create!(fax_number_label: 'Fake Number 1', fax_number: '12025550141', client_id: fakers.id)
-fake_num2 = FaxNumber.create!(fax_number_label: 'Fake Number 3', fax_number: '12025550126', client_id: fakers.id)
-dev_num = FaxNumber.create!(fax_number: '12096904545', fax_number_label: 'Modesto, California', client_id: phaxio.id)
-founder_num = FaxNumber.create!(fax_number: '18777115706', fax_number_label: 'Toll Free Number', client_id: phaxio.id)
+fake_num1 = FaxNumber.create!(fax_number_label: 'Fake Number 1', fax_number: '12025550141', client_id: fakers.id, fax_number_display_label: "Fake Accounting")
+fake_num2 = FaxNumber.create!(fax_number_label: 'Fake Number 3', fax_number: '12025550126', client_id: fakers.id, fax_number_display_label: "Fake Sales")
+dev_num = FaxNumber.create!(fax_number: '12096904545', fax_number_label: 'Modesto, California', client_id: phaxio.id, fax_number_display_label: "Phaxio Engineering")
+founder_num = FaxNumber.create!(fax_number: '18777115706', fax_number_label: 'Toll Free Number', client_id: phaxio.id,fax_number_display_label: "Phaxio Help Line")
 
 phaxio_user3 = Email.create!(email: 'ceo@phaxio.com', fax_number: founder_num.fax_number, client_id: phaxio.id)
 phaxio_user4 = Email.create!(email: 'cto@phaxio.com', fax_number: founder_num.fax_number, client_id: phaxio.id)

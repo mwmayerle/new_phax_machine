@@ -5,7 +5,7 @@ RSpec.describe FaxNumbersController, type: :controller do
 	let!(:client_manager) { User.create!(type: :ClientManager, username: "Client", password: "testmanager") }
 	let!(:client) {Client.create!(admin_id: admin.id, client_manager_id: client_manager.id, client_label: "Fax Number Test Client")}
 	let!(:fax_number) { FaxNumber.create!(fax_number: '12248675309', fax_number_label: "Fake Testing Number1", client_id: client.id) }
-	let!(:fax_number) { FaxNumber.create!(fax_number: '12248675310', fax_number_label: "Fake Testing Number2", client_id: client.id) }
+	let!(:fax_number2) { FaxNumber.create!(fax_number: '12248675310', fax_number_label: "Fake Testing Number2", client_id: client.id) }
 	let!(:user) { User.create!(type: :User, username: "User1", password: 'tomtom', client_id: client.id) }
 
 	describe "if the user is an admin" do
@@ -42,6 +42,24 @@ RSpec.describe FaxNumbersController, type: :controller do
 			expect(response).to render_template(:new)
 			expect(FaxNumber.all.count).to eq(fax_number_amount)
 		end
+
+		it "#edit only accessible if the User is an admin, renders 'new' if invalid inputs are provided" do
+			@fax_number = FaxNumber.find(fax_number.id)
+			session[:user_id] = admin.id
+			@fax_number = FaxNumber.find(fax_number.id)
+			get :edit
+			expect(response.status).to eq(200)
+			expect(response).to render_template(:edit)
+		end
+
+		# it "#update only accessible if the User is an admin, renders 'new' if invalid inputs are provided" do
+		# 	session[:user_id] = admin.id
+		# 	put :update, params: { fax_number: { fax_number: '12248675311', fax_number_label: "Edited Label" } }
+		# 	expect(response.status).to eq(302)
+		# 	expect(response).to redirect_to(:index)
+		# end
+
+		#TODO DELETE ROUTE TESTS
 	end
 
 	describe "if the user is not an admin or not logged in" do

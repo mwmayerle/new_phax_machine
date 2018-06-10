@@ -18,7 +18,7 @@ body {
 	margin-top: 20px;
 }
 
-td {
+tr {
 	background: #f7f7f7;
 }
 
@@ -30,4 +30,16 @@ td {
 
 .container-fluid {
 	width: 80%;
+}
+
+tr:hover {
+  background-color: #D2D2D2;
+}
+
+.nav-link {
+	color: #cbcbcb !important;
+}
+
+.nav-link:hover {
+	color: #eeeeee !important;
 }
