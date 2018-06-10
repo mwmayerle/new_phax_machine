@@ -1,7 +1,7 @@
 <%= form_for(:fax_number, url: '/fax_numbers') do |f| %>
 	<div class="form-group">
 		<%= f.label :fax_number, "Fax Number:" %>
-		<%= f.phone_field :fax_number, class: 'form-control' %>
+		<%= f.phone_field :fax_number, class: 'form-control'%>
 	<div class="form-group">
 		<%= f.label :fax_number_label, "Fax Number Name (optional):" %>
 		<%= f.text_field :fax_number_label, class: 'form-control' %>

@@ -4,15 +4,15 @@
     <title>NewPhaxMachine</title>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <%= stylesheet_link_tag    'application', media: 'all' %>
     <%= javascript_include_tag 'application' %>
   </head>
 
   <body>
-  	<%= render 'shared/navbar_sidebar' %>
-  	<%= render 'shared/flash_messages' %>
-  	<div class="container">
+  	<div class="container-fluid">
+  		<%= render 'shared/navbar_sidebar' %>
+  		<%= render 'shared/flash_messages' %>
     	<%= yield %>
     </div>
   </body>

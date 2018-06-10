@@ -30,7 +30,7 @@ RSpec.describe User, type: :model do
   	let!(:user) { User.new(username: "Test User 3", password: 'hellohello', fax_tag: 'hello I am a fax tag', client_id: 1) }
 
   	it "does not persist if a username is longer than 60 characters" do
-  		user.username = ("A" * 61)
+  		user.username = ("A" * 51)
   		expect(user).to be_invalid
   	end
 
@@ -42,7 +42,7 @@ RSpec.describe User, type: :model do
   	end
 
   	it "does not persist if the fax_tag is longer than 60 characters" do
-  		user.fax_tag = "A" * 61
+  		user.fax_tag = "A" * 51
   		expect(user).to be_invalid
   	end
   	

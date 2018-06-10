@@ -7,8 +7,8 @@ fakers = Client.create!(client_label: "Fake Number Client", client_manager_id: f
 
 fake_num1 = FaxNumber.create!(fax_number_label: 'Fake Number 1', fax_number: '12025550141', client_id: fakers.id)
 fake_num2 = FaxNumber.create!(fax_number_label: 'Fake Number 3', fax_number: '12025550126', client_id: fakers.id)
-dev_num = FaxNumber.create!(fax_number: '12096904545', fax_number_label: 'Phaxio Number - Modesto, California', client_id: phaxio.id)
-founder_num = FaxNumber.create!(fax_number: '18777115706', fax_number_label: 'Phaxio Toll Free Number - No City', client_id: phaxio.id)
+dev_num = FaxNumber.create!(fax_number: '12096904545', fax_number_label: 'Modesto, California', client_id: phaxio.id)
+founder_num = FaxNumber.create!(fax_number: '18777115706', fax_number_label: 'Toll Free Number', client_id: phaxio.id)
 
 phaxio_user3 = Email.create!(email: 'ceo@phaxio.com', fax_number: founder_num.fax_number, client_id: phaxio.id)
 phaxio_user4 = Email.create!(email: 'cto@phaxio.com', fax_number: founder_num.fax_number, client_id: phaxio.id)

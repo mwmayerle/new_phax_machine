@@ -31,12 +31,12 @@ RSpec.describe Email, type: :model do
 
 	describe "invalid input" do
 		it "does not persist if the fax_tag is longer than 60 characters" do
-  		email.fax_tag = "A" * 61
+  		email.fax_tag = "A" * 51
   		expect(email).to be_invalid
   	end
 
   	it "is invalid if the email is too long" do
-			email.email = ("A" * 60).concat('@aol.com')
+			email.email = ("A" * 50).concat('@aol.com')
 			expect(email).to be_invalid
 		end
 

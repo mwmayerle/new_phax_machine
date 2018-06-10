@@ -1,5 +1,4 @@
 require 'rails_helper'
-
 RSpec.describe Client, type: :model do
 	let!(:admin) {User.create!(type: :Admin, username: "Admin", password: 'testadmin')}
 	let!(:client_manager) { User.create!(type: :ClientManager, username: "Test Manager", password: "testmanager") }
@@ -24,12 +23,12 @@ RSpec.describe Client, type: :model do
 		end
 
 		it "is invalid when the 'fax_tag' attribute is longer than 60 characters" do 
-			client.fax_tag = 'A' * 61
+			client.fax_tag = 'A' * 51
 			expect(client).to be_invalid
 		end
 
 		it "is invalid when the 'client_label' attribute is longer than 60 characters" do 
-			client.client_label = 'A' * 61
+			client.client_label = 'A' * 51
 			expect(client).to be_invalid
 		end
 
