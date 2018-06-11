@@ -1,4 +1,11 @@
-<h1>Admin Console Page</h1>
+<div class="row">
+	<div class="col-lg-9">
+		<h1>Manage Clients</h1>
+	</div>
+	<div class="col-lg-3 text-right">
+		<%= link_to "Add New Client", new_client_path, class: "btn btn-primary" %>
+	</div>
+</div>
 
 <% if logged_in? && is_admin? %>
 	<% if current_user.clients %>

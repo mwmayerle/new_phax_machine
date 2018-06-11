@@ -2,11 +2,11 @@ require 'rails_helper'
 
 RSpec.describe SessionsController, type: :controller do
 
-	let!(:user) { User.create!(type: :User, username: "Fake User", password: 'tomtom', client_id: 1) }
+	let!(:user) { User.create!(type: :User, username: "Fake_User", password: 'tomtom', client_id: 1) }
 
 	describe "logging in and logging out users" do
 		it "does not log in the user when invalid credentials are provided" do
-			post :create, params: {:session => {id: user.id, password: "nope", username: "Fake User"}}
+			post :create, params: {:session => {id: user.id, password: "nope", username: "Fake_User"}}
 			expect(response.status).to eq(200)
 			expect(session[:user_id]).to eq(nil)
 			expect(flash.now[:alert]).to eq("Invalid username or password. Please try again.")
@@ -14,7 +14,7 @@ RSpec.describe SessionsController, type: :controller do
 		end
 
 		it "logs in the user when valid credentials are provided" do
-			post :create, params: {:session => {id: user.id, password: "tomtom", username: "Fake User"} }
+			post :create, params: {:session => {id: user.id, password: "tomtom", username: "Fake_User"} }
 			expect(response.status).to eq(200)
 			expect(session[:user_id]).to eq(user.id)
 			expect(flash.now[:notice]).to eq("Welcome #{user.username}.")

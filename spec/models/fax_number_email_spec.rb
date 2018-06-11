@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe FaxNumberEmail, type: :model do
   let!(:admin) {User.create!(type: :Admin, username: "Admin", password: 'testadmin')}
-	let!(:client_manager) { User.create!(type: :ClientManager, username: "Client Manager", password: "testmanager") }
+	let!(:client_manager) { User.create!(type: :ClientManager, username: "Client_Manager", password: "testmanager") }
 	let!(:client) do 
 		Client.create!(admin_id: admin.id, client_manager_id: client_manager.id, client_label: "Client Model Test Client", fax_tag: "Test Fax Tag")
 	end

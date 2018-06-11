@@ -1,5 +1,5 @@
 class SessionsController < ApplicationController
-	include SessionsHelper #in helpers and not concerns
+	include SessionsHelper
 
 	def index
 	end

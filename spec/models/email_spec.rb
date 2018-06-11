@@ -2,11 +2,11 @@ require 'rails_helper'
 
 RSpec.describe Email, type: :model do
   let!(:admin) {User.create!(type: :Admin, username: "Admin", password: 'testadmin')}
-	let!(:repeat_client_manager) { User.create!(type: :ClientManager, username: "Repeat Client Manager", password: "testmanager") }
+	let!(:repeat_client_manager) { User.create!(type: :ClientManager, username: "Repeat_Client_Manager", password: "testmanager") }
 	let!(:repeat_client) do
 		Client.create!(admin_id: admin.id, client_manager_id: repeat_client_manager.id, client_label: "Repeat Client Model Test Client", fax_tag: "Repeat Test Fax Tag")
 	end
-	let!(:client_manager) { User.create!(type: :ClientManager, username: "Client Manager", password: "testmanager") }
+	let!(:client_manager) { User.create!(type: :ClientManager, username: "Client_Manager", password: "testmanager") }
 	let!(:client) do 
 		Client.create!(admin_id: admin.id, client_manager_id: client_manager.id, client_label: "Client Model Test Client", fax_tag: "Test Fax Tag")
 	end

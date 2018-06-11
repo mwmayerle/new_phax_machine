@@ -29,56 +29,33 @@ class FaxNumber < ApplicationRecord
 				time.to_time.strftime("%B %-d, %Y")
 			end
 
-			def get_and_persist_account_numbers
+			def format_and_retrieve_fax_numbers_from_api
 				set_phaxio_creds
 				api_response = Phaxio::PhoneNumber.list
-				phaxio_numbers = {}
-				api_response.raw_data.each do |phaxio_number|
-					phaxio_numbers[phaxio_number[:phone_number]] = {}
-					phaxio_numbers[phaxio_number[:phone_number]][:city] = phaxio_number[:city]
-					phaxio_numbers[phaxio_number[:phone_number]][:state] = phaxio_number[:state]
-					phaxio_numbers[phaxio_number[:phone_number]][:provisioned_at] = format_time(phaxio_number[:provisioned_at])
-					phaxio_numbers[phaxio_number[:phone_number]][:last_billed_at] = format_time(phaxio_number[:last_billed_at])
-					phaxio_numbers[phaxio_number[:phone_number]][:cost] = format_cost(phaxio_number[:cost])
-				end
-				persist_unsaved_phaxio_numbers(phaxio_numbers)
+				format_fax_numbers(api_response.raw_data)
 			end
 
-			# Compares all fax numbers in the database with fax numbers returned from the Phaxio API and combines them
-			def combine_api_numbers_with_db_numbers(fax_numbers_from_db, fax_numbers_from_api)
-				fax_numbers = {}
-				fax_numbers_from_db.each do |db_number|
-					fax_numbers[db_number.fax_number] = {}
+			def format_fax_numbers(fax_numbers_from_api)
+				phaxio_fax_numbers = {}
+				fax_numbers_from_api.each do |api_fax_number|
+					phaxio_fax_numbers[api_fax_number[:phone_number]] = {}
+					phaxio_fax_numbers[api_fax_number[:phone_number]][:city] = api_fax_number[:city]
+					phaxio_fax_numbers[api_fax_number[:phone_number]][:state] = api_fax_number[:state]
+					phaxio_fax_numbers[api_fax_number[:phone_number]][:provisioned_at] = format_time(api_fax_number[:provisioned_at])
+					phaxio_fax_numbers[api_fax_number[:phone_number]][:cost] = format_cost(api_fax_number[:cost])
+
+					db_number = self.find_or_create_by!(fax_number: api_fax_number[:phone_number])
+					phaxio_fax_numbers[api_fax_number[:phone_number]][:id] = db_number.id
 
 					if db_number.client
-						fax_numbers[db_number.fax_number][:client] = db_number.client.client_label
+						phaxio_fax_numbers[api_fax_number[:phone_number]][:client] = db_number.client.client_label
 					else
-						fax_numbers[db_number.fax_number][:client] = "Unallocated"
+						phaxio_fax_numbers[api_fax_number[:phone_number]][:client] = "Unallocated"
 					end
-
-					fax_numbers[db_number.fax_number][:fax_number_label] = db_number.fax_number_label
-					fax_numbers[db_number.fax_number][:id] = db_number.id
-
-					if fax_numbers_from_api[db_number.fax_number]
-						fax_numbers[db_number.fax_number][:phaxio_number] = true
-						fax_numbers[db_number.fax_number][:city] = fax_numbers_from_api[db_number.fax_number][:city]
-						fax_numbers[db_number.fax_number][:state] = fax_numbers_from_api[db_number.fax_number][:state]
-						fax_numbers[db_number.fax_number][:provisioned_at] = fax_numbers_from_api[db_number.fax_number][:provisioned_at]
-						fax_numbers[db_number.fax_number][:last_billed_at] = fax_numbers_from_api[db_number.fax_number][:last_billed_at]
-						fax_numbers[db_number.fax_number][:cost] = fax_numbers_from_api[db_number.fax_number][:cost]
-					else
-						fax_numbers[db_number.fax_number][:phaxio_number] = false
-					end
+					
+					phaxio_fax_numbers[api_fax_number[:phone_number]][:fax_number_label] = db_number.fax_number_label if db_number.fax_number_label
 				end
-				fax_numbers
-			end
-
-			def persist_unsaved_phaxio_numbers(fax_numbers)
-				fax_numbers.each do |fax_number, info_hash|
-					number = self.find_or_create_by!(fax_number: fax_number)
-					info_hash[:id] = number.id
-				end
-				fax_numbers
+				phaxio_fax_numbers
 			end
 		end
 end
