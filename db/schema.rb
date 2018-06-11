@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_06_08_155252) do
+ActiveRecord::Schema.define(version: 2018_06_10_154448) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -24,13 +24,6 @@ ActiveRecord::Schema.define(version: 2018_06_08_155252) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "email_groups", force: :cascade do |t|
-    t.integer "email_id", null: false
-    t.integer "group_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "emails", force: :cascade do |t|
     t.integer "client_id", null: false
     t.string "fax_number", null: false
@@ -40,20 +33,18 @@ ActiveRecord::Schema.define(version: 2018_06_08_155252) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "fax_numbers", force: :cascade do |t|
-    t.integer "client_id"
-    t.string "fax_number_label"
-    t.string "fax_number", null: false
+  create_table "fax_number_emails", force: :cascade do |t|
+    t.integer "fax_number_id", null: false
+    t.integer "email_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "groups", force: :cascade do |t|
-    t.integer "fax_number_id"
+  create_table "fax_numbers", force: :cascade do |t|
     t.integer "client_id"
-    t.string "group_label"
-    t.string "display_label"
-    t.string "fax_tag"
+    t.string "fax_number_label"
+    t.string "fax_number_display_label"
+    t.string "fax_number", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

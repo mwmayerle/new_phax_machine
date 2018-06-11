@@ -24,7 +24,7 @@ RSpec.describe FaxNumber, type: :model do
   	end
 
   	it "fax_number_label attribute cannot be more than 60 characters long" do
-  		fax_number.fax_number_label = "A" * 61
+  		fax_number.fax_number_label = "A" * 51
   		expect(fax_number).to be_invalid
   	end
 
@@ -33,6 +33,17 @@ RSpec.describe FaxNumber, type: :model do
   		fake2 = FaxNumber.new(fax_number: '12248671111', fax_number_label: "Different Fake Testing Number")
   		expect(fake1).to be_valid
   		expect(fake2).to be_invalid
+  	end
+  end
+
+  describe "#format_cost method" do
+  	it "returns a properly formatted string" do
+  		expect(FaxNumber.format_cost(1)).to eq("$0.01")
+  		expect(FaxNumber.format_cost(20)).to eq("$0.20")
+  		expect(FaxNumber.format_cost(200)).to eq("$2.00")
+  		expect(FaxNumber.format_cost(111)).to eq("$1.11")
+  		expect(FaxNumber.format_cost(1000)).to eq("$10.00")
+  		expect(FaxNumber.format_cost(99999)).to eq("$999.99")
   	end
   end
 end

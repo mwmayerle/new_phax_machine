@@ -17,7 +17,7 @@ RSpec.describe SessionsController, type: :controller do
 			post :create, params: {:session => {id: user.id, password: "tomtom", username: "Fake User"} }
 			expect(response.status).to eq(200)
 			expect(session[:user_id]).to eq(user.id)
-			expect(flash.now[:notice]).to eq("Welcome #{user.username}. You've been logged in.")
+			expect(flash.now[:notice]).to eq("Welcome #{user.username}.")
 			expect(response).to render_template('users/show')
 		end
 
