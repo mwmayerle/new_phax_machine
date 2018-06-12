@@ -28,7 +28,7 @@ RSpec.describe Client, type: :model do
 		end
 
 		it "is invalid when the 'client_label' attribute is longer than 60 characters" do 
-			client.client_label = 'A' * 51
+			client.client_label = 'A' * 33
 			expect(client).to be_invalid
 		end
 

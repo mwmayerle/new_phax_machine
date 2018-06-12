@@ -2,7 +2,7 @@ Rails.application.routes.draw do
 	resources :users
   resources :sessions, only: [:new, :create, :destroy]
   resources :fax_numbers, only: [:index, :edit, :update]
-	resources :clients, only: [:index, :new, :create, :edit, :destroy]
+	resources :clients, only: [:index, :new, :create, :edit, :update, :destroy]
 	
 	get '/login', to: 'sessions#new'
   post '/login', to: 'sessions#create'

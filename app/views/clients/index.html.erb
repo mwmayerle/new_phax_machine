@@ -1,4 +1,4 @@
-<div class="row">
+<div id="manage-clients-top" class="row">
 	<div class="col-lg-9">
 		<h1>Manage Clients</h1>
 	</div>
@@ -6,30 +6,49 @@
 		<%= link_to "Add New Client", new_client_path, class: "btn btn-primary" %>
 	</div>
 </div>
-
-<% if logged_in? && is_admin? %>
-	<% if current_user.clients %>
-		<ul class="list-unstyled">
-		<% current_user.clients.each do |client|%>
-			<br>
-			<li><%= client.client_label %> - <%= client.client_manager.username %></li>
-			<% if client.fax_numbers %>
-			<ul class="list-unstyled">
-				<% client.fax_numbers.each do |fax_number| %>
-					<li><%= fax_number.fax_number_label %> | <%= fax_number.fax_number %></li>
-					<% if fax_number.emails %>
-					<ul class="list-unstyled">
-						<% fax_number.emails.each do |email| %>
-							<li><%= email.email %></li>
+<% if is_admin? %>
+	<% if @clients %>
+		<% @clients.each do |client| %>
+			<div class="client-info row">
+				<div class="col-lg-5">
+					<div class="align-middle">
+						<h2><%= client.client_label %></h2>
+						<% if client.client_manager %>
+								<p>Managed by: <%= client.client_manager.username %></p>
+						<% else %>
+							<%= button_to "Invite Manager", root_path, method: :get, class: "btn-inline btn btn-success btn-sm" %>
 						<% end %>
-					<% end %>
-					</ul>
+					</div>
+				</div>
+				<div class="col-lg-4">
+					<div class="row">
+						<ul class="list-unstyled">
+							<% client.fax_numbers.each do |client_fax_number| %>
+								<li> <%= link_to client_fax_number.fax_number, edit_fax_number_path(client_fax_number) %> </li>
+							<% end %>
+						</ul>
+						<%= button_to "Add Fax Number", root_path, method: :get, class: "btn-inline btn btn-success btn-sm" %>
+					</div>
+				</div>
+				<div class="btn-group col-lg-3">
+					<%= button_to "Edit Client", edit_client_path(client), method: :get, class: "btn-inline btn btn-success btn-sm" %>
+					<%= button_to "Delete Client", client_path(client), method: :delete, class: "btn-inline btn btn-danger btn-sm" %>
+				</div>
+			</div>
+		<% end %>
+	<% end %>
+	<% if @unallocated_fax_numbers %>
+	<div class="row">
+		<div class="col-lg-3">
+			<h2>Unallocated Fax Numbers</h2>
+		</div>
+		<div class="col-lg-9">
+			<ul class="list-unstyled">
+				<% @unallocated_fax_numbers.each do |fax_number| %>
+					<li> <%= link_to fax_number.fax_number, edit_fax_number_path(fax_number) %></li>
 				<% end %>
 			</ul>
-			<% end %>
-		<% end %>
-		</ul>
-	<% end %>
-	<% if @phaxio_fax_numbers %>
+		</div>
+	</div>
 	<% end %>
 <% end %>

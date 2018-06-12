@@ -2,13 +2,14 @@ class FaxNumbersController < ApplicationController
 	include SessionsHelper
 	
 	before_action :verify_is_admin
-	before_action :set_fax_number, only: [:edit, :update, :destroy]
+	before_action :set_fax_number, only: [:edit, :update]
 
 	def index
 		@fax_numbers = FaxNumber.format_and_retrieve_fax_numbers_from_api
 	end
 
 	def edit
+		@clients = Client.all
 	end
 
 	def update
@@ -22,18 +23,11 @@ class FaxNumbersController < ApplicationController
 	end
 
 	private
-		def verify_is_admin
-			if !is_admin?
-				flash[:alert] = "Permission denied."
-				redirect_to root_path
-			end
-		end
-
 		def set_fax_number
-			@fax_number ||= FaxNumber.find(fax_number_params[:id])
+			@fax_number ||= FaxNumber.find(params[:id])
 		end
 
 		def fax_number_params
-			params.require(:fax_number).permit(:fax_number, :fax_number_label, :id)
+			params.require(:fax_number).permit(:fax_number, :fax_number_label, :id, :fax_number_display_label, :client_id)
 		end
 end

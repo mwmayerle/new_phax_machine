@@ -13,8 +13,8 @@
 				<%= f.text_field :fax_number_display_label, class: 'form-control', placeholder: "(Typically set by the number's Client Manager)" %>
 			</div>
 			<div class="form-group">
-				<%= f.label :client_id, "Client" %>
-				<p>Client Dropdown here or no?</p>
+				<%= f.label "Client:" %>
+				<%= f.select :client_id, @clients.map { |client| [client.client_label, client.id] }, class: "form-control" %>
 			</div>
 			<div class="form-group">
 				<%= f.submit "Save Changes", class: "btn btn-primary" %>

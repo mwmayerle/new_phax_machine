@@ -50,7 +50,7 @@ RSpec.describe User, type: :model do
   	end
 
   	it "does not persist if the fax_tag is longer than 60 characters" do
-  		user.fax_tag = "A" * 51
+  		user.fax_tag = "A" * 61
   		expect(user).to be_invalid
   	end
   	

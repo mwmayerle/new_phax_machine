@@ -16,6 +16,6 @@ class UsersController < ApplicationController
 
 	private
 		def set_user
-			@user ||= User.find(params[:id]) #MAKE THIS USE STRONG PARAMS LATER
+			@user ||= User.find(params[:id])
 		end
 end

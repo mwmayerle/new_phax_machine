@@ -1,0 +1,38 @@
+<%= form_for client do |f| %>
+	<% if is_admin? %>
+		<%= f.hidden_field :admin_id, value: "#{current_user.id}" %>
+	<% end %>
+	<div class="form-group">
+		<%= f.label :client_label, "Client Name: " %>
+		<%= f.text_field :client_label, value: client.client_label %>
+	</div>
+	<div class="form-group">
+		<% if unallocated_fax_numbers.present? %>
+			<%= f.label "Add the following fax numbers:" %>
+			<ul class="list-unstyled">
+			<% unallocated_fax_numbers.each do |fax_number| %>
+				<li>
+					<input type="checkbox" id="<%= fax_number.fax_number %>" name="fax_numbers[to_add][<%= fax_number.id %>]" value="<%= fax_number.fax_number %>">
+    			<label for="%<= fax_number.fax_number %>"> <%= fax_number.fax_number %> </label>
+    		</li>
+			<% end %>
+		</ul>
+		<% end %>
+	</div>
+	<div class="form-group">
+		<% if client.fax_numbers.present? %>
+		<%= f.label "Remove the following fax numbers:" %>
+			<ul class="list-unstyled">
+			<% client.fax_numbers.each do |client_fax_number| %>
+				<li>
+					<input type="checkbox" id="<%= client_fax_number.fax_number %>" name="fax_numbers[to_remove][<%= client_fax_number.id %>]" value="<%= client_fax_number.fax_number %>">
+    			<label for="%<= client_fax_number.fax_number %>"> <%= client_fax_number.fax_number %> </label>
+    	</li>
+			<% end %>
+		</ul>
+		<% end %>
+	</div>
+	<div class="form-group">
+		<%= f.submit "Submit", class: "btn btn-primary" %>
+	</div>
+<% end %>

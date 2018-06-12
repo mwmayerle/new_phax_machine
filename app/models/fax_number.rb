@@ -9,10 +9,12 @@ class FaxNumber < ApplicationRecord
 	has_many :fax_number_emails
 	has_many :emails, through: :fax_number_emails
 
-	validates :fax_number, presence: true, length: { maximum: LENGTH_LIMIT }, phone: {possible: true}, uniqueness: true
-	validates :fax_number_label, length: { maximum: LENGTH_LIMIT }
+	validates :fax_number, presence: true, length: { maximum: 60 }, phone: {possible: true}, uniqueness: true
+	validates :fax_number_label, length: { maximum: 60 }
 	
 	before_validation :fax_number, :format_fax_number
+
+	accepts_nested_attributes_for :client
 
 	private
 		class << self

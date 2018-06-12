@@ -10,7 +10,7 @@ class Email < ApplicationRecord
 	has_many :fax_numbers, through: :fax_number_emails
 
 	validates :email, presence: true, uniqueness: { case_sensitive: false }
-	validates :email, :fax_tag, length: { maximum: LENGTH_LIMIT }
+	validates :email, :fax_tag, length: { maximum: 80 }
 	validates :client_id, presence: true, numericality: { integer_only: true }
 
 	validate :fax_number, :format_fax_number
