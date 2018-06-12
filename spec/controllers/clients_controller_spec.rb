@@ -98,5 +98,12 @@ RSpec.describe ClientsController, type: :controller do
 		expect(client_count).to eq(Client.all.count)
 	end
 
+	it "#show is only accessible by the client_manager or the admin" do
+		session[:user_id] = admin.id
+		get "/clients/".concat(client.id.to_s), params: { :client => { :id => client.id } }
+		expect(response.status).to eq(200)
+		expect(response).to render_template :show
+	end
+
 
 end

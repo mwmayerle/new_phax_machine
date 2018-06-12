@@ -30,10 +30,11 @@ class ClientsController < ApplicationController
 	end
 
 	def show
-		if authorized?(@client)
-			flash[:alert] = "Permission denied."
-			redirect_to root_path
-		end
+		p "HERE I AM"
+		# if authorized?(@client)
+		# 	flash[:alert] = "Permission denied."
+		# 	redirect_to root_path
+		# end
 	end
 
 	def edit
