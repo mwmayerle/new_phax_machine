@@ -3,15 +3,22 @@ class UsersController < ApplicationController
 
 	before_action :set_user, only: [:show]
 
-	def admin_console
-		redirect_to root_path if !is_admin?
+	def new
 	end
 
-	def client_console
-		redirect_to root_path if !is_client_manager?
+	def create
 	end
 
 	def show
+	end
+
+	def edit
+	end
+
+	def update
+	end
+
+	def destroy
 	end
 
 	private

@@ -23,7 +23,7 @@ RSpec.describe Client, type: :model do
 		end
 
 		it "is invalid when the 'fax_tag' attribute is longer than 60 characters" do 
-			client.fax_tag = 'A' * 51
+			client.fax_tag = 'A' * 61
 			expect(client).to be_invalid
 		end
 

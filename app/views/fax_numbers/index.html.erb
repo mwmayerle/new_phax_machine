@@ -23,7 +23,11 @@
 					<td class="text-center align-middle"><%= image_tag("file-icon.png", size:"24x24") %></td>
 					<td class="text-center align-middle"><%= fax_number %></td>
 					<td class="text-center align-middle">
-						<%= link_to info_hash[:client], edit_client_path(id: info_hash[:id]) %>
+						<% if info_hash[:client] == "Unallocated" %>
+							<%= link_to info_hash[:client], clients_path %>
+						<% else %>
+							<%= link_to info_hash[:client], edit_client_path(id: info_hash[:id]) %>
+						<% end %>
 					</td>
 					<td class="text-center align-middle"><%= info_hash[:fax_number_label] %></td>
 					<% if info_hash[:city] && info_hash[:state] %>
