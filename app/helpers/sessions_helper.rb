@@ -12,8 +12,8 @@ module SessionsHelper
 	def logged_in?
 		!!current_user
 	end
-	
-	def authorized?(input_object, attribute) #accepts an object and an attribute(should be an id) to compare against the current_user's id
+		# authorized? accepts an object and an attribute(should be an id) to compare against the current_user's id
+	def authorized?(input_object, attribute)
 		return false if current_user.nil?
 		current_user.id == input_object[attribute].to_i || is_admin?
 	end

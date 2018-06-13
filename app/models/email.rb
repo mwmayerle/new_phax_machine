@@ -16,4 +16,6 @@ class Email < ApplicationRecord
 	validate :fax_number, :format_fax_number
 
 	before_validation :generate_fax_tag
+
+	accepts_nested_attributes_for :fax_number_emails
 end

@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
 	resources :users
+  resources :emails
 	resources :clients
   resources :sessions, only: [:new, :create, :destroy]
   resources :fax_numbers, only: [:index, :edit, :update]

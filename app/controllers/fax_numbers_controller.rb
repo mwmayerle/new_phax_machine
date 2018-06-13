@@ -1,7 +1,7 @@
 class FaxNumbersController < ApplicationController
 	include SessionsHelper
 	
-	before_action :verify_is_admin
+	before_action :verify_is_admin #SessionsHelper method
 	before_action :set_fax_number, only: [:edit, :update]
 
 	def index

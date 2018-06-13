@@ -1,3 +1,27 @@
-<h1>Client Show</h1>
-<%= @client.client_label %>
-<%= @client.client_manager.username %>
+<h1><%= @client.client_label %></h1>
+<div>
+	<% if @client.fax_numbers %>
+		<ul class="list-unstyled">
+		<% @client.fax_numbers.each do |fax_number| %>
+			<li>
+				<div class="client-view-fax-number-container row">
+					<div class="col-lg-6">
+						<h2><%= fax_number.fax_number_display_label %></h2>
+						<p><%= fax_number.fax_number %></p>
+					</div>
+					<div class="col-lg-6">
+						<% if fax_number.emails %>
+							<ul class="list-unstyled">
+								<% fax_number.emails.each do |email| %>
+									<li><%= email.email %></li>
+								<% end %>
+							</ul>
+						<% end %>
+						<%= link_to "Add Email", new_email_path(id: fax_number.id), class: "btn btn-success btn-sm" %>
+					</div>
+				</div>
+			</li>
+		<% end %>
+		</ul>
+	<% end %>
+</div>

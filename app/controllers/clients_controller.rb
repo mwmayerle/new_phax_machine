@@ -1,9 +1,8 @@
 class ClientsController < ApplicationController
 	include SessionsHelper
 	
-	before_action :verify_is_client_manager_or_admin
-	before_action :verify_is_admin, only: [:index, :new, :create, :destroy]
-	before_action :set_client, only: [:show, :edit, :update, :destroy]
+	before_action :verify_is_admin, only: [:index, :new, :create, :edit, :update, :destroy]
+	before_action :set_client, only: [:show, :edit, :update, :destroy, :add_emails]
 
 	def index
 		@clients = Client.all
@@ -57,7 +56,6 @@ class ClientsController < ApplicationController
 	end
 
 	def destroy
-		redirect_to :index if !is_admin?
 		alter_fax_number_associations(@client.fax_numbers.map { |fax_number| fax_number.id })
 		@client.destroy
 		flash[:notice] = "Client deleted successfully."
@@ -65,12 +63,6 @@ class ClientsController < ApplicationController
 	end
 
 	private
-		def verify_is_client_manager_or_admin
-			if !is_client_manager? #is_client_manager? is in SessionsHelper, it allows Admin the same functions as a client_manager
-				flash[:alert] = "Permission denied."
-				redirect_to root_path
-			end
-		end
 
 		def set_client
 			@client ||= Client.find(params[:id])
@@ -84,7 +76,7 @@ class ClientsController < ApplicationController
 			params.require(:fax_numbers).permit(:to_add => {}, :to_remove => {})
 		end
 
-		def alter_fax_number_associations(param_input, value = nil)
+		def alter_fax_number_associations(param_input, value = nil) #nil is for un-associating the FaxNumber, ex: client_id = nil
 			param_input.each { |fax_number_id, fax_number| FaxNumber.find(fax_number_id.to_i).update(client_id: value) }
 		end
 end

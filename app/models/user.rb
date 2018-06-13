@@ -5,7 +5,7 @@ class User < ApplicationRecord
 
 	belongs_to :client, optional: true
 
-	has_one :admin, through: :client
+	# has_one :admin, through: :client
 	has_one :client_manager, through: :client
 
 	validates :username, length: { in: 5..60 }, uniqueness: { case_senstive: false }
