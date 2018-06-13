@@ -6,13 +6,24 @@
       </li>
       <% if logged_in? %>
       	<% if is_admin? %>
-      		<%= link_to "Admin Console", admin_path, class: "nav-link" %>
-      		<%= link_to "Manage Fax Numbers", fax_numbers_path, class: "nav-link" %>
+	      	<li class="nav-item">
+	      		<%= link_to "Manage Clients", clients_path, class: "nav-link" %>
+		      </li>
+		      <li class="nav-item">
+	      		<%= link_to "Manage Fax Numbers", fax_numbers_path, class: "nav-link" %>
+		      </li>
       	<% end %>
-      		<%= link_to "My Profile", user_path(current_user), class: "nav-link" %>
       	<li class="nav-item">
-	      	<%= link_to "Log Out", logout_path(session: {id: current_user.id}), class: "nav-link", method: :delete %>
+      		<%= link_to "My Profile", user_path(current_user.id), class: "nav-link" %>
 	      </li>
+	      <% if is_client_manager? && !is_admin? %>
+	      	<li class="nav-item">
+      			<%= link_to "Client Profile", client_path(current_user.client.id), class: "nav-link" %>
+	      	</li>
+	      <% end %>
+	      <li>
+	      	<%= link_to "Log Out", logout_path(session: {id: current_user.id}), class: "nav-link", method: :delete %>
+	      </li class="nav-item">
       <% else %>
 	      <li class="nav-item">
 	      	<%= link_to "Log In", login_path, class: "nav-link" %>

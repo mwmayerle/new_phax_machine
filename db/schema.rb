@@ -17,7 +17,7 @@ ActiveRecord::Schema.define(version: 2018_06_10_154448) do
 
   create_table "clients", force: :cascade do |t|
     t.integer "admin_id", null: false
-    t.integer "client_manager_id", null: false
+    t.integer "client_manager_id"
     t.string "client_label", null: false
     t.string "fax_tag"
     t.datetime "created_at", null: false

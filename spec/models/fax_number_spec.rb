@@ -24,7 +24,7 @@ RSpec.describe FaxNumber, type: :model do
   	end
 
   	it "fax_number_label attribute cannot be more than 60 characters long" do
-  		fax_number.fax_number_label = "A" * 51
+  		fax_number.fax_number_label = "A" * 61
   		expect(fax_number).to be_invalid
   	end
 

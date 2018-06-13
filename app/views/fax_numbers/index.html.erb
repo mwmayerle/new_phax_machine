@@ -2,12 +2,6 @@
 	<div class="col-lg-9">
 		<h1>Manage Fax Numbers</h1>
 	</div>
-	<div class="col-lg-3 text-right">
-		<%= link_to "Add New Fax Number", new_fax_number_path, class: "btn btn-primary" %>
-	</div>
-</div>
-<div class="pull-right">
-	<p><%= image_tag("file-icon.png", size:"24x24") %> = Phaxio fax number. go to your [Phaxio console HYPERLINK HERE] to add or remove Phaxio fax numbers</p>
 </div>
 <br>
 <table class='table table-hover'>
@@ -18,53 +12,38 @@
 			<th class="text-center">Client</th>
 			<th class="text-center">Description</th>
 			<th class="text-center">Fax Number Location</th>
-			<th class="text-center">Date Last Billed</th>
 			<th class="text-center">Date Provisioned</th>
 			<th class="text-center">Edit</th>
-			<th class="text-center">Delete</th>
 		</tr>
 	</thead>
 	<tbody>
 		<% if @fax_numbers %>
 			<% @fax_numbers.each do |fax_number, info_hash| %>
 				<tr>
-					<% if info_hash[:phaxio_number] %>
-						<td class="text-center"><%= image_tag("file-icon.png", size:"24x24") %></td>
-					<% else %>
-						<td class="text-center"></td>
-					<% end %>
+					<td class="text-center align-middle"><%= image_tag("file-icon.png", size:"24x24") %></td>
+					<td class="text-center align-middle"><%= fax_number %></td>
+					<td class="text-center align-middle">
+						<% if info_hash[:client] == "Unallocated" %>
+							<%= link_to info_hash[:client], clients_path %>
+						<% else %>
+							<%= link_to info_hash[:client], edit_client_path(id: info_hash[:id]) %>
+						<% end %>
 					</td>
-					<td class="text-center"><%= fax_number %></td>
-					<td class="text-center"><%= info_hash[:client] %></td>
-					<td class="text-center"><%= info_hash[:fax_number_label] %></td>
+					<td class="text-center align-middle"><%= info_hash[:fax_number_label] %></td>
 					<% if info_hash[:city] && info_hash[:state] %>
-						<td class="text-center"> <%= info_hash[:city] %>, <%= info_hash[:state] %></td>
+						<td class="text-center align-middle"> <%= info_hash[:city] %>, <%= info_hash[:state] %></td>
 					<% else %>
-						<td class="text-center"></td>
+						<td class="text-center align-middle"></td>
 					<% end %>
-					<td class="text-center"><%= info_hash[:last_billed_at] %></td>
-					<td class="text-center"><%= info_hash[:provisioned_at] %></td>
-					<% unless info_hash[:phaxio_number] %>
-						<td class="text-center">
-							<%= button_to "Edit",
-								edit_fax_number_path(id: info_hash[:id]),
-								params: { fax_number: { id: info_hash[:id] } },
-								class: "btn btn-success btn-sm",
-								method: :get
-							%>
-						</td>
-						<td class="text-center">
-							<%= form_for :fax_number, class: "btn btn-light", method: :delete, url: "/fax_numbers/#{info_hash[:id]}" do |f| %>
-								<%= f.hidden_field "id", value: info_hash[:id]  %>
-								<%= f.button :submit do %>
-									<span class="fa fa-trash-o"></span>
-								<% end %>
-							<% end %>
-						</td>
-					<% else %>
-						<td></td>
-						<td></td>
-					<% end %>
+					<td class="text-center align-middle"><%= info_hash[:provisioned_at] %></td>
+					<td class="text-center align-middle">
+						<%= button_to "Edit",
+							edit_fax_number_path(id: info_hash[:id]),
+							params: { fax_number: { id: info_hash[:id] } },
+							class: "btn btn-success btn-sm align-middle",
+							method: :get
+						%>
+					</td>
 				</tr>
 			<% end %>
 		<% else %>

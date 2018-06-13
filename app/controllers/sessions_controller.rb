@@ -1,5 +1,5 @@
 class SessionsController < ApplicationController
-	include SessionsHelper #in helpers and not concerns
+	include SessionsHelper
 
 	def index
 	end
@@ -25,7 +25,7 @@ class SessionsController < ApplicationController
 	end
 
 	def destroy
-		if logged_in? && authorized?(session_params)
+		if logged_in? && authorized?(session_params, :id)
 			session[:user_id] = nil
 			flash[:notice] = "You've been logged out."
 		else

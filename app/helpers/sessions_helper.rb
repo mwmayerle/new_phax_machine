@@ -9,13 +9,13 @@ module SessionsHelper
 		@current_user ||= User.find(session[:user_id])
 	end
 
-	def authorized?(input)
-		return false if current_user.nil?
-		current_user.id == input[:id].to_i
-	end
-
 	def logged_in?
 		!!current_user
+	end
+	
+	def authorized?(input_object, attribute) #accepts an object and an attribute(should be an id) to compare against the current_user's id
+		return false if current_user.nil?
+		current_user.id == input_object[attribute].to_i || is_admin?
 	end
 
 	def is_admin?
@@ -26,5 +26,12 @@ module SessionsHelper
 	def is_client_manager? #allows admins as well
 		return false if current_user.nil?
 		current_user.type == "ClientManager" || is_admin?
+	end
+
+	def verify_is_admin
+		if !is_admin?
+			flash[:alert] = "Permission denied."
+			redirect_to root_path
+		end
 	end
 end

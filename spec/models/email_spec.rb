@@ -2,11 +2,11 @@ require 'rails_helper'
 
 RSpec.describe Email, type: :model do
   let!(:admin) {User.create!(type: :Admin, username: "Admin", password: 'testadmin')}
-	let!(:repeat_client_manager) { User.create!(type: :ClientManager, username: "Repeat Client Manager", password: "testmanager") }
+	let!(:repeat_client_manager) { User.create!(type: :ClientManager, username: "Repeat_Client_Manager", password: "testmanager") }
 	let!(:repeat_client) do
 		Client.create!(admin_id: admin.id, client_manager_id: repeat_client_manager.id, client_label: "Repeat Client Model Test Client", fax_tag: "Repeat Test Fax Tag")
 	end
-	let!(:client_manager) { User.create!(type: :ClientManager, username: "Client Manager", password: "testmanager") }
+	let!(:client_manager) { User.create!(type: :ClientManager, username: "Client_Manager", password: "testmanager") }
 	let!(:client) do 
 		Client.create!(admin_id: admin.id, client_manager_id: client_manager.id, client_label: "Client Model Test Client", fax_tag: "Test Fax Tag")
 	end
@@ -31,12 +31,12 @@ RSpec.describe Email, type: :model do
 
 	describe "invalid input" do
 		it "does not persist if the fax_tag is longer than 60 characters" do
-  		email.fax_tag = "A" * 51
+  		email.fax_tag = "A" * 61
   		expect(email).to be_invalid
   	end
 
   	it "is invalid if the email is too long" do
-			email.email = ("A" * 50).concat('@aol.com')
+			email.email = ("A" * 60).concat('@aol.com')
 			expect(email).to be_invalid
 		end
 
