@@ -16,6 +16,11 @@
       	<li class="nav-item">
       		<%= link_to "My Profile", user_path(current_user.id), class: "nav-link" %>
 	      </li>
+	      <% if is_client_manager? && !is_admin? %>
+	      	<li class="nav-item">
+      			<%= link_to "Client Profile", client_path(current_user.client.id), class: "nav-link" %>
+	      	</li>
+	      <% end %>
 	      <li>
 	      	<%= link_to "Log Out", logout_path(session: {id: current_user.id}), class: "nav-link", method: :delete %>
 	      </li class="nav-item">

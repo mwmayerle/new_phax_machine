@@ -30,11 +30,12 @@ class ClientsController < ApplicationController
 	end
 
 	def show
-		p "HERE I AM"
-		# if authorized?(@client)
-		# 	flash[:alert] = "Permission denied."
-		# 	redirect_to root_path
-		# end
+		if authorized?(@client, :client_manager_id)
+			render :show
+		else
+			flash[:alert] = "Permission denied."
+			redirect_to root_path
+		end
 	end
 
 	def edit
@@ -59,6 +60,7 @@ class ClientsController < ApplicationController
 		redirect_to :index if !is_admin?
 		alter_fax_number_associations(@client.fax_numbers.map { |fax_number| fax_number.id })
 		@client.destroy
+		flash[:notice] = "Client deleted successfully."
 		redirect_to clients_path
 	end
 

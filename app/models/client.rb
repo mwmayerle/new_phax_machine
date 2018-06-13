@@ -16,6 +16,4 @@ class Client < ApplicationRecord  #LENGTH_LIMIT constant is in application_recor
 	validates :fax_tag, uniqueness: true, length: { maximum: 60 }, presence: true
 
 	before_validation :generate_fax_tag
-
-	accepts_nested_attributes_for :fax_numbers
 end

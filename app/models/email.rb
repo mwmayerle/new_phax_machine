@@ -3,7 +3,7 @@ class Email < ApplicationRecord
 
 	belongs_to :client
 
-	has_one :admin, through: :client
+	# has_one :admin, through: :client
 	has_one :client_manager, through: :client
 
 	has_many :fax_number_emails

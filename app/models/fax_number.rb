@@ -4,7 +4,7 @@ class FaxNumber < ApplicationRecord
 	belongs_to :client, optional: true
 
 	has_one :client_manager, through: :client
-	has_one :admin, through: :client
+	# has_one :admin, through: :client
 
 	has_many :fax_number_emails
 	has_many :emails, through: :fax_number_emails
@@ -13,8 +13,6 @@ class FaxNumber < ApplicationRecord
 	validates :fax_number_label, length: { maximum: 60 }
 	
 	before_validation :fax_number, :format_fax_number
-
-	accepts_nested_attributes_for :client
 
 	private
 		class << self

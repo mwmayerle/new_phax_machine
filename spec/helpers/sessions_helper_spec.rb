@@ -20,16 +20,16 @@ RSpec.describe SessionsHelper, type: :helper do
 
 		it "#authorized? returns false if the current_user does not match the id in params" do
 			login(user)
-			expect(authorized?({id: user.id + 1})).to be(false)
+			expect(authorized?(manager, :id)).to be(false)
 		end
 
 		it "#authorized? returns true if the current_user matches the id in params" do
 			login(user)
-			expect(authorized?({id: user.id})).to be(true)
+			expect(authorized?(user, :id)).to be(true)
 		end
 
 		it "#authorized returns false if a user is not logged in" do
-			expect(authorized?({id: 'totally false data'})).to be(false)
+			expect(authorized?(nil, :id)).to be(false)
 		end
 
 		it "#logged_in? returns false if a user is not logged in" do
