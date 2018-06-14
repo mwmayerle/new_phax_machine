@@ -11,7 +11,7 @@ class FaxNumbersController < ApplicationController
 	def edit
 		if authorized?(@fax_number.client, :client_manager_id)
 			current_user.type == "ClientManager" ? @clients = nil : @clients = Client.all
-			# @unused_client_emails = FaxNumber.get_unused_client_emails(@fax_number)
+			@unused_client_emails = FaxNumber.get_unused_client_emails(@fax_number)
 		else
 			flash[:alert] = "Permission denied."
 			redirect_to root_path

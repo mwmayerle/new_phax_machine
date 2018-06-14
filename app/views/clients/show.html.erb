@@ -24,4 +24,12 @@
 		<% end %>
 		</ul>
 	<% end %>
+	<% if @unused_emails %>
+		<h3>Unallocated Emails</h3>
+		<ul class="list-unstyled">
+			<% @unused_emails.each do |email| %>
+				<li><%= email.email %></li>
+			<% end %>
+		</ul>
+	<% end %>
 </div>

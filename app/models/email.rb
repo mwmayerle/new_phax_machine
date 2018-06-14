@@ -1,7 +1,7 @@
 class Email < ApplicationRecord
 	include FaxTags
 
-	belongs_to :client, dependent: :destroy
+	belongs_to :client
 
 	# has_one :admin, through: :client
 	has_one :client_manager, through: :client

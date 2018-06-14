@@ -29,6 +29,7 @@ class ClientsController < ApplicationController
 
 	def show
 		if authorized?(@client, :client_manager_id)
+			@unused_emails = @client.emails.select { |client_email| client_email.fax_number_emails == [] }
 			render :show
 		else
 			flash[:alert] = "Permission denied."
@@ -42,8 +43,8 @@ class ClientsController < ApplicationController
 	def update
 		if @client.update_attributes(client_params)
 			unless params[:fax_numbers].nil?
-				alter_fax_number_associations(client_association_params[:to_add], @client.id) if params[:fax_numbers][:to_add]
-				alter_fax_number_associations(client_association_params[:to_remove]) if params[:fax_numbers][:to_remove]
+				add_fax_number_associations(client_association_params[:to_add], @client.id) if params[:fax_numbers][:to_add]
+				remove_fax_number_associations(client_association_params[:to_remove]) if params[:fax_numbers][:to_remove]
 			end
 			flash[:notice] = "Client updated successfully."
 			redirect_to clients_path
@@ -78,12 +79,18 @@ class ClientsController < ApplicationController
 			params.require(:fax_numbers).permit(:to_add => {}, :to_remove => {})
 		end
 
-		def alter_fax_number_associations(param_input, value = nil) #nil is for un-associating the FaxNumber, ex: client_id = nil
+		def add_fax_number_associations(param_input, value = nil) #nil is for un-associating the FaxNumber, ex: client_id = nil
 			param_input.each do |fax_number_id, fax_number| 
-				if value.nil?
-					fax_emails = FaxNumberEmail.where(fax_number_id: fax_number_id.to_i).destroy_all
-				end
-				FaxNumber.find(fax_number_id.to_i).update(client_id: value)
+				fax_number = FaxNumber.find(fax_number_id.to_i).update(client_id: value)
+			end
+		end
+
+		def remove_fax_number_associations(param_input) #nil is for un-associating the FaxNumber, ex: client_id = nil
+			param_input.each do |fax_number_id, fax_number| 
+				fax_number = FaxNumber.find(fax_number_id.to_i)
+				fax_number.update_attributes({client_id: nil, fax_number_display_label: nil})
+				fax_num_email = FaxNumberEmail.where(fax_number_id: fax_number.id)
+				fax_num_email.each { |fax_num_email_obj| fax_num_email_obj.destroy }
 			end
 		end
 end
