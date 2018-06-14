@@ -12,8 +12,8 @@
 			<ul class="list-unstyled">
 			<% unallocated_fax_numbers.each do |fax_number| %>
 				<li>
-					<input type="checkbox" id="<%= fax_number.fax_number %>" class="form-control" name="fax_numbers[to_add][<%= fax_number.id %>]" value="<%= fax_number.fax_number %>">
-    			<label for="%<= fax_number.fax_number %>"> <%= fax_number.fax_number %> </label>
+					<input type="checkbox" id="<%= fax_number.fax_number %>" name="fax_numbers[to_add][<%= fax_number.id %>]" value="<%= fax_number.fax_number %>">
+    			<label><%= fax_number.fax_number %> </label>
     		</li>
 			<% end %>
 		</ul>
@@ -25,9 +25,9 @@
 			<ul class="list-unstyled">
 			<% client.fax_numbers.each do |client_fax_number| %>
 				<li>
-					<input type="checkbox" id="<%= client_fax_number.fax_number %>" class="form-control" name="fax_numbers[to_remove][<%= client_fax_number.id %>]" value="<%= client_fax_number.fax_number %>">
-    			<label for="%<= client_fax_number.fax_number %>"> <%= client_fax_number.fax_number %> </label>
-    	</li>
+					<input type="checkbox" id="<%= client_fax_number.fax_number %>" name="fax_numbers[to_remove][<%= client_fax_number.id %>]" value="<%= client_fax_number.fax_number %>">
+    			<label><%= client_fax_number.fax_number %></label>
+    		</li>
 			<% end %>
 		</ul>
 		<% end %>

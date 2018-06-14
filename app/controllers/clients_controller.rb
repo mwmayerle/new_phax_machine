@@ -1,16 +1,15 @@
 class ClientsController < ApplicationController
 	include SessionsHelper
-	
+
 	before_action :verify_is_admin, only: [:index, :new, :create, :edit, :update, :destroy]
 	before_action :set_client, only: [:show, :edit, :update, :destroy, :add_emails]
+	before_action :get_unallocated_numbers, only: [:index, :new, :edit]
 
 	def index
 		@clients = Client.all
-		@unallocated_fax_numbers = FaxNumber.where(client_id: nil)
 	end
 
 	def new
-		@unallocated_fax_numbers = FaxNumber.where(client_id: nil)
 		@client = Client.new
 	end
 
@@ -38,7 +37,6 @@ class ClientsController < ApplicationController
 	end
 
 	def edit
-		@fax_numbers = FaxNumber.where(client_id: nil)
 	end
 
 	def update
@@ -68,6 +66,10 @@ class ClientsController < ApplicationController
 			@client ||= Client.find(params[:id])
 		end
 
+		def get_unallocated_numbers
+			@unallocated_fax_numbers = FaxNumber.where(client_id: nil)
+		end
+
 		def client_params
 			params.require(:client).permit(:id, :client_manager_id, :client_label, :admin_id)
 		end
@@ -77,6 +79,11 @@ class ClientsController < ApplicationController
 		end
 
 		def alter_fax_number_associations(param_input, value = nil) #nil is for un-associating the FaxNumber, ex: client_id = nil
-			param_input.each { |fax_number_id, fax_number| FaxNumber.find(fax_number_id.to_i).update(client_id: value) }
+			param_input.each do |fax_number_id, fax_number| 
+				if value.nil?
+					fax_emails = FaxNumberEmail.where(fax_number_id: fax_number_id.to_i).destroy_all
+				end
+				FaxNumber.find(fax_number_id.to_i).update(client_id: value)
+			end
 		end
 end

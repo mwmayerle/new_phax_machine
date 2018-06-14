@@ -6,7 +6,7 @@ class EmailsController < ApplicationController
 	def new
 		if authorized?(@fax_number.client, :client_manager_id)
 			@email = Email.new(client_id: @fax_number.client_id)
-			@existing_emails = @fax_number.emails.select { |email| email.fax_number == @fax_number.fax_number }
+			@existing_emails = @fax_number.emails
 			render :new
 		else
 			flash[:alert] = "Permission denied."
@@ -38,6 +38,6 @@ class EmailsController < ApplicationController
 		end
 
 		def email_params
-			params.require(:email).permit(:id, :email, :client_id, :fax_number)
+			params.require(:email).permit(:id, :email, :client_id, :caller_id_number)
 		end
 end

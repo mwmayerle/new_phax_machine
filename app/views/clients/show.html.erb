@@ -6,7 +6,7 @@
 			<li>
 				<div class="client-view-fax-number-container row">
 					<div class="col-lg-6">
-						<h2><%= fax_number.fax_number_display_label %></h2>
+						<h2><%= link_to fax_number.fax_number_display_label, edit_fax_number_path(fax_number) %></h2>
 						<p><%= fax_number.fax_number %></p>
 					</div>
 					<div class="col-lg-6">
@@ -17,8 +17,8 @@
 								<% end %>
 							</ul>
 						<% end %>
-						<%= link_to "Add Email", new_email_path(id: fax_number.id), class: "btn btn-success btn-sm" %>
 					</div>
+					<%= link_to "Add Email", new_email_path(id: fax_number.id), class: "btn btn-success btn-sm" %>
 				</div>
 			</li>
 		<% end %>

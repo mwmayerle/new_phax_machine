@@ -1,13 +1,13 @@
 class FaxNumber < ApplicationRecord
-	include FaxOperations #in model/concerns folder
+	include FaxTags #in model/concerns folder
 
 	belongs_to :client, optional: true
 
 	has_one :client_manager, through: :client
 	# has_one :admin, through: :client
 
-	has_many :fax_number_emails
-	has_many :emails, through: :fax_number_emails
+	has_many :fax_number_emails, dependent: :destroy
+	has_many :emails, through: :fax_number_emails, dependent: :destroy
 
 	validates :fax_number, presence: true, length: { maximum: 60 }, phone: {possible: true}, uniqueness: true
 	validates :fax_number_label, length: { maximum: 60 }
@@ -15,6 +15,10 @@ class FaxNumber < ApplicationRecord
 	before_validation :fax_number, :format_fax_number
 
 	private
+		def format_fax_number
+			self.fax_number = Phonelib.parse(fax_number).e164
+	  end
+
 		class << self
 			def set_phaxio_creds
 				Phaxio.api_key = ENV.fetch('PHAXIO_API_KEY')
@@ -57,5 +61,13 @@ class FaxNumber < ApplicationRecord
 				end
 				phaxio_fax_numbers
 			end
+
+			# def get_unused_client_emails(fax_number)
+			# 	unused_emails = fax_number.client.fax_number_emails.select do |fax_num_email| 
+			# 		# fax_number.client.fax_number_emails gets nuked when I disassociate a number
+			# 		fax_num_email.fax_number_id != fax_number.id && !fax_number.emails.include?(fax_num_email.email)
+			# 	end
+			# 	unused_emails.map {|fax_num_email| fax_num_email.email }
+			# end
 		end
 end
