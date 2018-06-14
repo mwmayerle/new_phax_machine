@@ -12,7 +12,7 @@
 			<div class="client-info row">
 				<div class="col-lg-5">
 					<div class="align-middle">
-						<h2><%= client.client_label %></h2>
+						<h2><%= link_to client.client_label, client_path(client) %></h2>
 						<% if client.client_manager %>
 								<p>Managed by: <%= client.client_manager.username %></p>
 						<% else %>
@@ -45,7 +45,7 @@
 		<div class="col-lg-9">
 			<ul class="list-unstyled">
 				<% @unallocated_fax_numbers.each do |fax_number| %>
-					<li> <%= link_to fax_number.fax_number, edit_fax_number_path(fax_number) %></li>
+					<li> <%= fax_number.fax_number %></li>
 				<% end %>
 			</ul>
 		</div>

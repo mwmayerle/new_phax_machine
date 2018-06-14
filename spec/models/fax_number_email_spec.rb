@@ -7,7 +7,7 @@ RSpec.describe FaxNumberEmail, type: :model do
 		Client.create!(admin_id: admin.id, client_manager_id: client_manager.id, client_label: "Client Model Test Client", fax_tag: "Test Fax Tag")
 	end
 	let!(:fax_number) { FaxNumber.create!(fax_number: '12248675309', fax_number_label: "Fake Testing Number", client_id: client.id) }
-	let!(:email) { Email.create!(email: 'test@phaxio.com', fax_number: fax_number.fax_number, client_id: client.id) }
+	let!(:email) { Email.create!(email: 'test@phaxio.com', caller_id_number: fax_number.fax_number, client_id: client.id) }
 	let!(:fax_number_email) { FaxNumberEmail.new(fax_number_id: fax_number.id, email_id: email.id) }
 
 	describe "with valid inputs" do

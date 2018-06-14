@@ -1,21 +1,51 @@
-<h1>Edit Fax Number</h1>
+<h1>Edit Fax Number (<%= @fax_number.fax_number%>)</h1>
 <br>
 <div class="row">
-	<div class="col-md-6 col-md-offset-3">
+	<div class="col-lg-6">
 		<%= form_for(:fax_number, url: "/fax_numbers/#{@fax_number.id}", method: :put) do |f| %>
 			<%= f.hidden_field :id, :value => @fax_number.id %>
+			<% if is_admin? %>
+				<div class="form-group">
+					<%= f.label :fax_number_label, "Fax Number Label:" %>
+					<%= f.text_field :fax_number_label, class: 'form-control' %>
+				</div>
+			<% end %>
 			<div class="form-group">
-				<%= f.label :fax_number_label, "Fax Number Label:" %>
-				<%= f.text_field :fax_number_label, class: 'form-control' %>
-			</div>
-			<div class="form-group">
-				<%= f.label :fax_number_display_label, "Client-Set Fax Number Label:" %>
+				<% if is_admin? %>
+					<%= f.label :fax_number_display_label, "Client-Set Fax Number Label:" %>
+				<% else %>
+					<%= f.label :fax_number_display_label, "Fax Number Label:" %>
+				<% end %>
 				<%= f.text_field :fax_number_display_label, class: 'form-control', placeholder: "(Typically set by the number's Client Manager)" %>
 			</div>
-			<div class="form-group">
-				<%= f.label "Client:" %>
-				<%= f.select :client_id, @clients.map { |client| [client.client_label, client.id] }, class: "form-control" %>
-			</div>
+			<% if @clients && is_admin? %>
+				<div class="form-group">
+					<%= f.label "Client:" %>
+					<%= f.select :client_id, @clients.map { |client| [client.client_label, client.id] }, class: "form-control" %>
+				</div>
+			<% end %>
+			<% if @fax_number.emails %>
+				<h3>Remove These Emails</h3>
+				<ul class="list-unstyled">
+					<% @fax_number.emails.each do |email| %>
+						<li>
+							<input type="checkbox" id="<%= email.email %>" name="email[to_remove][<%= email.id %>]" value="<%= email.email %>">
+	    				<label><%=email.email %></label>
+	    			</li>
+					<% end %>
+				</ul>
+			<% end %>
+			<% if @unused_client_emails %>
+				<h3>Add These Emails</h3>
+				<ul class="list-unstyled">
+					<% @unused_client_emails.each do |unused_email| %>
+						<li>
+							<input type="checkbox" id="<%= unused_email.email %>" name="unused_email[to_add][<%= unused_email.id %>]" value="<%= unused_email.email %>">
+	    				<label><%= unused_email.email %></label>
+	    			</li>
+					<% end %>
+				</ul>
+			<% end %>
 			<div class="form-group">
 				<%= f.submit "Save Changes", class: "btn btn-primary" %>
 			</div>

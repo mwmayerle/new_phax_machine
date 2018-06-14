@@ -1,5 +1,5 @@
 class FaxNumber < ApplicationRecord
-	include FaxOperations #in model/concerns folder
+	include FaxTags #in model/concerns folder
 
 	belongs_to :client, optional: true
 
@@ -15,6 +15,10 @@ class FaxNumber < ApplicationRecord
 	before_validation :fax_number, :format_fax_number
 
 	private
+		def format_fax_number
+			self.fax_number = Phonelib.parse(fax_number).e164
+	  end
+
 		class << self
 			def set_phaxio_creds
 				Phaxio.api_key = ENV.fetch('PHAXIO_API_KEY')
@@ -56,6 +60,10 @@ class FaxNumber < ApplicationRecord
 					phaxio_fax_numbers[api_fax_number[:phone_number]][:fax_number_label] = db_number.fax_number_label if db_number.fax_number_label
 				end
 				phaxio_fax_numbers
+			end
+
+			def get_unused_client_emails(fax_number)
+				fax_number.client.emails.select { |client_email| !client_email.fax_numbers.include?(fax_number) }
 			end
 		end
 end

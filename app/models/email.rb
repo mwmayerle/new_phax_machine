@@ -1,5 +1,5 @@
 class Email < ApplicationRecord
-	include FaxOperations
+	include FaxTags
 
 	belongs_to :client
 
@@ -12,8 +12,14 @@ class Email < ApplicationRecord
 	validates :email, presence: true, uniqueness: { case_sensitive: false }
 	validates :email, :fax_tag, length: { maximum: 60 }
 	validates :client_id, presence: true, numericality: { integer_only: true }
+	validates :caller_id_number, presence: true, length: { maximum: 60 }, phone: {possible: true}
 
-	validate :fax_number, :format_fax_number
+	validate :caller_id_number, :format_fax_number
 
-	before_validation :generate_fax_tag
+	before_validation :generate_fax_tag, :format_fax_number
+
+	private
+		def format_fax_number
+			self.caller_id_number = Phonelib.parse(caller_id_number).e164
+  	end
 end
