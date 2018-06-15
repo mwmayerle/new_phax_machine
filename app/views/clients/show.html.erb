@@ -1,6 +1,9 @@
 <div id="manage-clients-top" class="row">
-	<div class="col-lg-9">
+	<div class="col-lg-10">
 		<h1><%= @client.client_label %></h1>
+	</div>
+	<div class="col-lg-2">
+		<%= link_to "Create New Email", new_email_path, class: "btn btn-primary" %>
 	</div>
 </div>
 <% if authorized?(@client, :client_manager_id) %>

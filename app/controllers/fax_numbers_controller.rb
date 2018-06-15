@@ -60,9 +60,6 @@ class FaxNumbersController < ApplicationController
 		end
 
 		def remove_email_associations(param_input, fax_number_object)
-			param_input.each do |email_object_id, checkbox_on| 
-				email = Email.find(email_object_id)
-				FaxNumberEmail.where( { email_id: email_object_id } ).destroy_all
-			end
+			param_input.each { |email_object_id, checkbox_on| FaxNumberEmail.where( { email_id: email_object_id } ).destroy_all }
 		end
 end
