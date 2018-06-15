@@ -3,7 +3,7 @@ class EmailsController < ApplicationController
 
 	before_action :set_email, only: [:edit, :update]
 	before_action :set_fax_number, only: [:new]
-	before_action :verify_is_client_manager_or_admin
+	before_action :verify_is_client_manager_or_admin, only: [:new, :create]
 
 	def new
 		if authorized?(@fax_number.client, :client_manager_id)
