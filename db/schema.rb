@@ -26,7 +26,7 @@ ActiveRecord::Schema.define(version: 2018_06_10_154448) do
 
   create_table "emails", force: :cascade do |t|
     t.integer "client_id", null: false
-    t.string "caller_id_number", null: false
+    t.string "caller_id_number"
     t.string "email", null: false
     t.string "fax_tag"
     t.datetime "created_at", null: false
@@ -42,8 +42,8 @@ ActiveRecord::Schema.define(version: 2018_06_10_154448) do
 
   create_table "fax_numbers", force: :cascade do |t|
     t.integer "client_id"
-    t.string "fax_number_label"
-    t.string "fax_number_display_label"
+    t.string "fax_number_label", default: "Unallocated"
+    t.string "fax_number_display_label", default: "Unlabeled"
     t.string "fax_number", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

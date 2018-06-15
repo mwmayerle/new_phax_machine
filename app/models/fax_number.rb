@@ -1,6 +1,8 @@
 class FaxNumber < ApplicationRecord
 	include FaxTags #in model/concerns folder
 
+	attr_accessor :unused_client_emails
+
 	belongs_to :client, optional: true
 
 	has_one :client_manager, through: :client

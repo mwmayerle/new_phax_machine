@@ -1,7 +1,9 @@
 class EmailsController < ApplicationController
 	include SessionsHelper
 
+	before_action :set_email, only: [:edit, :update]
 	before_action :set_fax_number, only: [:new]
+	before_action :verify_is_client_manager_or_admin
 
 	def new
 		if authorized?(@fax_number.client, :client_manager_id)
@@ -32,12 +34,36 @@ class EmailsController < ApplicationController
 		end
 	end
 
+	def edit
+	end
+
+	def update
+		if @email.update_attributes(email_params)
+			flash[:notice] = "Email successfully edited."
+			redirect_to client_path(@email.client)
+		else
+			flash[:notice] = email.errors.full_messages.pop
+			redirect_to :edit
+		end
+	end
+
 	private
+		def set_email
+			@email ||= Email.find(params[:id])
+		end
+
 		def set_fax_number
 			@fax_number ||= FaxNumber.find(params[:id])
 		end
 
 		def email_params
 			params.require(:email).permit(:id, :email, :client_id, :caller_id_number)
+		end
+
+		def verify_is_client_manager_or_admin
+			unless is_client_manager? && authorized?(@email.client, :client_manager_id)
+				flash[:alert] = "Permission denied."
+				redirect_to root_path
+			end
 		end
 end

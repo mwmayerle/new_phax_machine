@@ -17,7 +17,7 @@ class ClientsController < ApplicationController
 		@client = Client.new(client_params)
 		if @client.save
 			unless params[:fax_numbers].nil?
-				alter_fax_number_associations(client_association_params[:to_add], @client.id) if params[:fax_numbers][:to_add]
+				add_fax_number_associations(client_association_params[:to_add], @client.id) if params[:fax_numbers][:to_add]
 			end
 			flash[:notice] = "Client created successfully."
 			redirect_to clients_path
@@ -29,7 +29,7 @@ class ClientsController < ApplicationController
 
 	def show
 		if authorized?(@client, :client_manager_id)
-			@unused_emails = @client.emails.select { |client_email| client_email.fax_number_emails == [] }
+			@unused_emails = @client.emails.select { |client_email| client_email.fax_number_emails.empty? } # == [] possible bug
 			render :show
 		else
 			flash[:alert] = "Permission denied."
@@ -55,7 +55,7 @@ class ClientsController < ApplicationController
 	end
 
 	def destroy
-		alter_fax_number_associations(@client.fax_numbers.map { |fax_number| fax_number.id })
+		remove_fax_number_associations(@client.fax_numbers.map { |fax_number| fax_number.id })
 		@client.destroy
 		flash[:notice] = "Client deleted successfully."
 		redirect_to clients_path
@@ -79,18 +79,15 @@ class ClientsController < ApplicationController
 			params.require(:fax_numbers).permit(:to_add => {}, :to_remove => {})
 		end
 
-		def add_fax_number_associations(param_input, value = nil) #nil is for un-associating the FaxNumber, ex: client_id = nil
-			param_input.each do |fax_number_id, fax_number| 
-				fax_number = FaxNumber.find(fax_number_id.to_i).update(client_id: value)
-			end
+		def add_fax_number_associations(param_input, client_id)
+			param_input.each { |fax_number_id, fax_number| FaxNumber.find(fax_number_id.to_i).update(client_id: client_id) }
 		end
 
-		def remove_fax_number_associations(param_input) #nil is for un-associating the FaxNumber, ex: client_id = nil
+		def remove_fax_number_associations(param_input)
 			param_input.each do |fax_number_id, fax_number| 
 				fax_number = FaxNumber.find(fax_number_id.to_i)
-				fax_number.update_attributes({client_id: nil, fax_number_display_label: nil})
-				fax_num_email = FaxNumberEmail.where(fax_number_id: fax_number.id)
-				fax_num_email.each { |fax_num_email_obj| fax_num_email_obj.destroy }
+				fax_number.update_attributes({client_id: nil, fax_number_display_label: "Unlabeled"})
+				fax_num_email = FaxNumberEmail.where(fax_number_id: fax_number.id).destroy_all
 			end
 		end
 end

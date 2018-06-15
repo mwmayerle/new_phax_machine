@@ -1,35 +1,66 @@
-<h1><%= @client.client_label %></h1>
-<div>
-	<% if @client.fax_numbers %>
-		<ul class="list-unstyled">
-		<% @client.fax_numbers.each do |fax_number| %>
-			<li>
-				<div class="client-view-fax-number-container row">
-					<div class="col-lg-6">
-						<h2><%= link_to fax_number.fax_number_display_label, edit_fax_number_path(fax_number) %></h2>
-						<p><%= fax_number.fax_number %></p>
-					</div>
-					<div class="col-lg-6">
-						<% if fax_number.emails %>
-							<ul class="list-unstyled">
-								<% fax_number.emails.each do |email| %>
-									<li><%= email.email %></li>
-								<% end %>
-							</ul>
-						<% end %>
-					</div>
-					<%= link_to "Add Email", new_email_path(id: fax_number.id), class: "btn btn-success btn-sm" %>
-				</div>
-			</li>
-		<% end %>
-		</ul>
-	<% end %>
-	<% if @unused_emails %>
-		<h3>Unallocated Emails</h3>
-		<ul class="list-unstyled">
-			<% @unused_emails.each do |email| %>
-				<li><%= email.email %></li>
-			<% end %>
-		</ul>
-	<% end %>
+<div id="manage-clients-top" class="row">
+	<div class="col-lg-9">
+		<h1><%= @client.client_label %></h1>
+	</div>
 </div>
+<% if authorized?(@client, :client_manager_id) %>
+	<% if @client.fax_numbers.present? %>
+		<% @client.fax_numbers.each do |client_fax_number| %>
+			<div class="client-email-info row">
+				<div class="col-lg-4">
+					<div class="client-label-div align-self-center">
+						<h2><%= link_to client_fax_number.fax_number, edit_fax_number_path(client_fax_number) %></h2>
+						<p><%= client_fax_number.fax_number_display_label %></p>
+					</div>
+				</div>
+				<div class="col-lg-6">
+					<table class="table table-hover table-striped table-sm align-self-center">
+						<thead class="thead-dark">
+							<tr>
+								<th class="text-center"></th>
+								<th class="text-center">Email</th>
+								<th class="text-center">Caller ID</th>
+								<th class="text-center">Edit</th>
+							</tr>
+						</thead>
+						<tbody>
+							<% if client_fax_number.emails.present? %>
+								<% client_fax_number.emails.each do |email| %>
+									<tr>
+										<td></td>
+										<td class="text-center"><%= email.email %></td>
+										<td class="text-center"><%= email.caller_id_number %></td>
+										<td class="text-center"><%= link_to "Edit Email", edit_email_path(email), class: "btn btn-sm btn-success" %>
+									</tr>
+								<% end %>
+							<% else %>
+							<tr>
+								<td></td>
+									<td class="text-right">None</td>
+									<td class="text-left">Assigned</td>
+								</tr>
+							<% end %>
+						</tbody>
+					</table>
+				</div>
+				<div class="col-lg-1 align-self-center">
+					<%= link_to "Manage Emails", edit_fax_number_path(client_fax_number), class: "btn btn-sm btn-success" %>
+				</div>
+			</div>
+		<% end %>
+	<% end %>
+<% end %>
+<% if @unused_emails.present? %>
+	<div id="unallocated-emails" class="row">
+		<div class="col-lg-4">
+			<h2>Unallocated Emails</h2>
+		</div>
+		<div class="col-lg-9">
+			<ul class="list-unstyled">
+				<% @unused_emails.each do |email| %>
+					<li> <%= email.email %> </li>
+				<% end %>
+			</ul>
+		</div>
+	</div>
+<% end %>
