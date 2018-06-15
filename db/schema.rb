@@ -26,7 +26,7 @@ ActiveRecord::Schema.define(version: 2018_06_10_154448) do
 
   create_table "emails", force: :cascade do |t|
     t.integer "client_id", null: false
-    t.string "caller_id_number"
+    t.string "caller_id_number", null: false
     t.string "email", null: false
     t.string "fax_tag"
     t.datetime "created_at", null: false

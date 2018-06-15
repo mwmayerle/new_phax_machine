@@ -21,7 +21,16 @@
 			<% if @clients && is_admin? %>
 				<div class="form-group">
 					<%= f.label "Client:" %>
-					<%= f.select :client_id, @clients.map { |client| [client.client_label, client.id] }, class: "form-control" %>
+					<%#= f.select :client_id, @clients.map { |client| [client.client_label, client.id] }, class: "form-control" %>
+					<select name="fax_number[client_id]">
+						<% @clients.each do |client| %>
+							<% if client == @fax_number.client %>
+								<option class="form-control" name="fax_number[client_id]" value="<%= client.id %>" selected="selected"><%= client.client_label %></option>
+							<% else %>
+								<option class="form-control" name="fax_number[client_id]" value="<%= client.id %>"><%= client.client_label %></option>
+							<% end %>
+						<% end %>
+					</select>
 				</div>
 			<% end %>
 			<% if @fax_number.emails %>
@@ -29,7 +38,8 @@
 					<table class="table table-hover table-striped table-sm">
 						<thead class="thead-dark">
 							<tr>
-								<th class="text-center">Remove</th>
+								<th></th>
+								<th class="text-left">Remove</th>
 								<th class="text-center">Email</th>
 								<th class="text-center">Caller ID</th>
 								<th class="text-center">Edit</th>
@@ -38,7 +48,8 @@
 						<tbody>
 							<% @fax_number.emails.each do |email| %>
 								<tr>
-									<td><input class="form-check-input checkbox" type="checkbox" id="<%= email.email %>" name="emails[to_remove][<%= email.id %>]"></td>
+									<td class="text-center align-middle"><%= image_tag("file-icon.png", size:"24x24") %></td>
+									<td class="text-center"><input class="form-check-input checkbox" type="checkbox" id="<%= email.email %>" name="emails[to_remove][<%= email.id %>]"></td>
 				    			<td class="text-center"><%= email.email %></td>
 				    			<td class="text-center"><%= email.caller_id_number %></td>
 				    			<td class="text-center"><%= link_to "Edit", edit_email_path(email), class: "btn btn-sm btn-success" %></td>
@@ -52,7 +63,8 @@
 				<table class="table table-hover table-striped table-sm">
 					<thead class="thead-dark">
 						<tr>
-							<th class="text-center">Add</th>
+							<th></th>
+							<th class="text-left">Add</th>
 							<th class="text-center">Email</th>
 							<th class="text-center">Caller ID</th>
 							<th class="text-center">Edit</th>
@@ -61,7 +73,8 @@
 					<tbody>
 						<% @fax_number.unused_client_emails.each do |unused_email| %>
 							<tr>
-								<td><input class="form-check-input checkbox" type="checkbox" id="<%= unused_email.email %>" name="emails[to_add][<%= unused_email.id %>]"></td>
+								<td class="text-center align-middle"><%= image_tag("file-icon.png", size:"24x24") %></td>
+								<td class="text-center"><input class="form-check-input checkbox" type="checkbox" id="<%= unused_email.email %>" name="emails[to_add][<%= unused_email.id %>]"></td>
 			    			<td class="text-center"><%= unused_email.email %></td>
 			    			<td class="text-center"><%= unused_email.caller_id_number %></td>
 			    			<td class="text-center"><%= link_to "Edit", edit_email_path(unused_email), class: "btn btn-sm btn-success" %></td>

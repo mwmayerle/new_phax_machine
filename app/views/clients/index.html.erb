@@ -24,6 +24,7 @@
 					<table class="table table-hover table-striped table-sm align-self-center">
 						<thead class="thead-dark">
 							<tr>
+								<th></th>
 								<th class="text-center">Fax Number</th>
 								<th class="text-center">Label</th>
 								<th class="text-center">Client-Set Label</th>
@@ -34,6 +35,7 @@
 							<% if client.fax_numbers.present? %>
 								<% client.fax_numbers.each do |client_fax_number| %>
 									<tr>
+										<td class="text-center align-middle"><%= image_tag("file-icon.png", size:"24x24") %></td>
 										<td class="text-center"><%= client_fax_number.fax_number %></td>
 										<td class="text-center"><%= client_fax_number.fax_number_label %></td>
 										<td class="text-center"><%= client_fax_number.fax_number_display_label %></td>
@@ -41,6 +43,7 @@
 									</tr>
 								<% end %>
 							<% else %>
+							<td class="text-center align-middle"><%= image_tag("file-icon.png", size:"24x24") %></td>
 							<td></td>
 							<td></td>
 							<td>None Assigned</td>
@@ -52,7 +55,7 @@
 				<div class="col-lg-1 align-self-center">
 					<%= link_to "Edit Client", edit_client_path(client), class: "btn-inline btn btn-success" %>
 				</div>
-			</div> <!-- row closing tag -->
+			</div>
 		<% end %>
 	<% end %>
 	<% if @unallocated_fax_numbers.present? %>

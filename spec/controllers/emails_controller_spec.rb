@@ -10,31 +10,31 @@ RSpec.describe EmailsController, type: :controller do
 	let!(:email) { Email.new(caller_id_number: fax_number.fax_number, client_id: client.id, email: "test@aol.com") }
 
 	describe "when logged in as the Client object's client_manager or an Admin" do
-		it "#new, only the client_manager or admin can reach the new email form" do
-			session[:user_id] = client_manager.id
-			get :new, params: { id: fax_number.id }
-			expect(response.status).to eq(200)
-			expect(response).to render_template(:new)
+		# it "#new, only the client_manager or admin can reach the new email form" do
+		# 	session[:user_id] = client_manager.id
+		# 	get :new, params: { id: fax_number.id }
+		# 	expect(response.status).to eq(200)
+		# 	expect(response).to render_template(:new)
 
-			session[:user_id] = admin.id
-			get :new, params: { id: fax_number.id }
-			expect(response.status).to eq(200)
-			expect(response).to render_template(:new)
-		end
+		# 	session[:user_id] = admin.id
+		# 	get :new, params: { id: fax_number.id }
+		# 	expect(response.status).to eq(200)
+		# 	expect(response).to render_template(:new)
+		# end
 
-		it "#create, a new email may only be created by an Admin or the client_manager" do
-			session[:user_id] = admin.id
-			post :create, params: { email: { caller_id_number: fax_number.fax_number, client_id: client.id, email: "test@aol.com", fax_number_id: fax_number.id } }
-			expect(flash[:notice]).to eq("Email successfully created.")
-			expect(response.status).to eq(302)
-			expect(response).to redirect_to client_path(id: client.id)
+		# it "#create, a new email may only be created by an Admin or the client_manager" do
+		# 	session[:user_id] = admin.id
+		# 	post :create, params: { email: { caller_id_number: fax_number.fax_number, client_id: client.id, email: "test@aol.com", fax_number_id: fax_number.id } }
+		# 	expect(flash[:notice]).to eq("Email successfully created.")
+		# 	expect(response.status).to eq(302)
+		# 	expect(response).to redirect_to client_path(id: client.id)
 
-			session[:user_id] = client_manager.id
-			post :create, params: { email: { caller_id_number: fax_number.fax_number, client_id: client.id, email: "test2@aol.com", fax_number_id: fax_number.id } }
-			expect(flash[:notice]).to eq("Email successfully created.")
-			expect(response.status).to eq(302)
-			expect(response).to redirect_to client_path(id: client.id)
-		end
+		# 	session[:user_id] = client_manager.id
+		# 	post :create, params: { email: { caller_id_number: fax_number.fax_number, client_id: client.id, email: "test2@aol.com", fax_number_id: fax_number.id } }
+		# 	expect(flash[:notice]).to eq("Email successfully created.")
+		# 	expect(response.status).to eq(302)
+		# 	expect(response).to redirect_to client_path(id: client.id)
+		# end
 	end
 
 end
