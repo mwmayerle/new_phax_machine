@@ -1,13 +1,19 @@
 <%= form_for email do |f| %>
-	<%= f.hidden_field :fax_number_id, value: "#{@fax_number.id}" %>
-	<%= f.hidden_field :client_id, value: "#{@fax_number.client.id}" %>
+	<% if fax_number %>
+		<%= f.hidden_field :fax_number_id, value: "#{fax_number.id}" %>
+		<%= f.hidden_field :client_id, value: "#{fax_number.client.id}" %>
+	<% end %>
 	<div class="form-group">
 		<%= f.label :email, "Email Address" %>
 		<%= f.email_field :email, class: "form-control"%>
 	</div>
 	<div class="form-group">
-		<%= f.label :fax_number, "Caller ID Number" %>
-		<%= f.phone_field :caller_id_number, value: "#{@fax_number.fax_number}", class: "form-control" %>
+		<%= f.label :caller_id_number, "Caller ID Number" %>
+		<% if email.caller_id_number %>
+			<%= f.phone_field :caller_id_number, value: "#{email.caller_id_number}", class: "form-control" %>
+		<% else %>
+			<%= f.phone_field :caller_id_number, value: "#{fax_number.fax_number}", class: "form-control" %>
+		<% end %>
 	</div>
 	<div class="form-group">
 		<%= f.submit "Submit", class: "btn btn-primary" %>

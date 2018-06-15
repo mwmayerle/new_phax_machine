@@ -26,25 +26,49 @@
 			<% end %>
 			<% if @fax_number.emails %>
 				<h3>Remove These Emails</h3>
-				<ul class="list-unstyled">
-					<% @fax_number.emails.each do |email| %>
-						<li>
-							<input type="checkbox" id="<%= email.email %>" name="email[to_remove][<%= email.id %>]" value="<%= email.email %>">
-	    				<label><%=email.email %></label>
-	    			</li>
-					<% end %>
-				</ul>
+					<table class="table table-hover table-striped table-sm">
+						<thead class="thead-dark">
+							<tr>
+								<th class="text-center">Remove</th>
+								<th class="text-center">Email</th>
+								<th class="text-center">Caller ID</th>
+								<th class="text-center">Edit</th>
+							</tr>
+						</thead>
+						<tbody>
+							<% @fax_number.emails.each do |email| %>
+								<tr>
+									<td><input class="form-check-input checkbox" type="checkbox" id="<%= email.email %>" name="emails[to_remove][<%= email.id %>]"></td>
+				    			<td class="text-center"><%= email.email %></td>
+				    			<td class="text-center"><%= email.caller_id_number %></td>
+				    			<td class="text-center"><%= link_to "Edit", edit_email_path(email), class: "btn btn-sm btn-success" %></td>
+								</tr>
+						<% end %>
+						</tbody>
+				</table>
 			<% end %>
-			<% if @unused_client_emails %>
+			<% if @fax_number.unused_client_emails.present? %>
 				<h3>Add These Emails</h3>
-				<ul class="list-unstyled">
-					<% @unused_client_emails.each do |unused_email| %>
-						<li>
-							<input type="checkbox" id="<%= unused_email.email %>" name="unused_email[to_add][<%= unused_email.id %>]" value="<%= unused_email.email %>">
-	    				<label><%= unused_email.email %></label>
-	    			</li>
-					<% end %>
-				</ul>
+				<table class="table table-hover table-striped table-sm">
+					<thead class="thead-dark">
+						<tr>
+							<th class="text-center">Add</th>
+							<th class="text-center">Email</th>
+							<th class="text-center">Caller ID</th>
+							<th class="text-center">Edit</th>
+						</tr>
+					</thead>
+					<tbody>
+						<% @fax_number.unused_client_emails.each do |unused_email| %>
+							<tr>
+								<td><input class="form-check-input checkbox" type="checkbox" id="<%= unused_email.email %>" name="emails[to_add][<%= unused_email.id %>]"></td>
+			    			<td class="text-center"><%= unused_email.email %></td>
+			    			<td class="text-center"><%= unused_email.caller_id_number %></td>
+			    			<td class="text-center"><%= link_to "Edit", edit_email_path(unused_email), class: "btn btn-sm btn-success" %></td>
+							</tr>
+						<% end %>
+					</tbody>
+				</table>
 			<% end %>
 			<div class="form-group">
 				<%= f.submit "Save Changes", class: "btn btn-primary" %>

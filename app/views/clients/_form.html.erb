@@ -2,37 +2,50 @@
 	<% if is_admin? %>
 		<%= f.hidden_field :admin_id, value: "#{current_user.id}" %>
 	<% end %>
-	<div class="form-group">
-		<%= f.label :client_label, "Client Name: " %>
-		<%= f.text_field :client_label, value: client.client_label, class: "form-control" %>
-	</div>
-	<div class="form-group">
-		<% if unallocated_fax_numbers.present? %>
-			<%= f.label "Add the following fax numbers:" %>
-			<ul class="list-unstyled">
-			<% unallocated_fax_numbers.each do |fax_number| %>
-				<li>
-					<input type="checkbox" id="<%= fax_number.fax_number %>" name="fax_numbers[to_add][<%= fax_number.id %>]" value="<%= fax_number.fax_number %>">
-    			<label><%= fax_number.fax_number %> </label>
-    		</li>
-			<% end %>
-		</ul>
-		<% end %>
-	</div>
-	<div class="form-group">
-		<% if client.fax_numbers.present? %>
-		<%= f.label "Remove the following fax numbers:" %>
-			<ul class="list-unstyled">
-			<% client.fax_numbers.each do |client_fax_number| %>
-				<li>
-					<input type="checkbox" id="<%= client_fax_number.fax_number %>" name="fax_numbers[to_remove][<%= client_fax_number.id %>]" value="<%= client_fax_number.fax_number %>">
-    			<label><%= client_fax_number.fax_number %></label>
-    		</li>
-			<% end %>
-		</ul>
-		<% end %>
-	</div>
-	<div class="form-group">
-		<%= f.submit "Submit", class: "btn btn-primary" %>
+	<div class="row">
+		<div class="col-lg-6">
+			<div class="form-group col-lg-6">
+				<%= f.label :client_label, "Client Name: " %>
+				<%= f.text_field :client_label, value: client.client_label, class: "form-control" %>
+				<% if client.client_manager.present? %>
+					<p> Client Manager: <%= @client.client_manager.username %> </p>
+				<% else %>
+					<%= button_to "Invite Manager", root_path, method: :get, class: "btn-inline btn btn-success btn-sm" %>
+				<% end %>
+			</div>
+		</div>
+
+		<div class="col-lg-6">
+			<div class="form-group">
+				<% if unallocated_fax_numbers.present? %>
+					<strong><%= f.label "Add the following fax numbers:" %></strong>
+					<ul class="list-unstyled">
+					<% unallocated_fax_numbers.each do |fax_number| %>
+						<li>
+							<input type="checkbox" id="<%= fax_number.fax_number %>" name="fax_numbers[to_add][<%= fax_number.id %>]" value="<%= fax_number.fax_number %>">
+		    			<label><%= fax_number.fax_number %> </label>
+		    		</li>
+					<% end %>
+				</ul>
+				<% end %>
+			</div>
+			<div class="form-group">
+				<% if client.fax_numbers.present? %>
+				<strong><%= f.label "Remove the following fax numbers:" %></strong>
+					<ul class="list-unstyled">
+					<% client.fax_numbers.each do |client_fax_number| %>
+						<li>
+							<input type="checkbox" id="<%= client_fax_number.fax_number %>" name="fax_numbers[to_remove][<%= client_fax_number.id %>]" value="<%= client_fax_number.fax_number %>">
+		    			<label><%= client_fax_number.fax_number %></label>
+		    		</li>
+					<% end %>
+				</ul>
+				<% end %>
+			</div>
+
+		</div>
+		<div class="form-group">
+			<%= f.submit "Submit", class: "btn btn-primary" %>
+		</div>
 	</div>
 <% end %>

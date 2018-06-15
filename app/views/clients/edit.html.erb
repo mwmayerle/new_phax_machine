@@ -1,3 +1,3 @@
-<h1>Client Edit</h1>
+<h1>Edit <%= @client.client_label %> Details</h1>
 <br>
 <%= render partial: "form", locals: { client: @client, unallocated_fax_numbers: @unallocated_fax_numbers }, layout: false %>
