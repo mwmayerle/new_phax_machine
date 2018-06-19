@@ -33,7 +33,7 @@
 					</select>
 				</div>
 			<% end %>
-			<% if @fax_number.emails %>
+			<% if @fax_number.user_emails %>
 				<h3>Remove These Emails</h3>
 					<table class="table table-hover table-striped table-sm">
 						<thead class="thead-dark">
@@ -46,13 +46,15 @@
 							</tr>
 						</thead>
 						<tbody>
-							<% @fax_number.emails.each do |email| %>
+							<% @fax_number.user_emails.each do |user_email| %>
 								<tr>
 									<td class="text-center align-middle"><%= image_tag("file-icon.png", size:"24x24") %></td>
-									<td class="text-center"><input class="form-check-input checkbox" type="checkbox" id="<%= email.email %>" name="emails[to_remove][<%= email.id %>]"></td>
-				    			<td class="text-center"><%= email.email %></td>
-				    			<td class="text-center"><%= email.caller_id_number %></td>
-				    			<td class="text-center"><%= link_to "Edit", edit_email_path(email), class: "btn btn-sm btn-success" %></td>
+									<td class="text-center">
+										<input class="form-check-input checkbox" type="checkbox" id="<%= user_email.email_address %>" name="user_emails[to_remove][<%= user_email.id %>]">
+									</td>
+				    			<td class="text-center"><%= user_email.email_address %></td>
+				    			<td class="text-center"><%= user_email.caller_id_number %></td>
+				    			<td class="text-center"><%= link_to "Edit", edit_user_email_path(user_email), class: "btn btn-sm btn-success" %></td>
 								</tr>
 						<% end %>
 						</tbody>
@@ -74,10 +76,12 @@
 						<% @fax_number.unused_client_emails.each do |unused_email| %>
 							<tr>
 								<td class="text-center align-middle"><%= image_tag("file-icon.png", size:"24x24") %></td>
-								<td class="text-center"><input class="form-check-input checkbox" type="checkbox" id="<%= unused_email.email %>" name="emails[to_add][<%= unused_email.id %>]"></td>
-			    			<td class="text-center"><%= unused_email.email %></td>
+								<td class="text-center">
+									<input class="form-check-input checkbox" type="checkbox" id="<%= unused_email.email_address %>" name="user_emails[to_add][<%= unused_email.id %>]">
+								</td>
+			    			<td class="text-center"><%= unused_email.email_address %></td>
 			    			<td class="text-center"><%= unused_email.caller_id_number %></td>
-			    			<td class="text-center"><%= link_to "Edit", edit_email_path(unused_email), class: "btn btn-sm btn-success" %></td>
+			    			<td class="text-center"><%= link_to "Edit", edit_user_email_path(unused_email), class: "btn btn-sm btn-success" %></td>
 							</tr>
 						<% end %>
 					</tbody>

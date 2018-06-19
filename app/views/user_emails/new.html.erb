@@ -1,0 +1,4 @@
+<h1>New Email for <%= @fax_number.fax_number_display_label %> (<%= @fax_number.fax_number %>)</h1>
+<div class="col-lg-6">
+	<%= render partial: "form", locals: { user_email: @user_email, fax_number: @fax_number, existing_emails: @existing_emails }, layout: false %>
+</div>

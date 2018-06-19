@@ -1,4 +1,4 @@
-class Client < ApplicationRecord  #LENGTH_LIMIT constant is in application_record.rb
+class Client < ApplicationRecord
 	include FaxTags
 
 	attr_readonly :admin_id
@@ -7,8 +7,8 @@ class Client < ApplicationRecord  #LENGTH_LIMIT constant is in application_recor
 	belongs_to :client_manager, optional: true, dependent: :destroy
 
 	has_many :fax_numbers
-	has_many :emails
-	has_many :fax_number_emails, through: :emails
+	has_many :user_emails
+	has_many :fax_number_user_emails, through: :user_emails
 	has_many :users, dependent: :destroy
 
 	validates :admin_id, presence: true, numericality: { integer_only: true }
@@ -24,7 +24,7 @@ class Client < ApplicationRecord  #LENGTH_LIMIT constant is in application_recor
 			FaxNumber.where(client_id: self.id).each do |fax_number|
 				fax_number.update_attributes( { client_id: nil, fax_number_display_label: nil, fax_number_label: nil } )
 			end
-			emails = Email.where(client_id: self.id).destroy_all
-			FaxNumberEmail.where(email_id: emails).destroy_all
+			user_emails = UserEmail.where(client_id: self.id).destroy_all
+			FaxNumberUserEmail.where(user_email_id: user_emails).destroy_all
 		end
 end

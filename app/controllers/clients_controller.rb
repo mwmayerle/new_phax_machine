@@ -29,7 +29,7 @@ class ClientsController < ApplicationController
 
 	def show
 		if authorized?(@client, :client_manager_id)
-			@unused_emails = @client.emails.select { |client_email| client_email.fax_number_emails.empty? } # == [] possible bug
+			@unused_emails = @client.user_emails.select { |client_email| client_email.fax_number_user_emails.empty? } # == [] possible bug
 			render :show
 		else
 			flash[:alert] = "Permission denied."
@@ -87,7 +87,7 @@ class ClientsController < ApplicationController
 			param_input.each do |fax_number_id, fax_number| 
 				fax_number = FaxNumber.find(fax_number_id.to_i)
 				fax_number.update_attributes({client_id: nil, fax_number_display_label: "Unlabeled"})
-				fax_num_email = FaxNumberEmail.where(fax_number_id: fax_number.id).destroy_all
+				fax_num_user_email = FaxNumberUserEmail.where(fax_number_id: fax_number.id).destroy_all
 			end
 		end
 end

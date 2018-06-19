@@ -3,7 +3,7 @@
 		<h1><%= @client.client_label %></h1>
 	</div>
 	<div class="col-lg-2">
-		<%= link_to "Create New Email", new_email_path, class: "btn btn-primary" %>
+		<%= link_to "Create New Email", new_user_email_path, class: "btn btn-primary" %>
 	</div>
 </div>
 <% if authorized?(@client, :client_manager_id) %>
@@ -28,14 +28,14 @@
 							</tr>
 						</thead>
 						<tbody>
-							<% if client_fax_number.emails.present? %>
-								<% client_fax_number.emails.each do |email| %>
+							<% if client_fax_number.user_emails.present? %>
+								<% client_fax_number.user_emails.each do |user_email| %>
 									<tr>
 										<td class="text-center align-middle"><%= image_tag("file-icon.png", size:"24x24") %></td>
 										<td></td>
-										<td class="text-center"><%= email.email %></td>
-										<td class="text-center"><%= email.caller_id_number %></td>
-										<td class="text-center"><%= link_to "Edit Email", edit_email_path(email), class: "btn btn-sm btn-success" %>
+										<td class="text-center"><%= user_email.email_address %></td>
+										<td class="text-center"><%= user_email.caller_id_number %></td>
+										<td class="text-center"><%= link_to "Edit Email", edit_user_email_path(user_email), class: "btn btn-sm btn-success" %>
 									</tr>
 								<% end %>
 							<% else %>
@@ -64,8 +64,8 @@
 		</div>
 		<div class="col-lg-9">
 			<ul class="list-unstyled">
-				<% @unused_emails.each do |email| %>
-					<li> <%= email.email %> </li>
+				<% @unused_emails.each do |unused_email| %>
+					<li> <%= unused_email.email_address %> </li>
 				<% end %>
 			</ul>
 		</div>
