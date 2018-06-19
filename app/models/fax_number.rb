@@ -8,8 +8,8 @@ class FaxNumber < ApplicationRecord
 	has_one :client_manager, through: :client
 	# has_one :admin, through: :client
 
-	has_many :fax_number_emails
-	has_many :emails, through: :fax_number_emails
+	has_many :fax_number_user_emails
+	has_many :user_emails, through: :fax_number_user_emails
 
 	validates :fax_number, presence: true, length: { maximum: 60 }, phone: {possible: true}, uniqueness: true
 	validates :fax_number_label, length: { maximum: 60 }
@@ -42,30 +42,30 @@ class FaxNumber < ApplicationRecord
 			end
 
 			def format_fax_numbers(fax_numbers_from_api)
-				phaxio_fax_numbers = {}
+				phaxio_numbers = {}
 				fax_numbers_from_api.each do |api_fax_number|
-					phaxio_fax_numbers[api_fax_number[:phone_number]] = {}
-					phaxio_fax_numbers[api_fax_number[:phone_number]][:city] = api_fax_number[:city]
-					phaxio_fax_numbers[api_fax_number[:phone_number]][:state] = api_fax_number[:state]
-					phaxio_fax_numbers[api_fax_number[:phone_number]][:provisioned_at] = format_time(api_fax_number[:provisioned_at])
-					phaxio_fax_numbers[api_fax_number[:phone_number]][:cost] = format_cost(api_fax_number[:cost])
+					phaxio_numbers[api_fax_number[:phone_number]] = {}
+					phaxio_numbers[api_fax_number[:phone_number]][:city] = api_fax_number[:city]
+					phaxio_numbers[api_fax_number[:phone_number]][:state] = api_fax_number[:state]
+					phaxio_numbers[api_fax_number[:phone_number]][:provisioned_at] = format_time(api_fax_number[:provisioned_at])
+					phaxio_numbers[api_fax_number[:phone_number]][:cost] = format_cost(api_fax_number[:cost])
 
 					db_number = self.find_or_create_by!(fax_number: api_fax_number[:phone_number])
-					phaxio_fax_numbers[api_fax_number[:phone_number]][:id] = db_number.id
+					phaxio_numbers[api_fax_number[:phone_number]][:id] = db_number.id
 
 					if db_number.client
-						phaxio_fax_numbers[api_fax_number[:phone_number]][:client] = db_number.client.client_label
+						phaxio_numbers[api_fax_number[:phone_number]][:client] = db_number.client.client_label
 					else
-						phaxio_fax_numbers[api_fax_number[:phone_number]][:client] = "Unallocated"
+						phaxio_numbers[api_fax_number[:phone_number]][:client] = "Unallocated"
 					end
 					
-					phaxio_fax_numbers[api_fax_number[:phone_number]][:fax_number_label] = db_number.fax_number_label if db_number.fax_number_label
+					phaxio_numbers[api_fax_number[:phone_number]][:fax_number_label] = db_number.fax_number_label if db_number.fax_number_label
 				end
-				phaxio_fax_numbers
+				phaxio_numbers
 			end
 
 			def get_unused_client_emails(fax_number)
-				fax_number.client.emails.select { |client_email| !client_email.fax_numbers.include?(fax_number) }
+				fax_number.client.user_emails.select { |client_email| !client_email.fax_numbers.include?(fax_number) }
 			end
 		end
 end

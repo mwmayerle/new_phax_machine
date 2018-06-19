@@ -14,7 +14,7 @@
 					<div class="client-label-div align-self-center">
 						<h2><%= link_to client.client_label, client_path(client) %></h2>
 						<% if client.client_manager %>
-								<p>Managed by: <%= client.client_manager.username %></p>
+								<p>Managed by: <%= client.client_manager.email %></p>
 						<% else %>
 							<%= button_to "Invite Manager", root_path, method: :get, class: "btn-inline btn btn-success btn-sm" %>
 						<% end %>
