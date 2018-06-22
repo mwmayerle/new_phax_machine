@@ -4,7 +4,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 	include SessionsHelper
   # before_action :configure_sign_up_params, only: [:create]
   # before_action :configure_account_update_params, only: [:update]
-  	before_action :verify_permissions
+  	before_action :verify_permissions, only: :create
   	prepend_before_action :require_no_authentication, only: :cancel
 
   # GET /resource/sign_up
@@ -14,7 +14,6 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   # POST /resource
   def create
-  	p sign_up_params
     build_resource(sign_up_params)
     resource.save
     yield resource if block_given?

@@ -3,12 +3,11 @@ class UserEmailsController < ApplicationController
 
 	before_action :set_user_email, only: [:edit, :update]
 	before_action :set_fax_number, only: [:new]
-	before_action :verify_is_client_manager_or_admin, only: [:new, :create]
 
 	def new
 		if authorized?(@fax_number.client, :client_manager_id)
 			@user_email = UserEmail.new(client_id: @fax_number.client_id)
-			@existing_emails = @fax_number.emails
+			@existing_emails = @fax_number.user_emails
 			render :new
 		else
 			flash[:alert] = "Permission denied."
@@ -62,12 +61,5 @@ class UserEmailsController < ApplicationController
 
 		def invite_client_manager_params
 			params.require(:user_email).permit(:id, :client_id, :email_address)
-		end
-
-		def verify_is_client_manager_or_admin
-			unless is_client_manager? && authorized?(@user_email.client, :client_manager_id)
-				flash[:alert] = "Permission denied."
-				redirect_to root_path
-			end
 		end
 end
