@@ -27,4 +27,10 @@ class Client < ApplicationRecord
 			user_emails = UserEmail.where(client_id: self.id).destroy_all
 			FaxNumberUserEmail.where(user_email_id: user_emails).destroy_all
 		end
+
+		class << self
+			def new_client_token
+				SecureRandom.uuid
+			end
+		end
 end

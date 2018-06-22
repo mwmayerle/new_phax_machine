@@ -70,5 +70,4 @@ Rails.application.configure do
     :user_name => ENV["SMTP_USER"],
     :password => ENV["SMTP_PASSWORD"]
   }
-
 end

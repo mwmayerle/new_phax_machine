@@ -1,9 +1,15 @@
 class User < ApplicationRecord
+	
 	include FaxTags
+
+	USER = "User"
+	ADMIN = "Admin"
+	CLIENT_MANAGER = "ClientManager"
+
   # Include default devise modules. Others available are:
-  # :confirmable, :lockable, :timeoutable and :omniauthable
+  # :confirmable, :lockable, :trackable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :trackable, :validatable, :confirmable
+         :recoverable, :rememberable, :validatable #:confirmable
 
 	attr_readonly :type
 
@@ -13,20 +19,40 @@ class User < ApplicationRecord
 	# has_one :admin, through: :client
 	has_one :client_manager, through: :client
 
-
 	validates :email, length: { in: 5..60 }, uniqueness: { case_senstive: false }
 	validates :fax_tag, length: { maximum: 60 }, uniqueness: { case_sensitve: false }
 	validates :client_id, presence: true, numericality: { integer_only: true }, if: :is_generic_user?
 
 	before_validation :generate_fax_tag, :ensure_user_type
-	# has_secure_password
 
+	before_validation :generate_temporary_password, on: :create
+
+	after_create { User.welcome(self.id) }
+	
+	# has_secure_password
 	private
 	  def ensure_user_type
-	  	self.type = "User" if self.type.nil?
+	  	self.type = USER if self.type.nil?
 	  end
 
 	  def is_generic_user?
-	  	self.type == "User"
+	  	self.type == USER
 	  end
+
+		def generate_temporary_password
+			self.password = SecureRandom.uuid
+		end
+
+	  class << self
+			def welcome(user_id)
+		    user = User.find(user_id)
+		    @raw = nil
+		    raw, enc = Devise.token_generator.generate(user.class, :reset_password_token)
+		    user.reset_password_token   = enc
+		    user.reset_password_sent_at = Time.now.utc
+		    user.save(validate: false)
+		    @raw = raw
+		    PhaxMachineMailer.welcome_invite(user, @raw).deliver_now
+		  end
+		end
 end

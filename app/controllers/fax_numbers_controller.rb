@@ -18,7 +18,7 @@ class FaxNumbersController < ApplicationController
 		original_client = @fax_number.client
 		param_filter_type = current_user.type == User::CLIENT_MANAGER ? client_manager_fax_number_params : admin_fax_number_params
 		if @fax_number.update_attributes(param_filter_type)
-			# this 'if block' spoofs the "email[:to_remove]" portion of params by creating and passing in a similar hash
+			# this if block spoofs the "email[:to_remove]" portion of params by creating and passing in a similar hash
 			if original_client != @fax_number.client
 				@fax_number.update(fax_number_label: "Unallocated", fax_number_display_label: "Unlabeled")
 				original_client_user_email_ids = {}

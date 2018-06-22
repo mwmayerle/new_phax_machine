@@ -1,0 +1,5 @@
+<p>Hello <%= @resource.email %>!</p>
+
+<p>You've been invited to manage ___________________</p>
+
+<p><%= link_to 'Setup Account', edit_password_url(@resource, reset_password_token: @token) %></p>
