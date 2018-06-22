@@ -60,6 +60,10 @@ class UserEmailsController < ApplicationController
 			params.require(:user_email).permit(:id, :email_address, :client_id, :caller_id_number, :user_id)
 		end
 
+		def invite_client_manager_params
+			params.require(:user_email).permit(:id, :client_id, :email_address)
+		end
+
 		def verify_is_client_manager_or_admin
 			unless is_client_manager? && authorized?(@user_email.client, :client_manager_id)
 				flash[:alert] = "Permission denied."
