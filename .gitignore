@@ -29,3 +29,4 @@
 .env
 coverage
 /db/seeds.rb
+.travis.yml

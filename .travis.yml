@@ -34,6 +34,19 @@ script:
   - bin/rake db:migrate RAILS_ENV=test
   - bundle exec rake db:test:prepare
   - bundle exec rspec spec/
+
+  env:
+  - PHAXIO_API_KEY=3t1wv9kf523lgibbfgrbppw4nnnkopn5n26482i9
+  - PHAXIO_API_SECRET=dgffavoziwm171hyoi409ok7w0i683ftd011t7bw
+  - SMTP_PASSWORD=f8b9d94855e72d52f5ea9460696772bb
+  - SMTP_USER=postmaster@sandbox977f2cd8bec345c1b453b2f03b0f447c.mailgun.org
+  - SMTP_PORT=587
+  - SMTP_TLS=true
+  - SMTP_FROM=matt@phaxio.com
+  - SMTP_HOST=smtp.mailgun.org
+  - SMTP_DOMAIN=sandbox977f2cd8bec345c1b453b2f03b0f447c.mailgun.org
+  - FROM_EMAIL=matt@phaxio.com
+  
 # 5. OPTIONAL Add a Build Status Badge to your README, follow instructions here:
 #    http://docs.travis-ci.com/user/status-images/
 
