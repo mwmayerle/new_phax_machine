@@ -1,5 +1,11 @@
 class User < ApplicationRecord
+	
 	include FaxTags
+
+	USER = "User"
+	ADMIN = "Admin"
+	CLIENT_MANAGER = "ClientManager"
+
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :trackable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable,
@@ -26,11 +32,11 @@ class User < ApplicationRecord
 	# has_secure_password
 	private
 	  def ensure_user_type
-	  	self.type = "User" if self.type.nil?
+	  	self.type = USER if self.type.nil?
 	  end
 
 	  def is_generic_user?
-	  	self.type == "User"
+	  	self.type == USER
 	  end
 
 		def generate_temporary_password
@@ -45,9 +51,6 @@ class User < ApplicationRecord
 		    user.reset_password_token   = enc
 		    user.reset_password_sent_at = Time.now.utc
 		    user.save(validate: false)
-		    p "===================="
-		    p raw
-		    p "===================="
 		    @raw = raw
 		    PhaxMachineMailer.welcome_invite(user, @raw).deliver_now
 		  end

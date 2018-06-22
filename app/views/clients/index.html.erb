@@ -18,6 +18,7 @@
 						<% else %>
 							<%= form_for :user, url: "users", method: :post do |f| %>
 								<%= f.hidden_field :client_id, value: client.id %>
+								<%= f.hidden_field :type, value: User::CLIENT_MANAGER %>
 								<%= f.email_field :email, placeholder: "manager@acme.com" %>
 								<%= f.submit "Invite Manager", class: "btn-inline btn btn-success btn-sm" %>
 							<% end %>

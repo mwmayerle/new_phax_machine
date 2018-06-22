@@ -1,9 +1,10 @@
 admin = User.create!(type: :Admin, email: "mwmayerle@gmail.com", password: "mattmatt")
-phaxio_manager = User.create!(type: :ClientManager, email: "manager@phaxio.org", password: "mattmatt")
-fake_manager = User.create!(type: :ClientManager, email: "manager@fake.com", password: "mattmatt")
 
-phaxio = Client.create!(client_label: "Phaxio Test Client", client_manager_id: phaxio_manager.id, admin_id: admin.id)
-fakers = Client.create!(client_label: "Fake Number Client", client_manager_id: fake_manager.id, admin_id: admin.id)
+phaxio = Client.create!(client_label: "Phaxio Test Client", admin_id: admin.id)
+fakers = Client.create!(client_label: "Fake Number Client", admin_id: admin.id)
+
+phaxio_manager = User.create!(type: :ClientManager, email: "manager@phaxio.org", password: "mattmatt", client_id: phaxio.id)
+fake_manager = User.create!(type: :ClientManager, email: "manager@fake.com", password: "mattmatt", client_id: fakers.id)
 
 UserEmail.create!(email_address: 'tom@tom.com', user_id: admin.id)
 UserEmail.create!(email_address: 'manager@fake.com', user_id: fake_manager.id, client_id: fakers.id)
