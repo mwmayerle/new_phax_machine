@@ -32,7 +32,7 @@ class ClientsController < ApplicationController
 			@unused_emails = @client.user_emails.select { |client_email| client_email.fax_number_user_emails.empty? } # == [] possible bug
 			render :show
 		else
-			flash[:alert] = "Permission denied."
+			flash[:alert] = DENIED
 			redirect_to root_path
 		end
 	end

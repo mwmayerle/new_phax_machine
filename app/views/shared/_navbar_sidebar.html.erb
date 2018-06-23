@@ -21,9 +21,9 @@
       			<%= link_to "Client Profile", client_path(current_user.client.id), class: "nav-link" %>
 	      	</li>
 	      <% end %>
-	      <li>
+	      <li class="nav-item">
 	      	<%= link_to "Log Out", destroy_user_session_path(session: {id: current_user.id}), class: "nav-link", method: :delete %>
-	      </li class="nav-item">
+	      </li>
       <% else %>
 	      <li class="nav-item">
 	      	<%= link_to "Log In", new_user_session_path, class: "nav-link" %>

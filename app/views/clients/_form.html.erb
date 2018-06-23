@@ -9,8 +9,6 @@
 				<%= f.text_field :client_label, value: client.client_label, class: "form-control" %>
 				<% if client.client_manager.present? %>
 					<p> Client Manager: <%= @client.client_manager.email %> </p>
-				<% else %>
-					<%= button_to "Invite Manager", root_path, method: :get, class: "btn-inline btn btn-success btn-sm" %>
 				<% end %>
 			</div>
 		</div>

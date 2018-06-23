@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe User, type: :model do
 
   describe "creating a User with valid input" do
-  	let!(:user) { User.new(type: :User, username: "Test_User_1", password: 'tomtom', client_id: 1) }
+  	let!(:user) { User.new(type: :User, email: "test1@test.com", password: 'tomtom', client_id: 1) }
 
   	it "has valid attributes" do
   		expect(user).to be_valid
@@ -21,25 +21,25 @@ RSpec.describe User, type: :model do
   	end
 
   	it "the 'type' attribute defaults to User" do
-  		user2 = User.create!(username: "Test_User_2", password: 'passwordia', client_id: 1)
+  		user2 = User.create!(email: "test2@test.com", password: 'passwordia', client_id: 1)
   		expect(user2.type).to eq("User")
   	end
   end
 
   describe "creating a User with invalid input" do
-  	let!(:user) { User.new(username: "Test_User_3", password: 'hellohello', fax_tag: 'hello I am a fax tag', client_id: 1) }
+  	let!(:user) { User.new(email: "test3@test.com", password: 'hellohello', fax_tag: 'hello I am a fax tag', client_id: 1) }
 
-  	it "does not persist if a username is longer than 60 characters" do
-  		user.username = ("A" * 61)
+  	it "does not persist if a email is longer than 60 characters" do
+  		user.email = ("A" * 61)
   		expect(user).to be_invalid
   	end
 
-  	it "does not persist if a username contains spaces" do
-  		user.username = "One Space"
+  	it "does not persist if a email contains spaces" do
+  		user.email = "One Space"
   		expect(user).to be_invalid
-  		user.username = " A bunch of spaces in this name "
+  		user.email = " A bunch of spaces in this name "
   		expect(user).to be_invalid
-  		expect(user.errors[:username]).to include("Username may not contain any spaces")
+  		expect(user.errors[:email]).to include("email may not contain any spaces")
   	end
 
   	it "'client_id' attribute must be present and an integer if the User 'type' attribute is 'User'" do
@@ -56,14 +56,15 @@ RSpec.describe User, type: :model do
   	
   	it "does not persist if a password is not present" do
   		user.password = nil
+  		puts user.valid?
   		expect(user).to be_invalid
   	end
 
   	it "the 'type' boolean attribute cannot be updated and is read-only" do
   		user.save
-  		user.update_attributes({type: :Admin, username: "Edited_Username", password: "changed!"})
+  		user.update_attributes({type: :Admin, email: "Edited_email", password: "changed!"})
   		expect(user.reload.type).to eq("User")
-  		expect(user.reload.username).to eq('Edited_Username')
+  		expect(user.reload.email).to eq('Edited_email')
   		expect(user.reload.password).to eq('changed!')
   	end
   end
