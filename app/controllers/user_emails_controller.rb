@@ -10,7 +10,7 @@ class UserEmailsController < ApplicationController
 			@existing_emails = @fax_number.user_emails
 			render :new
 		else
-			flash[:alert] = "Permission denied."
+			flash[:alert] = DENIED
 			redirect_to root_path
 		end
 	end

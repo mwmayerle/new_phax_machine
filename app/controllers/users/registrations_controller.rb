@@ -21,20 +21,16 @@ class Users::RegistrationsController < Devise::RegistrationsController
     	client = Client.find(resource.client_id)
     	client.update(client_manager_id: resource.id)
       if resource.active_for_authentication?
-        set_flash_message! :notice, :signed_up
+        flash[:notice] = "#{resource.email} has been invited."
       else
-        set_flash_message! :notice, :"signed_up_but_#{resource.inactive_message}"
+        flash[:notice] = "signed_up_but_#{resource.inactive_message}"
         expire_data_after_sign_in!
       end
     else
       clean_up_passwords resource
       set_minimum_password_length
     end
-    if is_admin?
-    	redirect_to clients_path
-  	else
-    	redirect_to client_path(current_user.client)
-  	end
+    is_admin? ? redirect_to(clients_path) : redirect_to(client_path(current_user.client))
   end
 
   # GET /resource/edit

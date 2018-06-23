@@ -1,12 +1,12 @@
 require 'rails_helper'
 
 RSpec.describe ClientsController, type: :controller do
-	let!(:admin) {User.create!(type: :Admin, username: "Admin", password: 'testadmin')}
-	let!(:client_manager) { User.create!(type: :ClientManager, username: "Client", password: "testmanager") }
+	let!(:admin) {User.create!(type: :Admin, email: "admin@admin.com", password: 'testadmin')}
+	let!(:client_manager) { User.create!(type: :ClientManager, email: "manager@manager.com", password: "testmanager") }
 	let!(:client) {Client.create!(admin_id: admin.id, client_manager_id: client_manager.id, client_label: "Client Controller Test Client")}
 	let!(:fax_number) { FaxNumber.create!(fax_number: '12248675309', fax_number_label: "Fake Testing Number1") }
 	let!(:fax_number2) { FaxNumber.create!(fax_number: '12248675310', fax_number_label: "Fake Testing Number2") }
-	let!(:user) { User.create!(type: :User, username: "User1", password: 'tomtom', client_id: client.id) }
+	let!(:user) { User.create!(type: :User, email: "user@user.com", password: 'tomtom', client_id: client.id) }
 
 	it "#new is only accessible by an admin" do
 		session[:user_id] = admin.id

@@ -1,13 +1,13 @@
 require 'rails_helper'
 
-RSpec.describe EmailsController, type: :controller do
-	let!(:admin) {User.create!(type: :Admin, username: "Admin", password: 'testadmin')}
-	let!(:client_manager) { User.create!(type: :ClientManager, username: "Client", password: "testmanager") }
-	let!(:wrong_client_manager) { User.create!(type: :ClientManager, username: "WrongClient", password: "testmanager") }
+RSpec.describe UserEmailsController, type: :controller do
+	let!(:admin) {User.create!(type: :Admin, email: "admin@admin.com", password: 'testadmin')}
+	let!(:client_manager) { User.create!(type: :ClientManager, email: "client@client.com", password: "testmanager") }
+	let!(:wrong_client_manager) { User.create!(type: :ClientManager, email: "wrongclient@wrongclient.com", password: "testmanager") }
 	let!(:client) {Client.create!(admin_id: admin.id, client_manager_id: client_manager.id, client_label: "Fax Number Test Client")}
 	let!(:fax_number) { FaxNumber.create!(fax_number: '12248675309', fax_number_label: "Fake Testing Number1", client_id: client.id) }
 	let!(:fax_number2) { FaxNumber.create!(fax_number: '12248675310', fax_number_label: "Fake Testing Number2", client_id: client.id) }
-	let!(:email) { Email.new(caller_id_number: fax_number.fax_number, client_id: client.id, email: "test@aol.com") }
+	let!(:user_email) { UserEmail.new(caller_id_number: fax_number.fax_number, client_id: client.id, email_address: "test@aol.com") }
 
 	describe "when logged in as the Client object's client_manager or an Admin" do
 		# it "#new, only the client_manager or admin can reach the new email form" do

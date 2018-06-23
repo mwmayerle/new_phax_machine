@@ -1,5 +1,6 @@
 module SessionsHelper
-		# authorized? accepts an object and an attribute(should be an id) to compare against the current_user's id
+	
+	# authorized? accepts an object and an attribute(should be an id) to compare against the current_user's id
 	def authorized?(input_object, attribute)
 		return false if current_user.nil?
 		current_user.id == input_object[attribute].to_i || is_admin?
@@ -17,7 +18,14 @@ module SessionsHelper
 
 	def verify_is_admin
 		if !is_admin?
-			flash[:alert] = "Permission denied."
+			flash[:alert] = ApplicationController::DENIED
+			redirect_to root_path
+		end
+	end
+
+	def verify_is_client_manager_or_admin
+		if !is_client_manager?
+			flash[:alert] = ApplicationController::DENIED
 			redirect_to root_path
 		end
 	end
