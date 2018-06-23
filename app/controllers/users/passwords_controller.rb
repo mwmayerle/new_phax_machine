@@ -33,9 +33,9 @@ class Users::PasswordsController < Devise::PasswordsController
       	if params[:user][:new_user]
       		flash[:notice] = "Welcome to Phax Machine #{resource.email}. You have been logged in."
       	else
-        	flash[:notice] = resource.active_for_authentication? ? :updated : :updated_not_active
+        	flash_message = resource.active_for_authentication? ? :updated : :updated_not_active
+        	set_flash_message!(:notice, flash_message)
         end
-        # set_flash_message!(:notice, flash_message)
         sign_in(resource_name, resource)
       else
         set_flash_message!(:notice, :updated_not_active)

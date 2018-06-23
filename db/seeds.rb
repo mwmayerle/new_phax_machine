@@ -6,6 +6,9 @@ fakers = Client.create!(client_label: "Fake Number Client", admin_id: admin.id)
 phaxio_manager = User.create!(type: :ClientManager, email: "manager@phaxio.org", password: "mattmatt", client_id: phaxio.id)
 fake_manager = User.create!(type: :ClientManager, email: "manager@fake.com", password: "mattmatt", client_id: fakers.id)
 
+phaxio.update(client_manager_id: phaxio_manager.id)
+fakers.update(client_manager_id: fake_manager.id)
+
 UserEmail.create!(email_address: 'tom@tom.com', user_id: admin.id)
 UserEmail.create!(email_address: 'manager@fake.com', user_id: fake_manager.id, client_id: fakers.id)
 UserEmail.create!(email_address: 'manager@phaxio.org', user_id: phaxio_manager.id, client_id: phaxio.id)
