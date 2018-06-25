@@ -5,7 +5,7 @@ class UserEmail < ApplicationRecord
 
 	# has_one :admin, through: :client
 	has_one :client_manager, through: :client
-	has_one :user
+	belongs_to :user
 
 	has_many :fax_number_user_emails
 	has_many :fax_numbers, through: :fax_number_user_emails

@@ -20,6 +20,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
     if resource.persisted?
     	client = Client.find(resource.client_id)
     	client.update(client_manager_id: resource.id)
+    	UserEmail.create(email_address: sign_up_params[:email], client_id: client.id, user_id: resource.id)
       if resource.active_for_authentication?
         flash[:notice] = "#{resource.email} has been invited."
       else

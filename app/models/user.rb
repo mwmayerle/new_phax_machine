@@ -14,7 +14,7 @@ class User < ApplicationRecord
 	attr_readonly :type
 
 	belongs_to :client, optional: true
-	belongs_to :user_email, optional: true
+	has_one :user_email
 
 	# has_one :admin, through: :client
 	has_one :client_manager, through: :client

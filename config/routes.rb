@@ -12,6 +12,7 @@ Rails.application.routes.draw do
 	  get "/users/password/set_new_user_password", to: "users/passwords#set_new_user_password"
 	end
 
+	resources :faxes
   resources :users, only: [:index, :show, :create]
   resources :user_emails
 	resources :clients
