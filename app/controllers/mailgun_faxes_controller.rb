@@ -34,7 +34,7 @@ class MailgunFaxesController < ApplicationController
 	def fax_sent
 		puts "FAX_SENT MAILGUN CONTROLLER METHOD"
 		@fax = JSON.parse(params['fax'])
-		email_address = UserEmail.find_by(fax_tag: @fax['tags']['sender_email_fax_tag'])
+		email_addresses = UserEmail.find_by(fax_tag: @fax['tags']['sender_email_fax_tag']).email_address
 
     if @fax["status"] == "success"
     	email_subject = "Your fax was sent successfully"
@@ -42,7 +42,7 @@ class MailgunFaxesController < ApplicationController
     	@fax["most_common_error"] = Fax.most_common_error(@fax)
     	email_subject = "Your fax failed because: #{@fax["most_common_error"]}"
     end
-		MailgunMailer.fax_email(email_address, email_subject, @fax).deliver_now
+		MailgunMailer.fax_email(email_addresses, email_subject, @fax).deliver_now
 	end
 
 	# POST /mailgun
