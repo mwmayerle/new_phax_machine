@@ -41,7 +41,7 @@ class MailgunFaxesController < ApplicationController
 		puts "FAX_SENT MAILGUN CONTROLLER METHOD"
 		@fax = JSON.parse(mailgun_params)
 		p @fax
-		
+
 		# MailgunMailer.fax_sent(@sender, @client).deliver_now
 		# @fax = JSON.parse params['fax']
   #   fax_tag = @fax['tags']['user']
@@ -102,7 +102,7 @@ class MailgunFaxesController < ApplicationController
 		def mailgun_params
 			params.require(:fax).permit(:id, :num_pages, :cost, :direction, :status, :is_test, :requested_at, :completed_at, { recipients:
 				mailgun_recipient_params}, { tags: mailgun_tag_params },  
-			})
+			)
 		end
 
 		def mailgun_recipient_params
