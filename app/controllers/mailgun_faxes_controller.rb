@@ -6,35 +6,14 @@ class MailgunFaxesController < ApplicationController
 		puts "FAX_RECEIVED MAILGUN CONTROLLER METHOD"
 		p "==============================================================================="
 		@fax = JSON.parse(params['fax'])
-		p "======"
-		p "@fax"
-		p @fax
-		p "======"
-		p "recipient_number"
     recipient_number = Phonelib.parse(@fax['to_number']).e164
-    p recipient_number
-    p "======"
-    p "fax_number object"
     fax_number = FaxNumber.find_by(fax_number: recipient_number)
-    p fax_number
-    p "======"
-    p "fax_num_user_emails obj"
-    emails = FaxNumberUserEmail.where(fax_number_id: fax_number.id)
-    p emails
-    p "======"
-    p "email objects"
-    emails.each { |lol| p lol.user_email.email_address}
-  #   begin
-  #     user_id = db[:users].where(fax_number: recipient_number).first[:id]
-  #     email_addresses = db[:user_emails].where(user_id: user_id).all.map { |user_email| user_email[:email] }
-  #   ensure
-  #     db.disconnect
-  #   end
+    email_addresses = FaxNumberUserEmail.where(fax_number_id: fax_number.id).map { |fax_num_email_obj| fax_num_email_obj.email_address }
 
-  #   fax_from = @fax['from_number']
-  #   fax_file_name = params['filename']['filename']
-  #   fax_file_contents = params['filename']['tempfile'].read
-  #   email_subject = "Fax received from #{fax_from}"
+    fax_from = @fax['from_number']
+    # fax_file_name = params['filename']['filename']
+    # fax_file_contents = params['filename']['tempfile'].read
+    email_subject = "Fax received from #{fax_from}"
 
   #   Pony.mail(
   #     to: email_addresses,
@@ -47,14 +26,14 @@ class MailgunFaxesController < ApplicationController
   #     via: :smtp,
   #     via_options: smtp_options
   #   )
-		# MailgunMailer.fax_email(@sender, @client).deliver_now
+		MailgunMailer.fax_email(email_addresses, email_subject, @fax).deliver_now
 	end
 
 	# POST /fax_sent: email sent out to the user_emails associated w/a fax number that sent a fax
 	def fax_sent
 		puts "FAX_SENT MAILGUN CONTROLLER METHOD"
 		@fax = JSON.parse(params['fax'])
-		fax_sender = UserEmail.find_by(fax_tag: @fax['tags']['sender_email_fax_tag'])
+		email_address = UserEmail.find_by(fax_tag: @fax['tags']['sender_email_fax_tag'])
 
     if @fax["status"] == "success"
     	email_subject = "Your fax was sent successfully"
@@ -62,7 +41,7 @@ class MailgunFaxesController < ApplicationController
     	@fax["most_common_error"] = Fax.most_common_error(@fax)
     	email_subject = "Your fax failed because: #{@fax["most_common_error"]}"
     end
-		MailgunMailer.fax_email(fax_sender, email_subject, @fax).deliver_now
+		MailgunMailer.fax_email(email_address, email_subject, @fax).deliver_now
 	end
 
 	# POST /mailgun
