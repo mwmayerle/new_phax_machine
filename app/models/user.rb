@@ -25,7 +25,7 @@ class User < ApplicationRecord
 	validates :client_id, presence: true, numericality: { integer_only: true }, if: :is_generic_user?
 	validates :situational, length: { maximum: 9, allow_blank: true }
 
-	before_validation :ensure_user_type
+	before_validation :ensure_user_type, :generate_fax_tag
 
 	before_validation :generate_temporary_password, on: :create
 

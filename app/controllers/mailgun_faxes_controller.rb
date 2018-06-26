@@ -40,35 +40,16 @@ class MailgunFaxesController < ApplicationController
 	def fax_sent
 		puts "FAX_SENT MAILGUN CONTROLLER METHOD"
 		@fax = JSON.parse(params['fax'])
-		tags = @fax['tags'].keys
 		p @fax
-		p tags
+		fax_sender = UserEmail.find_by(fax_tag: @fax['tags']['sender_email_fax_tag']
 
-		# MailgunMailer.fax_sent(@sender, @client).deliver_now
-		# @fax = JSON.parse params['fax']
-  #   fax_tag = @fax['tags']['user']
-  #   begin
-  #     user_id = db[:users].where(fax_tag: fax_tag).first[:id]
-  #     email_addresses = db[:user_emails].where(user_id: user_id).all.map { |user_email| user_email[:email] }
-  #   ensure
-  #     db.disconnect
-  #   end
-
-  #   if @fax["status"] == "success"
-  #   	email_subject = "Your fax was sent successfully"
-  #   else
-  #   	@fax["most_common_error"] = most_common_error(@fax)
-  #   	email_subject = "Your fax failed because: #{@fax["most_common_error"]}"
-  #   end
-
-  #   Pony.mail(
-  #     to: email_addresses,
-  #     from: smtp_from_address,
-  #     subject: email_subject,
-  #     html_body: erb(:fax_email, layout: false),
-  #     via: :smtp,
-  #     via_options: smtp_options
-  #   )
+    if @fax["status"] == "success"
+    	email_subject = "Your fax was sent successfully"
+    else
+    	@fax["most_common_error"] = Fax.most_common_error(@fax)
+    	email_subject = "Your fax failed because: #{@fax["most_common_error"]}"
+    end
+		MailgunMailer.fax_sent(fax_sender, email_subject, @fax).deliver_now
 	end
 
 	# POST /mailgun

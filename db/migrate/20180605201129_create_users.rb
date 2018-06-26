@@ -5,6 +5,7 @@ class CreateUsers < ActiveRecord::Migration[5.2]
       t.string  :email, null: false, default: ""
       t.string  :type, null: false
       t.string  :situational
+      t.string  :fax_tag
 
       t.timestamps
     end
