@@ -9,7 +9,7 @@ class MailgunFaxesController < ApplicationController
     p recipient_number = Phonelib.parse(@fax['to_number']).e164
     p fax_number = FaxNumber.find_by(fax_number: recipient_number)
     p emails = FaxNumberUserEmail.where(fax_number_id: fax_number.id)
-    email.each { |lol| puts lol.user_email.email_address}
+    emails.each { |lol| puts lol.user_email.email_address}
   #   begin
   #     user_id = db[:users].where(fax_number: recipient_number).first[:id]
   #     email_addresses = db[:user_emails].where(user_id: user_id).all.map { |user_email| user_email[:email] }
