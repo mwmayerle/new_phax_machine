@@ -1,6 +1,6 @@
 class Fax
-
-	private
+	
+	protected
 		class << self
 			def set_phaxio_creds
 				Phaxio.api_key = ENV.fetch('PHAXIO_API_KEY')

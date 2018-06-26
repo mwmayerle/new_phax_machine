@@ -11,14 +11,16 @@ class FaxesController < ApplicationController
 
 	# POST for sending a fax via the internal view
 	def create(attached_files = [])
-		# TODO 
-		fax_params[:files].each { |file_in_params| attached_files << file_in_params[1].tempfile } # No .map() for ActionController params...
+		fax_params[:files].each { |file_in_params| attached_files << file_in_params[1].tempfile } # No .map() for ActionCont. params
 		api_response = Phaxio::Fax.create(
 			to: fax_params[:to],
-			tag: { sender_fax_tag: current_user.fax_tag, sender_client_fax_tag: current_user.client.fax_tag },
 			file: attached_files,
+			caller_id: current_user.user_email.caller_id_number,
+			tag: {
+				sender_client_fax_tag: current_user.client.fax_tag,
+				sender_fax_tag: current_user.user_email.fax_tag,
+			},
 		)
-		p api_response
 	end
 
 	def show

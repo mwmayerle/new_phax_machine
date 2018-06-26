@@ -6,6 +6,7 @@ class ClientsController < ApplicationController
 	before_action :get_unallocated_numbers, only: [:index, :new, :edit]
 
 	def index
+		FaxNumber.format_and_retrieve_fax_numbers_from_api if FaxNumber.first.nil?
 		@clients = Client.all
 	end
 

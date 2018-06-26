@@ -4,7 +4,7 @@ class ApplicationController < ActionController::Base
 	DENIED = "Permission denied."
 
   protected
-	def configure_permitted_parameters
-    devise_parameter_sanitizer.permit(:sign_up, keys: [:client_id, :email, :id, :type])
-  end
+		def configure_permitted_parameters
+	    devise_parameter_sanitizer.permit(:sign_up, keys: [:client_id, :email, :id, :type, :situational])
+	  end
 end
