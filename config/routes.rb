@@ -22,8 +22,8 @@ Rails.application.routes.draw do
 
   post "/users/invite_and_create_client_manager", to: "users#invite_and_create_client_manager"
 
-  post "/fax_received", to: "mailgun_faxes_controller#fax_received"
-  post "/fax_sent", to: "mailgun_faxes_controller#fax_sent"
-  post "/mailgun", to: "mailgun_faxes_controller#mailgun"
+  post "/fax_received", to: "mailgun_faxes#fax_received"
+  post "/fax_sent", to: "mailgun_faxes#fax_sent"
+  post "/mailgun", to: "mailgun_faxes#mailgun"
 end
 
