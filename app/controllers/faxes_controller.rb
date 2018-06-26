@@ -19,13 +19,11 @@ class FaxesController < ApplicationController
 			caller_id: current_user.user_email.caller_id_number,
 			tag: {
 				sender_client_fax_tag: current_user.client.fax_tag,
-				sender_fax_tag: current_user.user_email.fax_tag,
+				sender_email_fax_tag: current_user.user_email.fax_tag,
 			},
 		)
 		api_response = Phaxio::Fax.get(sent_fax_object.get.id)
 		flash_message_type = api_response.status == "queued" ? :notice : :alert
-		puts "Output for sending fax via in-app form"
-		p api_response
 		flash[flash_message_type] = api_response.status
 		redirect_to new_fax_path
 	end
