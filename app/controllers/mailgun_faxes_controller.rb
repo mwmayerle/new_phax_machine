@@ -9,7 +9,7 @@ class MailgunFaxesController < ApplicationController
     recipient_number = Phonelib.parse(@fax['to_number']).e164
     fax_number = FaxNumber.find_by(fax_number: recipient_number)
     fax_num_user_email_objs = FaxNumberUserEmail.where(fax_number_id: fax_number.id)
-    email_addresses = fax_number_user_email_objs.map { |fax_num_email_obj| fax_num_email_obj.user_email.email_address }
+    email_addresses = fax_num_user_email_objs.map { |fax_num_email_obj| fax_num_email_obj.user_email.email_address }
 
     fax_from = @fax['from_number']
     # fax_file_name = params['filename']['filename']
