@@ -1,10 +1,11 @@
 class MailgunMailer < ApplicationMailer
+	default from: ENV["SMTP_FROM"]
+
 	def fax_sent(sender, client)
   	@sender = sender
   	@client = client
   	mail(
   		to: @sender.email_address,
-  		from: ENV["FROM_EMAIL"],
   		template: 'fax_sent',
   	)
   end
