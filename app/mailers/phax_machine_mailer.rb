@@ -9,16 +9,4 @@ class PhaxMachineMailer < Devise::Mailer
     @token = token
     devise_mail(record, :welcome_invite, opts)
   end
-
-  def fax_sent(sender, client)
-  	@sender = sender
-  	@client = client
-  	devise_mail(
-  		to: @sender.email_address,
-      subject: 'you done got a fax',
-    )
-  end
-
-  def fax_received
-  end
 end
