@@ -10,6 +10,11 @@ class MailgunMailer < ApplicationMailer
   	)
   end
 
-  def fax_received
+  def fax_received(sender, client)
+  	@sender = sender
+  	@client = client
+  	mail(
+  		to: @sender.email_address,
+  	)
   end
 end

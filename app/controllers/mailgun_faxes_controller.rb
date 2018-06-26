@@ -6,7 +6,9 @@ class MailgunFaxesController < ApplicationController
 		puts "FAX_RECEIVED MAILGUN CONTROLLER METHOD"
 		p "==============================================================================="
 		p params
-		MailgunMailer.fax_received_email.deliver_now
+		@sender = UserEmail.find_by(params["fax"]["tags"]["sender_fax_tag"])
+		@client = Client.find_by(params["fax"]["tags"]["sender_client_fax_tag"])
+		MailgunMailer.fax_received_email(@sender, @client).deliver_now
 		# fax = JSON.parse params['fax']
   #   recipient_number = Phonelib.parse(@fax['to_number']).e164
   #   begin
