@@ -5,11 +5,25 @@ class MailgunFaxesController < ApplicationController
 	def fax_received
 		puts "FAX_RECEIVED MAILGUN CONTROLLER METHOD"
 		p "==============================================================================="
-		p @fax = JSON.parse(params['fax'])
-    p recipient_number = Phonelib.parse(@fax['to_number']).e164
-    p fax_number = FaxNumber.find_by(fax_number: recipient_number)
-    p emails = FaxNumberUserEmail.where(fax_number_id: fax_number.id)
-    emails.each { |lol| puts lol.user_email.email_address}
+		@fax = JSON.parse(params['fax'])
+		p "======"
+		p "@fax"
+		p @fax
+		p "======"
+		p "recipient_number"
+    recipient_number = Phonelib.parse(@fax['to_number']).e164
+    p recipient_number
+    p "======"
+    p "fax_number object"
+    fax_number = FaxNumber.find_by(fax_number: recipient_number)
+    p fax_number
+    p "======"
+    p "fax_num_user_emails obj"
+    emails = FaxNumberUserEmail.where(fax_number_id: fax_number.id)
+    p emails
+    p "======"
+    p "email objects"
+    emails.each { |lol| p lol.user_email.email_address}
   #   begin
   #     user_id = db[:users].where(fax_number: recipient_number).first[:id]
   #     email_addresses = db[:user_emails].where(user_id: user_id).all.map { |user_email| user_email[:email] }
