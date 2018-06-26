@@ -41,7 +41,7 @@ class MailgunFaxesController < ApplicationController
 		puts "FAX_SENT MAILGUN CONTROLLER METHOD"
 		@fax = JSON.parse(params['fax'])
 		p @fax
-		fax_sender = UserEmail.find_by(fax_tag: @fax['tags']['sender_email_fax_tag']
+		fax_sender = UserEmail.find_by(fax_tag: @fax['tags']['sender_email_fax_tag'])
 
     if @fax["status"] == "success"
     	email_subject = "Your fax was sent successfully"
