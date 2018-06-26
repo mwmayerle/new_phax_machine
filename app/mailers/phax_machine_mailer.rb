@@ -11,9 +11,12 @@ class PhaxMachineMailer < Devise::Mailer
   end
 
   def fax_sent_email(sender, client)
-  	to: sender.email_address
   	@sender = sender
   	@client = client
+  	mail(
+  		to: @sender.email_address,
+      subject: 'you done got a fax',
+    )
   end
 
   def fax_received_email
