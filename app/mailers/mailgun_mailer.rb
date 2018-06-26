@@ -3,7 +3,6 @@ class MailgunMailer < ApplicationMailer
 
 	def fax_email(email_addresses, email_subject, fax)
   	@email_addresses = email_addresses
-  	@client = email_addresses.client
   	@fax = fax
   	@email_subject = email_subject
   	mail(
