@@ -7,7 +7,7 @@ class MailgunMailer < ApplicationMailer
   	@fax = fax
   	@email_subject = email_subject
   	mail(
-  		to: @sender.email_address,
+  		to: @fax_sender.email_address,
   		subject: @email_subject,
   		template: 'fax_sent',
   	)
