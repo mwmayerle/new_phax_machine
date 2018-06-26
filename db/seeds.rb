@@ -1,1 +1,1 @@
-admin = User.create!(type: :Admin, email: "mwmayerle@gmail.com")
+admin = User.create!(type: :Admin, email: ENV["ADMIN_EMAIL"])
