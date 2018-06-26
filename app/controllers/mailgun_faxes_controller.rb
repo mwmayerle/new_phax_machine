@@ -8,7 +8,7 @@ class MailgunFaxesController < ApplicationController
 		p params
 		@sender = UserEmail.find_by(params["fax"]["tags"]["sender_fax_tag"])
 		@client = Client.find_by(params["fax"]["tags"]["sender_client_fax_tag"])
-		MailgunMailer.fax_received(@sender, @client)
+		MailgunMailer.fax_received(@sender, @client).deliver_now
 		# fax = JSON.parse params['fax']
   #   recipient_number = Phonelib.parse(@fax['to_number']).e164
   #   begin
@@ -43,7 +43,7 @@ class MailgunFaxesController < ApplicationController
 		p params
 		@sender = UserEmail.find_by(params["fax"]["tags"]["sender_fax_tag"])
 		@client = Client.find_by(params["fax"]["tags"]["sender_client_fax_tag"])
-		MailgunMailer.fax_sent(@sender, @client)
+		MailgunMailer.fax_sent(@sender, @client).deliver_now
 		# @fax = JSON.parse params['fax']
   #   fax_tag = @fax['tags']['user']
   #   begin
