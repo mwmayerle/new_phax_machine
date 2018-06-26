@@ -1,4 +1,5 @@
 class MailgunFaxesController < ApplicationController
+	skip_before_action :verify_authenticity_token, only: [:fax_received, :fax_sent, :mailgun]
 
 	# POST /fax_received: email sent out to the user_emails associated w/a fax number that received a fax
 	def fax_received
