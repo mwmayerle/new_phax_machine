@@ -39,7 +39,7 @@ class MailgunFaxesController < ApplicationController
 	# POST /fax_sent: email sent out to the user_emails associated w/a fax number that sent a fax
 	def fax_sent
 		puts "FAX_SENT MAILGUN CONTROLLER METHOD"
-		@fax = JSON.parse(params)
+		@fax = JSON.parse(params['fax'])
 		tags = @fax['tags'].keys
 		p @fax
 		p tags
