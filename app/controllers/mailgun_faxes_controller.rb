@@ -41,7 +41,7 @@ class MailgunFaxesController < ApplicationController
 		p params
 		@sender = UserEmail.find_by(params["fax"]["tags"]["sender_fax_tag"])
 		@client = Client.find_by(params["fax"]["tags"]["sender_client_fax_tag"])
-		PhaxMachineMailer.fax_sent(@sender, @client).deliver_now
+		puts PhaxMachineMailer.fax_sent(@sender, @client).deliver_now
 		# @fax = JSON.parse params['fax']
   #   fax_tag = @fax['tags']['user']
   #   begin
@@ -99,8 +99,6 @@ class MailgunFaxesController < ApplicationController
 
 	private
 		def mailgun_params
-			params.require(:fax).permit(:id, :num_pages, :cost, :direction, :status, :is_test, :requested_at, :completed_at, { recipients: {} }, )
+			params.require(:fax).permit!
 		end
 end
-
-{"fax"=>"{\"id\":76230670,\"num_pages\":1,\"cost\":7,\"direction\":\"sent\",\"status\":\"success\",\"is_test\":true,\"requested_at\":1530027390,\"completed_at\":1530027393,\"recipients\":[{\"number\":\"+12096904545\",\"status\":\"success\",\"bitrate\":\"14400\",\"resolution\":\"7700\",\"completed_at\":1530027393}],\"tags\":{\"sender_client_fax_tag\":\"6c4ae3b9-ddf9-445f-809c-6add4eaf48e5\",\"sender_fax_tag\":\"ef0e09a0-d02f-46b9-99d0-9afeebb565e1\"}}", "direction"=>"sent", "is_test"=>"true", "success"=>"true", "controller"=>"mailgun_faxes", "action"=>"fax_sent"}

@@ -14,6 +14,7 @@ class PhaxMachineMailer < Devise::Mailer
   	@sender = sender
   	@client = client
   	devise_mail(
+  		current_user,
   		to: @sender.email_address,
       subject: 'you done got a fax',
     )
