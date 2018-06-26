@@ -4,7 +4,7 @@ class MailgunMailer < ApplicationMailer
   	@client = client
   	
   	mail(
-  		to: @sender.email_address
+  		to: @sender.email_address,
   		from: ENV["FROM_EMAIL"]
   	)
   end
