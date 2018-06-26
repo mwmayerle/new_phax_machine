@@ -14,16 +14,18 @@ class User < ApplicationRecord
 	attr_readonly :type
 
 	belongs_to :client, optional: true
-	belongs_to :user_email, optional: true
+	has_one :user_email
 
 	# has_one :admin, through: :client
 	has_one :client_manager, through: :client
 
-	validates :email, length: { in: 5..60 }, uniqueness: { case_senstive: false }
-	validates :fax_tag, length: { maximum: 60 }, uniqueness: { case_sensitve: false }
-	validates :client_id, presence: true, numericality: { integer_only: true }, if: :is_generic_user?
+	belongs_to :fax_number_user_email, optional: true
 
-	before_validation :generate_fax_tag, :ensure_user_type
+	validates :email, length: { in: 5..60 }, uniqueness: { case_senstive: false }
+	validates :client_id, presence: true, numericality: { integer_only: true }, if: :is_generic_user?
+	validates :situational, length: { maximum: 9, allow_blank: true }
+
+	before_validation :ensure_user_type
 
 	before_validation :generate_temporary_password, on: :create
 

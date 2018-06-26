@@ -10,7 +10,8 @@ class FaxNumbersController < ApplicationController
 	end
 
 	def edit
-		current_user.type == User::CLIENT_MANAGER ? @clients = nil : @clients = Client.all
+		@user = User.new
+		is_admin? ? @clients = Client.all : @clients = nil
 		@fax_number.unused_client_emails = FaxNumber.get_unused_client_emails(@fax_number)
 	end
 

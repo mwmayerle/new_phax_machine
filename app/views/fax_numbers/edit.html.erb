@@ -1,7 +1,7 @@
 <h1>Edit Fax Number (<%= @fax_number.fax_number%>)</h1>
 <br>
 <div class="row">
-	<div class="col-lg-6">
+	<div class="col-lg-5">
 		<%= form_for(:fax_number, url: "/fax_numbers/#{@fax_number.id}", method: :put) do |f| %>
 			<%= f.hidden_field :id, :value => @fax_number.id %>
 			<% if is_admin? %>
@@ -54,7 +54,9 @@
 									</td>
 				    			<td class="text-center"><%= user_email.email_address %></td>
 				    			<td class="text-center"><%= user_email.caller_id_number %></td>
-				    			<td class="text-center"><%= link_to "Edit", edit_user_email_path(user_email), class: "btn btn-sm btn-success" %></td>
+				    			<td class="text-center">
+				    				<%= link_to "Edit", edit_user_email_path(user_email), class: "btn btn-sm btn-success" %>
+				    			</td>
 								</tr>
 						<% end %>
 						</tbody>
@@ -90,6 +92,23 @@
 			<div class="form-group">
 				<%= f.submit "Save Changes", class: "btn btn-primary" %>
 			</div>
+		<% end %>
+
+
+	</div>
+	<div class="col-lg-5">
+		<% if @fax_number.user_emails.present? %>
+			<% @fax_number.user_emails.each do |user_email| %>
+	  		<% if user_email.user_id.nil? %>
+					<%= user_email.email_address %>
+					<%= form_for @user, url: "/users", method: :post do |f| %>
+						<%= f.hidden_field :client_id, value: "#{user_email.client_id}" %>
+						<%= f.hidden_field :email, value: "#{user_email.email_address}" %>
+						<%= f.hidden_field :situational, value: "#{@fax_number.id}" %>
+						<%= f.submit "Invite User", class: "btn btn-primary" %>
+					<% end %>
+				<% end %>
+			<% end %>
 		<% end %>
 	</div>
 	<div class="col-lg-2">

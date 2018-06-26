@@ -41,7 +41,7 @@ gem 'jquery-rails'
 gem 'bootstrap'
 
 # Telephony/faxing goodies
-gem 'phaxio'
+gem 'phaxio', github: 'phaxio/phaxio-ruby'
 gem 'phonelib'
 
 # Reduces boot times through caching; required in config/boot.rb

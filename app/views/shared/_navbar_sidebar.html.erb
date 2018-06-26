@@ -16,6 +16,9 @@
       	<li class="nav-item">
       		<%= link_to "My Profile", user_path(current_user.id), class: "nav-link" %>
 	      </li>
+	      <li class="nav-item">
+	      	<%= link_to "Send Fax", new_fax_path, class: "nav-link" %>
+	      </li>
 	      <% if is_client_manager? && !is_admin? %>
 	      	<li class="nav-item">
       			<%= link_to "Client Profile", client_path(current_user.client.id), class: "nav-link" %>

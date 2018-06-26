@@ -22,11 +22,6 @@ class FaxNumber < ApplicationRecord
 	  end
 
 		class << self
-			def set_phaxio_creds
-				Phaxio.api_key = ENV.fetch('PHAXIO_API_KEY')
-				Phaxio.api_secret = ENV.fetch('PHAXIO_API_SECRET')
-			end
-
 			def format_cost(cost) # this will fail if an integer with many preceding zero's (000020) is used
 				"$".concat("%.2f" % (cost / 100.00))
 			end
@@ -36,13 +31,12 @@ class FaxNumber < ApplicationRecord
 			end
 
 			def format_and_retrieve_fax_numbers_from_api
-				set_phaxio_creds
+				Fax.set_phaxio_creds
 				api_response = Phaxio::PhoneNumber.list
 				format_fax_numbers(api_response.raw_data)
 			end
 
-			def format_fax_numbers(fax_numbers_from_api)
-				phaxio_numbers = {}
+			def format_fax_numbers(fax_numbers_from_api, phaxio_numbers = {})
 				fax_numbers_from_api.each do |api_fax_number|
 					phaxio_numbers[api_fax_number[:phone_number]] = {}
 					phaxio_numbers[api_fax_number[:phone_number]][:city] = api_fax_number[:city]

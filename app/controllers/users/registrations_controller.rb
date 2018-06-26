@@ -16,10 +16,25 @@ class Users::RegistrationsController < Devise::RegistrationsController
   def create
     build_resource(sign_up_params)
     resource.save
+
     yield resource if block_given?
     if resource.persisted?
+	    user = User.find(resource.id)
     	client = Client.find(resource.client_id)
-    	client.update(client_manager_id: resource.id)
+
+    	if resource.type == User::CLIENT_MANAGER
+	    	client.update(client_manager_id: user.id)
+	    	new_email = UserEmail.create(
+	    		email_address: user.email,
+	    		client_id: client.id,
+	    		user_id: user.id,
+	    	)
+	    else
+    		fax_number = FaxNumber.find(resource.situational.to_i)
+	    	emails = UserEmail.where(email_address: user.email).update(user_id: user.id)
+	      resource.update_attributes(situational: nil)
+	    end
+	    
       if resource.active_for_authentication?
         flash[:notice] = "#{resource.email} has been invited."
       else
@@ -30,7 +45,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
       clean_up_passwords resource
       set_minimum_password_length
     end
-    is_admin? ? redirect_to(clients_path) : redirect_to(client_path(current_user.client))
+    is_admin? ? redirect_to(clients_path) : redirect_to(edit_fax_number_path(id: fax_number.id))
   end
 
   # GET /resource/edit
