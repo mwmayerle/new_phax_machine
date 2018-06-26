@@ -10,7 +10,10 @@ class PhaxMachineMailer < Devise::Mailer
     devise_mail(record, :welcome_invite, opts)
   end
 
-  def fax_sent_email
+  def fax_sent_email(sender, client)
+  	to: sender.email_address
+  	@sender = sender
+  	@client = client
   end
 
   def fax_received_email
