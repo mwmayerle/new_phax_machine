@@ -101,7 +101,7 @@ class MailgunFaxesController < ApplicationController
 
 	private
 		def mailgun_params
-			params.require('fax').permit('id', 'num_pages', 'cost', 'direction', 'status', 'is_test', 'requested_at', 'completed_at', { 'recipients'
-				['number', 'status', 'bitrate', 'resolution', 'completed_at']}, { 'tags' ['sender_client_fax_tag', 'sender_fax_tag'] })
+			params.require('fax').permit('id', 'num_pages', 'cost', 'direction', 'status', 'is_test', 'requested_at', 'completed_at', { 'recipients':
+				['number', 'status', 'bitrate', 'resolution', 'completed_at']}, { 'tags': ['sender_client_fax_tag', 'sender_fax_tag'] })
 		end
 end
