@@ -101,14 +101,10 @@ class MailgunFaxesController < ApplicationController
 	private
 		def mailgun_params
 			params.require(:fax).permit(:id, :num_pages, :cost, :direction, :status, :is_test, :requested_at, :completed_at, { recipients:
-				mailgun_recipient_params}, { tags: mailgun_tag_params },  
+				[:number, :status, :bitrate, :resolution, :completed_at]}, { tags: mailgun_tag_params },  
 			)
 		end
-
-		def mailgun_recipient_params
-			params.require(:recipients).permit(:number, :status, :bitrate, :resolution, :completed_at)
-		end
-
+		
 		def mailgun_tag_params
 			params.require(:tags).permit(:sender_client_fax_tag, :sender_fax_tag)
 		end
