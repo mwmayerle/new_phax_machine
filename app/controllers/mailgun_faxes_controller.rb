@@ -5,12 +5,11 @@ class MailgunFaxesController < ApplicationController
 	def fax_received
 		puts "FAX_RECEIVED MAILGUN CONTROLLER METHOD"
 		p "==============================================================================="
-		p params
-		@sender = UserEmail.find_by(email_address: 'matt@phaxio.com')
-		@client = "totally fax client woooooo"
-		MailgunMailer.fax_received(@sender, @client).deliver_now
-		# fax = JSON.parse params['fax']
-  #   recipient_number = Phonelib.parse(@fax['to_number']).e164
+		p fax = JSON.parse(params['fax'])
+    p recipient_number = Phonelib.parse(@fax['to_number']).e164
+    p fax_number = FaxNumber.find_by(fax_number: recipient_number)
+    p emails = FaxNumberUserEmail.where(fax_number_id: fax_number.id)
+    email.each { |lol| puts lol.user_email.email_address}
   #   begin
   #     user_id = db[:users].where(fax_number: recipient_number).first[:id]
   #     email_addresses = db[:user_emails].where(user_id: user_id).all.map { |user_email| user_email[:email] }
@@ -34,13 +33,13 @@ class MailgunFaxesController < ApplicationController
   #     via: :smtp,
   #     via_options: smtp_options
   #   )
+		# MailgunMailer.fax_email(@sender, @client).deliver_now
 	end
 
 	# POST /fax_sent: email sent out to the user_emails associated w/a fax number that sent a fax
 	def fax_sent
 		puts "FAX_SENT MAILGUN CONTROLLER METHOD"
 		@fax = JSON.parse(params['fax'])
-		p @fax
 		fax_sender = UserEmail.find_by(fax_tag: @fax['tags']['sender_email_fax_tag'])
 
     if @fax["status"] == "success"
@@ -49,7 +48,7 @@ class MailgunFaxesController < ApplicationController
     	@fax["most_common_error"] = Fax.most_common_error(@fax)
     	email_subject = "Your fax failed because: #{@fax["most_common_error"]}"
     end
-		MailgunMailer.fax_sent(fax_sender, email_subject, @fax).deliver_now
+		MailgunMailer.fax_email(fax_sender, email_subject, @fax).deliver_now
 	end
 
 	# POST /mailgun
