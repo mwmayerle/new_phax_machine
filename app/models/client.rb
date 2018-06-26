@@ -1,7 +1,8 @@
 class Client < ApplicationRecord
+	CHARACTER_LIMIT = 36
 	include FaxTags
 
-	attr_readonly :admin_id
+	attr_readonly :admin_id, :fax_tag
 
 	belongs_to :admin, class_name: :User
 	belongs_to :client_manager, optional: true, dependent: :destroy
@@ -13,8 +14,8 @@ class Client < ApplicationRecord
 
 	validates :admin_id, presence: true, numericality: { integer_only: true }
 	validates :client_manager_id, numericality: { integer_only: true, allow_blank: true }
-	validates :client_label, uniqueness: true, length: { maximum: 32 }, presence: true
-	validates :fax_tag, uniqueness: true, length: { maximum: 60 }, presence: true
+	validates :client_label, uniqueness: true, length: { maximum: CHARACTER_LIMIT }, presence: true
+	validates :fax_tag, uniqueness: true, length: { maximum: CHARACTER_LIMIT }, presence: true
 
 	before_validation :generate_fax_tag
 	before_destroy :modify_and_delete_associated
@@ -26,11 +27,5 @@ class Client < ApplicationRecord
 			end
 			user_emails = UserEmail.where(client_id: self.id).destroy_all
 			FaxNumberUserEmail.where(user_email_id: user_emails).destroy_all
-		end
-
-		class << self
-			def new_client_token
-				SecureRandom.uuid
-			end
 		end
 end

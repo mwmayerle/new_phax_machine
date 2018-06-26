@@ -55,6 +55,7 @@ ActiveRecord::Schema.define(version: 2018_06_19_182316) do
     t.string "email", default: "", null: false
     t.string "type", null: false
     t.string "situational"
+    t.string "fax_tag"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "encrypted_password", default: "", null: false
