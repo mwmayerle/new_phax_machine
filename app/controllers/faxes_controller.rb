@@ -12,15 +12,23 @@ class FaxesController < ApplicationController
 	# POST for sending a fax via the internal view
 	def create(attached_files = [])
 		fax_params[:files].each { |file_in_params| attached_files << file_in_params[1].tempfile } # No .map() for ActionCont. params
-		api_response = Phaxio::Fax.create(
+		sent_fax_object = Phaxio::Fax.create(
 			to: fax_params[:to],
 			file: attached_files,
 			caller_id: current_user.user_email.caller_id_number,
+
+			test_fail: 'documentConversionError',
 			tag: {
 				sender_client_fax_tag: current_user.client.fax_tag,
 				sender_fax_tag: current_user.user_email.fax_tag,
 			},
 		)
+		api_response = Phaxio::Fax.get(sent_fax_object.get.id)
+		flash_message_type = api_response.status == "queued" ? :notice : :alert
+		puts "Output for sending fax via in-app form"
+		p api_response
+		flash[flash_message_type] = api_response.status
+		redirect_to new_fax_path
 	end
 
 	def show
@@ -28,6 +36,9 @@ class FaxesController < ApplicationController
 
 	# GET /download_file
 	def download_file
+		# fax_id = params["fax_id"].to_i
+  #   api_response = Phaxio.get_fax_file(id: fax_id, type: "p")
+  #   download_file(api_response)
 	end
 
 	def destroy
@@ -35,7 +46,7 @@ class FaxesController < ApplicationController
 
 	private
 		def fax_params
-			params.require(:fax).permit(:to, { files: [:file1, :file2, :file3, :file4, :file5, :file6, :file7, :file8, :file9, :file10] })
+			params.require(:fax).permit(:id, :to, { files: [:file1, :file2, :file3, :file4, :file5, :file6, :file7, :file8, :file9, :file10] })
 		end
 
 		def set_phaxio_creds

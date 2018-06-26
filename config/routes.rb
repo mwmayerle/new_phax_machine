@@ -13,6 +13,7 @@ Rails.application.routes.draw do
 	end
 
 	resources :faxes
+	resources :mailgun_faxes_controller, only: [:fax_received, :fax_sent, :mailgun]
   resources :users, only: [:index, :show, :create]
   resources :user_emails
 	resources :clients
@@ -21,5 +22,8 @@ Rails.application.routes.draw do
 
   post "/users/invite_and_create_client_manager", to: "users#invite_and_create_client_manager"
 
+  post "/fax_received", to: "mailgun_faxes_controller#fax_received"
+  post "/fax_sent", to: "mailgun_faxes_controller#fax_sent"
+  post "/mailgun", to: "mailgun_faxes_controller#mailgun"
 end
 
