@@ -41,7 +41,7 @@ class MailgunFaxesController < ApplicationController
 		p params
 		@sender = UserEmail.find_by(params["fax"]["tags"]["sender_fax_tag"])
 		@client = Client.find_by(params["fax"]["tags"]["sender_client_fax_tag"])
-		PhaxMachineMailer.fax_sent_email(@sender, @client).deliver_now
+		PhaxMachineMailer.fax_sent(@sender, @client).deliver_now
 		# @fax = JSON.parse params['fax']
   #   fax_tag = @fax['tags']['user']
   #   begin
