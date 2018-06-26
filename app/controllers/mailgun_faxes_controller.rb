@@ -39,11 +39,10 @@ class MailgunFaxesController < ApplicationController
 	# POST /fax_sent: email sent out to the user_emails associated w/a fax number that sent a fax
 	def fax_sent
 		puts "FAX_SENT MAILGUN CONTROLLER METHOD"
-		p "==============================================================================="
-		p params
-		@sender = UserEmail.find_by(params["fax"]["tags"]["sender_fax_tag"])
-		@client = Client.find_by(params["fax"]["tags"]["sender_client_fax_tag"])
-		MailgunMailer.fax_sent(@sender, @client).deliver_now
+		@fax = JSON.parse(mailgun_params)
+		p @fax
+		
+		# MailgunMailer.fax_sent(@sender, @client).deliver_now
 		# @fax = JSON.parse params['fax']
   #   fax_tag = @fax['tags']['user']
   #   begin
@@ -101,6 +100,16 @@ class MailgunFaxesController < ApplicationController
 
 	private
 		def mailgun_params
-			params.require(:fax).permit!
+			params.require(:fax).permit(:id, :num_pages, :cost, :direction, :status, :is_test, :requested_at, :completed_at, { recipients:
+				mailgun_recipient_params}, { tags: mailgun_tag_params },  
+			})
+		end
+
+		def mailgun_recipient_params
+			params.require(:recipients).permit(:number, :status, :bitrate, :resolution, :completed_at)
+		end
+
+		def mailgun_tag_params
+			params.require(:tags).permit(:sender_client_fax_tag, :sender_fax_tag)
 		end
 end
