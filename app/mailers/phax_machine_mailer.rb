@@ -11,10 +11,8 @@ class PhaxMachineMailer < Devise::Mailer
   end
 
   def fax_sent_email
-
   end
 
   def fax_received_email
-
   end
 end
