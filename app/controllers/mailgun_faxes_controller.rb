@@ -3,6 +3,8 @@ class MailgunFaxesController < ApplicationController
 	# POST /fax_received: email sent out to the user_emails associated w/a fax number that received a fax
 	def fax_received
 		puts "FAX_RECEIVED MAILGUN CONTROLLER METHOD"
+		p "==============================================================================="
+		p params
 		PhaxMachineMailer.fax_received_email.deliver_now
 		# fax = JSON.parse params['fax']
   #   recipient_number = Phonelib.parse(@fax['to_number']).e164
@@ -34,6 +36,8 @@ class MailgunFaxesController < ApplicationController
 	# POST /fax_sent: email sent out to the user_emails associated w/a fax number that sent a fax
 	def fax_sent
 		puts "FAX_SENT MAILGUN CONTROLLER METHOD"
+		p "==============================================================================="
+		p params
 		PhaxMachineMailer.fax_sent_email.deliver_now
 		# @fax = JSON.parse params['fax']
   #   fax_tag = @fax['tags']['user']
