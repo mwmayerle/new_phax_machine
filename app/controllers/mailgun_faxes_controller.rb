@@ -34,7 +34,6 @@ class MailgunFaxesController < ApplicationController
 
 	# POST /mailgun
 	def mailgun(files = [])
-		p "******************************************************************"
     return [400, "Must include a sender"] if not params['from']
     return [400, "Must include a recipient"] if not params['recipient']
 
@@ -50,9 +49,9 @@ class MailgunFaxesController < ApplicationController
 
       i += 1
      end
-    p "******************************************************************"
-    p sender = Mail::AddressList.new(params['from']).addresses.first.address
-    p files
+
+    sender = Mail::AddressList.new(params['from']).addresses.first.address
+ 		Fax.send_fax(sender, params['recipient'], files)
 	end
 end
 
