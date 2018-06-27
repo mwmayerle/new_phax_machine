@@ -13,23 +13,10 @@ class MailgunFaxesController < ApplicationController
     email_addresses = fax_num_user_email_objs.map { |fax_num_email_obj| fax_num_email_obj.user_email.email_address }
 
     fax_from = @fax['from_number']
-    p fax_file_name = params['filename']['filename']
-    p fax_file_contents = params['filename']['tempfile'].read
+    p fax_file_name = params['filename']#['filename']
+    # p fax_file_contents = params['filename']['tempfile'].read
     email_subject = "Fax received from #{fax_from}"
-    attachments = { fax_file_name => fax_file_contents }
-  #   Pony.mail(
-  #     to: email_addresses,
-  #     from: smtp_from_address,
-  #     subject: email_subject,
-  #     html_body: erb(:fax_email, layout: false),
-  #     attachments: {
-  #       fax_file_name => fax_file_contents
-  #     },
-  #     via: :smtp,
-  #     via_options: smtp_options
-  #   )
 		MailgunMailer.fax_email(email_addresses, email_subject, @fax).deliver_now
-		p mailgun_params
 	end
 
 	# POST /fax_sent: email sent out to the user_emails associated w/a fax number that sent a fax
@@ -83,4 +70,6 @@ class MailgunFaxesController < ApplicationController
 			params.require('fax').permit!({'filename': {} }, 'id', 'num_pages', 'cost', 'direction', 'status', 'is_test', 'requested_at', 'completed_at', { 'recipients':
 				['number', 'status', 'bitrate', 'resolution', 'completed_at']}, { 'tags': ['sender_client_fax_tag', 'sender_fax_tag'] })
 		end
+
+		{"fax"=>"{\"id\":76433448,\"num_pages\":1,\"cost\":7,\"direction\":\"received\",\"status\":\"success\",\"is_test\":false,\"requested_at\":1530129369,\"completed_at\":1530129367,\"from_number\":\"+18777115706\",\"to_number\":\"+12096904545\"}", "direction"=>"received", "is_test"=>"false", "success"=>"true", "filename"=>"Fax-76433448.pdf\"}
 end
