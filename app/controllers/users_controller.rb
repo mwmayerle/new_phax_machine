@@ -13,6 +13,10 @@ class UsersController < ApplicationController
 		# go to /users/registrations_controller.rb
 	# end
 
+	# def destroy
+		# go to /users/registrations_controller.rb
+	# end
+
 	private
 		def set_user
 			@user ||= User.find(params[:id])

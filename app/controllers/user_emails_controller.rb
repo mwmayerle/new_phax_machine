@@ -1,9 +1,9 @@
 class UserEmailsController < ApplicationController
 	include SessionsHelper
 
-	before_action :set_user_email, only: [:edit, :update, :destroy]
+	before_action :set_user_email, only: [:edit, :update]
 	before_action :set_fax_number, only: [:new]
-	before_action :verify_is_client_manager_or_admin, only: [:new, :create, :destroy]
+	before_action :verify_is_client_manager_or_admin, only: [:new, :create]
 
 	def new
 		if authorized?(@fax_number.client, :client_manager_id)
@@ -39,17 +39,14 @@ class UserEmailsController < ApplicationController
 
 	def update
 		if @user_email.update_attributes(user_email_params)
+			# Line below updates the User object's email attribute, which behaves like and mimics a username
+			@user_email.user.update_attributes(email: user_email_params[:email_address]) if @user_email.user
 			flash[:notice] = "Email successfully edited."
 			redirect_to client_path(@user_email.client)
 		else
 			flash[:notice] = @user_email.errors.full_messages.pop
 			redirect_to :edit
 		end
-	end
-
-	def destroy
-		@user_email.destroy ? flash[:notice] = "Email has been deleted" : flash[:alert] = @user_email.errors.full_messages.pop
-		redirect_to(client_path(@user_email.client))
 	end
 
 	private

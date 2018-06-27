@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   
   devise_scope :user do
 	  get "/users/password/set_new_user_password", to: "users/passwords#set_new_user_password"
+	  delete "/users/:id", to: "users/registrations#destroy"
 	end
 
 	resources :faxes

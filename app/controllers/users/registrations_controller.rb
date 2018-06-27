@@ -4,7 +4,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 	include SessionsHelper
   # before_action :configure_sign_up_params, only: [:create]
   # before_action :configure_account_update_params, only: [:update]
-  	before_action :verify_permissions, only: :create
+  	before_action :verify_permissions, only: [:create, :destroy]
   	prepend_before_action :require_no_authentication, only: :cancel
 
   # GET /resource/sign_up
@@ -62,9 +62,15 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # end
 
   # DELETE /resource
-  # def destroy
-  #   super
-  # end
+  def destroy
+  	resource = User.find(params[:id])
+  	client = Client.find(resource.client.id)
+  	client.update_attributes(client_manager_id: nil) if resource.type == User::CLIENT_MANAGER
+    resource.destroy
+    flash[:notice] = "User deleted"
+    yield resource if block_given?
+    is_admin? ? redirect_to(client_path(client)) : redirect_to(client_path(current_user.client))
+  end
 
   # GET /resource/cancel
   # Forces the session data which is usually expired after sign

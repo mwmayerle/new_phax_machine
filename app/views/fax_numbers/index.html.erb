@@ -26,7 +26,7 @@
 						<% if info_hash[:client] == "Unallocated" %>
 							<%= link_to info_hash[:client], clients_path %>
 						<% else %>
-							<%= link_to info_hash[:client], edit_client_path(id: info_hash[:id]) %>
+							<%= link_to info_hash[:client], edit_client_path(id: info_hash[:client_id]) %>
 						<% end %>
 					</td>
 					<td class="text-center align-middle"><%= info_hash[:fax_number_label] %></td>

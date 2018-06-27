@@ -93,14 +93,13 @@
 				<%= f.submit "Save Changes", class: "btn btn-primary" %>
 			</div>
 		<% end %>
-
-
 	</div>
+	
 	<div class="col-lg-5">
 		<% if @fax_number.user_emails.present? %>
 			<% @fax_number.user_emails.each do |user_email| %>
+				<%= user_email.email_address %>
 	  		<% if user_email.user_id.nil? %>
-					<%= user_email.email_address %>
 					<%= form_for @user, url: "/users", method: :post do |f| %>
 						<%= f.hidden_field :client_id, value: "#{user_email.client_id}" %>
 						<%= f.hidden_field :email, value: "#{user_email.email_address}" %>

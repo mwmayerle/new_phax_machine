@@ -47,3 +47,9 @@
 		</div>
 	</div>
 <% end %>
+<% if @client.users %>
+	<% @client.users.each do |user| %>
+		<%= user.email %>
+		<%= button_to "Delete User", user_path(id: user.id), method: :delete, class: "btn btn-danger" %>
+	<% end %>
+<% end %>
