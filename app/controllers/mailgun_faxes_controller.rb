@@ -4,7 +4,6 @@ class MailgunFaxesController < ApplicationController
 	# POST /fax_received: email sent out to the user_emails associated w/a fax number that received a fax
 	def fax_received
 		@fax = JSON.parse(params['fax'])
-
     recipient_number = Phonelib.parse(@fax['to_number']).e164
     fax_number = FaxNumber.find_by(fax_number: recipient_number)
 
@@ -36,26 +35,28 @@ class MailgunFaxesController < ApplicationController
 	# POST /mailgun
 	def mailgun
 		p params
+		p "==================="
+		p params[attachment-count].to_i
     return [400, "Must include a sender"] if not params['from']
     return [400, "Must include a recipient"] if not params['recipient']
 
-    files = []
-    attachmentCount = params['attachment-count'].to_i
+    # files = []
+    # attachmentCount = params['attachment-count'].to_i
 
-    i = 1
-    while i <= attachmentCount do
-      #add the file to the hash
-      outputFile = "/tmp/#{Time.now.to_i}-#{rand(200)}-" + params["attachment-#{i}"][:filename]
+    # i = 1
+    # while i <= attachmentCount do
+    #   #add the file to the hash
+    #   outputFile = "/tmp/#{Time.now.to_i}-#{rand(200)}-" + params["attachment-#{i}"][:filename]
 
-      file_data = File.binread(params["attachment-#{i}"][:tempfile].path)
-      IO.binwrite(outputFile, file_data)
+    #   file_data = File.binread(params["attachment-#{i}"][:tempfile].path)
+    #   IO.binwrite(outputFile, file_data)
 
-      files.push(outputFile)
+    #   files.push(outputFile)
 
-      i += 1
-      end
+    #   i += 1
+    #   end
 
-    sender = Mail::AddressList.new(params['from']).addresses.first.address
-    sendFax(sender, params['recipient'],files)
+    # sender = Mail::AddressList.new(params['from']).addresses.first.address
+    # sendFax(sender, params['recipient'],files)
 	end
 end
