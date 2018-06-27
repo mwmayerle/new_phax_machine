@@ -1,38 +1,45 @@
 class User < ApplicationRecord
-	
 	include FaxTags
 
 	USER = "User"
 	ADMIN = "Admin"
 	CLIENT_MANAGER = "ClientManager"
+	USER_CHARACTER_LIMIT = 60
 
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :trackable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable #:confirmable
 
-	attr_readonly :type
+	attr_readonly :type, :fax_tag
 
 	belongs_to :client, optional: true
-	has_one :user_email
 
-	# has_one :admin, through: :client
+	has_one :user_email
+	has_one :admin, through: :client
 	has_one :client_manager, through: :client
 
 	belongs_to :fax_number_user_email, optional: true
 
-	validates :email, length: { in: 5..60 }, uniqueness: { case_senstive: false }
+	has_many :fax_numbers, through: :client
+
+	validates :email, length: { in: 5..USER_CHARACTER_LIMIT }, uniqueness: { case_senstive: false }
 	validates :client_id, presence: true, numericality: { integer_only: true }, if: :is_generic_user?
 	validates :situational, length: { maximum: 9, allow_blank: true }
+	validates :fax_tag, length: { maximum: FaxTags::FAX_TAG_LIMIT }
 
-	before_validation :ensure_user_type, :generate_fax_tag
+	before_validation :ensure_user_type, :check_for_unwanted_characters
 
-	before_validation :generate_temporary_password, on: :create
+	before_validation :generate_fax_tag, :generate_temporary_password, on: :create
 
 	after_create { User.welcome(self.id) }
 	
 	# has_secure_password
 	private
+		def check_for_unwanted_characters
+			errors.add(:email, "Email may not contain spaces") if self.email.match(/\s/)
+		end
+
 	  def ensure_user_type
 	  	self.type = USER if self.type.nil?
 	  end

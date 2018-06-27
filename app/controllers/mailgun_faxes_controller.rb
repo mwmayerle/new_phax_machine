@@ -6,6 +6,7 @@ class MailgunFaxesController < ApplicationController
 		puts "FAX_RECEIVED MAILGUN CONTROLLER METHOD"
 		p "==============================================================================="
 		@fax = JSON.parse(params['fax'])
+		p @fax
     recipient_number = Phonelib.parse(@fax['to_number']).e164
     fax_number = FaxNumber.find_by(fax_number: recipient_number)
     fax_num_user_email_objs = FaxNumberUserEmail.where(fax_number_id: fax_number.id)
