@@ -13,10 +13,10 @@ class MailgunFaxesController < ApplicationController
     email_addresses = fax_num_user_email_objs.map { |fax_num_email_obj| fax_num_email_obj.user_email.email_address }
 
     fax_from = @fax['from_number']
-    # fax_file_name = params['filename']['filename']
-    # fax_file_contents = params['filename']['tempfile'].read
+    p fax_file_name = mailgun_params['filename']['filename']
+    p fax_file_contents = mailgun_params['filename']['tempfile'].read
     email_subject = "Fax received from #{fax_from}"
-
+    attachments: { fax_file_name => fax_file_contents }
   #   Pony.mail(
   #     to: email_addresses,
   #     from: smtp_from_address,
@@ -78,6 +78,9 @@ class MailgunFaxesController < ApplicationController
 	private
 		def mailgun_params
 			params.require('fax').permit('id', 'num_pages', 'cost', 'direction', 'status', 'is_test', 'requested_at', 'completed_at', { 'recipients':
-				['number', 'status', 'bitrate', 'resolution', 'completed_at']}, { 'tags': ['sender_client_fax_tag', 'sender_fax_tag'] })
+				['number', 'status', 'bitrate', 'resolution', 'completed_at']}, { 'tags': ['sender_client_fax_tag', 'sender_fax_tag'] }, { 'filename': {} })
 		end
+
+		{"fax"=>"{\"id\":76429796,\"num_pages\":1,\"cost\":7,\"direction\":\"received\",\"status\":\"success\",\"is_test\":false,\"requested_at\":1530127899,\"completed_at\":1530127897,\"from_number\":\"+18777115706\",\"to_number\":\"+12096904545\"}", "direction"=>"received", "is_test"=>"false", "success"=>"true", "filename"=>#<ActionDispatch::Http::UploadedFile:0x0000000005b071d8 @tempfile=#<Tempfile:/tmp/RackMultipart20180627-4-ke1bij.pdf>, @original_filename="Fax-76429796.pdf", @content_type="application/octet-stream", @headers="Content-Disposition: form-data; name=\"filename\"; filename=\"Fax-76429796.pdf\"\r\nContent-Type: application/octet-stream\r\n">}
+
 end
