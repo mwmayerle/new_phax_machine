@@ -4,22 +4,19 @@ class MailgunFaxesController < ApplicationController
 	def fax_received
 		puts "FAX_RECEIVED MAILGUN CONTROLLER METHOD"
 		@fax = JSON.parse(params['fax'])
-    p recipient_number = Phonelib.parse(@fax['to_number']).e164
-    p fax_number = FaxNumber.find_by(fax_number: recipient_number)
+		
+    recipient_number = Phonelib.parse(@fax['to_number']).e164
+    fax_number = FaxNumber.find_by(fax_number: recipient_number)
 
-    # if these are blank, then no fax_recieved email is sent
-    "======================================================="
-    fax_num_user_email_objs = FaxNumberUserEmail.where(fax_number_id: fax_number.id)
-    email_addresses = fax_num_user_email_objs.map { |fax_num_email_obj| fax_num_email_obj.user_email.email_address }
-    "======================================================="
+    email_addresses = FaxNumberUserEmail.where(fax_number_id: fax_number.id).all.map do |fax_num_email_obj|
+    	fax_num_email_obj.user_email.email_address
+    end
 
     fax_from = @fax['from_number']
     fax_file_name = params['filename'].original_filename
     fax_file_contents = params['filename'].read
-    p attachments = { fax_file_name => fax_file_contents }
-
     email_subject = "Fax received from #{fax_from}"
-		MailgunMailer.fax_email(email_addresses, email_subject, @fax, attachments).deliver_now
+		MailgunMailer.fax_email(email_addresses, email_subject, @fax, fax_file_name, fax_file_contents).deliver_now
 	end
 
 	# POST /fax_sent: email sent out to the user_emails associated w/a fax number that sent a fax
