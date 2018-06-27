@@ -5,10 +5,9 @@ class MailgunMailer < ApplicationMailer
   	@email_addresses = email_addresses
   	@fax = fax
   	@email_subject = email_subject
+  	p "****************************************************************"
   	p fax_file_name
-  	if fax_file_name != ''
-  		mail.attachments[fax_file_name] = fax_file_contents
-  	end
+  	mail.attachments[fax_file_name] = fax_file_contents if fax_file_name != ''
   	mail(
   		to: @email_addresses,
   		subject: @email_subject,
