@@ -70,6 +70,4 @@ class MailgunFaxesController < ApplicationController
 			params.require('fax').permit!({'filename': {} }, 'id', 'num_pages', 'cost', 'direction', 'status', 'is_test', 'requested_at', 'completed_at', { 'recipients':
 				['number', 'status', 'bitrate', 'resolution', 'completed_at']}, { 'tags': ['sender_client_fax_tag', 'sender_fax_tag'] })
 		end
-
-		{"fax"=>"{\"id\":76433448,\"num_pages\":1,\"cost\":7,\"direction\":\"received\",\"status\":\"success\",\"is_test\":false,\"requested_at\":1530129369,\"completed_at\":1530129367,\"from_number\":\"+18777115706\",\"to_number\":\"+12096904545\"}", "direction"=>"received", "is_test"=>"false", "success"=>"true", "filename"=>"Fax-76433448.pdf\"}
 end
