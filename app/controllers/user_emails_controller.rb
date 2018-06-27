@@ -1,8 +1,9 @@
 class UserEmailsController < ApplicationController
 	include SessionsHelper
 
-	before_action :set_user_email, only: [:edit, :update]
+	before_action :set_user_email, only: [:edit, :update, :destroy]
 	before_action :set_fax_number, only: [:new]
+	before_action :verify_is_client_manager_or_admin, only: [:new, :create, :destroy]
 
 	def new
 		if authorized?(@fax_number.client, :client_manager_id)
@@ -44,6 +45,11 @@ class UserEmailsController < ApplicationController
 			flash[:notice] = @user_email.errors.full_messages.pop
 			redirect_to :edit
 		end
+	end
+
+	def destroy
+		@user_email.destroy ? flash[:notice] = "Email has been deleted" : flash[:alert] = @user_email.errors.full_messages.pop
+		redirect_to(client_path(@user_email.client))
 	end
 
 	private

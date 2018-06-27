@@ -1,18 +1,21 @@
 class FaxNumber < ApplicationRecord
-	include FaxTags #in model/concerns folder
+	include FaxTags
+
+	FAX_NUMBER_CHARACTER_LIMIT = 36
+	FAX_NUMBER_DIGIT_LIMIT = 60 # Took this value from Phax Machine, is it real?
 
 	attr_accessor :unused_client_emails
 
 	belongs_to :client, optional: true
 
 	has_one :client_manager, through: :client
-	# has_one :admin, through: :client
+	has_one :admin, through: :client
 
 	has_many :fax_number_user_emails
 	has_many :user_emails, through: :fax_number_user_emails
 
-	validates :fax_number, presence: true, length: { maximum: 60 }, phone: {possible: true}, uniqueness: true
-	validates :fax_number_label, length: { maximum: 60 }
+	validates :fax_number, presence: true, length: { maximum: FAX_NUMBER_DIGIT_LIMIT }, phone: {possible: true}, uniqueness: true
+	validates :fax_number_label, length: { maximum: FAX_NUMBER_CHARACTER_LIMIT }
 	
 	before_validation :fax_number, :format_fax_number
 
