@@ -16,7 +16,7 @@ class MailgunFaxesController < ApplicationController
     fax_from = @fax['from_number']
     fax_file_name = params['filename'].original_filename
     fax_file_contents = params['filename'].read
-    p attachments[fax_file_name] = { fax_file_name => fax_file_contents }
+    p attachments = { fax_file_name => fax_file_contents }
 
     email_subject = "Fax received from #{fax_from}"
 		MailgunMailer.fax_email(email_addresses, email_subject, @fax, attachments).deliver_now
