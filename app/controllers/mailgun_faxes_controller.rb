@@ -35,25 +35,24 @@ class MailgunFaxesController < ApplicationController
 	# POST /mailgun
 	def mailgun
 		p "==================="
-		p params['attachment-count'].to_i
     return [400, "Must include a sender"] if not params['from']
     return [400, "Must include a recipient"] if not params['recipient']
 
     files = []
     attachment_count = params['attachment-count'].to_i
 
-    # i = 1
-    # while i <= attachmentCount do
-    #   #add the file to the hash
-    #   output_file = "/tmp/#{Time.now.to_i}-#{rand(200)}-" + params["attachment-#{i}"].original_filename
+    i = 1
+    while i <= attachment_count do
+      #add the file to the hash
+      p output_file = "/tmp/#{Time.now.to_i}-#{rand(200)}-" + params["attachment-#{i}"].original_filename
 
-    #   file_data = File.binread(params["attachment-#{i}"][:tempfile].path)
-    #   IO.binwrite(outputFile, file_data)
+      # file_data = File.binread(params["attachment-#{i}"][:tempfile].path)
+      # IO.binwrite(outputFile, file_data)
 
-    #   files.push(outputFile)
+      # files.push(outputFile)
 
-    #   i += 1
-    #  end
+      i += 1
+     end
 
     # sender = Mail::AddressList.new(params['from']).addresses.first.address
     # sendFax(sender, params['recipient'],files)
