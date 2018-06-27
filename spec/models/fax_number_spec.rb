@@ -37,7 +37,7 @@ RSpec.describe FaxNumber, type: :model do
 		it "has one client_manager" do
 			assoc = FaxNumber.reflect_on_association(:client_manager)
    		expect(assoc.macro).to eq(:has_one)
-   		expect(client.client_manager).to eq(client_manager)
+   		expect(fax_number.client_manager).to eq(client_manager)
 		end
 
 		it "belongs to client" do
