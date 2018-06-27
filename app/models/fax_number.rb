@@ -52,6 +52,7 @@ class FaxNumber < ApplicationRecord
 
 					if db_number.client
 						phaxio_numbers[api_fax_number[:phone_number]][:client] = db_number.client.client_label
+						phaxio_numbers[api_fax_number[:phone_number]][:client_id] = db_number.client.id
 					else
 						phaxio_numbers[api_fax_number[:phone_number]][:client] = "Unallocated"
 					end
