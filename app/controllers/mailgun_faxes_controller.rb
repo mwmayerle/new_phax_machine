@@ -34,19 +34,18 @@ class MailgunFaxesController < ApplicationController
 
 	# POST /mailgun
 	def mailgun
-		p params
 		p "==================="
-		p params[attachment-count].to_i
+		p params['attachment-count'].to_i
     return [400, "Must include a sender"] if not params['from']
     return [400, "Must include a recipient"] if not params['recipient']
 
-    # files = []
-    # attachmentCount = params['attachment-count'].to_i
+    files = []
+    attachment_count = params['attachment-count'].to_i
 
     # i = 1
     # while i <= attachmentCount do
     #   #add the file to the hash
-    #   outputFile = "/tmp/#{Time.now.to_i}-#{rand(200)}-" + params["attachment-#{i}"][:filename]
+    #   output_file = "/tmp/#{Time.now.to_i}-#{rand(200)}-" + params["attachment-#{i}"].original_filename
 
     #   file_data = File.binread(params["attachment-#{i}"][:tempfile].path)
     #   IO.binwrite(outputFile, file_data)
@@ -54,9 +53,28 @@ class MailgunFaxesController < ApplicationController
     #   files.push(outputFile)
 
     #   i += 1
-    #   end
+    #  end
 
     # sender = Mail::AddressList.new(params['from']).addresses.first.address
     # sendFax(sender, params['recipient'],files)
 	end
 end
+
+# <ActionController::Parameters {"Content-Type"=>"multipart/mixed; boundary=\"0000000000008cf141056fa6530f\"",
+# "Date"=>"Wed, 27 Jun 2018 16:30:39 -0500",
+# "From"=>"Matt Mayerle <matt@phaxio.com>", 
+# "To"=>"12096904545@sandbox977f2cd8bec345c1b453b2f03b0f447c.mailgun.org", 
+# "X-Envelope-From"=>"<matt@phaxio.com>", 
+# "attachment-count"=>"1", 
+# "body-html"=>"<div dir=\"ltr\"><br></div>\r\n", "body-plain"=>"\r\n",
+# "from"=>"Matt Mayerle <matt@phaxio.com>",
+# "recipient"=>"12096904545@sandbox977f2cd8bec345c1b453b2f03b0f447c.mailgun.org",
+# "sender"=>"matt@phaxio.com",
+# "signature"=>"456c4079cc56e1fb206cdf34eed07daed18fe6657e2a8c49aed2d41f6ce804b7",
+# "stripped-html"=>"<div dir=\"ltr\"><br></div>\n",
+# "stripped-signature"=>"",
+# "stripped-text"=>"",
+# "subject"=>"",
+# "timestamp"=>"1530135042",
+# "token"=>"3311eddaaa0d2940391df59704bb5f332d5138cfe2bf5f13b7",
+# "attachment-1"=><ActionDispatch::Http::UploadedFile:0x0000000005dd06d0 @tempfile=#<Tempfile:/tmp/RackMultipart20180627-4-kn3upl.odt>, @original_filename="testytest.odt", @content_type="application/vnd.oasis.opendocument.text", @headers="Content-Disposition: form-data; name=\"attachment-1\"; filename=\"testytest.odt\"\r\nContent-Type: application/vnd.oasis.opendocument.text\r\nContent-Length: 8573\r\n">, "controller"=>"mailgun_faxes", "action"=>"mailgun"} permitted: false>
