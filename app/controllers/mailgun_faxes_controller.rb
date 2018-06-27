@@ -2,9 +2,8 @@ class MailgunFaxesController < ApplicationController
 	skip_before_action :verify_authenticity_token, only: [:fax_received, :fax_sent, :mailgun]
 	# POST /fax_received: email sent out to the user_emails associated w/a fax number that received a fax
 	def fax_received
-		puts "FAX_RECEIVED MAILGUN CONTROLLER METHOD"
 		@fax = JSON.parse(params['fax'])
-		
+
     recipient_number = Phonelib.parse(@fax['to_number']).e164
     fax_number = FaxNumber.find_by(fax_number: recipient_number)
 
@@ -18,10 +17,8 @@ class MailgunFaxesController < ApplicationController
     email_subject = "Fax received from #{fax_from}"
 		MailgunMailer.fax_email(email_addresses, email_subject, @fax, fax_file_name, fax_file_contents).deliver_now
 	end
-
 	# POST /fax_sent: email sent out to the user_emails associated w/a fax number that sent a fax
 	def fax_sent
-		puts "FAX_SENT MAILGUN CONTROLLER METHOD"
 		@fax = JSON.parse(params['fax'])
 		email_addresses = UserEmail.find_by(fax_tag: @fax['tags']['sender_email_fax_tag']).email_address
 
@@ -65,7 +62,7 @@ class MailgunFaxesController < ApplicationController
 
 	private
 		def mailgun_params
-			# params.require('fax').permit('filename', 'id', 'num_pages', 'cost', 'direction', 'status', 'is_test', 'requested_at', 'completed_at', { 'recipients':
+			# params.require('fax').permit('id', 'num_pages', 'cost', 'direction', 'status', 'is_test', 'requested_at', 'completed_at', { 'recipients':
 			# 	['number', 'status', 'bitrate', 'resolution', 'completed_at']}, { 'tags': ['sender_client_fax_tag', 'sender_fax_tag'] })
 			params.require('fax').permit!({'filename': {} }, 'id', 'num_pages', 'cost', 'direction', 'status', 'is_test', 'requested_at', 'completed_at', { 'recipients':
 				['number', 'status', 'bitrate', 'resolution', 'completed_at']}, { 'tags': ['sender_client_fax_tag', 'sender_fax_tag'] })
