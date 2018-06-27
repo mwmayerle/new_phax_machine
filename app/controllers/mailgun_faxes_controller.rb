@@ -6,15 +6,20 @@ class MailgunFaxesController < ApplicationController
 		puts "FAX_RECEIVED MAILGUN CONTROLLER METHOD"
 		p "==============================================================================="
 		@fax = JSON.parse(params['fax'])
-		p @fax
-    recipient_number = Phonelib.parse(@fax['to_number']).e164
-    fax_number = FaxNumber.find_by(fax_number: recipient_number)
-    fax_num_user_email_objs = FaxNumberUserEmail.where(fax_number_id: fax_number.id)
-    email_addresses = fax_num_user_email_objs.map { |fax_num_email_obj| fax_num_email_obj.user_email.email_address }
-
+    p recipient_number = Phonelib.parse(@fax['to_number']).e164
+    p fax_number = FaxNumber.find_by(fax_number: recipient_number)
+    p fax_num_user_email_objs = FaxNumberUserEmail.where(fax_number_id: fax_number.id)
+    p email_addresses = fax_num_user_email_objs.map { |fax_num_email_obj| fax_num_email_obj.user_email.email_address }
     fax_from = @fax['from_number']
-    p fax_file_name = params['filename']#['filename']
-    # p fax_file_contents = params['filename']['tempfile'].read
+
+    # fax_from = @fax['from_number']
+    # fax_file_name = params['filename']['filename']
+    # fax_file_contents = params['filename']['tempfile'].read
+    # email_subject = "Fax received from #{fax_from}"
+
+    p fax_file_name = params['filename'].original_filename
+    p fax_file_contents = params['filename'].read
+
     email_subject = "Fax received from #{fax_from}"
 		MailgunMailer.fax_email(email_addresses, email_subject, @fax).deliver_now
 	end
