@@ -22,17 +22,20 @@ class Users::RegistrationsController < Devise::RegistrationsController
 	    user = User.find(resource.id)
     	client = Client.find(resource.client_id)
 
-    	if resource.type == User::CLIENT_MANAGER
-	    	client.update(client_manager_id: user.id)
-	    	new_email = UserEmail.create(
-	    		email_address: user.email,
-	    		client_id: client.id,
-	    		user_id: user.id,
+    	# Create a UserEmail object with the User object          
+    	if resource.type == User::CLIENT_MANAGER                  #
+	    	client.update(client_manager_id: user.id)               #
+	    	new_email = UserEmail.create(                           #
+	    		email_address: user.email,                            # Creating a ClientManager user
+	    		client_id: client.id,                                 #
+	    		user_id: user.id,                                     #
+	    		caller_id_number: client.fax_numbers.first.fax_number #
 	    	)
+
 	    else
-    		fax_number = FaxNumber.find(resource.situational.to_i)
-	    	emails = UserEmail.where(email_address: user.email).update(user_id: user.id)
-	      resource.update_attributes(situational: nil)
+    		fax_number = FaxNumber.find(resource.situational.to_i)                       #
+	    	emails = UserEmail.where(email_address: user.email).update(user_id: user.id) # Creating a User from existing UserEmail
+	      resource.update_attributes(situational: nil)                                 #
 	    end
 	    
       if resource.active_for_authentication?

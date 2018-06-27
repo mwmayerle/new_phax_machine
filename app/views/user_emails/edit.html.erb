@@ -2,3 +2,4 @@
 <div class="col-lg-6">
 	<%= render partial: "form", locals: { user_email: @user_email, fax_number: @fax_number}, layout: false %>
 </div>
+<%= button_to "Delete Email", user_email_path(@user_email), method: :delete, class: "btn btn-danger" %>

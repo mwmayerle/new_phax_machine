@@ -25,7 +25,7 @@ RSpec.describe Client, :type => :model do
 		end
 	end
 
-	describe "Client callbacks" do
+	describe "callbacks" do
 		it "generates a fax tag if none is provided by the user" do
 			client.fax_tag = nil
 			client.save
@@ -53,7 +53,7 @@ RSpec.describe Client, :type => :model do
 		end
 	end
 
-	describe "Client assocations" do
+	describe "assocations" do
 		it "has many fax numbers" do
 			assoc = Client.reflect_on_association(:fax_numbers)
    		expect(assoc.macro).to eq(:has_many)

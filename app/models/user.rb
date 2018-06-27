@@ -33,6 +33,8 @@ class User < ApplicationRecord
 	before_validation :generate_fax_tag, :generate_temporary_password, on: :create
 
 	after_create { User.welcome(self.id) }
+
+	before_destroy :remove_client_manager, if: :is_client_manager?
 	
 	# has_secure_password
 	private
@@ -40,8 +42,16 @@ class User < ApplicationRecord
 			errors.add(:email, "Email may not contain spaces") if self.email.match(/\s/)
 		end
 
+		def remove_client_manager
+			Client.find(self.client.id).update_attributes(client_manager_id: nil)
+		end
+
 	  def ensure_user_type
 	  	self.type = USER if self.type.nil?
+	  end
+
+	  def is_client_manager?
+	  	self.type == CLIENT_MANAGER
 	  end
 
 	  def is_generic_user?

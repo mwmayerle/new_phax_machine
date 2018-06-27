@@ -9,11 +9,7 @@
 	</div>
 	<div class="form-group">
 		<%= f.label :caller_id_number, "Caller ID Number" %>
-		<% if user_email.caller_id_number %>
-			<%= f.phone_field :caller_id_number, value: "#{user_email.caller_id_number}", class: "form-control" %>
-		<% else %>
-			<%= f.phone_field :caller_id_number, value: "#{fax_number.fax_number}", class: "form-control" %>
-		<% end %>
+		<%= f.select :caller_id_number, user_email.client.fax_numbers.map { |fax_num| fax_num.fax_number }, class: "form-control" %>
 	</div>
 	<div class="form-group">
 		<%= f.submit "Submit", class: "btn btn-primary" %>

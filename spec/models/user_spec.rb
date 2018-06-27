@@ -112,5 +112,11 @@ RSpec.describe User, type: :model do
   		user2.reload
   		expect(user2.reset_password_token).not_to be_nil
   	end
+
+  	it "removes the client_manager association when the client_manager is deleted" do
+  		client_manager.destroy
+  		client.reload
+  		expect(client.client_manager_id).to be_nil
+  	end
   end
 end
