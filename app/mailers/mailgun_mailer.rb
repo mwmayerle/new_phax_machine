@@ -5,10 +5,11 @@ class MailgunMailer < ApplicationMailer
   	@email_addresses = email_addresses
   	@fax = fax
   	@email_subject = email_subject
-  	attachments
+  	@attachments = attachments
   	mail(
   		to: @email_addresses,
   		subject: @email_subject,
+  		attachments: @attachments
   	)
   end
 end

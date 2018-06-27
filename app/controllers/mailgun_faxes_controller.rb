@@ -7,11 +7,11 @@ class MailgunFaxesController < ApplicationController
     p recipient_number = Phonelib.parse(@fax['to_number']).e164
     p fax_number = FaxNumber.find_by(fax_number: recipient_number)
 
-    # if these are blank, then no fax_recieved
-    p "======================================================="
-    p fax_num_user_email_objs = FaxNumberUserEmail.where(fax_number_id: fax_number.id)
-    p email_addresses = fax_num_user_email_objs.map { |fax_num_email_obj| fax_num_email_obj.user_email.email_address }
-    p "======================================================="
+    # if these are blank, then no fax_recieved email is sent
+    "======================================================="
+    fax_num_user_email_objs = FaxNumberUserEmail.where(fax_number_id: fax_number.id)
+    email_addresses = fax_num_user_email_objs.map { |fax_num_email_obj| fax_num_email_obj.user_email.email_address }
+    "======================================================="
 
     fax_from = @fax['from_number']
     fax_file_name = params['filename'].original_filename
