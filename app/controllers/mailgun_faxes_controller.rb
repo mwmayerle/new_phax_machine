@@ -44,18 +44,15 @@ class MailgunFaxesController < ApplicationController
     while i <= attachment_count do
       #add the file to the hash
       output_file = "/tmp/#{Time.now.to_i}-#{rand(200)}-" + params["attachment-#{i}"].original_filename
-      p file_data = File.binread(params["attachment-#{i}"].tempfile.path)
-      p "******************************************************************"
-      p IO.binwrite(output_file, file_data)
-      p "******************************************************************"
+      file_data = File.binread(params["attachment-#{i}"].tempfile.path)
+      IO.binwrite(output_file, file_data)
       files.push(output_file)
-      p "******************************************************************"
-      p files
+
       i += 1
      end
-
-    # sender = Mail::AddressList.new(params['from']).addresses.first.address
-    # sendFax(sender, params['recipient'],files)
+    p "******************************************************************"
+    p sender = Mail::AddressList.new(params['from']).addresses.first.address
+    p files
 	end
 end
 
