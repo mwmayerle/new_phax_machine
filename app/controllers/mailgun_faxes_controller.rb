@@ -33,24 +33,24 @@ class MailgunFaxesController < ApplicationController
 	end
 
 	# POST /mailgun
-	def mailgun
-		p "==================="
+	def mailgun(files = [])
+		p "******************************************************************"
     return [400, "Must include a sender"] if not params['from']
     return [400, "Must include a recipient"] if not params['recipient']
 
-    files = []
     attachment_count = params['attachment-count'].to_i
 
     i = 1
     while i <= attachment_count do
       #add the file to the hash
-      p output_file = "/tmp/#{Time.now.to_i}-#{rand(200)}-" + params["attachment-#{i}"].original_filename
-
-      # file_data = File.binread(params["attachment-#{i}"][:tempfile].path)
-      # IO.binwrite(outputFile, file_data)
-
-      # files.push(outputFile)
-
+      output_file = "/tmp/#{Time.now.to_i}-#{rand(200)}-" + params["attachment-#{i}"].original_filename
+      p file_data = File.binread(params["attachment-#{i}"][:tempfile].path)
+      p "******************************************************************"
+      p IO.binwrite(output_file, file_data)
+      p "******************************************************************"
+      files.push(output_file)
+      p "******************************************************************"
+      p files
       i += 1
      end
 
