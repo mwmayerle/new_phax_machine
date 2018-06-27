@@ -1,5 +1,6 @@
 class MailgunFaxesController < ApplicationController
 	skip_before_action :verify_authenticity_token, only: [:fax_received, :fax_sent, :mailgun]
+
 	# POST /fax_received: email sent out to the user_emails associated w/a fax number that received a fax
 	def fax_received
 		@fax = JSON.parse(params['fax'])
@@ -17,6 +18,7 @@ class MailgunFaxesController < ApplicationController
     email_subject = "Fax received from #{fax_from}"
 		MailgunMailer.fax_email(email_addresses, email_subject, @fax, fax_file_name, fax_file_contents).deliver_now
 	end
+
 	# POST /fax_sent: email sent out to the user_emails associated w/a fax number that sent a fax
 	def fax_sent
 		@fax = JSON.parse(params['fax'])
@@ -33,38 +35,27 @@ class MailgunFaxesController < ApplicationController
 
 	# POST /mailgun
 	def mailgun
-		# if not params['from']
-  #     return [400, "Must include a sender"]
-  #   elsif not params['recipient']
-  #     return [400, "Must include a recipient"]
-  #   end
+		p params
+    return [400, "Must include a sender"] if not params['from']
+    return [400, "Must include a recipient"] if not params['recipient']
 
-  #   files = []
-  #   attachmentCount = params['attachment-count'].to_i
+    files = []
+    attachmentCount = params['attachment-count'].to_i
 
-  #   i = 1
-  #   while i <= attachmentCount do
-  #     #add the file to the hash
-  #     outputFile = "/tmp/#{Time.now.to_i}-#{rand(200)}-" + params["attachment-#{i}"][:filename]
+    i = 1
+    while i <= attachmentCount do
+      #add the file to the hash
+      outputFile = "/tmp/#{Time.now.to_i}-#{rand(200)}-" + params["attachment-#{i}"][:filename]
 
-  #     file_data = File.binread(params["attachment-#{i}"][:tempfile].path)
-  #     IO.binwrite(outputFile, file_data)
+      file_data = File.binread(params["attachment-#{i}"][:tempfile].path)
+      IO.binwrite(outputFile, file_data)
 
-  #     files.push(outputFile)
+      files.push(outputFile)
 
-  #     i += 1
-  #     end
+      i += 1
+      end
 
-  #   sender = Mail::AddressList.new(params['from']).addresses.first.address
-  #   sendFax(sender, params['recipient'],files)
-  #   "OK"
+    sender = Mail::AddressList.new(params['from']).addresses.first.address
+    sendFax(sender, params['recipient'],files)
 	end
-
-	private
-		def mailgun_params
-			# params.require('fax').permit('id', 'num_pages', 'cost', 'direction', 'status', 'is_test', 'requested_at', 'completed_at', { 'recipients':
-			# 	['number', 'status', 'bitrate', 'resolution', 'completed_at']}, { 'tags': ['sender_client_fax_tag', 'sender_fax_tag'] })
-			params.require('fax').permit!({'filename': {} }, 'id', 'num_pages', 'cost', 'direction', 'status', 'is_test', 'requested_at', 'completed_at', { 'recipients':
-				['number', 'status', 'bitrate', 'resolution', 'completed_at']}, { 'tags': ['sender_client_fax_tag', 'sender_fax_tag'] })
-		end
 end
