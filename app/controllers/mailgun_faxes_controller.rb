@@ -80,7 +80,4 @@ class MailgunFaxesController < ApplicationController
 			params.require('fax').permit('id', 'num_pages', 'cost', 'direction', 'status', 'is_test', 'requested_at', 'completed_at', { 'recipients':
 				['number', 'status', 'bitrate', 'resolution', 'completed_at']}, { 'tags': ['sender_client_fax_tag', 'sender_fax_tag'] }, { 'filename': {} })
 		end
-
-		{"fax"=>"{\"id\":76429796,\"num_pages\":1,\"cost\":7,\"direction\":\"received\",\"status\":\"success\",\"is_test\":false,\"requested_at\":1530127899,\"completed_at\":1530127897,\"from_number\":\"+18777115706\",\"to_number\":\"+12096904545\"}", "direction"=>"received", "is_test"=>"false", "success"=>"true", "filename"=>#<ActionDispatch::Http::UploadedFile:0x0000000005b071d8 @tempfile=#<Tempfile:/tmp/RackMultipart20180627-4-ke1bij.pdf>, @original_filename="Fax-76429796.pdf", @content_type="application/octet-stream", @headers="Content-Disposition: form-data; name=\"filename\"; filename=\"Fax-76429796.pdf\"\r\nContent-Type: application/octet-stream\r\n">}
-
 end
