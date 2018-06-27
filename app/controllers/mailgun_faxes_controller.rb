@@ -16,7 +16,7 @@ class MailgunFaxesController < ApplicationController
     p fax_file_name = mailgun_params['filename']['filename']
     p fax_file_contents = mailgun_params['filename']['tempfile'].read
     email_subject = "Fax received from #{fax_from}"
-    attachments: { fax_file_name => fax_file_contents }
+    attachments = { fax_file_name => fax_file_contents }
   #   Pony.mail(
   #     to: email_addresses,
   #     from: smtp_from_address,
