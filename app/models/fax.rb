@@ -1,6 +1,5 @@
 class Fax
 	class << self
-
 		def get_fax_information(sent_fax_object)
 			Phaxio::Fax.get(sent_fax_object.get.id)
 		end
@@ -33,25 +32,22 @@ class Fax
       sent_fax_object = create_fax(options)
      	api_response = Fax.get_fax_information(sent_fax_object)
       p api_response
-
       # send an email to the sender if it fails
-      end
-			# if there are two error_codes with the same frequency, the error found first (first recipient) takes precedence
-			def most_common_error(fax, errors = {})
-				fax["recipients"].each do |recipient|
-			  	key = recipient["error_code"]
-			  	errors.has_key?(key) ? errors[key]["frequency"] += 1 : errors[key] = {"frequency" => 1}
-				end
-		  	errors.max_by { |error_code, amount| amount["frequency"] }.shift
+    end
+
+		# if there are two error_codes with the same frequency, the error found first (first recipient) takes precedence
+		def most_common_error(fax, errors = {})
+			fax["recipients"].each do |recipient|
+		  	key = recipient["error_code"]
+		  	errors.has_key?(key) ? errors[key]["frequency"] += 1 : errors[key] = {"frequency" => 1}
 			end
+	  	errors.max_by { |error_code, amount| amount["frequency"] }.shift
 		end
-	end
-	
-	protected
-		class << self
+
+		protected
 			def set_phaxio_creds
 				Phaxio.api_key = ENV.fetch('PHAXIO_API_KEY')
 				Phaxio.api_secret = ENV.fetch('PHAXIO_API_SECRET')
 			end
-		end
+	end
 end
