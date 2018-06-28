@@ -40,7 +40,7 @@ class MailgunFaxesController < ApplicationController
 	def mailgun(files = [])
 		p "/MAILGUN ROUTE"
 		p "**************************************************************************"
-		puts params
+		puts params['from']
 		p "**************************************************************************"
     return [400, "Must include a sender"] if not params['from']
     return [400, "Must include a recipient"] if not params['recipient']
