@@ -28,7 +28,7 @@ class Fax
 		def send_fax_from_email(sender, recipient, files)
 			p "**********************************************************"
 			set_phaxio_creds
-			user_email = UserEmail.find_by(email: sender.downcase)
+			user_email = UserEmail.find_by(email_address: sender.downcase)
       number = Mail::Address.new(recipient).local
 
       options = {
