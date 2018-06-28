@@ -4,6 +4,8 @@ class MailgunFaxesController < ApplicationController
 	# POST /fax_received: email sent out to the user_emails associated w/a fax number that received a fax
 	def fax_received
 		@fax = JSON.parse(params['fax'])
+		p "FAX RECEIVED MAILGUN"
+		p @fax
     recipient_number = Phonelib.parse(@fax['to_number']).e164
     fax_number = FaxNumber.find_by(fax_number: recipient_number)
 
@@ -21,6 +23,8 @@ class MailgunFaxesController < ApplicationController
 	# POST /fax_sent: email sent out to the user_emails associated w/a fax number that sent a fax
 	def fax_sent
 		@fax = JSON.parse(params['fax'])
+		p "FAX SENT MAILGUN"
+		p @fax
 		email_addresses = UserEmail.find_by(fax_tag: @fax['tags']['sender_email_fax_tag']).email_address
 
     if @fax["status"] == "success"
@@ -34,6 +38,7 @@ class MailgunFaxesController < ApplicationController
 
 	# POST /mailgun
 	def mailgun(files = [])
+		p "/MAILGUN ROUTE"
     return [400, "Must include a sender"] if not params['from']
     return [400, "Must include a recipient"] if not params['recipient']
 
