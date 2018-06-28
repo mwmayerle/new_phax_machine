@@ -6,21 +6,21 @@ class Fax
 		  	key = recipient["error_code"]
 		  	errors.has_key?(key) ? errors[key]["frequency"] += 1 : errors[key] = {"frequency" => 1}
 			end
-	  	errors.max_by {|error_code, amount| amount["frequency"]}.shift
+	  	errors.max_by { |error_code, amount| amount["frequency"] }.shift
 		end
 
 		def get_fax_information(sent_fax_object)
 			Phaxio::Fax.get(sent_fax_object.get.id)
 		end
 
-		def create_fax(to, attached_files, caller_id, sender_client_fax_tag, sender_email_fax_tag)
+		def create_fax(options)
 			Phaxio::Fax.create(
-				to: to,
-				file: attached_files,
-				caller_id: caller_id_number,
+				to: options[:to],
+				file: options[:files],
+				caller_id: options[:caller_id_number],
 				tag: {
-					sender_client_fax_tag: sender_client_fax_tag,
-					sender_email_fax_tag: sender_email_fax_tag,
+					sender_client_fax_tag: options[:sender_client_fax_tag],
+					sender_email_fax_tag: options[:sender_email_fax_tag],
 				},
 			)
 		end
@@ -36,7 +36,7 @@ class Fax
       	caller_id: user_email.caller_id_number,
       	sender_client_fax_tag: user_email.client.fax_tag,
       	send_email_fax_tag: user_email.fax_tag,
-      	file: files.map { |file| File.new(file) }
+      	files: files.map { |file| File.new(file) }
       }
 
       p "**********************************************************"
