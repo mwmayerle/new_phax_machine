@@ -6,9 +6,13 @@ class MailgunMailer < ApplicationMailer
   	@fax = fax
   	@email_subject = email_subject
   	mail.attachments[fax_file_name] = fax_file_contents if fax_file_name != ''
-  	mail(
-  		to: @email_addresses,
-  		subject: @email_subject,
-  	)
+  	mail(to: @email_addresses, subject: @email_subject)
   end
+  
+	def email_to_fax_failed(sender, files, recipients)
+		@sender = sender
+		@files = files
+		@recipients = recipients
+		mail(to: @sender, subject: 'There was a problem sending your fax')
+	end
 end
