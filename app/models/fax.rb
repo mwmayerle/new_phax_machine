@@ -1,13 +1,5 @@
 class Fax
 	class << self
-		# if there are two error_codes with the same frequency of occurrance, the error found first (first recipient) takes precedence
-		def most_common_error(fax, errors = {})
-			fax["recipients"].each do |recipient|
-		  	key = recipient["error_code"]
-		  	errors.has_key?(key) ? errors[key]["frequency"] += 1 : errors[key] = {"frequency" => 1}
-			end
-	  	errors.max_by { |error_code, amount| amount["frequency"] }.shift
-		end
 
 		def get_fax_information(sent_fax_object)
 			Phaxio::Fax.get(sent_fax_object.get.id)
@@ -26,7 +18,6 @@ class Fax
 		end
 
 		def send_fax_from_email(sender, recipient, files)
-			p "**********************************************************"
 			set_phaxio_creds
 			user_email = UserEmail.find_by(email_address: sender.downcase)
       number = Mail::Address.new(recipient).local
@@ -39,32 +30,20 @@ class Fax
       	files: files.map { |file| File.new(file) }
       }
 
-      p "**********************************************************"
-      p options
-      # logger.info "#{sender} is attempting to send #{files.length} files to #{number}..."
-      result = create_fax(options)
-      result = JSON.parse(result.body)
-      p result
-      if result['success']
-      	puts "YYYYAAAAAAAAAAAAAAAAAAAAAAAAYYYYYYYY"
-        # logger.info "Fax queued up successfully: ID #" + result['data']['faxId'].to_s
-      else
-      	puts "NNNNOOOOOOOOOOPPPPPPPPPPEEEEEEEEEE"
-        # logger.warn "Problem submitting fax: " + result['message']
+      sent_fax_object = create_fax(options)
+     	api_response = Fax.get_fax_information(sent_fax_object)
+      p api_response
 
-        # if ENV['SMTP_HOST']
-        #   #send mail back to the user telling them there was a problem
-
-        #   Pony.mail(
-        #     :to => fromEmail,
-        #     :from => smtp_from_address,
-        #     :subject => 'Mailfax: There was a problem sending your fax',
-        #     :body => "There was a problem faxing your #{filenames.length} files to #{number}: " + result['message'],
-        #     :via => :smtp,
-        #     :via_options => smtp_options
-        #   )
-        # end
+      # send an email to the sender if it fails
       end
+			# if there are two error_codes with the same frequency, the error found first (first recipient) takes precedence
+			def most_common_error(fax, errors = {})
+				fax["recipients"].each do |recipient|
+			  	key = recipient["error_code"]
+			  	errors.has_key?(key) ? errors[key]["frequency"] += 1 : errors[key] = {"frequency" => 1}
+				end
+		  	errors.max_by { |error_code, amount| amount["frequency"] }.shift
+			end
 		end
 	end
 	
