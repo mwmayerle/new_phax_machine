@@ -41,7 +41,7 @@ class Fax
 
       p "**********************************************************"
       p options
-      logger.info "#{sender} is attempting to send #{files.length} files to #{number}..."
+      # logger.info "#{sender} is attempting to send #{files.length} files to #{number}..."
       result = create_fax(options)
       result = JSON.parse(result.body)
       p result
