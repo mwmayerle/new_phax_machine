@@ -5,22 +5,16 @@ class Fax
 		end
 
 		def create_fax(options)
-			Phaxio::Fax.create(
-				to: options[:to],
-				file: options[:files],
-				caller_id: options[:caller_id_number],
-				tag: {
-					sender_client_fax_tag: options[:sender_client_fax_tag],
-					sender_email_fax_tag: options[:sender_email_fax_tag],
-				},
-			)
+			sent_fax_object = Phaxio::Fax.create(options)
+			#Options keys are :to, :caller_id, tag => { sender_client_fax_tag, sender_email_fax_tag, }
+			#to: options[:to], file: options[:files], caller_id: options[:caller_id_number], tag: { sender_client_fax_tag: options[:sender_client_fax_tag], sender_email_fax_tag: options[:sender_email_fax_tag]},)
+     	get_fax_information(sent_fax_object)
 		end
 
-		def send_fax_from_email(sender, recipient, files)
+		def create_fax_from_email(sender, recipient, files)
 			set_phaxio_creds
       number = Mail::Address.new(recipient).local
       user_email = UserEmail.find_by(email_address: sender)
-
 
       options = {
       	to: number,
@@ -29,11 +23,7 @@ class Fax
       	sender_email_fax_tag: user_email.fax_tag,
       	files: files.map { |file| File.new(file) }
       }
-
-      sent_fax_object = create_fax(options)
-     	api_response = Fax.get_fax_information(sent_fax_object)
-      p api_response
-      # send an email to the sender if it fails
+      create_fax(options)
     end
 
 		# if there are two error_codes with the same frequency, the error found first (first recipient) takes precedence

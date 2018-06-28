@@ -1,7 +1,6 @@
 class MailgunFaxesController < ApplicationController
 	skip_before_action :verify_authenticity_token, only: [:fax_received, :fax_sent, :mailgun]
 
-	# POST /fax_received: email sent out to the user_emails associated w/a fax number that received a fax
 	def fax_received
 		@fax = JSON.parse(params['fax'])
     recipient_number = Phonelib.parse(@fax['to_number']).e164
@@ -18,7 +17,6 @@ class MailgunFaxesController < ApplicationController
 		MailgunMailer.fax_email(email_addresses, email_subject, @fax, fax_file_name, fax_file_contents).deliver_now
 	end
 
-	# POST /fax_sent: email sent out to the user_emails associated w/a fax number that sent a fax
 	def fax_sent
 		@fax = JSON.parse(params['fax'])
 		email_addresses = UserEmail.find_by(fax_tag: @fax['tags']['sender_email_fax_tag']).email_address
@@ -32,16 +30,14 @@ class MailgunFaxesController < ApplicationController
 		MailgunMailer.fax_email(email_addresses, email_subject, @fax).deliver_now
 	end
 
-	# POST /mailgun
 	def mailgun(files = [])
-    return [400, "Must include a sender"] if not params['from']
-    return [400, "Must include a recipient"] if not params['recipient']
+    return [400, "Must include a sender"] if !params['from']
+    return [400, "Must include a recipient"] if !params['recipient']
 
     attachment_count = params['attachment-count'].to_i
 
     i = 1
     while i <= attachment_count do
-      #add the file to the hash
       output_file = "/tmp/#{Time.now.to_i}-#{rand(200)}-" + params["attachment-#{i}"].original_filename
       file_data = File.binread(params["attachment-#{i}"].tempfile.path)
       IO.binwrite(output_file, file_data)
@@ -50,7 +46,9 @@ class MailgunFaxesController < ApplicationController
      end
 
     sender = Mail::AddressList.new(params['from']).addresses.first.address
-    puts sender
- 		Fax.send_fax_from_email(sender, params['recipient'], files)
+ 		api_response = Fax.create_fax_from_email(sender, params['recipient'], files)
+ 		p "*******************************************************************"
+ 		p api_response
+
 	end
 end
