@@ -18,4 +18,6 @@ class UserEmail < ApplicationRecord
 	validates :client_id, numericality: { integer_only: true, allow_blank: true }
 
 	before_validation :generate_fax_tag, on: :create
+
+	before_save { self.email_address.downcase! }
 end
