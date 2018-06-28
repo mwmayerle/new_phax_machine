@@ -47,6 +47,7 @@ class MailgunFaxesController < ApplicationController
 
     sender = Mail::AddressList.new(params['from']).addresses.first.address
  		api_response = Fax.create_fax_from_email(sender, params['recipient'], files)
- 		MailgunMailer.email_to_fax_failed(sender, files, api_response['recipients']).deliver_now if api_response['status'] != 'queued'
+ 		puts api_response.raw_data
+ 		MailgunMailer.email_to_fax_failed(sender, files, api_response.raw_data['fax']['recipients']).deliver_now if api_response['status'] != 'queued'
 	end
 end
