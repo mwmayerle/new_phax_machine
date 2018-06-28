@@ -9,30 +9,42 @@ class Fax
 	  	errors.max_by {|error_code, amount| amount["frequency"]}.shift
 		end
 
-		def send_fax(sender, params_recip, files)
+		def get_fax_information(sent_fax_object)
+			Phaxio::Fax.get(sent_fax_object.get.id)
+		end
+
+		def create_fax(to, attached_files, caller_id, sender_client_fax_tag, sender_email_fax_tag)
+			Phaxio::Fax.create(
+				to: to,
+				file: attached_files,
+				caller_id: caller_id_number,
+				tag: {
+					sender_client_fax_tag: sender_client_fax_tag,
+					sender_email_fax_tag: sender_email_fax_tag,
+				},
+			)
+		end
+
+		def send_fax_from_email(sender, recipient, files)
 			p "**********************************************************"
 			set_phaxio_creds
+			user_email = UserEmail.find_by(email: sender.downcase)
+      number = Mail::Address.new(recipient).local
 
-			# begin
-   #      user_id = db[:user_emails].where do |user|
-   #        {user.lower(:email) => fromEmail&.downcase}
-   #      end.first[:user_id]
-   #      user = db[:users].where(id: user_id).first
-   #      from_fax_number = user[:fax_number]
-   #      fax_tag = user[:fax_tag]
-   #    ensure
-   #      db.disconnect
-   #    end
+      options = {
+      	to: number,
+      	caller_id: user_email.caller_id_number,
+      	sender_client_fax_tag: user_email.client.fax_tag,
+      	send_email_fax_tag: user_email.fax_tag
+      	file: files.map { |file| = File.new(file) }
+      }
 
-      number = Mail::Address.new(toEmail).local
-      options = {to: number, caller_id: from_fax_number, :"tag[user]" => fax_tag}
-
-      filenames.each_index { |idx| options["filename[#{idx}]"] = File.new(filenames[idx]) }
-
-      logger.info "#{fromEmail} is attempting to send #{filenames.length} files to #{number}..."
-      result = Phaxio.send_fax(options)
+      p "**********************************************************"
+      p options
+      logger.info "#{sender} is attempting to send #{files.length} files to #{number}..."
+      result = create_fax(options)
       result = JSON.parse(result.body)
-
+      p result
       if result['success']
         logger.info "Fax queued up successfully: ID #" + result['data']['faxId'].to_s
       else

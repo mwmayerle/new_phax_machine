@@ -51,7 +51,7 @@ class MailgunFaxesController < ApplicationController
      end
 
     sender = Mail::AddressList.new(params['from']).addresses.first.address
- 		Fax.send_fax(sender, params['recipient'], files)
+ 		Fax.send_fax_from_email(sender, params['recipient'], files)
 	end
 end
 

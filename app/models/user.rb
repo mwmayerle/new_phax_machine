@@ -39,6 +39,7 @@ class User < ApplicationRecord
 	# has_secure_password
 	private
 		def check_for_unwanted_characters
+			self.email.downcase!
 			errors.add(:email, "Email may not contain spaces") if self.email.match(/\s/)
 		end
 

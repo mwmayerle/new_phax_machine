@@ -13,7 +13,7 @@ class FaxesController < ApplicationController
 	# POST for sending a fax via the internal view
 	def create(attached_files = [])
 		fax_params[:files].each { |file_in_params| attached_files << file_in_params[1].tempfile } # No .map() for ActionCont. params
-		sent_fax_object = Phaxio::Fax.create(
+		sent_fax_object = Fax.create_fax(
 			to: fax_params[:to],
 			file: attached_files,
 			caller_id: current_user.user_email.caller_id_number,
@@ -22,7 +22,7 @@ class FaxesController < ApplicationController
 				sender_email_fax_tag: current_user.user_email.fax_tag,
 			},
 		)
-		api_response = Phaxio::Fax.get(sent_fax_object.get.id)
+		api_response = Fax.get_fax_information(sent_fax_object)
 		flash_message_type = api_response.status == "queued" ? :notice : :alert
 		flash[flash_message_type] = api_response.status
 		redirect_to new_fax_path
@@ -33,9 +33,6 @@ class FaxesController < ApplicationController
 
 	# GET /download_file
 	def download_file
-		# fax_id = params["fax_id"].to_i
-  #   api_response = Phaxio.get_fax_file(id: fax_id, type: "p")
-  #   download_file(api_response)
 	end
 
 	def destroy
