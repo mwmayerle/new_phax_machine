@@ -36,7 +36,7 @@ class Fax
       	caller_id: user_email.caller_id_number,
       	sender_client_fax_tag: user_email.client.fax_tag,
       	send_email_fax_tag: user_email.fax_tag
-      	file: files.map { |file| = File.new(file) }
+      	file: files.map { |file| File.new(file) }
       }
 
       p "**********************************************************"
