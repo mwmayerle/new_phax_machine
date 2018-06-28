@@ -21,6 +21,8 @@ class Fax
 			p "IN THE SEND_FAX_FROM_EMAIL METHOD"
 			p sender.downcase
 			user_email = UserEmail.find_by(email_address: sender.downcase)
+			p "==================================================================="
+			p user_email
       number = Mail::Address.new(recipient).local
 
       options = {
