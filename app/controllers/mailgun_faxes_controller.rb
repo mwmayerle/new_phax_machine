@@ -39,6 +39,9 @@ class MailgunFaxesController < ApplicationController
 	# POST /mailgun
 	def mailgun(files = [])
 		p "/MAILGUN ROUTE"
+		p "**************************************************************************"
+		puts params
+		p "**************************************************************************"
     return [400, "Must include a sender"] if not params['from']
     return [400, "Must include a recipient"] if not params['recipient']
 
@@ -51,11 +54,11 @@ class MailgunFaxesController < ApplicationController
       file_data = File.binread(params["attachment-#{i}"].tempfile.path)
       IO.binwrite(output_file, file_data)
       files.push(output_file)
-
       i += 1
      end
 
     sender = Mail::AddressList.new(params['from']).addresses.first.address
+    puts sender
  		Fax.send_fax_from_email(sender, params['recipient'], files)
 	end
 end
