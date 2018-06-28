@@ -30,14 +30,13 @@ class Fax
 			set_phaxio_creds
 			user_email = UserEmail.find_by(email: sender.downcase)
       number = Mail::Address.new(recipient).local
-      files.map! { |file| File.new(file) }
 
       options = {
       	to: number,
       	caller_id: user_email.caller_id_number,
       	sender_client_fax_tag: user_email.client.fax_tag,
-      	send_email_fax_tag: user_email.fax_tag
-      	file: files
+      	send_email_fax_tag: user_email.fax_tag,
+      	file: files.map { |file| File.new(file) }
       }
 
       p "**********************************************************"
