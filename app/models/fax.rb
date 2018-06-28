@@ -46,9 +46,11 @@ class Fax
       result = JSON.parse(result.body)
       p result
       if result['success']
-        logger.info "Fax queued up successfully: ID #" + result['data']['faxId'].to_s
+      	puts "YYYYAAAAAAAAAAAAAAAAAAAAAAAAYYYYYYYY"
+        # logger.info "Fax queued up successfully: ID #" + result['data']['faxId'].to_s
       else
-        logger.warn "Problem submitting fax: " + result['message']
+      	puts "NNNNOOOOOOOOOOPPPPPPPPPPEEEEEEEEEE"
+        # logger.warn "Problem submitting fax: " + result['message']
 
         # if ENV['SMTP_HOST']
         #   #send mail back to the user telling them there was a problem
