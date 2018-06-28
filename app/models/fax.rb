@@ -44,10 +44,9 @@ class Fax
 	  	errors.max_by { |error_code, amount| amount["frequency"] }.shift
 		end
 
-		protected
-			def set_phaxio_creds
-				Phaxio.api_key = ENV.fetch('PHAXIO_API_KEY')
-				Phaxio.api_secret = ENV.fetch('PHAXIO_API_SECRET')
-			end
+		def set_phaxio_creds
+			Phaxio.api_key = ENV.fetch('PHAXIO_API_KEY')
+			Phaxio.api_secret = ENV.fetch('PHAXIO_API_SECRET')
+		end
 	end
 end
