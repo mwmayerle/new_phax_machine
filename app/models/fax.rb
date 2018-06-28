@@ -18,18 +18,13 @@ class Fax
 
 		def send_fax_from_email(sender, recipient, files)
 			set_phaxio_creds
-			p "IN THE SEND_FAX_FROM_EMAIL METHOD"
-			p sender.downcase
-			user_email = UserEmail.find_by(email_address: sender.downcase)
-			p "==================================================================="
-			p user_email
       number = Mail::Address.new(recipient).local
 
       options = {
       	to: number,
       	caller_id: user_email.caller_id_number,
       	sender_client_fax_tag: user_email.client.fax_tag,
-      	send_email_fax_tag: user_email.fax_tag,
+      	sender_email_fax_tag: user_email.fax_tag,
       	files: files.map { |file| File.new(file) }
       }
 
