@@ -43,7 +43,7 @@ class MailgunFaxesController < ApplicationController
       IO.binwrite(output_file, file_data)
       files.push(output_file)
       i += 1
-     end
+    end
 
     sender = Mail::AddressList.new(params['from']).addresses.first.address
  		api_response = Fax.create_fax_from_email(sender, params['recipient'], files)
