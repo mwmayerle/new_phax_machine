@@ -11,54 +11,45 @@
 		<% @clients.each do |client| %>
 			<div class="client-info row">
 				<div class="col-lg-4">
-					<div class="client-label-div align-self-center">
-						<h2><%= link_to client.client_label, client_path(client) %></h2>
-						<% if client.client_manager %>
-								<p>Managed by: <%= client.client_manager.email %></p>
-						<% else %>
-							<%= form_for :user, url: "users", method: :post do |f| %>
-								<%= f.hidden_field :client_id, value: client.id %>
-								<%= f.hidden_field :type, value: User::CLIENT_MANAGER %>
-								<%= f.email_field :email, placeholder: "manager@acme.com" %>
-								<%= f.submit "Invite Manager", class: "btn-inline btn btn-success btn-sm" %>
-							<% end %>
+					<h2><%= link_to client.client_label, client_path(client) %></h2>
+					<% if client.client_manager %>
+							<p>Managed by: <%= client.client_manager.email %></p>
+					<% else %>
+						<%= form_for :user, url: "users", method: :post do |f| %>
+							<%= f.hidden_field :client_id, value: client.id %>
+							<%= f.hidden_field :type, value: User::CLIENT_MANAGER %>
+							<%= f.email_field :email, placeholder: "manager@acme.com" %>
+							<%= f.submit "Invite Manager", class: "btn-inline btn btn-success btn-sm" %>
 						<% end %>
-					</div>
+					<% end %>
+					<br>
+					<%= link_to "Link / Unlink Fax Numbers", edit_client_path(client), class: "btn btn-success" %>
 				</div>
 				<div class="col-lg-6">
 					<table class="table table-hover table-striped table-sm align-self-center">
 						<thead class="thead-dark">
 							<tr>
-								<th></th>
 								<th class="text-center">Fax Number</th>
 								<th class="text-center">Label</th>
 								<th class="text-center">Client-Set Label</th>
-								<th class="text-center">Edit Fax Number</th>
 							</tr>
 						</thead>
 						<tbody>
 							<% if client.fax_numbers.present? %>
 								<% client.fax_numbers.each do |client_fax_number| %>
 									<tr>
-										<td class="text-center align-middle"><%= image_tag("file-icon.png", size:"24x24") %></td>
 										<td class="text-center"><%= client_fax_number.fax_number %></td>
 										<td class="text-center"><%= client_fax_number.fax_number_label %></td>
 										<td class="text-center"><%= client_fax_number.fax_number_display_label %></td>
-										<td class="text-center"><%= link_to "Edit Fax Number", edit_fax_number_path(client_fax_number), class: "btn btn-success btn-sm" %>
 									</tr>
 								<% end %>
 							<% else %>
-							<td class="text-center align-middle"><%= image_tag("file-icon.png", size:"24x24") %></td>
-							<td></td>
 							<td></td>
 							<td>None Assigned</td>
 							<td></td>
 							<% end %>
 						</tbody>
 					</table>
-				</div>
-				<div class="col-lg-1 align-self-center">
-					<%= link_to "Edit Client", edit_client_path(client), class: "btn-inline btn btn-success" %>
 				</div>
 			</div>
 		<% end %>

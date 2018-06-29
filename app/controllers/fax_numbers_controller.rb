@@ -18,7 +18,9 @@ class FaxNumbersController < ApplicationController
 	def update
 		original_client = @fax_number.client
 		param_filter_type = is_admin? ? admin_fax_number_params : client_manager_fax_number_params
+		
 		if @fax_number.update_attributes(param_filter_type)
+
 			# this if block spoofs the "email[:to_remove]" portion of params by creating and passing in a similar hash
 			if original_client != @fax_number.client
 				@fax_number.update(fax_number_label: "Unallocated", fax_number_display_label: "Unlabeled")
@@ -26,12 +28,15 @@ class FaxNumbersController < ApplicationController
 				original_client.user_emails.each { |user_email| original_client_user_email_ids[user_email.id] = 'on' }
 				remove_user_email_associations(original_client_user_email_ids, @fax_number)
 			end
+
 			unless params[:user_emails].nil?
 				add_user_email_associations(user_email_association_params[:to_add], @fax_number) if params[:user_emails][:to_add]
 				remove_user_email_associations(user_email_association_params[:to_remove], @fax_number) if params[:user_emails][:to_remove]
 			end
+
 			flash[:notice] = "Changes successfully saved."
 			is_admin? ? redirect_to(fax_numbers_path) : redirect_to(client_path(id: original_client.id))
+
 		else
 			flash[:alert] = @fax_number.errors.full_messages.pop
 			render :edit

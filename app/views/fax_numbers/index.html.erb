@@ -7,7 +7,6 @@
 <table class='table table-hover'>
 	<thead class="thead-dark">
 		<tr>
-			<th></th>
 			<th class="text-center">Fax Number</th>
 			<th class="text-center">Client</th>
 			<th class="text-center">Label</th>
@@ -20,7 +19,6 @@
 		<% if @fax_numbers %>
 			<% @fax_numbers.each do |fax_number, info_hash| %>
 				<tr>
-					<td class="text-center align-middle"><%= image_tag("file-icon.png", size:"24x24") %></td>
 					<td class="text-center align-middle"><%= fax_number %></td>
 					<td class="text-center align-middle">
 						<% if info_hash[:client] == "Unallocated" %>

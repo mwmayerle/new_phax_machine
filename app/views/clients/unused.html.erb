@@ -1,0 +1,31 @@
+<% if @client.user_emails %>
+	<div class="row">
+		<div class="col-lg-6">
+			<strong><p>Emails linked to <%= client.client_label %>:</p></strong>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-5">
+			<table class="table table-hover table-sm">
+				<thead class="thead-dark">
+					<tr>
+						<th class="text-center">Email</th>
+						<th class="text-center">Delete</th>
+					</tr>
+				</thead>
+				<tbody>
+					<% @client.user_emails.each do |user_email| %>
+						<tr>
+							<td class="text-center"><%= user_email.email_address %></td>
+							<td class="text-center">
+								<% if user_email.user_id %>
+									<%= button_to "Delete User", user_path(id: user_email.user_id), method: :delete, class: "btn btn-danger btn-sm" %>
+								<% end %>
+							</td>
+						</tr>
+					<% end %>
+				</tbody>
+			</table>
+		</div>
+	</div>
+<% end %>

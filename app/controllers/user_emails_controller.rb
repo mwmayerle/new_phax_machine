@@ -18,8 +18,10 @@ class UserEmailsController < ApplicationController
 
 	def create
 		@fax_number = FaxNumber.find(params[:user_email][:fax_number_id])
+		
 		if @fax_number && authorized?(@fax_number.client, :client_manager_id)
 			@user_email = UserEmail.new(user_email_params)
+
 			if @user_email.valid?
 				@fax_number.user_emails << @user_email
 				flash[:notice] = "Email successfully created."
@@ -28,6 +30,7 @@ class UserEmailsController < ApplicationController
 				flash[:alert] = @user_email.errors.full_messages.pop
 				render :new
 			end
+
 		else
 			flash[:alert] = @fax_number.errors.full_messages.pop
 			render :new

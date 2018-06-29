@@ -17,11 +17,14 @@ class ClientsController < ApplicationController
 	def create
 		@client = Client.new(client_params)
 		if @client.save
+
 			unless params[:fax_numbers].nil?
 				add_fax_number_associations(client_association_params[:to_add], @client.id) if params[:fax_numbers][:to_add]
 			end
+
 			flash[:notice] = "Client created successfully."
 			redirect_to clients_path
+			
 		else
 			flash[:alert] = @client.errors.full_messages.pop
 			render :new
