@@ -8,8 +8,7 @@ class User < ApplicationRecord
 
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :trackable, :timeoutable and :omniauthable
-  devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable #:confirmable
+  devise :database_authenticatable, :registerable, :recoverable, :rememberable, :validatable #:confirmable
 
 	attr_readonly :type, :fax_tag
 
@@ -25,18 +24,15 @@ class User < ApplicationRecord
 
 	validates :email, length: { in: 5..USER_CHARACTER_LIMIT }, uniqueness: { case_senstive: false }
 	validates :client_id, presence: true, numericality: { integer_only: true }, if: :is_generic_user?
-	validates :situational, length: { maximum: 9, allow_blank: true }
 	validates :fax_tag, length: { maximum: FaxTags::FAX_TAG_LIMIT }
 
 	before_validation :ensure_user_type, :check_for_unwanted_characters
-
 	before_validation :generate_fax_tag, :generate_temporary_password, on: :create
 
 	after_create { User.welcome(self.id) }
 
 	before_destroy :remove_client_manager, if: :is_client_manager?
 	
-	# has_secure_password
 	private
 		def check_for_unwanted_characters
 			self.email.downcase!

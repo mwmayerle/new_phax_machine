@@ -1,21 +1,5 @@
 # frozen_string_literal: true
-
 class Users::PasswordsController < Devise::PasswordsController
-  # GET /resource/password/new
-  # def new
-  #   super
-  # end
-
-  # POST /resource/password
-  # def create
-  #   super
-  # end
-
-  # GET /resource/password/edit?reset_password_token=abcdef
-  # def edit
-  #   super
-  # end
-
   # GET /resource/password/set_new_user_password?reset_password_token=abcdef
   def set_new_user_password
     self.resource = resource_class.new
@@ -29,17 +13,21 @@ class Users::PasswordsController < Devise::PasswordsController
 
     if resource.errors.empty?
       resource.unlock_access! if unlockable?(resource)
+
       if Devise.sign_in_after_reset_password
+
       	if params[:user][:new_user]
       		flash[:notice] = "Welcome to Phax Machine #{resource.email}. You have been logged in."
       	else
         	flash_message = resource.active_for_authentication? ? :updated : :updated_not_active
         	set_flash_message!(:notice, flash_message)
         end
+
         sign_in(resource_name, resource)
       else
         set_flash_message!(:notice, :updated_not_active)
       end
+      
       respond_with resource, location: after_resetting_password_path_for(resource)
     else
       set_minimum_password_length
@@ -47,19 +35,4 @@ class Users::PasswordsController < Devise::PasswordsController
     end
   end
 
-  # PUT /resource/password
-  # def update
-  #   super
-  # end
-
-  # protected
-
-  # def after_resetting_password_path_for(resource)
-  #   super(resource)
-  # end
-
-  # The path used after sending reset password instructions
-  # def after_sending_reset_password_instructions_path_for(resource_name)
-  #   super(resource_name)
-  # end
 end

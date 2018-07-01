@@ -1,0 +1,15 @@
+<h1>Manage Users</h1>
+
+<h2>Users who can log in to send a fax</h2>
+<% if @client.users %>
+	<% @client.users.each do |client_user| %>
+		<%= client_user.email %>
+	<% end %>
+<% end %>
+
+<h2>Users linked to <%= @client.client_label %></h2>
+<% if @client.unused_emails %>
+	<% @client.unused_emails.each do |unused_email| %>
+		<%= unused_email.email_address %>
+	<% end %>
+<% end %>

@@ -7,11 +7,6 @@ class Users::RegistrationsController < Devise::RegistrationsController
   	before_action :verify_permissions, only: [:create, :destroy]
   	prepend_before_action :require_no_authentication, only: :cancel
 
-  # GET /resource/sign_up
-  # def new
-  #   super
-  # end
-
   # POST /resource
   def create
     build_resource(sign_up_params)
@@ -20,22 +15,20 @@ class Users::RegistrationsController < Devise::RegistrationsController
     yield resource if block_given?
     if resource.persisted?
 	    user = User.find(resource.id)
-    	client = Client.find(resource.client_id)
 
     	# Create a UserEmail object with the User object          
-    	if resource.type == User::CLIENT_MANAGER                  #
-	    	client.update(client_manager_id: user.id)               #
-	    	new_email = UserEmail.create(                           #
-	    		email_address: user.email,                            # Creating a ClientManager user
-	    		client_id: client.id,                                 #
-	    		user_id: user.id,                                     #
-	    		caller_id_number: client.fax_numbers.first.fax_number #
+    	if resource.type == User::CLIENT_MANAGER                      #
+	    	client = Client.find(resource.client_id)                    #
+	    	client.update_attributes(client_manager_id: user.id)        #
+	    	new_email = UserEmail.create(                               # Creating a ClientManager user from
+	    		email_address: user.email,                                # scratch w/no previously persisted
+	    		client_id: client.id,                                     # UserEmail object
+	    		user_id: user.id,                                         # 
+	    		caller_id_number: client.fax_numbers.first.fax_number     #
 	    	)
 
 	    else
-    		fax_number = FaxNumber.find(resource.situational.to_i)                       #
-	    	emails = UserEmail.where(email_address: user.email).update(user_id: user.id) # Creating a User from existing UserEmail
-	      resource.update_attributes(situational: nil)                                 #
+	    	UserEmail.find_by(email_address: user.email).update(user_id: user.id) # Creating a User from existing UserEmail
 	    end
 	    
       if resource.active_for_authentication?
@@ -48,65 +41,33 @@ class Users::RegistrationsController < Devise::RegistrationsController
       clean_up_passwords resource
       set_minimum_password_length
     end
-    is_admin? ? redirect_to(clients_path) : redirect_to(edit_fax_number_path(id: fax_number.id))
+    # Admin redirect is different b/c Client Managers are invited on the Client index page. A show page may not exist yet.
+    is_admin? ? redirect_to(clients_path) : redirect_to(client_path(id: current_user.client.id))
   end
-
-  # GET /resource/edit
-  # def edit
-  #   super
-  # end
-
-  # PUT /resource
-  # def update
-  #   super
-  # end
 
   # DELETE /resource
   def destroy
   	resource = User.find(params[:id])
-  	client = Client.find(resource.client.id)
-  	client.update_attributes(client_manager_id: nil) if resource.type == User::CLIENT_MANAGER
-    resource.destroy
-    flash[:notice] = "User deleted"
-    yield resource if block_given?
-    is_admin? ? redirect_to(client_path(client)) : redirect_to(client_path(current_user.client))
-  end
+  	UserEmail.find_by(user_id: resource.id).update_attributes(user_id: nil) # retains the UserEmail obj
 
-  # GET /resource/cancel
-  # Forces the session data which is usually expired after sign
-  # in to be expired now. This is useful if the user wants to
-  # cancel oauth signing in/up in the middle of the process,
-  # removing all OAuth session data.
-  # def cancel
-  #   super
-  # end
+		client = current_user.client.nil? ? Client.find(resource.client.id) : current_user.client
+		client.update_attributes(client_manager_id: nil) if resource.type == User::CLIENT_MANAGER # Removes client_manager privileges
+
+    resource.destroy
+    flash[:notice] = "Access for #{resource.email} revoked"
+    yield resource if block_given?
+    redirect_to(client_path(client))
+  end
 
   protected
 
-  # If you have extra params to permit, append them to the sanitizer.
-  # def configure_sign_up_params
-  #   devise_parameter_sanitizer.permit(:sign_up, keys: [:attribute])
-  # end
-
-  # If you have extra params to permit, append them to the sanitizer.
-  # def configure_account_update_params
-  #   devise_parameter_sanitizer.permit(:account_update, keys: [:attribute])
-  # end
-
-  # The path used after sign up.
-  # def after_sign_up_path_for(resource)
-  #   super(resource)
-  # end
-
-  # The path used after sign up for inactive accounts.
-  # def after_inactive_sign_up_path_for(resource)
-  #   super(resource)
-  # end
-  
-  def verify_permissions
-  	if !is_admin? && sign_up_params[:type] == User::CLIENT_MANAGER || !is_client_manager?
-  		flash[:alert] = "Permission denied."
-  		redirect_to_root_path
-  	end
-  end
+	# 'is_client_manager?' returns true if the user is a ClientManager or Admin, so if they're not an 
+	# admin and a ClientManager user is trying to be created OR they're not an Admin or ClientManager 
+	# and a generic user is being created, then redirect
+	  def verify_permissions
+	  	if !is_admin? && sign_up_params[:type] == User::CLIENT_MANAGER || !is_client_manager?
+	  		flash[:alert] = "Permission denied."
+	  		redirect_to_root_path
+	  	end
+	  end
 end

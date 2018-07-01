@@ -1,68 +1,80 @@
 <div id="manage-clients-top" class="row">
 	<h1><%= @client.client_label %></h1>
 </div>
-<% if authorized?(@client, :client_manager_id) %>
-	<% if @client.fax_numbers.present? %>
-		<% @client.fax_numbers.each do |client_fax_number| %>
-			<div class="client-email-info row">
-				<div class="col-lg-4">
-					<div class="client-label-div align-self-center">
-						<h2><%= link_to client_fax_number.fax_number, edit_fax_number_path(client_fax_number) %></h2>
-						<p><%= client_fax_number.fax_number_display_label %></p>
-					</div>
-				</div>
-				<div class="col-lg-6">
-					<table class="table table-hover table-striped table-sm align-self-center">
-						<thead class="thead-dark">
-							<tr>
-								<th></th>
-								<th class="text-center"></th>
-								<th class="text-center">Email</th>
-								<th class="text-center">Caller ID</th>
-								<th class="text-center">Edit</th>
-							</tr>
-						</thead>
-						<tbody>
-							<% if client_fax_number.user_emails.present? %>
-								<% client_fax_number.user_emails.each do |user_email| %>
-									<tr>
-										<td class="text-center align-middle"><%= image_tag("file-icon.png", size:"24x24") %></td>
-										<td></td>
-										<td class="text-center"><%= user_email.email_address %></td>
-										<td class="text-center"><%= user_email.caller_id_number %></td>
-										<td class="text-center"><%= link_to "Edit Email", edit_user_email_path(user_email), class: "btn btn-sm btn-success" %>
-									</tr>
-								<% end %>
-							<% else %>
-								<tr>
-									<td class="text-center align-middle"><%= image_tag("file-icon.png", size:"24x24") %></td>
-									<td></td>
-									<td class="text-right">None</td>
-									<td class="text-left">Assigned</td>
-									<td></td>
-								</tr>
-							<% end %>
-						</tbody>
-					</table>
-				</div>
-				<div class="col-lg-1 align-self-center">
-					<%= link_to "Manage Emails", edit_fax_number_path(client_fax_number), class: "btn btn-sm btn-success" %>
+
+<% if @client.fax_numbers.present? %>
+	<% @client.fax_numbers.each do |client_fax_number| %>
+		<div class="info-box row">
+			<div class="col-lg-4">
+				<div class="client-label-div align-self-center">
+					<h2><%= client_fax_number.fax_number %></h2>
+					<p><%= client_fax_number.fax_number_display_label %></p>
+					<%= link_to "Link / Unlink Emails", edit_fax_number_path(client_fax_number), class: "btn btn-success" %>
 				</div>
 			</div>
-		<% end %>
+
+			<div class="col-lg-6">
+				<table class="table table-hover table-striped table-sm align-self-center">
+					<thead class="thead-dark">
+						<tr>
+							<th class="text-center">Email</th>
+							<th class="text-center">Caller ID</th>
+							<th class="text-center">Edit</th>
+						</tr>
+					</thead>
+					<tbody>
+						<% if client_fax_number.user_emails.present? %>
+							<% client_fax_number.user_emails.each do |user_email| %>
+								<tr>
+									<td class="text-center"><%= user_email.email_address %></td>
+									<td class="text-center"><%= user_email.caller_id_number %></td>
+									<td class="text-center"><%= link_to "Edit Email", edit_user_email_path(user_email), class: "btn btn-sm btn-success" %>
+								</tr>
+							<% end %>
+						<% else %>
+							<tr>
+								<td></td>
+								<td class="text-right">None</td>
+								<td class="text-left">Assigned</td>
+								<td></td>
+							</tr>
+						<% end %>
+					</tbody>
+				</table>
+			</div>
+
+		</div>
 	<% end %>
 <% end %>
-<% if @unused_emails.present? %>
-	<div id="unallocated-emails" class="row">
-		<div class="col-lg-4">
-			<h2>Unallocated Emails</h2>
-		</div>
-		<div class="col-lg-9">
-			<ul class="list-unstyled">
-				<% @unused_emails.each do |unused_email| %>
-					<li> <%= unused_email.email_address %> </li>
+
+<h2><%= @client.client_label %> Users</h2>
+<% if @client.user_emails.present? %>
+	<div class="col-lg-6">
+		<table class="table table-sm table-hover">
+			<thead class="thead-dark">
+				<tr>
+					<th class="text-center">Email</th>
+					<th class="text-center">Invite User</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% @client.user_emails.each do |user_email| %>
+					<tr>
+						<td class="text-center"><%= user_email.email_address %></td>
+						<td class="text-center">
+							<% if user_email.user_id.nil? %>
+								<%= form_for :user, url: "/users", method: :post do |f| %>
+									<%= f.hidden_field :client_id, value: @client.id %>
+									<%= f.hidden_field :email, value: user_email.email_address %>
+									<%= f.submit "Invite User", class: "btn btn-success btn-sm" %>
+								<% end %>
+							<% else %>
+								<%= button_to "Revoke Access", user_path(id: user_email.user_id), method: :delete, class: "btn btn-danger btn-sm" %>
+							<% end %>
+						</td>
+					</tr>
 				<% end %>
-			</ul>
-		</div>
+			</tbody>
+		</table>
 	</div>
 <% end %>

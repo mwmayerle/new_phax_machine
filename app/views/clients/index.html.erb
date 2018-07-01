@@ -6,11 +6,27 @@
 		<%= link_to "Add New Client", new_client_path, class: "btn btn-primary" %>
 	</div>
 </div>
+
 <% if is_admin? %>
+	<% if @unallocated_fax_numbers.present? %>
+		<div class="row">
+			<div class="col-lg-4">
+				<h2>Unallocated Fax Numbers</h2>
+			</div>
+			<div class="col-lg-9">
+				<ul class="list-unstyled">
+					<% @unallocated_fax_numbers.each do |fax_number| %>
+						<li> <%= fax_number.fax_number %></li>
+					<% end %>
+				</ul>
+			</div>
+		</div>
+	<% end %>
+
 	<% if @clients.present? %>
 		<% @clients.each do |client| %>
-			<div class="client-info row">
-				<div class="col-lg-4">
+			<div class="info-box row">
+				<div class="col-lg-4 ">
 					<h2><%= link_to client.client_label, client_path(client) %></h2>
 					<% if client.client_manager %>
 							<p>Managed by: <%= client.client_manager.email %></p>
@@ -24,8 +40,10 @@
 					<% end %>
 					<br>
 					<%= link_to "Link / Unlink Fax Numbers", edit_client_path(client), class: "btn btn-success" %>
+					<%= button_to "Delete Client", client_path(client), class: "btn btn-danger", method: :delete %>
 				</div>
-				<div class="col-lg-6">
+
+				<div class="col-lg-8 align-self-center">
 					<table class="table table-hover table-striped table-sm align-self-center">
 						<thead class="thead-dark">
 							<tr>
@@ -44,28 +62,17 @@
 									</tr>
 								<% end %>
 							<% else %>
-							<td></td>
-							<td>None Assigned</td>
-							<td></td>
+								<tr>
+									<td></td>
+									<td class="text-center">None Assigned</td>
+									<td></td>
+								</tr>
 							<% end %>
 						</tbody>
 					</table>
 				</div>
+				
 			</div>
 		<% end %>
-	<% end %>
-	<% if @unallocated_fax_numbers.present? %>
-		<div id="unallocated-numbers" class="row">
-			<div class="col-lg-4">
-				<h2>Unallocated Fax Numbers</h2>
-			</div>
-			<div class="col-lg-9">
-				<ul class="list-unstyled">
-					<% @unallocated_fax_numbers.each do |fax_number| %>
-						<li> <%= fax_number.fax_number %></li>
-					<% end %>
-				</ul>
-			</div>
-		</div>
 	<% end %>
 <% end %>
