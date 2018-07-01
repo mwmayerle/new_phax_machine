@@ -19,9 +19,8 @@ Rails.application.routes.draw do
   resources :user_emails
 	resources :clients
   resources :fax_numbers, only: [:index, :edit, :update]
-  root to: "users#index" #change this in the future
 
-  post "/users/invite_and_create_client_manager", to: "users#invite_and_create_client_manager"
+  root to: "users#index"
 
   post "/fax_received", to: "mailgun_faxes#fax_received"
   post "/fax_sent", to: "mailgun_faxes#fax_sent"

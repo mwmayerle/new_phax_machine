@@ -10,14 +10,14 @@ RSpec.describe Client, :type => :model do
 		let!(:fax_number2) {FaxNumber.create!(fax_number: '12025550121', fax_number_label: "Fake2", client_id: client.id)}
 		let!(:fax_number3) {FaxNumber.create!(fax_number: '12025550167', fax_number_label: "Fake3", client_id: client.id)}
 
-		let!(:user_email1) {UserEmail.create!(user_id: user1.id, email_address: 'user1@gmail.com', client_id: client.id)}
-		let!(:user_email2) {UserEmail.create!(user_id: user2.id, email_address: 'user2@gmail.com', client_id: client.id)}
+		let!(:user_email1) {UserEmail.create!(user_id: user1.id, email_address: 'user1@gmail.com', client_id: client.id, caller_id_number: fax_number1.fax_number)}
+		let!(:user_email2) {UserEmail.create!(user_id: user2.id, email_address: 'user2@gmail.com', client_id: client.id, caller_id_number: fax_number1.fax_number)}
 
 		(3..9).each do |counter|
-			let!("user_email#{counter}".to_sym) {UserEmail.create!(email_address: "user#{counter}@gmail.com", client_id: client.id)}
+			let!("user_email#{counter}".to_sym) {UserEmail.create!(email_address: "user#{counter}@gmail.com", client_id: client.id, caller_id_number: fax_number1.fax_number)}
 		end
 
-	before(:each) { client.update(client_manager_id: client_manager.id) }
+	before(:each) { client.update_attributes(client_manager_id: client_manager.id) }
 
 	describe "creating a Client with valid input" do
 		it "is valid with valid inputs" do

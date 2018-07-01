@@ -31,8 +31,8 @@ class MailgunFaxesController < ApplicationController
 	end
 
 	def mailgun(files = [])
-    return [400, "Must include a sender"] if !params['from']
-    return [400, "Must include a recipient"] if !params['recipient']
+    return [400, "Must include a sender"] if !params['from']					#M ake this send a fail email
+    return [400, "Must include a recipient"] if !params['recipient']	# Make this send a fail email
 
     attachment_count = params['attachment-count'].to_i
 

@@ -6,8 +6,8 @@ RSpec.describe FaxNumber, type: :model do
 	let!(:client_manager) {User.create!(type: :ClientManager, email: "matt@phaxio.com", client_id: client.id)}
 	let!(:user1) {User.create!(email: "user1@gmail.com", client_id: client.id)}
 	let!(:fax_number) {FaxNumber.create!(fax_number: '12025550134', fax_number_label: "Fake1", client_id: client.id)}
-	let!(:user_email1) {UserEmail.create!(user_id: user1.id, email_address: 'user1@gmail.com', client_id: client.id)}
-	let!(:user_email2) {UserEmail.create!(user_id: client.id, email_address: 'matt@phaxio.com', client_id: client.id)}
+	let!(:user_email1) {UserEmail.create!(user_id: user1.id, email_address: 'user1@gmail.com', client_id: client.id, caller_id_number: fax_number.fax_number)}
+	let!(:user_email2) {UserEmail.create!(user_id: client.id, email_address: 'matt@phaxio.com', client_id: client.id, caller_id_number: fax_number.fax_number)}
 
 	before(:each) { client.update(client_manager_id: client_manager.id) }
 
@@ -94,8 +94,8 @@ RSpec.describe FaxNumber, type: :model do
   	end
 
   	it "returns user_emails associated with a fax_number " do
-  		new_email1 = UserEmail.create(email_address: "test1@gmail.com")
-  		new_email2 = UserEmail.create(email_address: "test2@gmail.com")
+  		new_email1 = UserEmail.create(email_address: "test1@gmail.com", caller_id_number: fax_number.fax_number)
+  		new_email2 = UserEmail.create(email_address: "test2@gmail.com", caller_id_number: fax_number.fax_number)
   		client.user_emails << new_email1
   		client.user_emails << new_email2
   		client.reload

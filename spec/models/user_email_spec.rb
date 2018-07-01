@@ -9,8 +9,8 @@ RSpec.describe UserEmail, type: :model do
 	let!(:fax_number1) {FaxNumber.create!(fax_number: '12025550134', fax_number_label: "Fake1", client_id: client.id)}
 	let!(:fax_number2) {FaxNumber.create!(fax_number: '12025550121', fax_number_label: "Fake2", client_id: client.id)}
 
-	let!(:user_email1) {UserEmail.create!(user_id: user1.id, email_address: 'user1@gmail.com', client_id: client.id)}
-	let!(:user_email2) {UserEmail.new(user_id: user2.id, email_address: 'user2@gmail.com', client_id: client.id)}
+	let!(:user_email1) {UserEmail.create!(user_id: user1.id, email_address: 'user1@gmail.com', client_id: client.id, caller_id_number: fax_number1.fax_number)}
+	let!(:user_email2) {UserEmail.new(user_id: user2.id, email_address: 'user2@gmail.com', client_id: client.id, caller_id_number: fax_number2.fax_number)}
 
 	before(:each) { client.update(client_manager_id: client_manager.id) }
 

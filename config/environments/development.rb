@@ -31,7 +31,7 @@ Rails.application.configure do
   config.active_storage.service = :local
 
   # Don't care if the mailer can't send.
-  config.action_mailer.raise_delivery_errors = false
+  config.action_mailer.raise_delivery_errors = true
 
   config.action_mailer.perform_caching = false
 
@@ -66,8 +66,10 @@ Rails.application.configure do
     :enable_starttls_auto => ENV['SMTP_TLS'],
     :address => ENV["SMTP_HOST"],
     :port => ENV["SMTP_PORT"],
-    :domain => ENV["SMTP_DOMAIN"],
+    # :domain => ENV["SMTP_DOMAIN"],
     :user_name => ENV["SMTP_USER"],
     :password => ENV["SMTP_PASSWORD"]
   }
+
 end
+

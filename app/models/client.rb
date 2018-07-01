@@ -3,8 +3,7 @@ class Client < ApplicationRecord
 	
 	CLIENT_CHARACTER_LIMIT = 64
 
-	attr_readonly :admin_id
-	attr_readonly :fax_tag
+	attr_readonly :admin_id, :fax_tag
 
 	belongs_to :admin, class_name: :User
 	belongs_to :client_manager, optional: true, dependent: :destroy
@@ -29,5 +28,11 @@ class Client < ApplicationRecord
 			end
 			user_emails = UserEmail.where(client_id: self.id).destroy_all
 			FaxNumberUserEmail.where(user_email_id: user_emails).destroy_all
+		end
+
+		class << self
+			def get_unused_emails(client)
+				client.user_emails.select { |client_email| client_email.fax_number_user_emails.empty? }
+			end
 		end
 end

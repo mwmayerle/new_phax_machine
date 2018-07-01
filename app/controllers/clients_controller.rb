@@ -2,9 +2,9 @@ class ClientsController < ApplicationController
 	include SessionsHelper
 
 	before_action :verify_is_admin, only: [:index, :new, :create, :edit, :update, :destroy]
-	before_action :set_client, only: [:show, :edit, :update, :destroy, :add_emails]
+	before_action :set_client, only: [:show, :edit, :update, :destroy, :user_index]
 	before_action :get_unallocated_numbers, only: [:index, :new, :edit]
-
+	
 	def index
 		FaxNumber.format_and_retrieve_fax_numbers_from_api if FaxNumber.first.nil?
 		@clients = Client.all
@@ -17,11 +17,14 @@ class ClientsController < ApplicationController
 	def create
 		@client = Client.new(client_params)
 		if @client.save
+
 			unless params[:fax_numbers].nil?
 				add_fax_number_associations(client_association_params[:to_add], @client.id) if params[:fax_numbers][:to_add]
 			end
+
 			flash[:notice] = "Client created successfully."
 			redirect_to clients_path
+			
 		else
 			flash[:alert] = @client.errors.full_messages.pop
 			render :new
@@ -30,8 +33,7 @@ class ClientsController < ApplicationController
 
 	def show
 		if authorized?(@client, :client_manager_id)
-			@unused_emails = @client.user_emails.select { |client_email| client_email.fax_number_user_emails.empty? } # == [] possible bug
-			render :show
+			@unused_emails = Client.get_unused_emails(@client)
 		else
 			flash[:alert] = DENIED
 			redirect_to root_path
@@ -43,10 +45,12 @@ class ClientsController < ApplicationController
 
 	def update
 		if @client.update_attributes(client_params)
+
 			unless params[:fax_numbers].nil?
 				add_fax_number_associations(client_association_params[:to_add], @client.id) if params[:fax_numbers][:to_add]
 				remove_fax_number_associations(client_association_params[:to_remove]) if params[:fax_numbers][:to_remove]
 			end
+
 			flash[:notice] = "Client updated successfully."
 			redirect_to clients_path
 		else

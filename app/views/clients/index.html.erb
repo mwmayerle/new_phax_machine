@@ -6,65 +6,10 @@
 		<%= link_to "Add New Client", new_client_path, class: "btn btn-primary" %>
 	</div>
 </div>
+
 <% if is_admin? %>
-	<% if @clients.present? %>
-		<% @clients.each do |client| %>
-			<div class="client-info row">
-				<div class="col-lg-4">
-					<div class="client-label-div align-self-center">
-						<h2><%= link_to client.client_label, client_path(client) %></h2>
-						<% if client.client_manager %>
-								<p>Managed by: <%= client.client_manager.email %></p>
-						<% else %>
-							<%= form_for :user, url: "users", method: :post do |f| %>
-								<%= f.hidden_field :client_id, value: client.id %>
-								<%= f.hidden_field :type, value: User::CLIENT_MANAGER %>
-								<%= f.email_field :email, placeholder: "manager@acme.com" %>
-								<%= f.submit "Invite Manager", class: "btn-inline btn btn-success btn-sm" %>
-							<% end %>
-						<% end %>
-					</div>
-				</div>
-				<div class="col-lg-6">
-					<table class="table table-hover table-striped table-sm align-self-center">
-						<thead class="thead-dark">
-							<tr>
-								<th></th>
-								<th class="text-center">Fax Number</th>
-								<th class="text-center">Label</th>
-								<th class="text-center">Client-Set Label</th>
-								<th class="text-center">Edit Fax Number</th>
-							</tr>
-						</thead>
-						<tbody>
-							<% if client.fax_numbers.present? %>
-								<% client.fax_numbers.each do |client_fax_number| %>
-									<tr>
-										<td class="text-center align-middle"><%= image_tag("file-icon.png", size:"24x24") %></td>
-										<td class="text-center"><%= client_fax_number.fax_number %></td>
-										<td class="text-center"><%= client_fax_number.fax_number_label %></td>
-										<td class="text-center"><%= client_fax_number.fax_number_display_label %></td>
-										<td class="text-center"><%= link_to "Edit Fax Number", edit_fax_number_path(client_fax_number), class: "btn btn-success btn-sm" %>
-									</tr>
-								<% end %>
-							<% else %>
-							<td class="text-center align-middle"><%= image_tag("file-icon.png", size:"24x24") %></td>
-							<td></td>
-							<td></td>
-							<td>None Assigned</td>
-							<td></td>
-							<% end %>
-						</tbody>
-					</table>
-				</div>
-				<div class="col-lg-1 align-self-center">
-					<%= link_to "Edit Client", edit_client_path(client), class: "btn-inline btn btn-success" %>
-				</div>
-			</div>
-		<% end %>
-	<% end %>
 	<% if @unallocated_fax_numbers.present? %>
-		<div id="unallocated-numbers" class="row">
+		<div class="row">
 			<div class="col-lg-4">
 				<h2>Unallocated Fax Numbers</h2>
 			</div>
@@ -76,5 +21,58 @@
 				</ul>
 			</div>
 		</div>
+	<% end %>
+
+	<% if @clients.present? %>
+		<% @clients.each do |client| %>
+			<div class="info-box row">
+				<div class="col-lg-4 ">
+					<h2><%= link_to client.client_label, client_path(client) %></h2>
+					<% if client.client_manager %>
+							<p>Managed by: <%= client.client_manager.email %></p>
+					<% else %>
+						<%= form_for :user, url: "users", method: :post do |f| %>
+							<%= f.hidden_field :client_id, value: client.id %>
+							<%= f.hidden_field :type, value: User::CLIENT_MANAGER %>
+							<%= f.email_field :email, placeholder: "manager@acme.com" %>
+							<%= f.submit "Invite Manager", class: "btn-inline btn btn-success btn-sm" %>
+						<% end %>
+					<% end %>
+					<br>
+					<%= link_to "Link / Unlink Fax Numbers", edit_client_path(client), class: "btn btn-success" %>
+					<%= button_to "Delete Client", client_path(client), class: "btn btn-danger", method: :delete %>
+				</div>
+
+				<div class="col-lg-8 align-self-center">
+					<table class="table table-hover table-striped table-sm align-self-center">
+						<thead class="thead-dark">
+							<tr>
+								<th class="text-center">Fax Number</th>
+								<th class="text-center">Label</th>
+								<th class="text-center">Client-Set Label</th>
+							</tr>
+						</thead>
+						<tbody>
+							<% if client.fax_numbers.present? %>
+								<% client.fax_numbers.each do |client_fax_number| %>
+									<tr>
+										<td class="text-center"><%= client_fax_number.fax_number %></td>
+										<td class="text-center"><%= client_fax_number.fax_number_label %></td>
+										<td class="text-center"><%= client_fax_number.fax_number_display_label %></td>
+									</tr>
+								<% end %>
+							<% else %>
+								<tr>
+									<td></td>
+									<td class="text-center">None Assigned</td>
+									<td></td>
+								</tr>
+							<% end %>
+						</tbody>
+					</table>
+				</div>
+				
+			</div>
+		<% end %>
 	<% end %>
 <% end %>
