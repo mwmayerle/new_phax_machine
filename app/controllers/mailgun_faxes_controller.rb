@@ -20,6 +20,7 @@ class MailgunFaxesController < ApplicationController
 
 	def fax_sent
 		@fax = JSON.parse(params['fax'])
+		p @fax
 		email_addresses = UserEmail.find_by(fax_tag: @fax['tags']['sender_email_fax_tag']).email_address
 
     if @fax["status"] == "success"

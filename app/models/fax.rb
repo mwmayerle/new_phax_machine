@@ -5,7 +5,11 @@ class Fax
 		end
 
 		def create_fax(options)
-
+			p "**************************************************"
+			p options
+			p options[:tag]
+			p options[:tag][:sender_client_fax_tag]
+			p "**************************************************"
 			sent_fax_object = Phaxio::Fax.create(
 				to: options[:to],
 				file: options[:files],
