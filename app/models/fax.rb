@@ -16,20 +16,15 @@ class Fax
 		      }
 		    )
 		  rescue => error
+		  	p "==============================================="
+		  	p error
+		  	puts error.message
 		  	sent_fax_response = error.message
 		  end
 		  sent_fax_response
 		end
 
-		def create_fax_from_email(sender, recipient, files)
-			puts "==========================="
-			p sender
-			p recipient
-			p files
-      p number = Mail::Address.new(recipient).local
-      p user_email = UserEmail.find_by(email_address: sender)
-			puts "=========================================="
-
+		def create_fax_from_email(sender, recipient, files, user_email)
       options = {
       	to: number,
       	caller_id: user_email.caller_id_number,
@@ -37,7 +32,6 @@ class Fax
       	sender_email_fax_tag: user_email.fax_tag,
       	files: files.map { |file| File.new(file) }
       }
-      p options
       create_fax(options)
     end
 
