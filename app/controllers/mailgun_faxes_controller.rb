@@ -20,7 +20,6 @@ class MailgunFaxesController < ApplicationController
 
 	def fax_sent
 		@fax = JSON.parse(params['fax'])
-		p @fax
 		email_addresses = UserEmail.find_by(fax_tag: @fax['tags']['sender_email_fax_tag']).email_address
 
     if @fax["status"] == "success"
@@ -34,9 +33,8 @@ class MailgunFaxesController < ApplicationController
 	end
 
 	def mailgun(files = [])
-    return [400, "Must include a sender"] if !params['from']					# Make this send a fail email
-    return [400, "Must include a recipient"] if !params['recipient']	# Make this send a fail email
-
+   # return [400, "Must include a sender"] if !params['from']					# Make this send a fail email
+    #return [400, "Must include a recipient"] if !params['recipient']	# Make this send a fail email
     attachment_count = params['attachment-count'].to_i
 
     i = 1
@@ -51,7 +49,11 @@ class MailgunFaxesController < ApplicationController
     sender = Mail::AddressList.new(params['from']).addresses.first.address
  		sent_fax_object = Fax.create_fax_from_email(sender, params['recipient'], files)
  		api_response = Fax.get_fax_information(sent_fax_object)
- 		
+ 		puts "0000000000000000000000000000000000000000000000000000000000000000000000000000000"
+ 		p sent_fax_object
+ 		p "**"
+ 		p api_response
+ 		puts "0000000000000000000000000000000000000000000000000000000000000000000000000000000"
  		if api_response.status != 'queued'
 	 		MailgunMailer.email_to_fax_failed(sender, files, api_response.recipients).deliver_now
 	 	end

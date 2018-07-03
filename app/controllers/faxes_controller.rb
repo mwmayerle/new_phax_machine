@@ -18,10 +18,14 @@ class FaxesController < ApplicationController
 				sender_email_fax_tag: current_user.user_email.fax_tag,
 			},
 		}
-		sent_fax_object = Fax.create_fax(options)
-		api_response = Fax.get_fax_information(sent_fax_object)
-		flash_message_type = api_response.status == "queued" ? :notice : :alert
-		flash[flash_message_type] = api_response.status
+		sent_fax_response = Fax.create_fax(options)
+		# in Fax.create_fax I rescue Phaxio::Error-type errors and convert them into a string to catch garbage input
+		if sent_fax_response.class == String
+			flash[:alert] = sent_fax_response
+		else
+			api_response = Fax.get_fax_information(sent_fax_response)
+			api_response.status == 'queued' ? flash[:notice] = 'Fax queued for sending' : flash[:alert] = api_response.error_message
+		end
 		redirect_to new_fax_path
 	end
 

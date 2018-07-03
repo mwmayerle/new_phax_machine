@@ -5,21 +5,20 @@ class Fax
 		end
 
 		def create_fax(options)
-			p "**************************************************"
-			p options
-			p options[:tag]
-			p options[:tag][:sender_client_fax_tag]
-			p "**************************************************"
-			sent_fax_object = Phaxio::Fax.create(
-				to: options[:to],
-				file: options[:files],
-				caller_id: options[:caller_id_number],
-				tag: {
-				  sender_client_fax_tag: options[:tag][:sender_client_fax_tag], 
-				  sender_email_fax_tag: options[:tag][:sender_email_fax_tag]
-				},
-			)
-     	get_fax_information(sent_fax_object)
+		  begin
+		    sent_fax_response = Phaxio::Fax.create(
+		      to: options[:to],
+		      file: options[:files],
+		      caller_id: options[:caller_id_number],
+		      tag: {
+		        sender_client_fax_tag: options[:tag][:sender_client_fax_tag], 
+		        sender_email_fax_tag: options[:tag][:sender_email_fax_tag]
+		      }
+		    )
+		  rescue => error
+		  	sent_fax_response = error.message
+		  end
+		  sent_fax_response
 		end
 
 		def create_fax_from_email(sender, recipient, files)
