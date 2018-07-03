@@ -13,12 +13,11 @@ class FaxesController < ApplicationController
 			to: fax_params[:to],
 			files: attached_files,
 			caller_id: current_user.user_email.caller_id_number,
-			tag: {
-				sender_client_fax_tag: current_user.client.fax_tag,
+			tag: { 
+				sender_client_fax_tag: current_user.client.fax_tag, 
 				sender_email_fax_tag: current_user.user_email.fax_tag,
 			},
 		}
-		puts options
 		sent_fax_object = Fax.create_fax(options)
 		api_response = Fax.get_fax_information(sent_fax_object)
 		flash_message_type = api_response.status == "queued" ? :notice : :alert
