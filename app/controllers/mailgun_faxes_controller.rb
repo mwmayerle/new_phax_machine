@@ -52,7 +52,7 @@ class MailgunFaxesController < ApplicationController
  		if sent_fax_object.class != String
 			api_response = Fax.get_fax_information(sent_fax_object)
 		else
-			MailgunMailer.fax_email(sender, sent_fax_object, @fax = "").deliver_now
+			MailgunMailer.failed_email_to_fax_email(sender, sent_fax_object).deliver_now
 		end
 	end
 end
