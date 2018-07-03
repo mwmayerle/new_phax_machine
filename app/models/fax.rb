@@ -26,9 +26,9 @@ class Fax
 			p sender
 			p recipient
 			p files
+      p number = Mail::Address.new(recipient).local
+      p user_email = UserEmail.find_by(email_address: sender)
 			puts "=========================================="
-      number = Mail::Address.new(recipient).local
-      user_email = UserEmail.find_by(email_address: sender)
 
       options = {
       	to: number,
@@ -37,6 +37,7 @@ class Fax
       	sender_email_fax_tag: user_email.fax_tag,
       	files: files.map { |file| File.new(file) }
       }
+      p options
       create_fax(options)
     end
 
