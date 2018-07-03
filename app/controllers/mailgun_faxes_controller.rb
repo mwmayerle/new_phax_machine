@@ -47,8 +47,9 @@ class MailgunFaxesController < ApplicationController
     end
 
     sender = Mail::AddressList.new(params['from']).addresses.first.address
- 		sent_fax_object = Fax.create_fax_from_email(sender, params['recipient'], files)
 
+ 		sent_fax_object = Fax.create_fax_from_email(sender, params['recipient'], files)
+ 		
  		if sent_fax_object.class == String
 			error_message = sent_fax_object
 			p "==================================================================="

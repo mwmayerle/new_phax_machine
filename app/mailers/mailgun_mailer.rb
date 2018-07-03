@@ -9,9 +9,10 @@ class MailgunMailer < ApplicationMailer
   	mail(to: @email_addresses, subject: @email_subject)
   end
   
-	def email_to_fax_failed(sender, files, recipients)
+	def email_to_fax_failed(sender, files, error_message)
 		@sender = sender
 		@files = files
+		@error_message = error_message
 		mail(to: @sender, subject: 'There was a problem sending your fax')
 	end
 end
