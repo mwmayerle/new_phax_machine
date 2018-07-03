@@ -34,7 +34,7 @@ class Fax
       	tag: {
       		sender_client_fax_tag: user_email.client.fax_tag,
       		sender_email_fax_tag: user_email.fax_tag,
-      	}
+      	},
       	files: files.map { |file| File.new(file) }
       }
       create_fax(options)
