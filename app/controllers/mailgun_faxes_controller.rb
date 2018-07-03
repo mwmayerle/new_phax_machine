@@ -49,6 +49,10 @@ class MailgunFaxesController < ApplicationController
     end
 
  		sent_fax_object = Fax.create_fax_from_email(sender, params['recipient'], files, user_email)
-		api_response = Fax.get_fax_information(sent_fax_object)
+ 		if sent_fax_object.class != String
+			api_response = Fax.get_fax_information(sent_fax_object)
+		else
+			MailgunMailer.failed_email_to_fax_email(sender, sent_fax_object).deliver_now
+		end
 	end
 end
