@@ -15,10 +15,6 @@ class MailgunFaxesController < ApplicationController
     fax_file_contents = params['filename'].read
     email_subject = "Fax received from #{fax_from}"
 
-    p "============================================"
-    p email_addresses
-    p "============================================"
-
 		MailgunMailer.fax_email(email_addresses, email_subject, @fax, fax_file_name, fax_file_contents).deliver_now
 	end
 
@@ -33,9 +29,6 @@ class MailgunFaxesController < ApplicationController
     	email_subject = "Your fax failed because: #{@fax["most_common_error"]}"
     end
 
-    p "============================================"
-    p email_addresses
-    p "============================================"
 		MailgunMailer.fax_email(email_addresses, email_subject, @fax).deliver_now
 	end
 
@@ -57,10 +50,8 @@ class MailgunFaxesController < ApplicationController
     sender = Mail::AddressList.new(params['from']).addresses.first.address
  		sent_fax_object = Fax.create_fax_from_email(sender, params['recipient'], files)
  		api_response = Fax.get_fax_information(sent_fax_object)
+ 		
  		if api_response.status != 'queued'
- 		p "==========================="
-    p sender
-    p "============================================"
 	 		MailgunMailer.email_to_fax_failed(sender, files, api_response.recipients).deliver_now
 	 	end
 	end

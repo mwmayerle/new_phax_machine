@@ -3,10 +3,11 @@ class ClientsController < ApplicationController
 
 	before_action :verify_is_admin, only: [:index, :new, :create, :edit, :update, :destroy]
 	before_action :set_client, only: [:show, :edit, :update, :destroy, :user_index]
-	before_action :get_unallocated_numbers, only: [:index, :new, :edit]
+	before_action :get_unallocated_numbers, only: [:new, :edit]
 	
 	def index
 		FaxNumber.format_and_retrieve_fax_numbers_from_api if FaxNumber.first.nil?
+		@unallocated_fax_numbers = Client.create_unallocated_fax_number_hash(FaxNumber.where(client_id: nil))
 		@clients = Client.all
 	end
 
@@ -52,7 +53,7 @@ class ClientsController < ApplicationController
 			end
 
 			flash[:notice] = "Client updated successfully."
-			redirect_to clients_path
+			redirect_to client_path(@client)
 		else
 			flash[:alert] = @client.errors.full_messages.pop
 			render :edit
@@ -72,7 +73,7 @@ class ClientsController < ApplicationController
 			@client ||= Client.find(params[:id])
 		end
 
-		def get_unallocated_numbers
+		def get_unallocated_numbers 
 			@unallocated_fax_numbers = FaxNumber.where(client_id: nil)
 		end
 

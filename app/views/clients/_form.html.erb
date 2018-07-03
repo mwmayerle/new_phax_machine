@@ -3,9 +3,9 @@
 		<%= f.hidden_field :admin_id, value: "#{current_user.id}" %>
 	<% end %>
 	<div class="row">
-		<div class="col-lg-6 form-inline form-group">
-			<%= f.label :client_label, "Client Name: "%>
-			<%= f.text_field :client_label, value: client.client_label, class: "form-control" %>
+		<div class="col-lg-6">
+			<%= f.label :client_label, "Client Name: ", class: "form-group" %>
+			<%= f.text_field :client_label, value: client.client_label, class: "form-control form-group" %>
 		</div>
 	</div>
 	<div class="row">
@@ -22,7 +22,7 @@
 		<% if unallocated_fax_numbers.present? %>
 			<div class="col-lg-5">
 				<div class="form-group">
-					<strong><p>Link the following fax numbers to <%= client.client_label %>:</p></strong>
+					<strong><p>Add the following fax numbers to <%= client.client_label %>:</p></strong>
 					<table class="table table-hover table-sm">
 						<thead class="thead-dark">
 							<tr>
@@ -50,7 +50,7 @@
 		<% if client.fax_numbers.present? %>
 			<div class="col-lg-5">
 				<div class="form-group">
-					<strong><p>Unlink the following fax numbers from <%= client.client_label %>:</p></strong>
+					<strong><p>Remove the following fax numbers from <%= client.client_label %>:</p></strong>
 						<table class="table table-hover table-sm">
 							<thead class="thead-dark">
 								<tr>
@@ -62,8 +62,10 @@
 								<% client.fax_numbers.each do |client_fax_number| %>
 									<tr>
 										<td class="text-center">
-											<input type="checkbox" id="<%= client_fax_number.fax_number %>" name="fax_numbers[to_remove][<%= client_fax_number.id %>]" value="<%= client_fax_number.fax_number %>">
-					    				<label><%= client_fax_number.fax_number %></label>
+											<div class="form-check form-check-inline">
+												<input type="checkbox" id="<%= client_fax_number.fax_number %>" name="fax_numbers[to_remove][<%= client_fax_number.id %>]" value="<%= client_fax_number.fax_number %>" class="form-check-input">
+						    				<label for="<%= client_fax_number.fax_number %>"><%= client_fax_number.fax_number %></label>
+											</div>
 					    			</td>
 					    			<td class="text-center"><%= client_fax_number.fax_number_label %></td>
 					    		</tr>

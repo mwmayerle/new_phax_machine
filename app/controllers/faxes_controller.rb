@@ -18,6 +18,7 @@ class FaxesController < ApplicationController
 				sender_email_fax_tag: current_user.user_email.fax_tag,
 			},
 		}
+		puts options
 		sent_fax_object = Fax.create_fax(options)
 		api_response = Fax.get_fax_information(sent_fax_object)
 		flash_message_type = api_response.status == "queued" ? :notice : :alert

@@ -1,17 +1,32 @@
-<%= form_for user_email, class: "form" do |f| %>
-	<% if fax_number %>
+<% if is_admin? %>
+	<i><p class="text-center">Note: Only client-set labels are shown here</p></i>
+<% end %>
+
+<%= form_for user_email do |f| %>
+	<% if fax_number %> <!-- These values not used when editing -->
 		<%= f.hidden_field :fax_number_id, value: "#{fax_number.id}" %>
 		<%= f.hidden_field :client_id, value: "#{fax_number.client.id}" %>
 	<% end %>
-	<div class="form-group form-inline col">
-		<%= f.label :email_address, "Email Address: " %>
-		<%= f.email_field :email_address, class: "form-control form-inline" %>
-	</div>
-	<div class="form-group col">
-		<%= f.label :caller_id_number, "Caller ID Number" %>
-		<%= f.select :caller_id_number, user_email.client.fax_numbers.map { |fax_num| fax_num.fax_number }, class: "form-control" %>
-	</div>
-	<div class="form-group col">
-		<%= f.submit "Submit", class: "btn btn-primary" %>
+
+	<div class="row">
+		<div class="form-group form-inline col-lg-4">
+			<strong><%= f.label :email_address, "Email Address: " %></strong>
+			<%= f.email_field :email_address, class: "form-control form-inline" %>
+		</div>
+		<div class="form-group form-inline col-lg-5">
+			<strong><%= f.label :caller_id_number, "Caller ID Number", class: "col" %></strong>
+			<select class="form-control" name="user_email[caller_id_number]">
+				<% user_email.client.fax_numbers.each do |client_fax_number| %>
+					<% if client_fax_number == fax_number %>
+						<option name="user_email[caller_id_number]" value="<%= client_fax_number.fax_number %>" selected="selected"><%= client_fax_number.fax_number %> - <%= client_fax_number.fax_number_display_label %></option>
+					<% else %>
+						<option name="user_email[caller_id_number]" value="<%= client_fax_number.fax_number %>"><%= client_fax_number.fax_number %> - <%= client_fax_number.fax_number_display_label %></option>
+					<% end %>
+				<% end %>
+			</select>
+		</div>
+		<div class="form-group form-inline col-lg-3">
+			<%= f.submit "Submit", class: "btn btn-primary" %>
+		</div>
 	</div>
 <% end %>

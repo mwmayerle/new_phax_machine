@@ -1,4 +1,4 @@
-<div id="manage-clients-top" class="row">
+<div class="row">
 	<div class="col-lg-9">
 		<h1>Manage Clients</h1>
 	</div>
@@ -9,16 +9,20 @@
 
 <% if is_admin? %>
 	<% if @unallocated_fax_numbers.present? %>
-		<div class="row">
-			<div class="col-lg-4">
-				<h2>Unallocated Fax Numbers</h2>
-			</div>
-			<div class="col-lg-9">
-				<ul class="list-unstyled">
-					<% @unallocated_fax_numbers.each do |fax_number| %>
-						<li> <%= fax_number.fax_number %></li>
-					<% end %>
-				</ul>
+		<div class="row info-box-no-border">
+			<h2>Unallocated Fax Numbers</h2>
+			<div class="col">
+				<table class="table-sm table-responsive">
+					<tbody>
+						<% @unallocated_fax_numbers.each do |td_column, fax_number_group| %>
+								<tr>
+									<% fax_number_group.each do |fax_number| %>
+										<td class="text-center"><%= fax_number %></td>
+									<% end %>
+								</tr>
+						<% end %>
+					</tbody>
+				</table>
 			</div>
 		</div>
 	<% end %>
@@ -26,21 +30,23 @@
 	<% if @clients.present? %>
 		<% @clients.each do |client| %>
 			<div class="info-box row">
-				<div class="col-lg-4 ">
+				<div class="col-lg-4 form-group">
 					<h2><%= link_to client.client_label, client_path(client) %></h2>
 					<% if client.client_manager %>
 							<p>Managed by: <%= client.client_manager.email %></p>
 					<% else %>
-						<%= form_for :user, url: "users", method: :post do |f| %>
-							<%= f.hidden_field :client_id, value: client.id %>
-							<%= f.hidden_field :type, value: User::CLIENT_MANAGER %>
-							<%= f.email_field :email, placeholder: "manager@acme.com" %>
-							<%= f.submit "Invite Manager", class: "btn-inline btn btn-success btn-sm" %>
-						<% end %>
+						<div class="form-group">
+							<%= form_for :user, url: "users", method: :post do |f| %>
+								<%= f.hidden_field :client_id, value: client.id %>
+								<%= f.hidden_field :type, value: User::CLIENT_MANAGER %>
+								<%= f.email_field :email, placeholder: "manager@acme.com" %>
+								<%= f.submit "Invite Manager", class: "btn-inline btn btn-success btn-sm" %>
+							<% end %>
+						</div>
 					<% end %>
-					<br>
-					<%= link_to "Link / Unlink Fax Numbers", edit_client_path(client), class: "btn btn-success" %>
-					<%= button_to "Delete Client", client_path(client), class: "btn btn-danger", method: :delete %>
+					<div class="form-group">
+						<%= button_to "Delete Client", client_path(client), class: "btn btn-danger", method: :delete %>
+					</div>
 				</div>
 
 				<div class="col-lg-8 align-self-center">
