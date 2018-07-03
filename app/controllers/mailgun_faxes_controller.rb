@@ -49,14 +49,14 @@ class MailgunFaxesController < ApplicationController
     sender = Mail::AddressList.new(params['from']).addresses.first.address
  		sent_fax_object = Fax.create_fax_from_email(sender, params['recipient'], files)
 
- 		if sent_fax_response.class == String
+ 		if sent_fax_object.class == String
 			error_message = sent_fax_object
 			p "==================================================================="
 			puts error_message
 			p "==================================================================="
 	 		MailgunMailer.email_to_fax_failed(sender, files, error_message).deliver_now
 		else
-			api_response = Fax.get_fax_information(sent_fax_response)
+			api_response = Fax.get_fax_information(sent_fax_object)
 		end
 	end
 end
