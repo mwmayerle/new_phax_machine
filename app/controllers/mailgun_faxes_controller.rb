@@ -14,6 +14,7 @@ class MailgunFaxesController < ApplicationController
     fax_file_name = params['filename'].original_filename
     fax_file_contents = params['filename'].read
     email_subject = "Fax received from #{fax_from}"
+
 		MailgunMailer.fax_email(email_addresses, email_subject, @fax, fax_file_name, fax_file_contents).deliver_now
 	end
 
@@ -27,13 +28,15 @@ class MailgunFaxesController < ApplicationController
     	@fax["most_common_error"] = Fax.most_common_error(@fax)
     	email_subject = "Your fax failed because: #{@fax["most_common_error"]}"
     end
+
 		MailgunMailer.fax_email(email_addresses, email_subject, @fax).deliver_now
 	end
 
 	def mailgun(files = [])
-    return [400, "Must include a sender"] if !params['from']					#M ake this send a fail email
-    return [400, "Must include a recipient"] if !params['recipient']	# Make this send a fail email
-
+    # return [400, "Must include a sender"] if !params['from']					# Make this send a fail email
+    # return [400, "Must include a recipient"] if !params['recipient']	# Make this send a fail email
+    sender = Mail::AddressList.new(params['from']).addresses.first.address
+    user_email = UserEmail.find_by(email_address: sender)
     attachment_count = params['attachment-count'].to_i
 
     i = 1
@@ -45,11 +48,7 @@ class MailgunFaxesController < ApplicationController
       i += 1
     end
 
-    sender = Mail::AddressList.new(params['from']).addresses.first.address
- 		sent_fax_object = Fax.create_fax_from_email(sender, params['recipient'], files)
- 		api_response = Fax.get_fax_information(sent_fax_object)
- 		if api_response.status != 'queued'
-	 		MailgunMailer.email_to_fax_failed(sender, files, api_response.recipients).deliver_now
-	 	end
+ 		sent_fax_object = Fax.create_fax_from_email(sender, params['recipient'], files, user_email)
+		api_response = Fax.get_fax_information(sent_fax_object)
 	end
 end

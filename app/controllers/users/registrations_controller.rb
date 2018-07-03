@@ -38,11 +38,11 @@ class Users::RegistrationsController < Devise::RegistrationsController
         expire_data_after_sign_in!
       end
     else
+    	flash[:alert] = resource.errors.full_messages.pop
       clean_up_passwords resource
       set_minimum_password_length
     end
-    # Admin redirect is different b/c Client Managers are invited on the Client index page. A show page may not exist yet.
-    is_admin? ? redirect_to(clients_path) : redirect_to(client_path(id: current_user.client.id))
+    resource.type == User::USER ? redirect_to(client_path(resource.client)) : redirect_to(clients_path)
   end
 
   # DELETE /resource

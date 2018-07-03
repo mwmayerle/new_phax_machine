@@ -45,8 +45,18 @@ tr:hover {
 }
 
 .info-box {
-	padding: 15px;
+	padding-top: 20px;
+	padding-left: 10px;
+	padding-right: 10px;
 	margin: 30px;
-	border-radius: 20px;
+	border-radius: 16px;
 	border: 1px solid grey;
+}
+
+.info-box-no-border {
+	padding-top: 20px;
+	padding-left: 10px;
+	padding-right: 10px;
+	margin: 30px;
+	border-radius: 16px;
 }
