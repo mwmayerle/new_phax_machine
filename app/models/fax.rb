@@ -6,8 +6,6 @@ class Fax
 
 		def create_fax(options)
 		  begin
-		  	p "***************************************************"
-		  	p options
 		    sent_fax_response = Phaxio::Fax.create(
 		      to: options[:to],
 		      file: options[:files],
@@ -18,9 +16,6 @@ class Fax
 		      }
 		    )
 		  rescue => error
-		  	p "==============================================="
-		  	p error
-		  	puts error.message
 		  	sent_fax_response = error.message
 		  end
 		  sent_fax_response
