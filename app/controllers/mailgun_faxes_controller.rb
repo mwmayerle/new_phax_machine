@@ -50,7 +50,7 @@ class MailgunFaxesController < ApplicationController
  		sent_fax_object = Fax.create_fax_from_email(sender, params['recipient'], files)
 
  		if sent_fax_response.class == String
-			error_message = sent_fax_response
+			error_message = sent_fax_object
 			p "==================================================================="
 			puts error_message
 			p "==================================================================="
