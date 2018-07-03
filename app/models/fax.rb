@@ -6,6 +6,8 @@ class Fax
 
 		def create_fax(options)
 		  begin
+		  	p "***************************************************"
+		  	p options
 		    sent_fax_response = Phaxio::Fax.create(
 		      to: options[:to],
 		      file: options[:files],
