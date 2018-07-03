@@ -27,6 +27,7 @@ class Fax
 		end
 
 		def create_fax_from_email(sender, recipient, files, user_email)
+			number = Mail::Address.new(recipient).local
       options = {
       	to: number,
       	caller_id: user_email.caller_id_number,
