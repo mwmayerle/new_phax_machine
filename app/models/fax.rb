@@ -22,6 +22,11 @@ class Fax
 		end
 
 		def create_fax_from_email(sender, recipient, files)
+			puts "==========================="
+			p sender
+			p recipient
+			p files
+			puts "=========================================="
       number = Mail::Address.new(recipient).local
       user_email = UserEmail.find_by(email_address: sender)
 
