@@ -31,8 +31,10 @@ class Fax
       options = {
       	to: number,
       	caller_id: user_email.caller_id_number,
-      	sender_client_fax_tag: user_email.client.fax_tag,
-      	sender_email_fax_tag: user_email.fax_tag,
+      	tag: {
+      		sender_client_fax_tag: user_email.client.fax_tag,
+      		sender_email_fax_tag: user_email.fax_tag,
+      	}
       	files: files.map { |file| File.new(file) }
       }
       create_fax(options)
