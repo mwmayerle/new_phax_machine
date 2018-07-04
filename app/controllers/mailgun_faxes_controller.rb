@@ -85,6 +85,6 @@ class MailgunFaxesController < ApplicationController
 
 	  # Sort by is not allowed on ActionController Params, and using 'to_h()' requires a strong params
 	  def allowed_callback_params
-	  	params.permit({:fax => {} }, :filename, :success, :is_test, :direction)
+	  	p params.permit({:fax => [:id, :num_pages, :cost, :direction, :status, :is_test, :requested_at, :completed_at, :from_number, :to_number] }, :filename, :success, :is_test, :direction)
 	  end
 end
