@@ -25,6 +25,8 @@ class MailgunFaxesController < ApplicationController
 
 	def fax_sent
 		p "============================================================"
+		response.headers.each {|h| puts h}
+		p "============================================================"
 		p phaxio_signature = response.headers.HTTP_X_PHAXIO_SIGNATURE
 		p phaxio_signature2 = response.headers.HTTP_X_PHAXIO_SIGNATURE2
 		p "============================================================"
