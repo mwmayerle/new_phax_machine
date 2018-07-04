@@ -65,13 +65,13 @@ class MailgunFaxesController < ApplicationController
 	    url = request.url
 	    file_params = params[:filename]
 	    if Phaxio::Callback.valid_signature?(signature, url, callback_params, file_params)
-	    	p "===================================================================="
+	    	p "======================================================================"
 	      puts 'Success!!!!!!!!!!!!!!!!!!!!!!!!!!!'
-	      p "===================================================================="
+	      p "======================================================================"
 	    else
-	    	p "===================================================================="
+	    	p "======================================================================"
 	      puts 'Invalid callback signature!!!!!!!!!!!!!!!!!!!!!!!!'
-	      p "===================================================================="
+	      p "======================================================================"
 	    end
 	  end
 
@@ -85,7 +85,7 @@ class MailgunFaxesController < ApplicationController
 	  # Sort by is not allowed on ActionController Params, and using 'to_h()' requires a strong params
 	  def strong_callback_params
 	  	# p params.permit({:fax => {[:id, :num_pages, :cost, :direction, :status, :is_test, :requested_at, :completed_at, :from_number, :to_number]} }, :filename, :success, :is_test, :direction)
-	  	p "HELLLO!!!!!!"
+	  	p "HELLLO STRONG PARAMS!!!!!!"
 	  	p params.permit({:fax => {} }, :filename, :success, :is_test, :direction)
 	  end
 end
