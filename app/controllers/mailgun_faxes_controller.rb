@@ -64,7 +64,7 @@ class MailgunFaxesController < ApplicationController
 			signature = request.env['HTTP_X_PHAXIO_SIGNATURE']
 	    url = request.url
 	    file_params = params[:filename]
-	    param_data = callback_params
+	    param_data = callback_params.to_unsafe_h
 	    p "**************"
 	    puts param_data
 	    p "**************"
