@@ -86,6 +86,6 @@ class MailgunFaxesController < ApplicationController
 	  def strong_callback_params
 	  	# p params.permit({:fax => {[:id, :num_pages, :cost, :direction, :status, :is_test, :requested_at, :completed_at, :from_number, :to_number]} }, :filename, :success, :is_test, :direction)
 	  	p "HELLLO STRONG PARAMS!!!!!!"
-	  	p params.permit({:fax => {} }, :filename, :success, :is_test, :direction)
+	  	p params.permit({ :fax => {} }, { :filename => {} }, :success, :is_test, :direction)
 	  end
 end
