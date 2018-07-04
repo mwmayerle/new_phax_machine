@@ -64,24 +64,17 @@ class MailgunFaxesController < ApplicationController
 			signature = request.env['HTTP_X_PHAXIO_SIGNATURE']
 	    url = request.url
 	    file_params = params[:filename]
-	    param_data = callback_params.to_unsafe_h
-	    p "**************"
-	    puts param_data
-	    p "**************"
-	    if Phaxio::Callback.valid_signature?(signature, url, param_data, file_params)
-	    	p "===================================================================="
+	    if Phaxio::Callback.valid_signature?(signature, url, callback_params.to_h, file_params)
 	      puts 'Success!!!!!!!!!!!!!!!!!!!!!!!!!!!'
-	      p "===================================================================="
 	    else
-	    	p "===================================================================="
 	      puts 'Invalid callback signature!!!!!!!!!!!!!!!!!!!!!!!!'
-	      p "===================================================================="
 	    end
 	  end
 
 	  def callback_params
-	    params.select do |key, _value|
-	      %w(success is_test direction fax metadata message).include?(key)
-	    end
+	  	params.permit(:success, :is_test, :direction, :fax, :metadata, :message)
+	    # params.select do |key, _value|
+	    #   %w(success is_test direction fax metadata message).include?(key)
+	    # end
 	  end
 end
