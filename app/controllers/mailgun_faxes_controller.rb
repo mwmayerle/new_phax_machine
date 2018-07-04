@@ -71,10 +71,13 @@ class MailgunFaxesController < ApplicationController
 	    end
 	  end
 
+	  def strong_callback_params
+	  	params.permit(:success, :is_test, :direction, :fax, :metadata, :message, { :filename => {} })
+	  end
+
 	  def callback_params
-	  	params.permit(:success, :is_test, :direction, :fax, :metadata, :message)
-	    # params.select do |key, _value|
-	    #   %w(success is_test direction fax metadata message).include?(key)
-	    # end
+	    strong_callback_params.select do |key, _value|
+	     %w(success is_test direction fax metadata message).include?(key)
+	    end
 	  end
 end
