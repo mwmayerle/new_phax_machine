@@ -59,12 +59,13 @@ class MailgunFaxesController < ApplicationController
 
 	private
 		def verify_callback_token
+			p params
 			Fax.set_phaxio_creds
 
 			signature = request.env['HTTP_X_PHAXIO_SIGNATURE']
 	    url = request.url
 	    file_params = params[:filename]
-	    if Phaxio::Callback.valid_signature? signature, url, callback_params, file_params
+	    if Phaxio::Callback.valid_signature?(signature, url, callback_params, file_params)
 	    	p "===================================================================="
 	      puts 'Success!!!!!!!!!!!!!!!!!!!!!!!!!!!'
 	      p "===================================================================="
@@ -76,8 +77,14 @@ class MailgunFaxesController < ApplicationController
 	  end
 
 	  def callback_params
-	    params.select do |key, _value|
+	    returned_params = params.select do |key, _value|
 	      %w(success is_test direction fax metadata message).include?(key)
 	    end
+	    returned_params.to_h
+	  end
+
+	  # Sort by is not allowed on ActionController Params, and using 'to_h()' requires a strong params
+	  def allowed_callback_params
+	  	params.permit({:fax => {} }, :filename, :success, :is_test, :direction)
 	  end
 end
