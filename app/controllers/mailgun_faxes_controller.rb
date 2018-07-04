@@ -10,7 +10,7 @@ class MailgunFaxesController < ApplicationController
 		p "================================================================"
 		p "================================================================"
 		p "================================================================"
-		p request.headers.HTTP_X_PHAXIO_SIGNATURE
+		p request.headers["HTTP_X_PHAXIO_SIGNATURE"]
 		@fax = JSON.parse(params['fax'])
     recipient_number = Phonelib.parse(@fax['to_number']).e164
     fax_number = FaxNumber.find_by(fax_number: recipient_number)
