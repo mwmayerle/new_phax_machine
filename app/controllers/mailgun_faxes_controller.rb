@@ -79,13 +79,12 @@ class MailgunFaxesController < ApplicationController
 	    returned_params = strong_callback_params.select do |key, _value|
 	      %w(success is_test direction fax metadata message).include?(key)
 	    end
-	    returned_params.to_h
+	    p returned_params.to_h
+	    returned_params
 	  end
 
 	  # Sort by is not allowed on ActionController Params, and using 'to_h()' requires a strong params
 	  def strong_callback_params
-	  	# p params.permit({:fax => {[:id, :num_pages, :cost, :direction, :status, :is_test, :requested_at, :completed_at, :from_number, :to_number]} }, :filename, :success, :is_test, :direction)
-	  	p "HELLLO STRONG PARAMS!!!!!!"
-	  	p params.permit({ :fax => {} }, { :filename => {} }, :success, :is_test, :direction)
+	  	params.permit({ :fax => {} }, { :filename => {} }, :success, :is_test, :direction)
 	  end
 end
