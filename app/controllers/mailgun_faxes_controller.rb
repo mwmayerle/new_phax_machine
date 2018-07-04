@@ -3,8 +3,11 @@ class MailgunFaxesController < ApplicationController
 
 	def fax_received
 		p "============================================================"
+		response.headers.each {|h| puts h}
+		p "============================================================"
 		p phaxio_signature = response.headers.HTTP_X_PHAXIO_SIGNATURE
 		p phaxio_signature2 = response.headers.HTTP_X_PHAXIO_SIGNATURE2
+		p "============================================================"
 		p "============================================================"
 
 		@fax = JSON.parse(params['fax'])
@@ -24,13 +27,6 @@ class MailgunFaxesController < ApplicationController
 	end
 
 	def fax_sent
-		p "============================================================"
-		response.headers.each {|h| puts h}
-		p "============================================================"
-		p phaxio_signature = response.headers.HTTP_X_PHAXIO_SIGNATURE
-		p phaxio_signature2 = response.headers.HTTP_X_PHAXIO_SIGNATURE2
-		p "============================================================"
-
 		email_addresses = UserEmail.find_by(fax_tag: @fax['tags']['sender_email_fax_tag']).email_address
 
     if @fax["status"] == "success"
@@ -45,8 +41,11 @@ class MailgunFaxesController < ApplicationController
 
 	def mailgun(files = [])
 		p "============================================================"
-		phaxio_signature = response.headers.HTTP_X_PHAXIO_SIGNATURE
-		phaxio_signature2 = response.headers.HTTP_X_PHAXIO_SIGNATURE2
+		response.headers.each {|h| puts h}
+		p "============================================================"
+		p phaxio_signature = response.headers.HTTP_X_PHAXIO_SIGNATURE
+		p phaxio_signature2 = response.headers.HTTP_X_PHAXIO_SIGNATURE2
+		p "============================================================"
 		p "============================================================"
     # return [400, "Must include a sender"] if !params['from']					# Make this send a fail email
     # return [400, "Must include a recipient"] if !params['recipient']	# Make this send a fail email

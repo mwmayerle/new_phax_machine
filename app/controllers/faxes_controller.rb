@@ -4,7 +4,6 @@ class FaxesController < ApplicationController
 	before_action :set_phaxio_creds
 
 	def new
-		request.headers.each {|header| puts header}
 	end
 
 	# POST for sending a fax via the internal view
