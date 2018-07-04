@@ -58,16 +58,20 @@ class MailgunFaxesController < ApplicationController
 	end
 
 	private
-		def verify_callback_token(params)
+		def verify_callback_token
 			Fax.set_phaxio_creds
-			
+
 			signature = request.env['HTTP_X_PHAXIO_SIGNATURE']
 	    url = request.url
 	    file_params = params[:filename]
 	    if Phaxio::Callback.valid_signature? signature, url, callback_params, file_params
+	    	p "===================================================================="
 	      puts 'Success!!!!!!!!!!!!!!!!!!!!!!!!!!!'
+	      p "===================================================================="
 	    else
+	    	p "===================================================================="
 	      puts 'Invalid callback signature!!!!!!!!!!!!!!!!!!!!!!!!'
+	      p "===================================================================="
 	    end
 	  end
 
