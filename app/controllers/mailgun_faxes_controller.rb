@@ -1,16 +1,8 @@
 class MailgunFaxesController < ApplicationController
+	before_action :verify_callback_token
 	skip_before_action :verify_authenticity_token, only: [:fax_received, :fax_sent, :mailgun]
 
 	def fax_received
-		p "================================================================"
-		p "================================================================"
-		p "================================================================"
-		@fax = JSON.parse(params['fax'])
-		p request.headers
-		p "================================================================"
-		p "================================================================"
-		p "================================================================"
-		p request.headers["HTTP_X_PHAXIO_SIGNATURE"]
 		@fax = JSON.parse(params['fax'])
     recipient_number = Phonelib.parse(@fax['to_number']).e164
     fax_number = FaxNumber.find_by(fax_number: recipient_number)
@@ -28,15 +20,7 @@ class MailgunFaxesController < ApplicationController
 	end
 
 	def fax_sent
-		p "================================================================"
-		p "================================================================"
-		p "================================================================"
 		@fax = JSON.parse(params['fax'])
-		request.headers.each {|header| puts header}
-		p "================================================================"
-		p "================================================================"
-		p "================================================================"
-
 		email_addresses = UserEmail.find_by(fax_tag: @fax['tags']['sender_email_fax_tag']).email_address
 
     if @fax["status"] == "success"
@@ -50,14 +34,6 @@ class MailgunFaxesController < ApplicationController
 	end
 
 	def mailgun(files = [])
-		p "================================================================"
-		p "================================================================"
-		p "================================================================"
-		@fax = JSON.parse(params['fax'])
-		request.headers.each {|header| puts header}
-		p "================================================================"
-		p "================================================================"
-		p "================================================================"
     # return [400, "Must include a sender"] if !params['from']					# Make this send a fail email
     # return [400, "Must include a recipient"] if !params['recipient']	# Make this send a fail email
     sender = Mail::AddressList.new(params['from']).addresses.first.address
@@ -80,4 +56,22 @@ class MailgunFaxesController < ApplicationController
 			MailgunMailer.failed_email_to_fax_email(sender, sent_fax_object).deliver_now
 		end
 	end
+
+	private
+		def verify_callback_token(params)
+			signature = request.env['HTTP_X_PHAXIO_SIGNATURE']
+	    url = request.url
+	    file_params = params[:filename]
+	    if Phaxio::Callback.valid_signature? signature, url, callback_params, file_params
+	      puts 'Success!!!!!!!!!!!!!!!!!!!!!!!!!!!'
+	    else
+	      puts 'Invalid callback signature!!!!!!!!!!!!!!!!!!!!!!!!'
+	    end
+	  end
+
+	  def callback_params
+	    params.select do |key, _value|
+	      %w(success is_test direction fax metadata message).include?(key)
+	    end
+	  end
 end
