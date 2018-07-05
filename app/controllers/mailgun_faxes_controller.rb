@@ -62,7 +62,7 @@ class MailgunFaxesController < ApplicationController
 			Fax.set_phaxio_creds
 
 			signature = request.env['HTTP_X_PHAXIO_SIGNATURE']
-	    url = request.url + "lol broken"
+	    url = request.url
 	    file_params = strong_callback_params[:filename]
 	    if Phaxio::Callback.valid_signature?(signature, url, callback_params.to_h, file_params)
 	      puts 'Success!'
