@@ -1,5 +1,4 @@
 class FaxesController < ApplicationController
-
 	before_action :verify_user_signed_in
 	before_action :set_phaxio_creds
 

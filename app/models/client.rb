@@ -34,7 +34,6 @@ class Client < ApplicationRecord
 			def get_unused_emails(client)
 				client.user_emails.select { |client_email| client_email.fax_number_user_emails.empty? }
 			end
-
 			# Creates a hash used in the index view that has up to 9 unallocated fax numbers in each 
 			# key of the hash. Each key is a new <tr>, and each of the elements in the value array
 			# is a <td> element within the key that makes the <tr> in the view
