@@ -3,8 +3,7 @@ class PhaxMachineMailer < Devise::Mailer
   include Devise::Controllers::UrlHelpers 
   default template_path: 'devise/mailer' 
 
-  def welcome_invite(record, token, opts={})
-  	headers["Custom-header"] = "Bar"
+  def welcome_invite(record, token, opts = {})
   	opts[:from] = 'matt@phaxio.com'
     @token = token
     devise_mail(record, :welcome_invite, opts)

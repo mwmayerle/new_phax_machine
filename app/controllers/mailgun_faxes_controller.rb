@@ -1,4 +1,5 @@
 class MailgunFaxesController < ApplicationController
+	# before_action :verify_callback_token
 	skip_before_action :verify_authenticity_token, only: [:fax_received, :fax_sent, :mailgun]
 
 	def fax_received
@@ -55,4 +56,29 @@ class MailgunFaxesController < ApplicationController
 			MailgunMailer.failed_email_to_fax_email(sender, sent_fax_object).deliver_now
 		end
 	end
+
+	private
+		# def verify_callback_token
+		# 	Fax.set_phaxio_creds
+
+		# 	signature = request.env['HTTP_X_PHAXIO_SIGNATURE']
+	 #    url = request.url
+	 #    file_params = strong_callback_params[:filename]
+	 #    if Phaxio::Callback.valid_signature?(signature, url, callback_params.to_h, file_params)
+	 #      puts 'Success!'
+	 #    else
+	 #      puts 'Invalid callback signature!'
+	 #      render status: 422
+	 #    end
+	 #  end
+
+	 #  def strong_callback_params
+	 #  	params.permit(:success, :is_test, :direction, :fax, :metadata, :message, { :filename => {} })
+	 #  end
+
+	 #  def callback_params
+	 #    strong_callback_params.select do |key, _value|
+	 #     %w(success is_test direction fax metadata message).include?(key)
+	 #    end
+	 #  end
 end

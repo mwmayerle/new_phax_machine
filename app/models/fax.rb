@@ -48,6 +48,7 @@ class Fax
 		def set_phaxio_creds
 			Phaxio.api_key = ENV.fetch('PHAXIO_API_KEY')
 			Phaxio.api_secret = ENV.fetch('PHAXIO_API_SECRET')
+			Phaxio.callback_token = ENV.fetch('PHAXIO_CALLBACK_TOKEN')
 		end
 	end
 end

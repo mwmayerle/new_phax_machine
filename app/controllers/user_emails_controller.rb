@@ -42,6 +42,7 @@ class UserEmailsController < ApplicationController
 
 	def update
 		if @user_email.update_attributes(user_email_params)
+			
 			# Line below updates the User object's email attribute, which behaves like and mimics a username
 			@user_email.user.update_attributes(email: user_email_params[:email_address]) if @user_email.user
 			flash[:notice] = "Email successfully edited."

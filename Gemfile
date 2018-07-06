@@ -40,6 +40,7 @@ gem 'dotenv-rails'
 # Prettying up
 gem 'jquery-rails'
 gem 'bootstrap'
+gem 'bootstrap_sb_admin_base_v2'
 
 # Telephony/faxing goodies
 gem 'phaxio', github: 'phaxio/phaxio-ruby'

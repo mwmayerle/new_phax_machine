@@ -17,16 +17,20 @@ class Users::RegistrationsController < Devise::RegistrationsController
 	    user = User.find(resource.id)
 
     	# Create a UserEmail object with the User object          
-    	if resource.type == User::CLIENT_MANAGER                      #
-	    	client = Client.find(resource.client_id)                    #
-	    	client.update_attributes(client_manager_id: user.id)        #
-	    	new_email = UserEmail.create(                               # Creating a ClientManager user from
-	    		email_address: user.email,                                # scratch w/no previously persisted
-	    		client_id: client.id,                                     # UserEmail object
-	    		user_id: user.id,                                         # 
-	    		caller_id_number: client.fax_numbers.first.fax_number     #
-	    	)
-
+    	if resource.type == User::CLIENT_MANAGER
+	    	client = Client.find(resource.client_id)
+	    	client.update_attributes(client_manager_id: user.id)
+	    	existing_email = UserEmail.find_by(email_address: user.email)
+	    	if existing_email.nil?
+		    	new_email = UserEmail.create(                           # Creating a ClientManager user from
+		    		email_address: user.email,                            # scratch w/no previously persisted
+		    		client_id: client.id,                                 # UserEmail object
+		    		user_id: user.id,                                     # 
+		    		caller_id_number: client.fax_numbers.first.fax_number #
+		    	)
+		    else																											#
+		    	existing_email.update_attributes(user_id: user.id.to_i) # Creating ClientManager with an existing UserEmail object
+		    end 																											#
 	    else
 	    	UserEmail.find_by(email_address: user.email).update(user_id: user.id) # Creating a User from existing UserEmail
 	    end
