@@ -1,0 +1,35 @@
+<div class="navbar-dark bg-dark navbar-fixed main-row sidebar">
+	<ul class="list-unstyled bg-dark navbar-dark">
+  <% if is_admin? %>
+    <li class="sidebar-item" data-toggle="tooltip" data-placement="right" title="Manage Fax Numbers">
+      <a class="nav-link text-light" href="/fax_numbers">
+        <i class="fa fa-fw fa-phone"></i>
+        <span class="nav-link-text">Manage Fax Numbers</span>
+      </a>
+    </li>
+    <li data-toggle="tooltip" data-placement="right" title="Manage Clients">
+      <a class="nav-link text-light" href="/clients">
+        <i class="fa fa-id-card-o"></i>
+        <span class="nav-link-text">Manage Clients</span>
+      </a>
+    </li>
+  <% end %>
+
+	<li data-toggle="tooltip" data-placement="right" title="Send a Fax">
+	  <a class="nav-link text-light" href="/faxes/new">
+	    <i class="fa fa-fw fa-fax"></i>
+	    <span class="nav-link-text">Send a Fax</span>
+	  </a>
+	</li>
+
+	<% if is_client_manager? && !is_admin? %>
+		<li data-toggle="tooltip" data-placement="right" title="<%= current_user.client.client_label %>">
+		  <a class="nav-link text-light" href="/clients/#{current_user.client.id}">
+		    <i class="fa fa-fw fa-id-card-o"></i>
+		    <span class="nav-link-text text-li"><%= current_user.client.client_label %></span>
+		  </a>
+		</li>
+	<% end %>
+
+	</ul>
+</div>
