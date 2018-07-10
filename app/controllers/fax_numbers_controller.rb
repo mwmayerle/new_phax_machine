@@ -11,7 +11,7 @@ class FaxNumbersController < ApplicationController
 
 	def edit
 		@user = User.new
-		@clients = Client.all if is_admin?
+		@clients = Client.order(client_label: :asc) if is_admin?
 	end
 
 	def update

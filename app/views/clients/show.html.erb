@@ -13,7 +13,13 @@
 	<% @client.fax_numbers.each do |client_fax_number| %>
 		<div class="row information-box">
 			<div class="col-lg-5">
-				<h2><%= link_to FaxNumber.format_pretty_fax_number(client_fax_number.fax_number), edit_fax_number_path(client_fax_number) %></h2>
+				<h2>
+					<% if is_admin? %>
+						<%= link_to FaxNumber.format_pretty_fax_number(client_fax_number.fax_number), edit_fax_number_path(client_fax_number) %>
+					<% else %>
+						<%= FaxNumber.format_pretty_fax_number(client_fax_number.fax_number) %>
+					<% end %>
+				</h2>
 				<% if is_admin? %>
 					<div class="col">
 						<div class="row">
@@ -42,7 +48,6 @@
 						<tr>
 							<th class="text-center">Email</th>
 							<th class="text-center">Caller ID</th>
-							<th class="text-center">Edit</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -51,7 +56,6 @@
 								<tr>
 									<td class="text-center"><%= user_email.email_address %></td>
 									<td class="text-center"><%= FaxNumber.format_pretty_fax_number(user_email.caller_id_number) %></td>
-									<td class="text-center"><%= link_to "Edit User", edit_user_email_path(id: user_email.id), class: "btn btn-sm btn-success" %>
 								</tr>
 							<% end %>
 						<% else %>
@@ -68,16 +72,47 @@
 	<% end %>
 <% end %>
 
-<% if @client.user_emails.present? %>
-	<div>
+<br>
+<h2><%= @client.client_label %> Users</h2>
+<p>
+	A brief description stating that invited users may log in to send faxes will go here. 
+</p>
+<div class="row">
+	<div class="col">
+	<%= form_for :user, url: "/users", method: :post, class: "form-inline" do |f| %>
+		<%= f.hidden_field :client_id, value: "#{@client.id}" %>
+
 		<div class="row">
-			<div class="col user-management-box">
-				<h2><%= @client.client_label %> Users</h2>
-				<p>
-					A brief description stating that invited users may log in to send faxes will go here. 
-				</p>
+			<div class="form-group col-lg-4">
+				<strong><%= f.label :email, "Email:", class: "pull-left" %></strong>
+				<%= f.email_field :email, class: "form-control" %>
+			</div>
+			<div class="form-group col-lg-4">
+				<strong><%= f.label :caller_id_number, "Caller ID Number:", class: "pull-left" %></strong>
+				<select class="form-control form-inline" name="user[caller_id_number]">
+					<% @client.fax_numbers.each do |client_fax_number| %>
+						<option name="user[caller_id_number]" value="<%= client_fax_number.fax_number %>" selected="selected">
+							<%= FaxNumber.format_pretty_fax_number(client_fax_number.fax_number) %>
+							<% if client_fax_number.fax_number_display_label.present? %>
+						 		- <%= client_fax_number.fax_number_display_label %>
+						 	<% end %>
+						 </option>
+					<% end %>
+				</select>
+			</div>
+			<div class="col force-down-checkbox inline-input-margin">
+				<input type="checkbox" id="invite-new-user" class="form-check-input" name="user[invite]" checked="checked">
+				<label for="invite-new-user" class="form-check-label">Invite User</label>
+			</div>
+			<div class="col form-group force-down-button">
+				<%= f.submit "Create User", class: "btn btn-success" %>
 			</div>
 		</div>
+	<% end %>
+	</div>
+</div>
+
+<% if @client.user_emails.present? %>
 		<div class="row information-box">
 			<div class="col-lg-6">
 				<table class="table table-sm table-hover">
@@ -87,15 +122,7 @@
 								<tr>
 									<td class="text-center"><%= user_email.email_address %></td>
 									<td class="text-center">
-										<% if user_email.user_id.nil? %>
-											<%= form_for :user, url: "/users", method: :post do |f| %>
-												<%= f.hidden_field :client_id, value: @client.id %>
-												<%= f.hidden_field :email, value: user_email.email_address %>
-												<%= f.submit "Grant Access", class: "btn btn-success btn-sm" %>
-											<% end %>
-										<% else %>
-											<%= button_to "Revoke Access", user_path(id: user_email.user_id), method: :delete, class: "btn btn-danger btn-sm" %>
-										<% end %>
+										<%= link_to "Edit User", edit_user_email_path(id: user_email.id), class: "btn btn-sm btn-success" %>
 									</td>
 								</tr>
 							<% end %>
@@ -112,15 +139,7 @@
 								<tr>
 									<td class="text-center"><%= user_email.email_address %></td>
 									<td class="text-center">
-										<% if user_email.user_id.nil? %>
-											<%= form_for :user, url: "/users", method: :post do |f| %>
-												<%= f.hidden_field :client_id, value: @client.id %>
-												<%= f.hidden_field :email, value: user_email.email_address %>
-												<%= f.submit "Grant Access", class: "btn btn-success btn-sm" %>
-											<% end %>
-										<% else %>
-											<%= button_to "Revoke Access", user_path(id: user_email.user_id), method: :delete, class: "btn btn-danger btn-sm" %>
-										<% end %>
+										<%= link_to "Edit User", edit_user_email_path(id: user_email.id), class: "btn btn-sm btn-success" %>
 									</td>
 								</tr>
 							<% end %>

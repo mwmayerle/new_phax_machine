@@ -9,44 +9,74 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   # POST /resource
   def create
-    build_resource(sign_up_params)
-    resource.save
+  	if sign_up_params[:invite].nil?
+    	new_email = UserEmail.create!(
+    		email_address: sign_up_params[:email],
+    		caller_id_number: sign_up_params[:caller_id_number], # make a UserEmail but no User
+    		client_id: sign_up_params[:client_id]
+    	)
+    	new_email ? flash[:notice] = "Email successfully created." : flash[:alert] = @user_email.errors.full_messages.pop
+    # There is an "invite" attr_accessor in User model that determines whether a UserEmail, or both a User and
+    # a UserEmail object are created simultaneously. 'if sign_up_params[:invite]' above is addressing this.
+    else 
+	    build_resource(sign_up_params)
+	    resource.save
+	    yield resource if block_given?
+	    if resource.persisted?
+		    user = User.find(resource.id)   
 
-    yield resource if block_given?
-    if resource.persisted?
-	    user = User.find(resource.id)
+	    	if resource.type == User::CLIENT_MANAGER
+		    	client = Client.find(resource.client_id)
+		    	client.update_attributes(client_manager_id: user.id)
+		    	existing_email = UserEmail.find_by(email_address: user.email)
 
-    	# Create a UserEmail object with the User object          
-    	if resource.type == User::CLIENT_MANAGER
-	    	client = Client.find(resource.client_id)
-	    	client.update_attributes(client_manager_id: user.id)
-	    	existing_email = UserEmail.find_by(email_address: user.email)
-	    	if existing_email.nil?
-		    	new_email = UserEmail.create(                           # Creating a ClientManager user from
-		    		email_address: user.email,                            # scratch w/no previously persisted
-		    		client_id: client.id,                                 # UserEmail object
-		    		user_id: user.id,                                     # 
-		    		caller_id_number: client.fax_numbers.first.fax_number #
-		    	)
-		    else																											#
-		    	existing_email.update_attributes(user_id: user.id.to_i) # Creating ClientManager with an existing UserEmail object
-		    end 																											#
+		    	if existing_email.nil?
+			    	new_email = UserEmail.create!(                          # 
+			    		email_address: user.email,                            # Creating a ClientManager user from
+			    		client_id: client.id,                                 # scratch w/no previously persisted
+			    		user_id: user.id,                                     # UserEmail object
+			    		caller_id_number: client.fax_numbers.first.fax_number #
+			    	)
+			    	new_email ? flash[:notice] = "Email successfully created." : flash[:alert] = @user_email.errors.full_messages.pop
+			    else																											#
+			    	existing_email.update_attributes(user_id: user.id.to_i) # Creating ClientManager with an existing UserEmail object
+			    end 																											#
+
+			  elsif resource.type == User::USER
+			  	existing_email = UserEmail.find_by(email_address: user.email)
+			  	if existing_email.nil?
+			    	new_email = UserEmail.create!(
+			    		caller_id_number: sign_up_params[:caller_id_number],
+			    		client_id: user.client.id,
+			    		email_address: user.email,               
+			    		user_id: user.id,
+			    	)
+			    	new_email ? flash[:notice] = "Email successfully created." : flash[:alert] = @user_email.errors.full_messages.pop
+			    else																											#
+			    	existing_email.update_attributes(user_id: user.id.to_i) # Creating generic User with an existing UserEmail object
+			    end 																											# 																				
+		    else
+		    	UserEmail.find_by(email_address: user.email).update(user_id: user.id) # Creating a User from existing UserEmail
+		    end
+		    
+	      if resource.active_for_authentication?
+	        flash[:notice] = "#{resource.email} has been invited."
+	      else
+	        flash[:notice] = "signed_up_but_#{resource.inactive_message}"
+	        expire_data_after_sign_in!
+	      end
+
 	    else
-	    	UserEmail.find_by(email_address: user.email).update(user_id: user.id) # Creating a User from existing UserEmail
+	    	flash[:alert] = resource.errors.full_messages.pop
+	      clean_up_passwords resource
+	      set_minimum_password_length
 	    end
-	    
-      if resource.active_for_authentication?
-        flash[:notice] = "#{resource.email} has been invited."
-      else
-        flash[:notice] = "signed_up_but_#{resource.inactive_message}"
-        expire_data_after_sign_in!
-      end
+		end
+		if resource
+    	resource.type == User::USER ? redirect_to(client_path(resource.client)) : redirect_to(clients_path)
     else
-    	flash[:alert] = resource.errors.full_messages.pop
-      clean_up_passwords resource
-      set_minimum_password_length
+    	redirect_to(client_path(sign_up_params[:client_id]))
     end
-    resource.type == User::USER ? redirect_to(client_path(resource.client)) : redirect_to(clients_path)
   end
 
   # DELETE /resource

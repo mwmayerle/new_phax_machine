@@ -2,7 +2,7 @@ class UserEmailsController < ApplicationController
 	include SessionsHelper
 
 	before_action :set_user_email, only: [:edit, :update]
-	before_action :set_fax_number, only: [:new]
+	before_action :set_client, only: [:new]
 	before_action :verify_is_client_manager_or_admin, only: [:new, :create]
 
 	def new
@@ -17,24 +17,22 @@ class UserEmailsController < ApplicationController
 	end
 
 	def create
-		@fax_number = FaxNumber.find(params[:user_email][:fax_number_id])
+		@client = Client.find(params[:user_email][:client_id])
 		
-		if @fax_number && authorized?(@fax_number.client, :client_manager_id)
+		if @client && authorized?(@client, :client_manager_id)
 			@user_email = UserEmail.new(user_email_params)
 
 			if @user_email.valid?
-				@fax_number.user_emails << @user_email
+				@client.user_emails << @user_email
 				flash[:notice] = "Email successfully created."
-				redirect_to client_path(id: @fax_number.client.id)
 			else
 				flash[:alert] = @user_email.errors.full_messages.pop
-				render :new
 			end
 
 		else
-			flash[:alert] = @fax_number.errors.full_messages.pop
-			render :new
+			flash[:alert] = @client.errors.full_messages.pop
 		end
+		redirect_to client_path(@client)
 	end
 
 	def edit
@@ -42,7 +40,6 @@ class UserEmailsController < ApplicationController
 
 	def update
 		if @user_email.update_attributes(user_email_params)
-			
 			# Line below updates the User object's email attribute, which behaves like and mimics a username
 			@user_email.user.update_attributes(email: user_email_params[:email_address]) if @user_email.user
 			flash[:notice] = "Email successfully edited."
@@ -58,15 +55,11 @@ class UserEmailsController < ApplicationController
 			@user_email ||= UserEmail.find(params[:id])
 		end
 
-		def set_fax_number
-			@fax_number ||= FaxNumber.find(params[:id])
+		def set_client
+			@client ||= Client.find(params[:id])
 		end
 
 		def user_email_params
 			params.require(:user_email).permit(:id, :email_address, :client_id, :caller_id_number, :user_id)
-		end
-
-		def invite_client_manager_params
-			params.require(:user_email).permit(:id, :client_id, :email_address)
 		end
 end
