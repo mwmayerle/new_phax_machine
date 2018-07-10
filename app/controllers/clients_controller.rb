@@ -7,7 +7,7 @@ class ClientsController < ApplicationController
 	
 	def index
 		FaxNumber.format_and_retrieve_fax_numbers_from_api if FaxNumber.first.nil?
-		@clients = Client.all
+		@clients = Client.all(:desc)
 	end
 
 	def new
