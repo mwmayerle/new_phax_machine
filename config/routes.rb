@@ -15,6 +15,7 @@ Rails.application.routes.draw do
 	end
 
 	resources :faxes
+	resources :fax_number_user_emails
 	resources :mailgun_faxes_controller, only: [:fax_received, :fax_sent, :mailgun]
   resources :users, only: [:index, :show, :create]
   resources :user_emails
