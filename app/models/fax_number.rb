@@ -24,7 +24,12 @@ class FaxNumber < ApplicationRecord
 			self.fax_number = Phonelib.parse(fax_number).e164
 	  end
 
+
 		class << self
+			def format_pretty_fax_number(fax_number)
+				fax_number.slice(2, fax_number.length).insert(0,"(").insert(4,") ").insert(9, "-")
+			end
+
 			def format_cost(cost) # this will fail if an integer with many preceding zero's (000020) is used
 				"$".concat("%.2f" % (cost / 100.00))
 			end
@@ -53,8 +58,6 @@ class FaxNumber < ApplicationRecord
 					if db_number.client
 						phaxio_numbers[api_fax_number[:phone_number]][:client] = db_number.client.client_label
 						phaxio_numbers[api_fax_number[:phone_number]][:client_id] = db_number.client.id
-					else
-						phaxio_numbers[api_fax_number[:phone_number]][:client] = "Unallocated"
 					end
 					
 					phaxio_numbers[api_fax_number[:phone_number]][:fax_number_label] = db_number.fax_number_label if db_number.fax_number_label

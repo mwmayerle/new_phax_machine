@@ -1,37 +1,63 @@
-<div id="navbar">
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark navbar-fixed-top">
-  	<ul class="navbar-nav mr-auto">
-  		<li class="nav-item">
-        <%= link_to "Home", root_path, class: "nav-link" %>
-      </li>
-      <% if user_signed_in? %>
-      	<% if is_admin? %>
-	      	<li class="nav-item">
-	      		<%= link_to "Manage Clients", clients_path, class: "nav-link" %>
-		      </li>
-		      <li class="nav-item">
-	      		<%= link_to "Manage Fax Numbers", fax_numbers_path, class: "nav-link" %>
-		      </li>
-      	<% end %>
-      	<!-- <li class="nav-item"> -->
-      		<%#= link_to "My Profile", user_path(current_user.id), class: "nav-link" %>
-	      <!-- </li> -->
-	      <li class="nav-item">
-	      	<%= link_to "Send Fax", new_fax_path, class: "nav-link" %>
+<nav id="sidebar" class="fixed-top">
+	<div class="sidebar-header">
+		<h3>
+      <%= link_to "Phax Machine", root_path, class: "nav-link" %>
+    </h3>
+  </div>
+  <ul class="list-unstyled components">
+    <% if user_signed_in? %>
+    	<% if is_admin? %>
+	      <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Manage Fax Numbers">
+      		<a class="nav-link" href="/fax_numbers">
+        		<i class="fa fa-fw fa-phone"></i>
+        		<span class="nav-link-text">Manage Fax Numbers</span>
+      		</a>
 	      </li>
-	      <% if is_client_manager? && !is_admin? %>
-	      	<li class="nav-item">
-      			<%= link_to "Client Profile", client_path(current_user.client.id), class: "nav-link" %>
-	      	</li>
-	      <% end %>
-	      <li class="nav-item">
-	      	<%= link_to "Log Out", destroy_user_session_path(session: {id: current_user.id}), class: "nav-link", method: :delete %>
+      	<li class="nav-item" data-toggle="tooltip" data-placement="right" title="Manage Clients">
+      		<a class="nav-link" href="/clients">
+        		<i class="fa fa-fw fa-id-card-o"></i>
+        		<span class="nav-link-text">Manage Clients</span>
+      		</a>
 	      </li>
-      <% else %>
-	      <li class="nav-item">
-	      	<%= link_to "Log In", new_user_session_path, class: "nav-link" %>
-	      </li>
+    	<% end %>
+      <% if is_client_manager? && !is_admin? %>
+      	<li class="nav-item" data-toggle="tooltip" data-placement="right" title="Send a Fax">
+	      	<a class="nav-link" href="/faxes/new">
+		    		<i class="fa fa-fw fa-fax"></i>
+		    		<span class="nav-link-text">Send a Fax</span>
+		 			</a>
+				</li>
+      	<li class="nav-item" data-toggle="tooltip" data-placement="right" title="Client Profile">
+      		<a class="nav-link" href="/clients/<%=current_user.client.id%>">
+      			<i class="fa fa-fw fa-id-card-o"></i>
+      			<span class="nav-link-text">Client Profile</span>
+      		</a>
+      	</li>
       <% end %>
-  	</ul>
-  </nav>
-</div>
+    <% else %>
+      <li class="nav-item">
+      	<%= link_to "Log In", new_user_session_path, class: "nav-link" %>
+      </li>
+    <% end %>
+  </ul>
+</nav>
+<!--     <li>
+      <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="true" class="dropdown-toggle">Pages</a>
+      <ul class="collapse list-unstyled" id="pageSubmenu">
+        <li>
+          <a href="#">Page 1</a>
+        </li>
+        <li>
+          <a href="#">Page 2</a>
+        </li>
+        <li>
+          <a href="#">Page 3</a>
+        </li>
+      </ul>
+    </li>
+    <li>
+      <a href="#">Portfolio</a>
+    </li>
+    <li>
+      <a href="#">Contact</a>
+    </li> -->

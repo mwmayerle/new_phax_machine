@@ -7,7 +7,6 @@ class ClientsController < ApplicationController
 	
 	def index
 		FaxNumber.format_and_retrieve_fax_numbers_from_api if FaxNumber.first.nil?
-		@unallocated_fax_numbers = Client.create_unallocated_fax_number_hash(FaxNumber.where(client_id: nil))
 		@clients = Client.all
 	end
 
@@ -92,7 +91,7 @@ class ClientsController < ApplicationController
 		def remove_fax_number_associations(param_input)
 			param_input.each do |fax_number_id, fax_number| 
 				fax_number = FaxNumber.find(fax_number_id.to_i)
-				fax_number.update_attributes({client_id: nil, fax_number_display_label: "Unlabeled"})
+				fax_number.update_attributes({client_id: nil, fax_number_display_label: nil})
 				fax_num_user_email = FaxNumberUserEmail.where(fax_number_id: fax_number.id).destroy_all
 			end
 		end

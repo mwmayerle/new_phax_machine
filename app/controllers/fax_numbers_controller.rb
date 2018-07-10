@@ -22,7 +22,7 @@ class FaxNumbersController < ApplicationController
 		if @fax_number.update_attributes(param_filter_type)
 			# this if block spoofs the "email[:to_remove]" portion of params by creating and passing in a similar hash
 			if original_client != @fax_number.client
-				@fax_number.update_attributes(fax_number_label: "Unallocated", fax_number_display_label: "Unlabeled")
+				@fax_number.update_attributes(fax_number_label: nil, fax_number_display_label: nil)
 				original_client_user_email_ids = {}
 				original_client.user_emails.each { |user_email| original_client_user_email_ids[user_email.id] = 'on' }
 				remove_user_email_associations(original_client_user_email_ids, @fax_number)

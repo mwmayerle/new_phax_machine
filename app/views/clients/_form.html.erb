@@ -1,83 +1,91 @@
-<%= form_for client do |f| %>
-	<% if is_admin? %>
-		<%= f.hidden_field :admin_id, value: "#{current_user.id}" %>
-	<% end %>
-	<div class="row">
-		<div class="col-lg-6">
-			<%= f.label :client_label, "Client Name: ", class: "form-group" %>
-			<%= f.text_field :client_label, value: client.client_label, class: "form-control form-group" %>
-		</div>
-	</div>
-	<div class="row">
-		<div class="col-lg-6">
-			<% if client.client_manager.present? %>
-				<p> Client Manager: <%= @client.client_manager.email %> </p>
-			<% end %>
-		</div>
-	</div>
-
-<br>
-
-	<div class="row">
-		<% if unallocated_fax_numbers.present? %>
-			<div class="col-lg-5">
-				<div class="form-group">
-					<strong><p>Add the following fax numbers to <%= client.client_label %>:</p></strong>
-					<table class="table table-hover table-sm">
-						<thead class="thead-dark">
-							<tr>
-								<th class="text-center">Fax Number</th>
-								<th class="text-center">Label</th>
-							</tr>
-						</thead>
-						<tbody>
-							<% unallocated_fax_numbers.each do |fax_number| %>
-								<tr>
-									<td class="text-center">
-										<input type="checkbox" id="<%= fax_number.fax_number %>" name="fax_numbers[to_add][<%= fax_number.id %>]" value="<%= fax_number.fax_number %>">
-				    				<label><%= fax_number.fax_number %> </label>
-				    			</td>
-				    			<td class="text-center"><%= fax_number.fax_number_label %></td>
-								</tr>
+<body class="bg-dark coverup">
+  <div class="container coverup">
+    <div class="card card-login mx-auto mt-5">
+      <div class="card-header">New Client</div>
+      <div class="card-body">
+        <div class="text-center mb-6">
+					<%= form_for client, class: "form-inline" do |f| %>
+						<% if is_admin? %>
+							<%= f.hidden_field :admin_id, value: "#{current_user.id}" %>
+						<% end %>
+							<div class="row">
+								<div class="col-lg-6 input-group align-self-center">
+									<%= f.label :client_label, "Client Name: ", class: "align-self-center" %>
+									<%= f.text_field :client_label, value: client.client_label, class: "form-control inline-input-margin" %>
+								</div>
+								<div class="col-lg-6 input-group align-self-center">
+									<%= f.submit "Submit", class: "form-inline btn btn-success" %>
+								</div>
+							</div>
+					<br>
+						<div class="row">
+							<% if unallocated_fax_numbers.present? %>
+								<div class="col-lg-5">
+									<div class="form-group">
+										<% if client.client_label %>
+											<strong><p>Add the following fax numbers to <%= client.client_label %>:</p></strong>
+										<% else %>
+											<strong><p>Add the following fax numbers:</p></strong>
+										<% end %>
+										<table class="table table-hover table-sm">
+											<thead class="thead-dark">
+												<tr>
+													<th class="text-center">Fax Number</th>
+													<th class="text-center">Label</th>
+												</tr>
+											</thead>
+											<tbody>
+												<% unallocated_fax_numbers.each do |fax_number| %>
+													<tr>
+														<td class="text-center">
+															<input type="checkbox" id="<%= fax_number.fax_number %>" name="fax_numbers[to_add][<%= fax_number.id %>]" value="<%= fax_number.fax_number %>">
+									    				<label><%= FaxNumber.format_pretty_fax_number(fax_number.fax_number) %></label>
+									    			</td>
+									    			<td class="text-center"><%= fax_number.fax_number_label %></td>
+													</tr>
+												<% end %>
+											</tbody>
+										</table>
+									</div>
+								</div>
+								<div class="col-lg-1"></div>
 							<% end %>
-						</tbody>
-					</table>
-				</div>
-			</div>
-			<div class="col-lg-1"></div>
-		<% end %>
 
-		<% if client.fax_numbers.present? %>
-			<div class="col-lg-5">
-				<div class="form-group">
-					<strong><p>Remove the following fax numbers from <%= client.client_label %>:</p></strong>
-						<table class="table table-hover table-sm">
-							<thead class="thead-dark">
-								<tr>
-									<th class="text-center">Fax Number</th>
-									<th class="text-center">Label</th>
-								</tr>
-							</thead>
-							<tbody>
-								<% client.fax_numbers.each do |client_fax_number| %>
-									<tr>
-										<td class="text-center">
-											<div class="form-check form-check-inline">
-												<input type="checkbox" id="<%= client_fax_number.fax_number %>" name="fax_numbers[to_remove][<%= client_fax_number.id %>]" value="<%= client_fax_number.fax_number %>" class="form-check-input">
-						    				<label for="<%= client_fax_number.fax_number %>"><%= client_fax_number.fax_number %></label>
-											</div>
-					    			</td>
-					    			<td class="text-center"><%= client_fax_number.fax_number_label %></td>
-					    		</tr>
-								<% end %>
-							</tbody>
-						</table>
-					</ul>
-				</div>
-			</div>
-		<% end %>
+							<% if client.fax_numbers.present? %>
+								<div class="col-lg-5">
+									<div class="form-group">
+										<strong><p>Remove the following fax numbers from <%= client.client_label %>:</p></strong>
+											<table class="table table-hover table-sm">
+												<thead class="thead-dark">
+													<tr>
+														<th class="text-center">Fax Number</th>
+														<th class="text-center">Label</th>
+													</tr>
+												</thead>
+												<tbody>
+													<% client.fax_numbers.each do |client_fax_number| %>
+														<tr>
+															<td class="text-center">
+																<div class="form-check form-check-inline">
+																	<input type="checkbox" id="<%= client_fax_number.fax_number %>" name="fax_numbers[to_remove][<%= client_fax_number.id %>]" value="<%= client_fax_number.fax_number %>" class="form-check-input">
+											    				<label for="<%= client_fax_number.fax_number %>">
+											    					<%= FaxNumber.format_pretty_fax_number(client_fax_number.fax_number) %>
+											    				</label>
+																</div>
+										    			</td>
+										    			<td class="text-center"><%= client_fax_number.fax_number_label %></td>
+										    		</tr>
+													<% end %>
+												</tbody>
+											</table>
+										</ul>
+									</div>
+								</div>
+							<% end %>
+						</div>
+					<% end %>
+	      </div>
+	    </div>
+	  </div>
 	</div>
-	<div class="form-group">
-		<%= f.submit "Submit", class: "btn btn-primary" %>
-	</div>
-<% end %>
+</body>

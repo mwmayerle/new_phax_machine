@@ -33,8 +33,8 @@ ActiveRecord::Schema.define(version: 2018_06_19_182316) do
 
   create_table "fax_numbers", force: :cascade do |t|
     t.integer "client_id"
-    t.string "fax_number_label", default: "Unallocated"
-    t.string "fax_number_display_label", default: "Unlabeled"
+    t.string "fax_number_label"
+    t.string "fax_number_display_label"
     t.string "fax_number", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
