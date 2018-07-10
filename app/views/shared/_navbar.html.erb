@@ -16,27 +16,31 @@
       	<li class="nav-item" data-toggle="tooltip" data-placement="right" title="Manage Clients">
       		<a class="nav-link" href="/clients">
         		<i class="fa fa-fw fa-id-card-o"></i>
-        		<span class="nav-link-text">Manage Clients</span>
+        		<span class="nav-link-text"> Manage Clients</span>
       		</a>
 	      </li>
     	<% end %>
       <% if is_client_manager? && !is_admin? %>
-      	<li class="nav-item" data-toggle="tooltip" data-placement="right" title="Send a Fax">
-	      	<a class="nav-link" href="/faxes/new">
-		    		<i class="fa fa-fw fa-fax"></i>
-		    		<span class="nav-link-text">Send a Fax</span>
-		 			</a>
-				</li>
       	<li class="nav-item" data-toggle="tooltip" data-placement="right" title="Client Profile">
       		<a class="nav-link" href="/clients/<%=current_user.client.id%>">
       			<i class="fa fa-fw fa-id-card-o"></i>
       			<span class="nav-link-text">Client Profile</span>
       		</a>
       	</li>
+      <% else %>
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Send a Fax">
+	      	<a class="nav-link" href="/faxes/new">
+		    		<i class="fa fa-fw fa-fax"></i>
+		    		<span class="nav-link-text">Send a Fax</span>
+		 			</a>
+				</li>
       <% end %>
     <% else %>
-      <li class="nav-item">
-      	<%= link_to "Log In", new_user_session_path, class: "nav-link" %>
+    	<li class="nav-item" data-toggle="tooltip" data-placement="right" title="Log In">
+      	<a class="nav-link" href="/users/sign_in">
+      		<i class="fa fa-fw fa-sign-in"></i>
+      		<span class="nav-link-text">Log In</span>
+      	</a>
       </li>
     <% end %>
   </ul>

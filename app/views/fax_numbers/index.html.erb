@@ -33,13 +33,8 @@
 					<% end %>
 					<td class="text-center align-middle"><%= info_hash[:provisioned_at] %></td>
 					<td class="text-center align-middle">
-						<% if !info_hash[:client].nil? %>
-							<%= link_to "Edit",
-								edit_fax_number_path(id: info_hash[:id]),
-								params: { fax_number: { id: info_hash[:id] } },
-								class: "btn btn-success btn-sm align-middle"
-							%>
-						<% end %>
+							<%= link_to "Edit", edit_fax_number_path(id: info_hash[:id]), params: { fax_number: { id: info_hash[:id] } },
+								class: "btn btn-success btn-sm align-middle" %>
 					</td>
 				</tr>
 			<% end %>

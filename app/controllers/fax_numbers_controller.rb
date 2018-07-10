@@ -12,7 +12,7 @@ class FaxNumbersController < ApplicationController
 	def edit
 		@user = User.new
 		@clients = Client.all if is_admin?
-		@fax_number.unused_client_emails = FaxNumber.get_unused_client_emails(@fax_number)
+		@fax_number.unused_client_emails = FaxNumber.get_unused_client_emails(@fax_number) if @fax_number.client
 	end
 
 	def update
@@ -34,7 +34,8 @@ class FaxNumbersController < ApplicationController
 			end
 
 			flash[:notice] = "Changes successfully saved."
-			redirect_to(client_path(id: original_client.id))
+			# This ternary is for editing a fax number's label before the client is created
+			@fax_number.client ? redirect_to(client_path(id: original_client.id)) : redirect_to(fax_numbers_path)
 
 		else
 			flash[:alert] = @fax_number.errors.full_messages.pop
@@ -68,6 +69,7 @@ class FaxNumbersController < ApplicationController
 		end
 
 		def verify_authorized
+			return if is_admin?
 			if !authorized?(@fax_number.client, :client_manager_id)
 				flash[:alert] = DENIED
 				redirect_to root_path
