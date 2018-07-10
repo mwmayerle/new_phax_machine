@@ -13,15 +13,14 @@
 	<% @client.fax_numbers.each do |client_fax_number| %>
 		<div class="row information-box">
 			<div class="col-lg-5">
-				<h2><%= FaxNumber.format_pretty_fax_number(client_fax_number.fax_number) %></h2>
-
+				<h2><%= link_to FaxNumber.format_pretty_fax_number(client_fax_number.fax_number), edit_fax_number_path(client_fax_number) %></h2>
 				<% if is_admin? %>
 					<div class="col">
 						<div class="row">
-							<p><strong>Client-Set Label:</strong> <%= client_fax_number.fax_number_display_label %></p>
+							<p><strong>Admin Label: </strong><%= client_fax_number.fax_number_label %></p>
 						</div>
 						<div class="row">
-							<p><%= client_fax_number.fax_number_label %></p>
+							<p><strong>Client Label: </strong> <%= client_fax_number.fax_number_display_label %></p>
 						</div>
 					</div>
 				<% else %>
@@ -33,10 +32,10 @@
 				<% end %>
 
 				<div class="form-group">
-					<%= link_to "Link / Unlink Email Addresses", edit_fax_number_path(client_fax_number), class: "btn btn-success" %>
+					<%= link_to "Link / Unlink Users", edit_fax_number_user_email_path(client_fax_number), class: "btn btn-success" %>
 				</div>
 			</div>
-
+			
 			<div class="col-lg-7 align-self-center">
 				<table class="table table-hover table-striped table-sm">
 					<thead class="thead-dark">

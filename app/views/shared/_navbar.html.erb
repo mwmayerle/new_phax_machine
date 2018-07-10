@@ -7,16 +7,16 @@
   <ul class="list-unstyled components">
     <% if user_signed_in? %>
     	<% if is_admin? %>
-	      <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Manage Fax Numbers">
-      		<a class="nav-link" href="/fax_numbers">
-        		<i class="fa fa-fw fa-phone"></i>
-        		<span class="nav-link-text">Manage Fax Numbers</span>
-      		</a>
-	      </li>
       	<li class="nav-item" data-toggle="tooltip" data-placement="right" title="Manage Clients">
       		<a class="nav-link" href="/clients">
         		<i class="fa fa-fw fa-id-card-o"></i>
         		<span class="nav-link-text"> Manage Clients</span>
+      		</a>
+	      </li>
+	      <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Manage Fax Numbers">
+      		<a class="nav-link" href="/fax_numbers">
+        		<i class="fa fa-fw fa-phone"></i>
+        		<span class="nav-link-text">Manage Numbers</span>
       		</a>
 	      </li>
     	<% end %>
