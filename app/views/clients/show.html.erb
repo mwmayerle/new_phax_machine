@@ -51,7 +51,7 @@
 							<% client_fax_number.user_emails.each do |user_email| %>
 								<tr>
 									<td class="text-center"><%= user_email.email_address %></td>
-									<td class="text-center"><%= user_email.caller_id_number %></td>
+									<td class="text-center"><%= FaxNumber.format_pretty_fax_number(user_email.caller_id_number) %></td>
 									<td class="text-center"><%= link_to "Edit User", edit_user_email_path(id: user_email.id), class: "btn btn-sm btn-success" %>
 								</tr>
 							<% end %>

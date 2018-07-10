@@ -1,109 +1,116 @@
-<div class="row">
-	<div class="col-lg-9">
-		<% if is_admin? %>
-			<h1>Edit Fax Number <%= FaxNumber.format_pretty_fax_number(@fax_number.fax_number) %></h1>
-		<% else %>
-			<h1>Manage Linked Emails for <%= FaxNumber.format_pretty_fax_number(@fax_number.fax_number) %> </h1>
-		<% end %>
-	</div>
-	<br>
-	<div class="col-lg-3">
-		<%= link_to "Create New Email", new_user_email_path(id: @fax_number.id), class: "btn btn-primary" %>
-	</div>
-</div>
-
-<%= form_for(:fax_number, url: "/fax_numbers/#{@fax_number.id}", method: :put) do |f| %>
-	<%= f.hidden_field :id, :value => @fax_number.id %>
-
-	<div class="row info-box-no-border">
-		<p>Linked email addresses are emailed whenever <%= FaxNumber.format_pretty_fax_number(@fax_number.fax_number) %> sends or receives a fax.</p>
-		<div class="col-lg-7">
-			<div class="form-inline form-group">
-				<% if is_admin? %>
-					<strong><%= f.label :fax_number_display_label, "Client-Set Fax Number Label:" %></strong>
-				<% else %>
-					<strong><%= f.label :fax_number_display_label, "Fax Number Label:" %></strong>
-				<% end %>
-				<%= f.text_field :fax_number_display_label, class: 'form-control form-group', placeholder: "(Typically set by the Client Manager)" %>
-			</div>
-			<div class="form-inline form-group">
-				<% if is_admin? %>
-					<label><strong>Fax Number Label:</strong></label>
-					<%= f.text_field :fax_number_label, class: 'form-control' %>
-				<% end %>
-			</div>
-		</div>
-
-		<% if @clients && is_admin? %>
-			<div class="form-group align-self-center form-inline">
-				<strong><%= f.label "Client: " %></strong>
-				<select class="form-control" name="fax_number[client_id]">
-					<% @clients.each do |client| %>
-						<% if client == @fax_number.client %>
-							<option name="fax_number[client_id]" value="<%= client.id %>" selected="selected"><%= client.client_label %></option>
-						<% else %>
-							<option name="fax_number[client_id]" value="<%= client.id %>"><%= client.client_label %></option>
-						<% end %>
+<body class="bg-dark coverup">
+  <div class="container coverup">
+    <div class="card card-login mx-auto mt-5">
+      <div class="card-header">Edit Fax Number Details:
+				<div class="pull-right">
+					<%= link_to "Create New Email", new_user_email_path(id: @fax_number.id), class: "btn btn-success" %>
+				</div>
+      </div>
+      <div class="card-body">
+        <div class="mb-8">
+      		<%= form_for(:fax_number, url: "/fax_numbers/#{@fax_number.id}", method: :put, class: "form-inline") do |f| %>
+						<%= f.hidden_field :id, :value => @fax_number.id %>
+						<div class="row">
+							<div class="text-center">
+								<em>
+									<p>
+										Linked email addresses are emailed whenever <%= FaxNumber.format_pretty_fax_number(@fax_number.fax_number) %> sends or receives a fax.
+									</p>
+								</em>
+							</div>
+							<div class="col-lg-5">
+								<div class="form-group">
+									<% if is_admin? %>
+										<strong><%= f.label :fax_number_display_label, "Client-Set Fax Number Label:" %></strong>
+									<% else %>
+										<strong><%= f.label :fax_number_display_label, "Fax Number Label:" %></strong>
+									<% end %>
+									<%= f.text_field :fax_number_display_label, class: 'form-control form-group', placeholder: "(Typically set by the Client Manager)" %>
+								</div>
+							</div>
+							<div class="col-lg-5">
+								<% if is_admin? %>
+									<label><strong>Fax Number Label:</strong></label>
+									<%= f.text_field :fax_number_label, class: 'form-control' %>
+								<% end %>
+							</div>
+						</div>
+						<div class="row">
+							<% if @clients && is_admin? %>
+								<div class="form-group col-lg-5">
+									<strong><%= f.label "Client: " %></strong>
+									<select class="form-control" name="fax_number[client_id]">
+										<% @clients.each do |client| %>
+											<% if client == @fax_number.client %>
+												<option name="fax_number[client_id]" value="<%= client.id %>" selected="selected"><%= client.client_label %></option>
+											<% else %>
+												<option name="fax_number[client_id]" value="<%= client.id %>"><%= client.client_label %></option>
+											<% end %>
+										<% end %>
+									</select>
+								</div>
+								<div class="form-group col-lg-5 text-center">
+									<%= f.submit "Save Changes", class: "btn btn-success force-down-button" %>
+								</div>
+							<% end %>
+						</div>
+						<div class="row">
+							<% if @fax_number.unused_client_emails.present? %>
+								<div class="col-lg-6">
+									<p><strong>Link These Emails to <%= FaxNumber.format_pretty_fax_number(@fax_number.fax_number) %>:</strong></p>
+									<table class="table table-hover table-striped table-sm">
+										<thead class="thead-dark">
+											<tr>
+												<th class="text-center">Add</th>
+												<th class="text-center">Caller ID</th>
+												<th class="text-center">Edit</th>
+											</tr>
+										</thead>
+										<tbody>
+											<% @fax_number.unused_client_emails.each do |unused_email| %>
+												<tr>
+													<td class="text-center">
+														<input class="form-check-input" type="checkbox" id="<%= unused_email.email_address %>" name="user_emails[to_add][<%= unused_email.id %>]">
+														<label for="<%= unused_email.email_address %>" class="form-check-label"><%= unused_email.email_address %></label>
+													</td>
+								    			<td class="text-center"><%= FaxNumber.format_pretty_fax_number(unused_email.caller_id_number) %></td>
+								    			<td class="text-center"><%= link_to "Edit", edit_user_email_path(unused_email), class: "btn btn-sm btn-success" %></td>
+												</tr>
+											<% end %>
+										</tbody>
+									</table>
+								</div>
+							<% end %>
+							<% if @fax_number.user_emails.present? %>
+								<div class="col-lg-6">
+									<p><strong>Unlink These Emails from <%= FaxNumber.format_pretty_fax_number(@fax_number.fax_number) %>:</strong></p>
+									<table class="table table-hover table-striped table-sm">
+										<thead class="thead-dark">
+											<tr>
+												<th class="text-center">Remove</th>
+												<th class="text-center">Caller ID</th>
+												<th class="text-center">Edit</th>
+											</tr>
+										</thead>
+										<tbody>
+											<% @fax_number.user_emails.each do |user_email| %>
+												<tr>
+													<td class="text-center">
+														<input class="form-check-input" type="checkbox" id="<%= user_email.email_address %>" name="user_emails[to_remove][<%= user_email.id %>]">
+														<label for="<%= user_email.email_address %>" class="form-check-label"><%= user_email.email_address %></label>
+													</td>
+								    			<td class="text-center"><%= FaxNumber.format_pretty_fax_number(user_email.caller_id_number) %></td>
+								    			<td class="text-center"><%= link_to "Edit", edit_user_email_path(user_email), class: "btn btn-sm btn-success" %></td>
+												</tr>
+										<% end %>
+										</tbody>
+									</table>
+								</div>
+							<% end %>
+						</div>
 					<% end %>
-				</select>
-			</div>
-		<% end %>
+	      </div>
+	    </div>
+	  </div>
 	</div>
-	<div class="form-group col">
-		<%= f.submit "Save Changes", class: "btn btn-primary" %>
-	</div>
-	<div class="row">
-		<% if @fax_number.unused_client_emails.present? %>
-			<div class="col-lg-6">
-				<p><strong>Link These Emails to <%= FaxNumber.format_pretty_fax_number(@fax_number.fax_number) %>:</strong></p>
-				<table class="table table-hover table-striped table-sm">
-					<thead class="thead-dark">
-						<tr>
-							<th class="text-center">Add</th>
-							<th class="text-center">Caller ID</th>
-							<th class="text-center">Edit</th>
-						</tr>
-					</thead>
-					<tbody>
-						<% @fax_number.unused_client_emails.each do |unused_email| %>
-							<tr>
-								<td class="text-center">
-									<input class="form-check-input" type="checkbox" id="<%= unused_email.email_address %>" name="user_emails[to_add][<%= unused_email.id %>]">
-									<label for="<%= unused_email.email_address %>" class="form-check-label"><%= unused_email.email_address %></label>
-								</td>
-			    			<td class="text-center"><%= unused_email.caller_id_number %></td>
-			    			<td class="text-center"><%= link_to "Edit", edit_user_email_path(unused_email), class: "btn btn-sm btn-success" %></td>
-							</tr>
-						<% end %>
-					</tbody>
-				</table>
-			</div>
-		<% end %>
-		<% if @fax_number.user_emails.present? %>
-			<div class="col-lg-6">
-				<p><strong>Unlink These Emails from <%= FaxNumber.format_pretty_fax_number(@fax_number.fax_number) %>:</strong></p>
-				<table class="table table-hover table-striped table-sm">
-					<thead class="thead-dark">
-						<tr>
-							<th class="text-center">Remove</th>
-							<th class="text-center">Caller ID</th>
-							<th class="text-center">Edit</th>
-						</tr>
-					</thead>
-					<tbody>
-						<% @fax_number.user_emails.each do |user_email| %>
-							<tr>
-								<td class="text-center">
-									<input class="form-check-input" type="checkbox" id="<%= user_email.email_address %>" name="user_emails[to_remove][<%= user_email.id %>]">
-									<label for="<%= user_email.email_address %>" class="form-check-label"><%= user_email.email_address %></label>
-								</td>
-			    			<td class="text-center"><%= user_email.caller_id_number %></td>
-			    			<td class="text-center"><%= link_to "Edit", edit_user_email_path(user_email), class: "btn btn-sm btn-success" %></td>
-							</tr>
-					<% end %>
-					</tbody>
-				</table>
-			</div>
-		<% end %>
-	</div>
-<% end %>
+</body>
