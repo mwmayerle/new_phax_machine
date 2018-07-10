@@ -1,5 +1,3 @@
-<%= link_to "Create New Email", new_user_email_path(id: @fax_number.id), class: "btn btn-success" %>
-
 <%= form_for(:fax_number, url: "/fax_number_user_emails/#{@fax_number.id}", method: :put) do |f| %>
 	<div class="row">
 		<% if @fax_number.unused_client_emails.present? %>
@@ -10,7 +8,6 @@
 						<tr>
 							<th class="text-center">Add</th>
 							<th class="text-center">Caller ID</th>
-							<th class="text-center">Edit</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -21,7 +18,6 @@
 									<label for="<%= unused_email.email_address %>" class="form-check-label"><%= unused_email.email_address %></label>
 								</td>
 			    			<td class="text-center"><%= FaxNumber.format_pretty_fax_number(unused_email.caller_id_number) %></td>
-			    			<td class="text-center"><%= link_to "Edit", edit_user_email_path(unused_email), class: "btn btn-sm btn-success" %></td>
 							</tr>
 						<% end %>
 					</tbody>
@@ -36,7 +32,6 @@
 						<tr>
 							<th class="text-center">Remove</th>
 							<th class="text-center">Caller ID</th>
-							<th class="text-center">Edit</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -47,7 +42,6 @@
 									<label for="<%= user_email.email_address %>" class="form-check-label"><%= user_email.email_address %></label>
 								</td>
 			    			<td class="text-center"><%= FaxNumber.format_pretty_fax_number(user_email.caller_id_number) %></td>
-			    			<td class="text-center"><%= link_to "Edit", edit_user_email_path(user_email), class: "btn btn-sm btn-success" %></td>
 							</tr>
 					<% end %>
 					</tbody>

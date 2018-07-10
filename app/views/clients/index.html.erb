@@ -18,10 +18,11 @@
 					<% if client.client_manager %>
 							<p>Managed by: <%= client.client_manager.email %></p>
 					<% else %>
-						<div class="form-group indent">
+						<div class="form-group">
 							<%= form_for :user, url: "users", method: :post, class: "form-inline" do |f| %>
 								<%= f.hidden_field :client_id, value: client.id %>
 								<%= f.hidden_field :type, value: User::CLIENT_MANAGER %>
+								<%= f.hidden_field :invite, value: "on" %>
 								<div class="mb-2 mr-sm-2 input-group align-self-center">
 									<%= f.email_field :email, placeholder: "manager@acme.com", class: "form-control mb-2 mr-sb-2" %>
 									<%= f.submit "Invite Manager", class: "btn btn-success btn-sm inline-object-margin align-self-center" %>
@@ -67,7 +68,6 @@
 						</tbody>
 					</table>
 				</div>
-				
 			</div>
 		<% end %>
 	<% end %>

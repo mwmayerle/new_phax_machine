@@ -11,6 +11,7 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable, :recoverable, :rememberable, :validatable #:confirmable
 
 	attr_readonly :type, :fax_tag
+	attr_accessor :invite, :caller_id_number
 
 	belongs_to :client, optional: true
 

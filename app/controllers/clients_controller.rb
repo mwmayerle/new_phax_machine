@@ -7,7 +7,7 @@ class ClientsController < ApplicationController
 	
 	def index
 		FaxNumber.format_and_retrieve_fax_numbers_from_api if FaxNumber.first.nil?
-		@clients = Client.all
+		@clients = Client.order(client_label: :asc)
 	end
 
 	def new
@@ -32,6 +32,7 @@ class ClientsController < ApplicationController
 	end
 
 	def show
+		@user_email = UserEmail.new
 		if authorized?(@client, :client_manager_id)
 			@unused_emails = Client.get_unused_emails(@client)
 		else
