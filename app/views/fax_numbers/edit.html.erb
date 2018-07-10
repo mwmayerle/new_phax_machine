@@ -1,9 +1,9 @@
 <div class="row">
 	<div class="col-lg-9">
 		<% if is_admin? %>
-			<h1>Edit Fax Number (<%= @fax_number.fax_number%>)</h1>
+			<h1>Edit Fax Number <%= FaxNumber.format_pretty_fax_number(@fax_number.fax_number) %></h1>
 		<% else %>
-			<h1>Manage Linked Emails for <%= @fax_number.fax_number%> </h1>
+			<h1>Manage Linked Emails for <%= FaxNumber.format_pretty_fax_number(@fax_number.fax_number) %> </h1>
 		<% end %>
 	</div>
 	<br>
@@ -16,7 +16,7 @@
 	<%= f.hidden_field :id, :value => @fax_number.id %>
 
 	<div class="row info-box-no-border">
-		<p>Linked email addresses are emailed whenever <%= @fax_number.fax_number %> sends or receives a fax.</p>
+		<p>Linked email addresses are emailed whenever <%= FaxNumber.format_pretty_fax_number(@fax_number.fax_number) %> sends or receives a fax.</p>
 		<div class="col-lg-7">
 			<div class="form-inline form-group">
 				<% if is_admin? %>
@@ -55,7 +55,7 @@
 	<div class="row">
 		<% if @fax_number.unused_client_emails.present? %>
 			<div class="col-lg-6">
-				<p><strong>Link These Emails to <%= @fax_number.fax_number %>:</strong></p>
+				<p><strong>Link These Emails to <%= FaxNumber.format_pretty_fax_number(@fax_number.fax_number) %>:</strong></p>
 				<table class="table table-hover table-striped table-sm">
 					<thead class="thead-dark">
 						<tr>
@@ -81,7 +81,7 @@
 		<% end %>
 		<% if @fax_number.user_emails.present? %>
 			<div class="col-lg-6">
-				<p><strong>Unlink These Emails from <%= @fax_number.fax_number %>:</strong></p>
+				<p><strong>Unlink These Emails from <%= FaxNumber.format_pretty_fax_number(@fax_number.fax_number) %>:</strong></p>
 				<table class="table table-hover table-striped table-sm">
 					<thead class="thead-dark">
 						<tr>

@@ -2,50 +2,40 @@
 	<div class="col-lg-9">
 		<h1>Manage Clients</h1>
 	</div>
-	<div class="col-lg-3 text-center">
-		<%= link_to "Add New Client", new_client_path, class: "btn btn-primary" %>
+	<div class="col-lg-3 text-center align-self-center">
+		<%= link_to "Add New Client", new_client_path, class: "btn btn-success" %>
 	</div>
 </div>
 
 <% if is_admin? %>
-	<% if @unallocated_fax_numbers.present? %>
-		<div class="row info-box-no-border">
-			<h2>Unallocated Fax Numbers</h2>
-			<div class="col">
-				<table class="table-sm table-responsive">
-					<tbody>
-						<% @unallocated_fax_numbers.each do |td_column, fax_number_group| %>
-								<tr>
-									<% fax_number_group.each do |fax_number| %>
-										<td class="text-center"><%= fax_number %></td>
-									<% end %>
-								</tr>
-						<% end %>
-					</tbody>
-				</table>
-			</div>
-		</div>
-	<% end %>
-
 	<% if @clients.present? %>
 		<% @clients.each do |client| %>
-			<div class="info-box row">
+			<div class="row information-box">
 				<div class="col-lg-4 form-group">
-					<h2><%= link_to client.client_label, client_path(client) %></h2>
+					<div class="form-group">
+						<h2><%= link_to client.client_label, client_path(client) %></h2>
+					</div>
 					<% if client.client_manager %>
 							<p>Managed by: <%= client.client_manager.email %></p>
 					<% else %>
 						<div class="form-group">
-							<%= form_for :user, url: "users", method: :post do |f| %>
+							<%= form_for :user, url: "users", method: :post, class: "form-inline" do |f| %>
 								<%= f.hidden_field :client_id, value: client.id %>
 								<%= f.hidden_field :type, value: User::CLIENT_MANAGER %>
-								<%= f.email_field :email, placeholder: "manager@acme.com" %>
-								<%= f.submit "Invite Manager", class: "btn-inline btn btn-success btn-sm" %>
+								<div class="mb-2 mr-sm-2 input-group align-self-center">
+									<%= f.email_field :email, placeholder: "manager@acme.com", class: "form-control mb-2 mr-sb-2" %>
+									<%= f.submit "Invite Manager", class: "btn btn-success btn-sm inline-object-margin align-self-center" %>
+								</div>
 							<% end %>
 						</div>
 					<% end %>
 					<div class="form-group">
-						<%= button_to "Delete Client", client_path(client), class: "btn btn-danger", method: :delete %>
+						<form action="/clients/<%= client.id %>" method="POST">
+							<input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+							<input type="hidden" name="_method" value="DELETE">
+							<button type="submit" class="btn btn-danger">
+								<span><i class="fa fa-fw fa-trash"></i> Delete Client</span>
+							</button>
 					</div>
 				</div>
 
@@ -62,7 +52,7 @@
 							<% if client.fax_numbers.present? %>
 								<% client.fax_numbers.each do |client_fax_number| %>
 									<tr>
-										<td class="text-center"><%= client_fax_number.fax_number %></td>
+										<td class="text-center"><%= FaxNumber.format_pretty_fax_number(client_fax_number.fax_number) %></td>
 										<td class="text-center"><%= client_fax_number.fax_number_label %></td>
 										<td class="text-center"><%= client_fax_number.fax_number_display_label %></td>
 									</tr>

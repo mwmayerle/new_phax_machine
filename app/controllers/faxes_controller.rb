@@ -1,8 +1,13 @@
 class FaxesController < ApplicationController
+	include SessionsHelper
+	
 	before_action :verify_user_signed_in
 	before_action :set_phaxio_creds
 
 	def new
+		if is_admin?
+			redirect_to(clients_path)
+		end
 	end
 
 	# POST for sending a fax via the internal view

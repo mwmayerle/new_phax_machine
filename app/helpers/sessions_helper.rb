@@ -1,5 +1,4 @@
 module SessionsHelper
-	
 	# authorized? accepts an object and an attribute(should be an id) to compare against the current_user's id
 	def authorized?(input_object, attribute)
 		return false if current_user.nil?

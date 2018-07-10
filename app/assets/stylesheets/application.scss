@@ -1,48 +1,93 @@
-@import "bootstrap";
+$primary: #076892;
+$success: #2C4251;
+$danger: #D16666;
+
+@import 'bootstrap';
+@import 'navbar';
+
+#content {
+	overflow-x: hidden;
+	margin-left: 240px;
+	margin-top: 70px;
+}
+
+.wrapper {
+  display: flex;
+  width: 100%;
+  align-items: stretch;
+}
+
+a[data-toggle="collapse"] {
+  position: relative;
+}
+
+.dropdown-toggle::after {
+  display: block;
+  position: absolute;
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%);
+}
+
+.information-box {
+	transition: all 0.3s;
+	background: #eeeeee;
+	padding-top: 16px;
+	margin: 24px;
+	border-radius: 7px;
+}
+
+.information-box-active {
+	transition: all 0.3s;
+	background: #e0e0e0;
+	padding-top: 16px;
+	margin: 24px;
+	border-radius: 7px;
+}
+
+.user-management-box {
+	padding-left: 40px;
+}
+
+.inline-object-margin {
+	margin-bottom: 5px;
+	margin-left: 10px;
+}
+
+.inline-input-margin {
+	margin-left: 16px;
+}
+
+.force-down-button { //I'm not proud...
+	margin-top: 30px;
+}
 
 body {
-	margin-top: 20px;
+  font-family: 'Padauk', sans-serif;
+  background: #fafafa;
 }
 
-tr {
-	background: #f7f7f7;
+h1 {
+	font-size: 1.8em;
 }
 
-#flash-messages {
-	margin-top: 20px;
-	margin-bottom: 20px;
-	height: 50px;
+h2 {
+	font-size: 1.55em;
 }
 
-.container-fluid {
-	width: 65%;
+p {
+  font-size: 1em;
+  // font-weight: 300;
+  line-height: 1.7em;
 }
 
-tr:hover {
-  background-color: #D2D2D2;
+a, a:hover, a:focus {
+  color: inherit;
+  transition: all 0.3s;
 }
 
-.nav-link {
-	color: #cbcbcb !important;
-}
-
-.nav-link:hover {
-	color: #eeeeee !important;
-}
-
-.info-box {
-	padding-top: 20px;
-	padding-left: 10px;
-	padding-right: 10px;
-	margin: 30px;
-	border-radius: 16px;
-	border: 1px solid grey;
-}
-
-.info-box-no-border {
-	padding-top: 20px;
-	padding-left: 10px;
-	padding-right: 10px;
-	margin: 30px;
-	border-radius: 16px;
+ul ul a {
+  font-size: 0.6em !important;
+  padding-left: 20px !important;
+  background: #202634;
 }
