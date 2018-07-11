@@ -17,4 +17,10 @@ class PhaxMachineMailer < Devise::Mailer
     devise_mail(record, :user_welcome_invite, opts)
   end
 
+  def admin_welcome_invite(record, token, opts = {})
+  	opts[:subject] = "You've been invited to Phax Machine"
+    @token = token
+    devise_mail(record, :admin_welcome_invite, opts)
+  end
+
 end

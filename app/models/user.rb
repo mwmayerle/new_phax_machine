@@ -75,7 +75,7 @@ class User < ApplicationRecord
 		    elsif user.type == USER
 		    	PhaxMachineMailer.user_welcome_invite(user, @raw).deliver_now
 		    else
-		    	PhaxMachineMailer.welcome_invite(user, @raw).deliver_now
+		    	PhaxMachineMailer.admin_welcome_invite(user, @raw).deliver_now
 		    end
 		  end
 		end
