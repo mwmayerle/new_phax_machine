@@ -47,8 +47,8 @@ class FaxesController < ApplicationController
 
 		def verify_user_signed_in
 			if !user_signed_in?
-				flash[:alert] = "You must be logged in to send a fax"
-				redirect_to root_path
+				# flash[:alert] = "You must be logged in to send a fax"
+				redirect_to new_user_session_path
 			end
 		end
 

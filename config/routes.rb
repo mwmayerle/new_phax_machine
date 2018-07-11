@@ -22,7 +22,7 @@ Rails.application.routes.draw do
 	resources :clients
   resources :fax_numbers, only: [:index, :edit, :update]
 
-  root to: "users#index"
+  root to: "faxes#new"
 
   post "/fax_received", to: "mailgun_faxes#fax_received"
   post "/fax_sent", to: "mailgun_faxes#fax_sent"
