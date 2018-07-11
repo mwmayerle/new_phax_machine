@@ -38,9 +38,7 @@
 				<% end %>
 
 				<div class="form-group">
-					<% if client_fax_number.user_emails.present? %>
-						<%= link_to "Link / Unlink Users", edit_fax_number_user_email_path(client_fax_number), class: "btn btn-success" %>
-					<% end %>
+					<%= link_to "Link / Unlink Users", edit_fax_number_user_email_path(client_fax_number), class: "btn btn-success" %>
 				</div>
 			</div>
 			
