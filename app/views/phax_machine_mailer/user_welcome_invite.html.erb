@@ -1,5 +1,5 @@
 <p>Hello <%= @resource.email %>!</p>
 
-<p>You've been invited to manage ___________________</p>
-
+<p>You've been invited to Phax Machine.</p>
+<p>Click the link below to set up your account and start faxing</p>
 <p><%= link_to "Set Up Account", users_password_set_new_user_password_url(@resource, reset_password_token: @token)%></p>

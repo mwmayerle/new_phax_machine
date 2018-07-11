@@ -69,7 +69,14 @@ class User < ApplicationRecord
 		    user.reset_password_sent_at = Time.now.utc
 		    user.save(validate: false)
 		    @raw = raw
-		    PhaxMachineMailer.welcome_invite(user, @raw).deliver_now
+
+		    if user.type == CLIENT_MANAGER
+		    	PhaxMachineMailer.client_manager_welcome_invite(user, @raw).deliver_now
+		    elsif user.type == USER
+		    	PhaxMachineMailer.user_welcome_invite(user, @raw).deliver_now
+		    else
+		    	PhaxMachineMailer.welcome_invite(user, @raw).deliver_now
+		    end
 		  end
 		end
 end
