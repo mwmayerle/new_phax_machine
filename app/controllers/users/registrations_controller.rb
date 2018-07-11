@@ -15,7 +15,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
     		caller_id_number: sign_up_params[:caller_id_number], # make a UserEmail but no User
     		client_id: sign_up_params[:client_id]
     	)
-    	new_email ? flash[:notice] = "Email successfully created." : flash[:alert] = @user_email.errors.full_messages.pop
+    	new_email ? flash[:notice] = "User successfully created." : flash[:alert] = @user_email.errors.full_messages.pop
     # There is an "invite" attr_accessor in User model that determines whether a UserEmail, or both a User and
     # a UserEmail object are created simultaneously. 'if sign_up_params[:invite]' above is addressing this.
     else 
@@ -37,7 +37,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 			    		user_id: user.id,                                     # UserEmail object
 			    		caller_id_number: client.fax_numbers.first.fax_number #
 			    	)
-			    	new_email ? flash[:notice] = "Email successfully created." : flash[:alert] = @user_email.errors.full_messages.pop
+			    	new_email ? flash[:notice] = "User successfully created." : flash[:alert] = @user_email.errors.full_messages.pop
 			    else																											#
 			    	existing_email.update_attributes(user_id: user.id.to_i) # Creating ClientManager with an existing UserEmail object
 			    end 																											#
@@ -51,7 +51,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 			    		email_address: user.email,               
 			    		user_id: user.id,
 			    	)
-			    	new_email ? flash[:notice] = "Email successfully created." : flash[:alert] = @user_email.errors.full_messages.pop
+			    	new_email ? flash[:notice] = "User successfully created." : flash[:alert] = @user_email.errors.full_messages.pop
 			    else																											#
 			    	existing_email.update_attributes(user_id: user.id.to_i) # Creating generic User with an existing UserEmail object
 			    end 																											# 																				
