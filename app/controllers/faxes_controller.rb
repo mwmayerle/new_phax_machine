@@ -7,6 +7,13 @@ class FaxesController < ApplicationController
 	def new
 	end
 
+
+	{"authenticity_token"=>"4e9SL2uEnZoWji8zN/oW49rejonSvSR1HVX2PCF3etjEs5hdmhPqwlpVrWQMSM6uB+4KQfef93bcdEm7ZI9I8Q==",
+
+		"fax"=>{"to"=>"18777115706", "files"=>{"file1"=><ActionDispatch::Http::UploadedFile:0x000000000484b620 @tempfile=<Tempfile:/tmp/RackMultipart20180712-4-863gra.odt>, @original_filename="firstfax.odt", @content_type="application/vnd.oasis.opendocument.text", @headers="Content-Disposition: form-data; name=\"fax[files][file1]\"; filename=\"firstfax.odt\"\r\nContent-Type: application/vnd.oasis.opendocument.text\r\n">}},
+
+	"files"=>{"file2"=><ActionDispatch::Http::UploadedFile:0x000000000484b288 @tempfile=<Tempfile:/tmp/RackMultipart20180712-4-1m19m3u.odt>, @original_filename="secondfax.odt", @content_type="application/vnd.oasis.opendocument.text", @headers="Content-Disposition: form-data; name=\"files[file2]\"; filename=\"secondfax.odt\"\r\nContent-Type: application/vnd.oasis.opendocument.text\r\n">}}
+
 	# POST for sending a fax via the internal view
 	def create(attached_files = [])
 		fax_params[:files].each { |file_in_params| attached_files << file_in_params[1].tempfile } # No .map() for ActionCont. params

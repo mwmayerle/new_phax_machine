@@ -67,7 +67,7 @@ function addAdditionalFileInput(fileCounter) {
 										"<span>&times;</span>" +
 									"</button>" +
 									// "<h3>Drag a file onto this box to upload it.</h3>" +
-									"<input id='faxFile" + fileCounter + "' name='files[file" + fileCounter +"]' type='file' required>" +
+									"<input id='faxFile" + fileCounter + "' name='fax[files][file" + fileCounter +"]' type='file' required>" +
 								"</div>" +
 							// "<div class='faxFileProgress' hidden='hidden'></div>" +
 							"</div>" +
