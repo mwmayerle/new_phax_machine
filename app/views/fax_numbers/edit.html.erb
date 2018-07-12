@@ -5,7 +5,7 @@
       <div class="card-body">
         <div class="mb-8">
       		<%= form_for(:fax_number, url: "/fax_numbers/#{@fax_number.id}", method: :put, class: "form-inline") do |f| %>
-						<%= f.hidden_field :fax_number_id, :value => @fax_number.id %>
+						<%#= f.hidden_field :fax_number_id, :value => @fax_number.id %>
 						<div class="row">
 							<div class="col-lg-5">
 								<div class="form-group">
