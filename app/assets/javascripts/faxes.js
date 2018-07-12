@@ -2,10 +2,7 @@
 // All this logic will automatically be available in application.js.
 
 $(document).ready(function() {
-	function initialConfig() { 
-		$("#send-another").prop("disabled", true);
-	};
-
+	$("#send-another").prop("disabled", true);
 	addAdditionalFileInput(fileCounter);
 	closeFileUploadWindow();
 	adjustAttachmentCount(fileCounter);
@@ -61,11 +58,11 @@ function addAdditionalFileInput(fileCounter) {
 					"<div class='information-box file-attachments'>" +
 						"<div class='row inline-input-margin'>" +
 							"<div id='file" + fileCounter + "' class='form-group col'>" +
-							"<label class='file-counter'>File " + fileCounter + ":</label>" +
+								"<button type='button' class='close' data-dismiss='#faxfile" + fileCounter + "' aria-label='Close'>" + 
+									"<span class='the-x'>&times;</span>" +
+								"</button>" +
+								"<label class='file-counter'>File " + fileCounter + ":</label>" +
 								"<div class='file-drop' data-target='#faxFile" + fileCounter + "'>" +
-									"<button type='button' class='close pull-right' data-dismiss='#faxfile" + fileCounter + "' aria-label='Close'>" + 
-										"<span>&times;</span>" +
-									"</button>" +
 									// "<h3>Drag a file onto this box to upload it.</h3>" +
 									"<input id='faxFile" + fileCounter + "' name='fax[files][file" + fileCounter +"]' type='file' required>" +
 								"</div>" +

@@ -15,12 +15,13 @@ class FaxNumbersController < ApplicationController
 	end
 
 	def update
-		original_client = @fax_number.client
 		param_filter_type = is_admin? ? admin_fax_number_params : client_manager_fax_number_params
 		
+		original_client = @fax_number.client
+
 		if @fax_number.update_attributes(param_filter_type)
 			# this if block spoofs the "email[:to_remove]" portion of params by creating and passing in a similar hash
-			if original_client != @fax_number.client
+			if original_client && original_client != @fax_number.client
 				@fax_number.update_attributes(fax_number_display_label: nil)
 				original_client_user_email_ids = {}
 				original_client.user_emails.each { |user_email| original_client_user_email_ids[user_email.id] = 'on' }
@@ -29,10 +30,10 @@ class FaxNumbersController < ApplicationController
 
 			flash[:notice] = "Changes successfully saved."
 			# This ternary is for editing a fax number's label before the client is created
-			@fax_number.client ? redirect_to(client_path(id: original_client.id)) : redirect_to(fax_numbers_path)
+			@fax_number.client ? redirect_to(client_path(@fax_number.client)) : redirect_to(fax_numbers_path)
 		else
 			flash[:alert] = @fax_number.errors.full_messages.pop
-			render :edit
+			redirect_to(edit_fax_number_path(@fax_number))
 		end
 	end
 

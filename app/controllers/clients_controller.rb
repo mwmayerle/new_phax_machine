@@ -1,7 +1,7 @@
 class ClientsController < ApplicationController
 	include SessionsHelper
 
-	before_action :verify_is_admin, only: [:index, :new, :create, :edit, :update, :destroy]
+	before_action :verify_is_admin, except: [:show]
 	before_action :set_client, only: [:show, :edit, :update, :destroy, :user_index]
 	before_action :get_unallocated_numbers, only: [:new, :edit]
 	

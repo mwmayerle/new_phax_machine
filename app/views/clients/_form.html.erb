@@ -1,7 +1,7 @@
 <body class="bg-dark coverup">
   <div class="container coverup">
     <div class="card card-login mx-auto mt-5">
-      <div class="card-header">New Client</div>
+      <div class="card-header">Client</div>
       <div class="card-body">
         <div class="text-center mb-6">
 					<%= form_for client, class: "form-inline" do |f| %>
@@ -49,6 +49,14 @@
 									</div>
 								</div>
 								<div class="col-lg-1"></div>
+							<% else %>
+								<% if is_admin? && !client.fax_numbers.present? %>
+									<div class="col">
+										<p>
+											All fax numbers are currently in use. Head to <a href="https://console.phaxio.com/phone_numbers">your Phaxio account </a>to provision more fax numbers.
+										</p>
+									</div>
+								<% end %>
 							<% end %>
 
 							<% if client.fax_numbers.present? %>

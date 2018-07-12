@@ -31,11 +31,11 @@ class Users::RegistrationsController < Devise::RegistrationsController
 		    	existing_email = UserEmail.find_by(email_address: user.email)
 
 		    	if existing_email.nil?
-			    	new_email = UserEmail.create!(                          # 
-			    		email_address: user.email,                            # Creating a ClientManager user from
-			    		client_id: client.id,                                 # scratch w/no previously persisted
-			    		user_id: user.id,                                     # UserEmail object
-			    		caller_id_number: client.fax_numbers.first.fax_number #
+			    	new_email = UserEmail.create!(                            # 
+			    		email_address: user.email,                              # Creating a ClientManager user from
+			    		client_id: client.id,                                   # scratch w/no previously persisted
+			    		user_id: user.id,                                       # UserEmail object
+			    		caller_id_number: client.fax_numbers.first.fax_number   #
 			    	)
 			    	new_email ? flash[:notice] = "User successfully created." : flash[:alert] = @user_email.errors.full_messages.pop
 			    else																											#

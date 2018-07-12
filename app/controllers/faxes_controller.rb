@@ -5,6 +5,7 @@ class FaxesController < ApplicationController
 	before_action :set_phaxio_creds
 
 	def new
+		redirect_to(fax_numbers_path) if is_admin?
 	end
 
 	# POST for sending a fax via the internal view
@@ -28,16 +29,6 @@ class FaxesController < ApplicationController
 			api_response.status == 'queued' ? flash[:notice] = 'Fax queued for sending' : flash[:alert] = api_response.error_message
 		end
 		redirect_to new_fax_path
-	end
-
-	def show
-	end
-
-	# GET /download_file
-	def download_file
-	end
-
-	def destroy
 	end
 
 	private

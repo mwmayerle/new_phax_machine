@@ -15,7 +15,7 @@ class FaxNumber < ApplicationRecord
 	has_many :user_emails, through: :fax_number_user_emails
 
 	validates :fax_number, presence: true, length: { maximum: FAX_NUMBER_DIGIT_LIMIT }, phone: {possible: true}, uniqueness: true
-	validates :fax_number_label, length: { maximum: FAX_NUMBER_CHARACTER_LIMIT }
+	validates :fax_number_label, length: { maximum: FAX_NUMBER_CHARACTER_LIMIT }, uniqueness: { allow_nil: true }
 	
 	before_validation :fax_number, :format_fax_number
 
@@ -23,7 +23,6 @@ class FaxNumber < ApplicationRecord
 		def format_fax_number
 			self.fax_number = Phonelib.parse(fax_number).e164
 	  end
-
 
 		class << self
 			def format_pretty_fax_number(fax_number)

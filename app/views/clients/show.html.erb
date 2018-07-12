@@ -76,13 +76,6 @@
 			</div>
 		</div>
 	<% end %>
-<% else %>
-	<div class="row information-box">
-		<div class="col">
-			<h2>No Fax Numbers are associated with this account.</h2>
-		</div>
-	</div>
-<% end %>
 
 <br>
 <div class="container-fluid user-form">
@@ -125,40 +118,54 @@
 	</div>
 </div>
 
-<% if @client.user_emails.present? %>
-	<div class="row information-box">
-		<div class="col-lg-6">
-			<table class="table table-sm table-hover">
-				<tbody>
-					<% @client.user_emails.each do |user_email| %>
-						<% if @client.user_emails.index(user_email).even? %>
-							<tr>
-								<td class="text-center"><%= user_email.email_address %></td>
-								<td class="text-center">
-									<%= link_to "Edit User", edit_user_email_path(id: user_email.id), class: "btn btn-sm btn-success" %>
-								</td>
-							</tr>
-						<% end %>
-					<% end %>
-				</tbody>
-			</table>
+	<% if @client.user_emails.present? %>
+		<div class="container-fluid">
+			<br>
+			<div class="col">
+				<p><em>Click 'Edit User' to grant an existing user to Phax Machine or to revoke their access.</em></p>
+			</div>
 		</div>
-
-		<div class="col-lg-6">
-			<table class="table table-sm table-hover">
-				<tbody>
-					<% @client.user_emails.each do |user_email| %>
-						<% if @client.user_emails.index(user_email).odd? %>
-							<tr>
-								<td class="text-center"><%= user_email.email_address %></td>
-								<td class="text-center">
-									<%= link_to "Edit User", edit_user_email_path(id: user_email.id), class: "btn btn-sm btn-success" %>
-								</td>
-							</tr>
+		<div class="row information-box">
+			<div class="col-lg-6">
+				<table class="table table-sm table-hover">
+					<tbody>
+						<% @client.user_emails.each do |user_email| %>
+							<% if @client.user_emails.index(user_email).even? %>
+								<tr>
+									<td class="text-center"><%= user_email.email_address %></td>
+									<td class="text-center">
+										<%= link_to "Edit User", edit_user_email_path(id: user_email.id), class: "btn btn-sm btn-success" %>
+									</td>
+								</tr>
+							<% end %>
 						<% end %>
-					<% end %>
-				</tbody>
-			</table>
+					</tbody>
+				</table>
+			</div>
+
+			<div class="col-lg-6">
+				<table class="table table-sm table-hover">
+					<tbody>
+						<% @client.user_emails.each do |user_email| %>
+							<% if @client.user_emails.index(user_email).odd? %>
+								<tr>
+									<td class="text-center"><%= user_email.email_address %></td>
+									<td class="text-center">
+										<%= link_to "Edit User", edit_user_email_path(id: user_email.id), class: "btn btn-sm btn-success" %>
+									</td>
+								</tr>
+							<% end %>
+						<% end %>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	<% end %>
+
+<% else %>
+	<div class="row information-box">
+		<div class="col">
+			<p>No Fax Numbers are associated with this account. Please click 'Manage Client Fax Numbers / Details' above to assign a fax number to this client.</p>
 		</div>
 	</div>
 <% end %>
