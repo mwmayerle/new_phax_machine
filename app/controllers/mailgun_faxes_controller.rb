@@ -3,9 +3,7 @@ class MailgunFaxesController < ApplicationController
 	skip_before_action :verify_authenticity_token, only: [:fax_received, :fax_sent, :mailgun]
 
 	def fax_received
-		# @fax = JSON.parse(params['fax'])
-		@fax = JSON.parse(request.body.read)
-		p @fax
+		@fax = JSON.parse(params.to_unsafe_h)# <-- This is a temporary workaround for webhooks V2
     recipient_number = Phonelib.parse(@fax['to_number']).e164
     fax_number = FaxNumber.find_by(fax_number: recipient_number)
 
@@ -22,9 +20,7 @@ class MailgunFaxesController < ApplicationController
 	end
 
 	def fax_sent
-		# @fax = JSON.parse(params['fax'])
-		@fax = JSON.parse(request.body.read)
-		p @fax
+		@fax = JSON.parse(params.to_unsafe_h)# <-- This is a temporary workaround for webhooks V2
 		email_addresses = UserEmail.find_by(fax_tag: @fax['tags']['sender_email_fax_tag']).email_address
 
     if @fax["status"] == "success"
