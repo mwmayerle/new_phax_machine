@@ -14,7 +14,7 @@
   <p><b>To:</b> <%= @fax["to_number"] %></p>
 <% end %>
 
-<% if <%= @fax["direction"] == "received" %>
+<% if @fax["direction"] == "received" %>
 	<p><b>From:</b> <%= @fax["from_number"] %> </b></p>
 <% else  %>
 	<p><b>	<%= @fax["caller_id"] %></b></p>
