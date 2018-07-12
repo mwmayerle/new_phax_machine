@@ -1,5 +1,4 @@
 class MailgunFaxesController < ApplicationController
-	# before_action :verify_callback_token
 	skip_before_action :verify_authenticity_token, only: [:fax_received, :fax_sent, :mailgun]
 
 	def fax_received
