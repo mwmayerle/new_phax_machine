@@ -23,9 +23,11 @@
 							<div>
 								<div class="col">
 								<em>
-									<p>
-										Linked email addresses are emailed whenever <%= FaxNumber.format_pretty_fax_number(@fax_number.fax_number) %> sends or receives a fax.
-									</p>
+									<% if @fax_number.client %>
+										<p>
+											Linked email addresses are emailed whenever <%= FaxNumber.format_pretty_fax_number(@fax_number.fax_number) %> sends or receives a fax.
+										</p>
+									<% end %>
 								</em>
 								</div>
 							</div>
