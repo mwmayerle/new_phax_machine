@@ -23,7 +23,7 @@
 							<div>
 								<div class="col">
 								<em>
-									<% if @fax_number.client %>
+									<% if @fax_number.client.present? %>
 										<p>
 											Linked email addresses are emailed whenever <%= FaxNumber.format_pretty_fax_number(@fax_number.fax_number) %> sends or receives a fax.
 										</p>
