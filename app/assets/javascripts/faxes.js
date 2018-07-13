@@ -3,13 +3,13 @@
 
 $(document).ready(function() {
 	$("#send-another").prop("disabled", true);
-	addAdditionalFileInput(fileCounter);
+	addAdditionalFileInput();
 	closeFileUploadWindow();
-	adjustAttachmentCount(fileCounter);
+	adjustAttachmentCount();
 	toggleAttachAnotherButton();
 });
-var fileCounter = 1;
 
+var fileCounter = 1;
 
 function toggleAttachAnotherButton() {
 	$(".file-attachments :file").change(function() {
@@ -24,26 +24,26 @@ function toggleAttachAnotherButton() {
 	});
 };
 
-function adjustAttachmentCount(fileCounter) {
+function adjustAttachmentCount() {
 	let files = $(".file-counter");
-	let filesArray = $.makeArray(files)//.reverse(); // .reverse() doesn't work on a jQuery object
+	let filesArray = $.makeArray(files)
 	filesArray.forEach(function(fileLabel) {
 		$(fileLabel).text("File: " + (filesArray.indexOf(fileLabel) + 1))
 	});
 };
 
-function closeFileUploadWindow(fileCounter) {
+function closeFileUploadWindow() {
 	$("#all-files").on("click", $(".close"), function(event) {
 		if ($(event.target).parent().hasClass("close") || $(event.target).hasClass("close")) {
 			$(event.target).closest(".file-attachments").remove();
 		}
-	adjustAttachmentCount(fileCounter);
+	adjustAttachmentCount();
 	// FileDrop.registerAll();
 	fileCounter -= 1;
 	});
 };
 
-function addAdditionalFileInput(fileCounter) {
+function addAdditionalFileInput() {
 	$("#send-another").on("click", function(event) {
 		// if ($(".file-attachments :file").val() === "") {
 		// 	FileDrop.removeEventListener('dragenter', handleDragEnter);
@@ -52,7 +52,7 @@ function addAdditionalFileInput(fileCounter) {
 	 //    FileDrop.removeEventListener('dragleave', handleDragLeave);
 	 //    FileDrop.registerAll();
 		// } else {
-			if (fileCounter < 10) {
+			if ($(".file-attachments :file").length < 10) {
 				fileCounter += 1;
 				$("#all-files").append(
 					"<div class='information-box file-attachments'>" +
@@ -71,7 +71,7 @@ function addAdditionalFileInput(fileCounter) {
 						"</div>" +
 					"</div>"
 					);
-				adjustAttachmentCount(fileCounter);
+				adjustAttachmentCount();
 			}
 		// }
 	});
