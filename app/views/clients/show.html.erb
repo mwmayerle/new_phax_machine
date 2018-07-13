@@ -77,46 +77,46 @@
 		</div>
 	<% end %>
 
-<br>
-<div class="container-fluid user-form">
-	<h2><%= @client.client_label %> Users</h2>
-	<div class="col">
-		<p><em>If you would only like to implement email-to-fax capabilities and do not wish for your users to log in to send a fax, uncheck the 'Invite User' box.</em></p>
-	</div>
-	<div class="row">
-		<div class="inline-input-margin col-lg-10">
-			<%= form_for :user, url: "/users", method: :post, class: "form-inline" do |f| %>
-				<%= f.hidden_field :client_id, value: "#{@client.id}" %>
-				<div class="row">
-					<div class="form-group col-lg-4">
-						<strong><%= f.label :email, "Email:", class: "pull-left" %></strong>
-						<%= f.email_field :email, class: "form-control" %>
+	<br>
+	<div class="container-fluid user-form">
+		<h2><%= @client.client_label %> Users</h2>
+		<div class="col">
+			<p><em>If you would only like to implement email-to-fax capabilities and do not wish for your users to log in to send a fax, uncheck the 'Invite User' box.</em></p>
+		</div>
+		<div class="row">
+			<div class="inline-input-margin col-lg-10">
+				<%= form_for :user, url: "/users", method: :post, class: "form-inline" do |f| %>
+					<%= f.hidden_field :client_id, value: "#{@client.id}" %>
+					<div class="row">
+						<div class="form-group col-lg-4">
+							<strong><%= f.label :email, "Email:", class: "pull-left" %></strong>
+							<%= f.email_field :email, class: "form-control" %>
+						</div>
+						<div class="form-group col-lg-4">
+							<strong><%= f.label :caller_id_number, "Caller ID Number:", class: "pull-left" %></strong>
+							<select class="form-control form-inline" name="user[caller_id_number]">
+								<% @client.fax_numbers.each do |client_fax_number| %>
+									<option name="user[caller_id_number]" value="<%= client_fax_number.fax_number %>" selected="selected">
+										<%= FaxNumber.format_pretty_fax_number(client_fax_number.fax_number) %>
+										<% if client_fax_number.fax_number_display_label.present? %>
+									 		- <%= client_fax_number.fax_number_display_label %>
+									 	<% end %>
+									 </option>
+								<% end %>
+							</select>
+						</div>
+						<div class="col force-down-checkbox inline-input-margin text-center">
+							<input type="checkbox" id="invite-new-user" class="form-check-input" name="user[invite]" checked="checked">
+							<label for="invite-new-user" class="form-check-label">Invite User</label>
+						</div>
+						<div class="col form-group force-down-button">
+							<%= f.submit "Create User", class: "btn btn-success" %>
+						</div>
 					</div>
-					<div class="form-group col-lg-4">
-						<strong><%= f.label :caller_id_number, "Caller ID Number:", class: "pull-left" %></strong>
-						<select class="form-control form-inline" name="user[caller_id_number]">
-							<% @client.fax_numbers.each do |client_fax_number| %>
-								<option name="user[caller_id_number]" value="<%= client_fax_number.fax_number %>" selected="selected">
-									<%= FaxNumber.format_pretty_fax_number(client_fax_number.fax_number) %>
-									<% if client_fax_number.fax_number_display_label.present? %>
-								 		- <%= client_fax_number.fax_number_display_label %>
-								 	<% end %>
-								 </option>
-							<% end %>
-						</select>
-					</div>
-					<div class="col force-down-checkbox inline-input-margin text-center">
-						<input type="checkbox" id="invite-new-user" class="form-check-input" name="user[invite]" checked="checked">
-						<label for="invite-new-user" class="form-check-label">Invite User</label>
-					</div>
-					<div class="col form-group force-down-button">
-						<%= f.submit "Create User", class: "btn btn-success" %>
-					</div>
-				</div>
-			<% end %>
+				<% end %>
+			</div>
 		</div>
 	</div>
-</div>
 
 	<% if @client.user_emails.present? %>
 		<div class="container-fluid">
@@ -163,9 +163,11 @@
 	<% end %>
 
 <% else %>
-	<div class="row information-box">
-		<div class="col">
-			<p>No Fax Numbers are associated with this account. Please click 'Manage Client Fax Numbers / Details' above to assign a fax number to this client.</p>
+	<% if is_admin? %>
+		<div class="row information-box">
+			<div class="col">
+				<p>No Fax Numbers are associated with this account. Please click 'Manage Client Fax Numbers / Details' above to assign a fax number to this client.</p>
+			</div>
 		</div>
-	</div>
+	<% end %>
 <% end %>
