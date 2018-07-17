@@ -6,16 +6,13 @@ class FaxNumber < ApplicationRecord
 
 	attr_accessor :unused_client_emails
 
-	belongs_to :client, optional: true
-
-	has_one :client_manager, through: :client
-	has_one :admin, through: :client
-
-	has_many :fax_number_user_emails
-	has_many :user_emails, through: :fax_number_user_emails
+	belongs_to :organization, optional: true
+	has_one :manager, through: :organization
+	has_many :user_fax_numbers
+	has_many :users, through: :user_fax_numbers
 
 	validates :fax_number, presence: true, length: { maximum: FAX_NUMBER_DIGIT_LIMIT }, phone: {possible: true}, uniqueness: true
-	validates :fax_number_label, length: { maximum: FAX_NUMBER_CHARACTER_LIMIT }, uniqueness: { allow_nil: true }
+	validates :label, length: { maximum: FAX_NUMBER_CHARACTER_LIMIT }, uniqueness: { allow_nil: true }
 	
 	before_validation :fax_number, :format_fax_number
 
