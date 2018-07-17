@@ -7,12 +7,12 @@ module SessionsHelper
 
 	def is_admin?
 		return false if current_user.nil?
-		current_user.type == User::ADMIN
+		current_user.user_permission.permission == User::ADMIN
 	end
 
-	def is_client_manager? #allows admins as well
+	def is_manager? #allows admins as well
 		return false if current_user.nil?
-		current_user.type == User::CLIENT_MANAGER || is_admin?
+		current_user.user_permission.permission == User::CLIENT_MANAGER || is_admin?
 	end
 
 	def verify_is_admin
@@ -22,8 +22,8 @@ module SessionsHelper
 		end
 	end
 
-	def verify_is_client_manager_or_admin
-		if !is_client_manager?
+	def verify_is_manager_or_admin
+		if !is_manager?
 			flash[:alert] = ApplicationController::DENIED
 			redirect_to root_path
 		end
