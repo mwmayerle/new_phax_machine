@@ -5,6 +5,7 @@ class CreateFaxNumbers < ActiveRecord::Migration[5.2]
     	t.string   :manager_label
     	t.string   :label
     	t.string   :fax_number, null: false
+    	t.boolean  :has_webhook_url
 
       t.timestamps
     end

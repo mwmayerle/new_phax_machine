@@ -18,7 +18,7 @@
       		</a>
 	      </li>
     	<% end %>
-      <% if is_client_manager? && !is_admin? %>
+      <% if is_manager? && !is_admin? %>
       	<li class="nav-item" data-toggle="tooltip" data-placement="right" title="Client Profile">
       		<a class="nav-link" href="/clients/<%=current_user.client.id%>">
       			<i class="fa fa-fw fa-id-card-o"></i>

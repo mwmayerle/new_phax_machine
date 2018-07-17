@@ -1,4 +1,4 @@
-class FaxNumberUserEmailsController < ApplicationController
+class UserFaxNumbersController < ApplicationController
 	include SessionsHelper
 
 	before_action :set_fax_number, only: [:edit, :update]

@@ -43,20 +43,20 @@ class FaxNumbersController < ApplicationController
 		end
 
 		def admin_fax_number_params
-			params.require(:fax_number).permit(:fax_number, :fax_number_label, :id, :fax_number_display_label, :client_id)
+			params.require(:fax_number).permit(:fax_number, :label, :id, :manager_label, :organization_id)
 		end
 
-		def client_manager_fax_number_params
-			params.require(:fax_number).permit(:id, :fax_number_display_label)
+		def manager_fax_number_params
+			params.require(:fax_number).permit(:id, :manager_label)
 		end
 
 		def remove_user_email_associations(param_input, fax_number_object)
-			param_input.keys.each { |user_email_object_id| FaxNumberUserEmail.where( { user_email_id: user_email_object_id } ).destroy_all }
+			param_input.keys.each { |user_object_id| UserFaxNumber.where( { user_id: user_object_id } ).destroy_all }
 		end
 
 		def verify_authorized
 			return if is_admin?
-			if !authorized?(@fax_number.client, :client_manager_id)
+			if !authorized?(@fax_number.manager, :manager_id)
 				flash[:alert] = DENIED
 				redirect_to root_path
 			end

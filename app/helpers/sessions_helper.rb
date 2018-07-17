@@ -7,12 +7,12 @@ module SessionsHelper
 
 	def is_admin?
 		return false if current_user.nil?
-		current_user.user_permission.permission == User::ADMIN
+		current_user.user_permission.permission == UserPermission::ADMIN
 	end
 
 	def is_manager? #allows admins as well
 		return false if current_user.nil?
-		current_user.user_permission.permission == User::CLIENT_MANAGER || is_admin?
+		current_user.user_permission.permission == UserPermission::MANAGER || is_admin?
 	end
 
 	def verify_is_admin

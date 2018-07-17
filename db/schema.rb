@@ -20,6 +20,7 @@ ActiveRecord::Schema.define(version: 2018_07_16_193046) do
     t.string "manager_label"
     t.string "label"
     t.string "fax_number", null: false
+    t.boolean "has_webhook_url"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
