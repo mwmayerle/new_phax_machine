@@ -43,12 +43,17 @@ RSpec.describe User, type: :model do
   end
 
   describe "creating a User with invalid input" do
-  	it "emails must be unique, more than 5 characters, and less than #{User::USER_CHARACTER_LIMIT}" do
+  	it "email attribute must be more than #{User::USER_CHARACTER_LIMIT}" do
   		user.email = ("a" * 48).concat('@aol.com')
   		expect(user).to be_invalid
+  	end
+
+  	it "email attribute must be 5 or more characters" do
   		user.email = "@1.e"
   		expect(user).to be_invalid
-  		user.email = 'matt@phaxio.com'
+  	end
+
+  	it "is invalid if the email address is already in use" do
   		user.save
   		new_user = User.new(
 			email: 'matt@phaxio.com',
@@ -58,6 +63,11 @@ RSpec.describe User, type: :model do
 		)
   		expect(new_user).to be_invalid
   	end
+
+  	it "is invalid if the email attribute is nil" do
+			user.email = nil
+			expect(user).to be_invalid
+		end
   end
 
   describe "User model associations" do

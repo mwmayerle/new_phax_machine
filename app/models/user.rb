@@ -8,6 +8,7 @@ class User < ApplicationRecord
 
 	belongs_to :organization, optional: true
 
+	has_one :admin, through: :organization
 	has_one :manager, through: :organization
 	has_one :user_permission
 	has_many :user_fax_numbers, dependent: :destroy
@@ -15,7 +16,7 @@ class User < ApplicationRecord
 
 	before_validation :generate_fax_tag, :generate_temporary_password, on: :create
 
-	validates :email, length: { in: 5..USER_CHARACTER_LIMIT }, uniqueness: { case_senstive: false }
+	validates :email, presence: true, length: { in: 5..USER_CHARACTER_LIMIT }, uniqueness: { case_senstive: false }
 	validates :fax_tag, length: { maximum: FaxTags::FAX_TAG_LIMIT }
 
 	after_create { User.welcome(self.id) }

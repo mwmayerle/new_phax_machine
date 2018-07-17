@@ -1,11 +1,11 @@
 class Organization < ApplicationRecord
 	include FaxTags
 	
-	ORGANIZATION_CHARACTER_LIMIT = 64
+	ORGANIZATION_CHARACTER_LIMIT = 48
 
-	attr_readonly :fax_tag
+	attr_readonly :fax_tag, :admin_id
 
-	belongs_to :admin, optional: true
+	belongs_to :admin
 	belongs_to :manager, optional: true, dependent: :destroy
 	has_many :fax_numbers
 	has_many :users, dependent: :destroy
@@ -26,9 +26,9 @@ class Organization < ApplicationRecord
 		# 	UserFaxNumber.where(user_id: users).destroy_all
 		# end
 
-		class << self
-			def get_unused_emails(organization)
-				organization.users.select { |organization_user| organization_user.user_fax_numbers.empty? }
-			end
-		end
+		# class << self
+		# 	def get_unused_emails(organization)
+		# 		organization.users.select { |organization_user| organization_user.user_fax_numbers.empty? }
+		# 	end
+		# end
 end
