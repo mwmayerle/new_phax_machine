@@ -1,5 +1,5 @@
 class MailgunFaxesController < ApplicationController
-	skip_before_action :verify_authenticity_token, only: [:fax_received, :fax_sent, :mailgun]
+	skip_before_action :verify_authenticity_token
 
 	def fax_received
 		@fax = JSON.parse(params['fax'])
