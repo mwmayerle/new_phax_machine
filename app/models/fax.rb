@@ -28,7 +28,7 @@ class Fax
       	to: number,
       	caller_id: user.caller_id_number,
       	tag: {
-      		sender_client_fax_tag: user.client.fax_tag,
+      		sender_organization_fax_tag: user.organization.fax_tag,
       		sender_email_fax_tag: user.fax_tag,
       	},
       	files: files.map { |file| File.new(file) }
