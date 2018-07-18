@@ -21,7 +21,7 @@ class Fax
 		  sent_fax_response
 		end
 
-		def create_fax_from_email(sender, recipient, files, user_email)
+		def create_fax_from_email(sender, recipient, files, user)
 			set_phaxio_creds
 			number = Mail::Address.new(recipient).local
       options = {

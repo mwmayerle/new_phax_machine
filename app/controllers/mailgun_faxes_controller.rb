@@ -36,7 +36,7 @@ class MailgunFaxesController < ApplicationController
     # return [400, "Must include a sender"] if !params['from']					# Make this send a fail email
     # return [400, "Must include a recipient"] if !params['recipient']	# Make this send a fail email
     sender = Mail::AddressList.new(params['from']).addresses.first.address
-    user_email = User.find_by(email: sender)
+    user = User.find_by(email: sender)
     attachment_count = params['attachment-count'].to_i
 
     i = 1
@@ -48,7 +48,7 @@ class MailgunFaxesController < ApplicationController
       i += 1
     end
 
- 		sent_fax_object = Fax.create_fax_from_email(sender, params['recipient'], files, user_email)
+ 		sent_fax_object = Fax.create_fax_from_email(sender, params['recipient'], files, user)
  		if sent_fax_object.class != String
 			api_response = Fax.get_fax_information(sent_fax_object)
 		else
