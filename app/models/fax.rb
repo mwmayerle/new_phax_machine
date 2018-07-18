@@ -11,7 +11,7 @@ class Fax
 		      file: options[:files],
 		      caller_id: options[:caller_id_number],
 		      tag: {
-		        sender_client_fax_tag: options[:tag][:sender_client_fax_tag], 
+		        sender_client_fax_tag: options[:tag][:sender_organization_fax_tag], 
 		        sender_email_fax_tag: options[:tag][:sender_email_fax_tag]
 		      }
 		    )
@@ -26,10 +26,10 @@ class Fax
 			number = Mail::Address.new(recipient).local
       options = {
       	to: number,
-      	caller_id: user_email.caller_id_number,
+      	caller_id: user.caller_id_number,
       	tag: {
-      		sender_client_fax_tag: user_email.client.fax_tag,
-      		sender_email_fax_tag: user_email.fax_tag,
+      		sender_client_fax_tag: user.client.fax_tag,
+      		sender_email_fax_tag: user.fax_tag,
       	},
       	files: files.map { |file| File.new(file) }
       }
