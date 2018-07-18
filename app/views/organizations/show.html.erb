@@ -1,45 +1,45 @@
 <div class="row">
 	<div class="col-lg-8">
-		<h1><%= @client.client_label %></h1>
+		<h1><%= @organization.label %></h1>
 	</div>
 	<div class="col-lg-4 align-self-center">
 		<% if is_admin? %>
-			<%= link_to "Manage Client Fax Numbers / Details", edit_client_path(@client), class: "btn btn-success btn-lg" %>
+			<%= link_to "Manage Client Fax Numbers / Details", edit_organization_path(@organization), class: "btn btn-success btn-lg" %>
 		<% end %>
 	</div>
 </div>
 
-<% if @client.fax_numbers.present? %>
-	<% @client.fax_numbers.each do |client_fax_number| %>
+<% if @organization.fax_numbers.present? %>
+	<% @organization.fax_numbers.each do |organization_fax_number| %>
 		<div class="row information-box">
 			<div class="col-lg-5">
 				<h2>
 					<% if is_admin? %>
-						<%= link_to FaxNumber.format_pretty_fax_number(client_fax_number.fax_number), edit_fax_number_path(client_fax_number) %>
+						<%= link_to FaxNumber.format_pretty_fax_number(organization_fax_number.fax_number), edit_fax_number_path(organization_fax_number) %>
 					<% else %>
-						<%= FaxNumber.format_pretty_fax_number(client_fax_number.fax_number) %>
+						<%= FaxNumber.format_pretty_fax_number(organization_fax_number.fax_number) %>
 					<% end %>
 				</h2>
 				<% if is_admin? %>
 					<div class="col">
 						<div class="row">
-							<p><strong>Admin Label: </strong><%= client_fax_number.fax_number_label %></p>
+							<p><strong>Admin Label: </strong><%= organization_fax_number.label %></p>
 						</div>
 						<div class="row">
-							<p><strong>Client Label: </strong> <%= client_fax_number.fax_number_display_label %></p>
+							<p><strong>organization Label: </strong> <%= organization_fax_number.manager_label %></p>
 						</div>
 					</div>
 				<% else %>
 					<div class="col">
 						<div class="row">
-							<p><%= client_fax_number.fax_number_display_label %></p>
+							<p><%= organization_fax_number.manager_label %></p>
 						</div>
 					</div>
 				<% end %>
 
 				<div class="form-group">
-					<% if client_fax_number.client.user_emails.present? %>
-						<%= link_to "Link / Unlink Users", edit_fax_number_user_email_path(client_fax_number), class: "btn btn-success" %>
+					<% if organization_fax_number.organization.users.present? %>
+						<%= link_to "Link / Unlink Users", edit_user_fax_number_path(organization_fax_number), class: "btn btn-success" %>
 					<% else %>
 						<div class="col">
 							<p><em> Add users below to start linking them to your fax numbers</em></p>
@@ -57,11 +57,11 @@
 						</tr>
 					</thead>
 					<tbody>
-						<% if client_fax_number.user_emails.present? %>
-							<% client_fax_number.user_emails.each do |user_email| %>
+						<% if organization_fax_number.users.present? %>
+							<% organization_fax_number.users.each do |user| %>
 								<tr>
-									<td class="text-center"><%= user_email.email_address %></td>
-									<td class="text-center"><%= FaxNumber.format_pretty_fax_number(user_email.caller_id_number) %></td>
+									<td class="text-center"><%= user.email %></td>
+									<td class="text-center"><%= FaxNumber.format_pretty_fax_number(user.caller_id_number) %></td>
 								</tr>
 							<% end %>
 						<% else %>
@@ -79,14 +79,14 @@
 
 	<br>
 	<div class="container-fluid user-form">
-		<h2><%= @client.client_label %> Users</h2>
+		<h2><%= @organization.label %> Users</h2>
 		<div class="col">
 			<p><em>If you would only like to implement email-to-fax capabilities and do not wish for your users to log in to send a fax, uncheck the 'Invite User' box.</em></p>
 		</div>
 		<div class="row">
 			<div class="inline-input-margin col-lg-10">
 				<%= form_for :user, url: "/users", method: :post, class: "form-inline" do |f| %>
-					<%= f.hidden_field :client_id, value: "#{@client.id}" %>
+					<%= f.hidden_field :organization_id, value: "#{@organization.id}" %>
 					<div class="row">
 						<div class="form-group col-lg-4">
 							<strong><%= f.label :email, "Email:", class: "pull-left" %></strong>
@@ -95,11 +95,11 @@
 						<div class="form-group col-lg-4">
 							<strong><%= f.label :caller_id_number, "Caller ID Number:", class: "pull-left" %></strong>
 							<select class="form-control form-inline" name="user[caller_id_number]">
-								<% @client.fax_numbers.each do |client_fax_number| %>
-									<option name="user[caller_id_number]" value="<%= client_fax_number.fax_number %>" selected="selected">
-										<%= FaxNumber.format_pretty_fax_number(client_fax_number.fax_number) %>
-										<% if client_fax_number.fax_number_display_label.present? %>
-									 		- <%= client_fax_number.fax_number_display_label %>
+								<% @organization.fax_numbers.each do |organization_fax_number| %>
+									<option name="user[caller_id_number]" value="<%= organization_fax_number.fax_number %>" selected="selected">
+										<%= FaxNumber.format_pretty_fax_number(organization_fax_number.fax_number) %>
+										<% if organization_fax_number.manager_label.present? %>
+									 		- <%= organization_fax_number.manager_label %>
 									 	<% end %>
 									 </option>
 								<% end %>
@@ -118,7 +118,7 @@
 		</div>
 	</div>
 
-	<% if @client.user_emails.present? %>
+	<% if @organization.users.present? %>
 		<div class="container-fluid">
 			<br>
 			<div class="col">
@@ -129,12 +129,12 @@
 			<div class="col-lg-6">
 				<table class="table table-sm table-hover">
 					<tbody>
-						<% @client.user_emails.each do |user_email| %>
-							<% if @client.user_emails.index(user_email).even? %>
+						<% @organization.users.each do |user| %>
+							<% if @organization.users.index(user).even? %>
 								<tr>
-									<td class="text-center"><%= user_email.email_address %></td>
+									<td class="text-center"><%= user.email %></td>
 									<td class="text-center">
-										<%= link_to "Edit User", edit_user_email_path(id: user_email.id), class: "btn btn-sm btn-success" %>
+										<%= link_to "Edit User", edit_user_registration_path(id: user.id), class: "btn btn-sm btn-success" %>
 									</td>
 								</tr>
 							<% end %>
@@ -146,12 +146,12 @@
 			<div class="col-lg-6">
 				<table class="table table-sm table-hover">
 					<tbody>
-						<% @client.user_emails.each do |user_email| %>
-							<% if @client.user_emails.index(user_email).odd? %>
+						<% @organization.users.each do |user| %>
+							<% if @organization.users.index(user).odd? %>
 								<tr>
-									<td class="text-center"><%= user_email.email_address %></td>
+									<td class="text-center"><%= user.email %></td>
 									<td class="text-center">
-										<%= link_to "Edit User", edit_user_email_path(id: user_email.id), class: "btn btn-sm btn-success" %>
+										<%= link_to "Edit User", edit_user_registration_path(id: user.id), class: "btn btn-sm btn-success" %>
 									</td>
 								</tr>
 							<% end %>
@@ -166,7 +166,7 @@
 	<% if is_admin? %>
 		<div class="row information-box">
 			<div class="col">
-				<p>No Fax Numbers are associated with this account. Please click 'Manage Client Fax Numbers / Details' above to assign a fax number to this client.</p>
+				<p>No Fax Numbers are associated with this account. Please click 'Manage Organization Fax Numbers / Details' above to assign a fax number to this Organization.</p>
 			</div>
 		</div>
 	<% end %>

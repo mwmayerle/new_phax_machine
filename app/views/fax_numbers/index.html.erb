@@ -7,7 +7,7 @@
 <div class="col">
 	<p><span><i class="fa fa-fw fa-check" aria-hidden="true"></i></span><i>  indicates a Phaxio account number</i></p>
 </div>
-<table class='table table-hover'>
+<table id="fax-number-table" class='table table-hover'>
 	<thead class="thead-dark">
 		<tr>
 			<th class="text-center"></th>
@@ -34,7 +34,7 @@
 							<%= link_to info_hash[:organization], edit_organization_path(id: info_hash[:organization_id]) %>
 						<% end %>
 					</td>
-					<td class="text-center align-middle"><%= info_hash[:fax_number_label] %></td>
+					<td class="text-center align-middle"><%= info_hash[:label] %></td>
 					<% if info_hash[:city] && info_hash[:state] %>
 						<td class="text-center align-middle"> <%= info_hash[:city] %>, <%= info_hash[:state] %></td>
 					<% else %>

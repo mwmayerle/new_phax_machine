@@ -5,16 +5,15 @@
       <div class="card-body">
         <div class="mb-8">
       		<%= form_for(:fax_number, url: "/fax_numbers/#{@fax_number.id}", method: :put, class: "form-inline") do |f| %>
-						<%#= f.hidden_field :fax_number_id, :value => @fax_number.id %>
 						<div class="row">
 							<div class="col-lg-5">
 								<div class="form-group">
 									<% if is_admin? %>
-										<strong><%= f.label :fax_number_display_label, "Client Label:" %></strong>
-										<%= @fax_number.fax_number_display_label %>
+										<strong><%= f.label :manager_label, "Manager Label:" %></strong>
+										<%= @fax_number.manager_label %>
 									<% else %>
-										<strong><%= f.label :fax_number_display_label, "Label:" %></strong>
-										<%= f.text_field :fax_number_display_label, class: 'form-control form-group' %>
+										<strong><%= f.label :manager_label, "Label:" %></strong>
+										<%= f.text_field :manager_label, class: 'form-control form-group' %>
 									<% end %>
 								</div>
 							</div>
@@ -23,7 +22,7 @@
 							<div>
 								<div class="col">
 								<em>
-									<% if @fax_number.client.present? %>
+									<% if @fax_number.organization.present? %>
 										<p>
 											Linked email addresses are emailed whenever <%= FaxNumber.format_pretty_fax_number(@fax_number.fax_number) %> sends or receives a fax.
 										</p>
@@ -35,18 +34,18 @@
 							<div class="col-lg-5">
 								<% if is_admin? %>
 									<label><strong>Fax Number Label:</strong></label>
-									<%= f.text_field :fax_number_label, class: 'form-control' %>
+									<%= f.text_field :label, class: 'form-control' %>
 								<% end %>
 							</div>
 
 							<div class="form-group col-lg-5">
-								<strong><%= f.label "Client: " %></strong>
-								<select class="form-control" name="fax_number[client_id]">
-									<% @clients.each do |client| %>
-										<% if client == @fax_number.client %>
-											<option name="fax_number[client_id]" value="<%= client.id %>" selected="selected"><%= client.client_label %></option>
+								<strong><%= f.label "Organization: " %></strong>
+								<select class="form-control" name="fax_number[organization_id]">
+									<% @organizations.each do |organization| %>
+										<% if organization == @fax_number.organization %>
+											<option name="fax_number[organization_id]" value="<%= organization.id %>" selected="selected"><%= organization.label %></option>
 										<% else %>
-											<option name="fax_number[client_id]" value="<%= client.id %>"><%= client.client_label %></option>
+											<option name="fax_number[organization_id]" value="<%= organization.id %>"><%= organization.label %></option>
 										<% end %>
 									<% end %>
 								</select>

@@ -1,26 +1,25 @@
 <div class="row">
 	<div class="col-lg-9">
-		<h1>Manage Clients</h1>
+		<h1>Manage Organizations</h1>
 	</div>
 	<div class="col-lg-3 text-center align-self-center">
-		<%= link_to "Add New Client", new_client_path, class: "btn btn-success" %>
+		<%= link_to "Add New Organization", new_organization_path, class: "btn btn-success" %>
 	</div>
 </div>
 
-<% if @clients.present? %>
-	<% @clients.each do |client| %>
+<% if @organizations.present? %>
+	<% @organizations.each do |organization| %>
 		<div class="row information-box">
 			<div class="col-lg-4 form-group">
 				<div class="form-group">
-					<h2><%= link_to client.client_label, client_path(client) %></h2>
+					<h2><%= link_to organization.label, organization_path(organization) %></h2>
 				</div>
-				<% if client.client_manager %>
-						<p>Managed by: <%= client.client_manager.email %></p>
-				<% elsif client.fax_numbers.present? %>
+				<% if organization.manager %>
+						<p>Managed by: <%= organization.manager.email %></p>
+				<% elsif organization.fax_numbers.present? %>
 					<div class="form-group">
 						<%= form_for :user, url: "users", method: :post, class: "form-inline" do |f| %>
-							<%= f.hidden_field :client_id, value: client.id %>
-							<%= f.hidden_field :type, value: User::CLIENT_MANAGER %>
+							<%= f.hidden_field :organization_id, value: organization.id %>
 							<%= f.hidden_field :invite, value: "on" %>
 							<div class="mb-2 mr-sm-2 input-group align-self-center">
 								<%= f.email_field :email, placeholder: "manager@acme.com", class: "form-control mb-2 mr-sb-2" %>
@@ -30,11 +29,11 @@
 					</div>
 				<% end %>
 				<div class="form-group">
-					<form action="/clients/<%= client.id %>" method="POST" class="delete-client">
+					<form action="/organizations/<%= organization.id %>" method="POST" class="delete-organization">
 						<input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
 						<input type="hidden" name="_method" value="DELETE">
 						<button type="submit" class="btn btn-danger">
-							<span><i class="fa fa-fw fa-trash"></i> Delete Client</span>
+							<span><i class="fa fa-fw fa-trash"></i> Delete Organization</span>
 						</button>
 					</form>
 				</div>
@@ -46,16 +45,16 @@
 						<tr>
 							<th class="text-center">Fax Number</th>
 							<th class="text-center">Label</th>
-							<th class="text-center">Client-Set Label</th>
+							<th class="text-center">Manager Label</th>
 						</tr>
 					</thead>
 					<tbody>
-						<% if client.fax_numbers.present? %>
-							<% client.fax_numbers.each do |client_fax_number| %>
+						<% if organization.fax_numbers.present? %>
+							<% organization.fax_numbers.each do |organization_fax_number| %>
 								<tr>
-									<td class="text-center"><%= FaxNumber.format_pretty_fax_number(client_fax_number.fax_number) %></td>
-									<td class="text-center"><%= client_fax_number.fax_number_label %></td>
-									<td class="text-center"><%= client_fax_number.fax_number_display_label %></td>
+									<td class="text-center"><%= FaxNumber.format_pretty_fax_number(organization_fax_number.fax_number) %></td>
+									<td class="text-center"><%= organization_fax_number.label %></td>
+									<td class="text-center"><%= organization_fax_number.manager_label %></td>
 								</tr>
 							<% end %>
 						<% else %>

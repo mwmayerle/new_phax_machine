@@ -4,7 +4,7 @@ class FaxNumber < ApplicationRecord
 	FAX_NUMBER_CHARACTER_LIMIT = 36
 	FAX_NUMBER_DIGIT_LIMIT = 60 # Took this value from Phax Machine, is it real?
 
-	attr_accessor :unused_organization_emails
+	attr_accessor :unassigned_organization_users
 
 	belongs_to :organization, optional: true
 	has_one :manager, through: :organization
@@ -45,6 +45,7 @@ class FaxNumber < ApplicationRecord
 
 			# Creates a new hash with desired data from data received from the Phaxio API
 			def format_fax_numbers(fax_numbers_from_api, phaxio_numbers = {})
+				fax_numbers_from_api.unshift({:phone_number => "+19992146995", :city=>"Las Vegas", :state=>"Nevada", :last_billed_at=>"2018-07-09T11:37:51.000-05:00", :provisioned_at=>"2018-01-09T11:37:50.000-06:00", :cost=>200, :callback_url=>'www.google.com', :id=>4})
 				fax_numbers_from_api.each do |api_fax_number|
 					phaxio_numbers[api_fax_number[:phone_number]] = {}
 					phaxio_numbers[api_fax_number[:phone_number]][:city] = api_fax_number[:city]
@@ -90,7 +91,7 @@ class FaxNumber < ApplicationRecord
 				phaxio_numbers.to_h
 			end
 
-			def get_unused_organization_emails(fax_number)
+			def get_unassigned_organization_users(fax_number)
 				fax_number.organization.users.select { |organization_user| !organization_user.fax_numbers.include?(fax_number) }
 			end
 		end
