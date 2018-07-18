@@ -6,9 +6,9 @@
     <% if user_signed_in? %>
     	<% if is_admin? %>
       	<li class="nav-item" data-toggle="tooltip" data-placement="right" title="Manage Clients">
-      		<a class="nav-link" href="/clients">
+      		<a class="nav-link" href="/organizations">
         		<i class="fa fa-fw fa-id-card-o"></i>
-        		<span class="nav-link-text">Manage Clients</span>
+        		<span class="nav-link-text">Manage Organizations</span>
       		</a>
 	      </li>
 	      <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Manage Fax Numbers">
@@ -18,11 +18,11 @@
       		</a>
 	      </li>
     	<% end %>
-      <% if is_client_manager? && !is_admin? %>
+      <% if is_manager? && !is_admin? %>
       	<li class="nav-item" data-toggle="tooltip" data-placement="right" title="Client Profile">
-      		<a class="nav-link" href="/clients/<%=current_user.client.id%>">
+      		<a class="nav-link" href="/organizations/<%=current_user.organization.id%>">
       			<i class="fa fa-fw fa-id-card-o"></i>
-      			<span class="nav-link-text">Client Profile</span>
+      			<span class="nav-link-text">Organization Profile</span>
       		</a>
       	</li>
 	      <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Send a Fax">

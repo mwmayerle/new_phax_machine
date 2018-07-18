@@ -10,50 +10,46 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_06_19_182316) do
+ActiveRecord::Schema.define(version: 2018_07_16_193046) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "clients", force: :cascade do |t|
-    t.integer "admin_id", null: false
-    t.integer "client_manager_id"
-    t.string "client_label", null: false
-    t.string "fax_tag"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "fax_number_user_emails", force: :cascade do |t|
-    t.integer "fax_number_id", null: false
-    t.integer "user_email_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "fax_numbers", force: :cascade do |t|
-    t.integer "client_id"
-    t.string "fax_number_label"
-    t.string "fax_number_display_label"
+    t.integer "organization_id"
+    t.string "manager_label"
+    t.string "label"
     t.string "fax_number", null: false
+    t.boolean "has_webhook_url"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "user_emails", force: :cascade do |t|
-    t.integer "client_id"
-    t.integer "user_id"
-    t.string "caller_id_number"
-    t.string "email_address", null: false
+  create_table "organizations", force: :cascade do |t|
+    t.integer "admin_id", null: false
+    t.integer "manager_id"
+    t.string "label", null: false
     t.string "fax_tag"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "user_fax_numbers", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "fax_number_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "user_permissions", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.string "permission", null: false
   end
 
   create_table "users", force: :cascade do |t|
-    t.integer "client_id"
-    t.string "email", default: "", null: false
-    t.string "type", null: false
+    t.integer "organization_id"
+    t.string "email", null: false
+    t.string "caller_id_number"
     t.string "fax_tag"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

@@ -1,78 +1,92 @@
 require 'rails_helper'
 
 RSpec.describe FaxNumber, type: :model do
-	let!(:admin) {User.create!(type: :Admin, email: "mwmayerle@gmail.com", password: 'tomtom')}
-	let!(:client) {Client.create!(admin_id: admin.id, client_label: "Client Controller Test Client")}
-	let!(:client_manager) {User.create!(type: :ClientManager, email: "matt@phaxio.com", client_id: client.id)}
-	let!(:user1) {User.create!(email: "user1@gmail.com", client_id: client.id)}
-	let!(:fax_number) {FaxNumber.create!(fax_number: '12025550134', fax_number_label: "Fake1", client_id: client.id)}
-	let!(:user_email1) {UserEmail.create!(user_id: user1.id, email_address: 'user1@gmail.com', client_id: client.id, caller_id_number: fax_number.fax_number)}
-	let!(:user_email2) {UserEmail.create!(user_id: client.id, email_address: 'matt@phaxio.com', client_id: client.id, caller_id_number: fax_number.fax_number)}
+	let! (:admin) do User.create!(
+		email: 'fake@phaxio.com',
+		user_permission_attributes: { permission: UserPermission::ADMIN }
+	)
+	end
+	let!(:org) { Organization.create(label: "Phaxio Test Company", admin_id: admin.id) }
+	let!(:manager) do 
+		User.create!(
+			email: 'manager@phaxio.com',
+			user_permission_attributes: { permission: UserPermission::MANAGER },
+			caller_id_number: '17738675309',
+			organization_id: org.id
+		)
+	end
+	let!(:user1) do 
+		User.create!(
+			email: 'matt@phaxio.com',
+			user_permission_attributes: { permission: UserPermission::USER },
+			caller_id_number: '17738675309',
+			organization_id: org.id
+		)
+	end
+	let!(:user2) do 
+		User.create!(
+			email: 'helloworld@phaxio.com',
+			user_permission_attributes: { permission: UserPermission::USER },
+			caller_id_number: '17738675309',
+			organization_id: org.id
+		)
+	end
+	let!(:fax_number) { FaxNumber.new(fax_number: '17738675309', organization_id: org.id) }
 
-	before(:each) { client.update(client_manager_id: client_manager.id) }
+	before(:each) { org.update(manager_id: manager.id) }
 
   describe "valid fax number formatting" do
   	it "persists to the database with valid attributes" do
   		expect(fax_number).to be_valid
   	end
 
-  	it "does not require a fax_number_label attribute to still be valid" do
-  		fax_number.fax_number_label = nil
+  	it "does not require a label attribute to still be valid" do
+  		fax_number.label = nil
   		expect(fax_number).to be_valid
   	end
   end
 
   describe "FaxNumber associations" do
   	before(:each) do
-			fax_number.user_emails << user_email1
-			fax_number.user_emails << user_email2
+  		fax_number.save
+			fax_number.users << user1
+			fax_number.users << user2
   	end
 
-  	it "has one admin" do
-			assoc = FaxNumber.reflect_on_association(:admin)
+		it "has one manager" do
+			assoc = FaxNumber.reflect_on_association(:manager)
    		expect(assoc.macro).to eq(:has_one)
-   		expect(fax_number.admin).to eq(admin)
+   		expect(fax_number.manager).to eq(org.manager)
 		end
 
-		it "has one client_manager" do
-			assoc = FaxNumber.reflect_on_association(:client_manager)
-   		expect(assoc.macro).to eq(:has_one)
-   		expect(fax_number.client_manager).to eq(client_manager)
-		end
-
-		it "belongs to client" do
-			assoc = FaxNumber.reflect_on_association(:client)
+		it "belongs to organization" do
+			assoc = FaxNumber.reflect_on_association(:organization)
    		expect(assoc.macro).to eq(:belongs_to)
-   		expect(fax_number.client).to eq(client)
+   		expect(fax_number.organization).to eq(org)
 		end
 
-		it "has many fax_number_user_emails" do
-			assoc = FaxNumber.reflect_on_association(:fax_number_user_emails)
+		it "has many UserFaxNumbers" do
+			assoc = FaxNumber.reflect_on_association(:user_fax_numbers)
    		expect(assoc.macro).to eq(:has_many)
-   		expect(fax_number.fax_number_user_emails.count).to eq(2)
-		end
-
-		it "has many user_emails" do
-			assoc = FaxNumber.reflect_on_association(:user_emails)
-   		expect(assoc.macro).to eq(:has_many)
-   		expect(fax_number.user_emails).to eq([user_email1, user_email2])
+   		expect(fax_number.user_fax_numbers.count).to eq(2)
 		end
   end
 
   describe "invalid fax number formatting" do
   	it "persists to the database only if fax number is present" do
   		fax_number.fax_number = nil
-  		expect(fax_number.save).to be false
+  		expect(fax_number).to be_invalid
   	end
 
-  	it "fax_number_label attribute cannot be more than #{FaxNumber::FAX_NUMBER_CHARACTER_LIMIT} characters long" do
-  		fax_number.fax_number_label = "A" * (FaxNumber::FAX_NUMBER_CHARACTER_LIMIT + 1)
+  	it "label attribute cannot be more than #{FaxNumber::FAX_NUMBER_CHARACTER_LIMIT} characters long" do
+  		fax_number.label = "A" * (FaxNumber::FAX_NUMBER_CHARACTER_LIMIT + 1)
   		expect(fax_number).to be_invalid
   	end
 
   	it "fax_number attribute must be unique" do
-  		fake2 = FaxNumber.new(fax_number: '12025550134', fax_number_label: "Different Fake Testing Number")
-  		expect(fake2).to be_invalid
+  		fax_number.save
+  		fax_number2 = FaxNumber.new(fax_number: '17738675309', label: "Different Fake Testing Number")
+  		expect(fax_number2).to be_invalid
   	end
   end
 
@@ -87,19 +101,26 @@ RSpec.describe FaxNumber, type: :model do
   	end
   end
 
-  describe "#get_unused_emails method" do
-  	before(:each) do
-			fax_number.user_emails << user_email1
-			fax_number.user_emails << user_email2
+  describe "#format_fax_number method" do
+		fake_number1 = {:phone_number => "+14442146849", :city=>"St. Louis", :state=>"Missouri", :last_billed_at=>"2018-07-09T11:37:51.000-05:00", :provisioned_at=>"2017-11-09T11:37:50.000-06:00", :cost=>200, :callback_url=>'www.helloworld.com', :id=>8}
+		fake_number2 = {:phone_number => "+14442146848", :city=>"Chicago", :state=>"Illinois", :last_billed_at=>"2018-07-09T11:37:51.000-05:00", :provisioned_at=>"2015-08-09T11:37:50.000-06:00", :cost=>200, :callback_url=>nil, :id=>5}
+		fake_number3 = {:phone_number => "+14442146845", :city=>"San Antonio", :state=>"Texas", :last_billed_at=>"2018-07-09T11:37:51.000-05:00", :provisioned_at=>"2018-01-09T11:37:50.000-06:00", :cost=>200, :callback_url=>'www.weeeeee.com', :id=>5} 
+		fake_number4 = {:phone_number => "+14442146995", :city=>"San Francisco", :state=>"California", :last_billed_at=>"2018-07-09T11:37:51.000-05:00", :provisioned_at=>"2018-01-09T11:37:50.000-06:00", :cost=>200, :callback_url=>nil, :id=>4}
+		fake_number5 = {:phone_number => "+19992146995", :city=>"Las Vegas", :state=>"Nevada", :last_billed_at=>"2018-07-09T11:37:51.000-05:00", :provisioned_at=>"2018-01-09T11:37:50.000-06:00", :cost=>200, :callback_url=>'www.google.com', :id=>4}
+		fax_numbers_from_api = [fake_number1, fake_number2, fake_number3, fake_number4, fake_number5]
+
+  	it "deletes fax numbers that are not in the api response from the database and from the hash being sent to the index view" do
+  		fax_number.save
+  		phaxio_numbers = FaxNumber.format_fax_numbers(fax_numbers_from_api)
+  		expect(phaxio_numbers).not_to include(fax_number)
+  		expect(FaxNumber.all).not_to include(fax_number)
   	end
 
-  	it "returns user_emails associated with a fax_number " do
-  		new_email1 = UserEmail.create(email_address: "test1@gmail.com", caller_id_number: fax_number.fax_number)
-  		new_email2 = UserEmail.create(email_address: "test2@gmail.com", caller_id_number: fax_number.fax_number)
-  		client.user_emails << new_email1
-  		client.user_emails << new_email2
-  		client.reload
-  		expect(FaxNumber.get_unused_client_emails(fax_number)).to eq([new_email1, new_email2])
+  	it "sorts all fax numbers and puts fax numbers with an associated callback_url at the bottom of the list (end of the array)" do
+  		phaxio_numbers = FaxNumber.format_fax_numbers(fax_numbers_from_api)
+  		expect(phaxio_numbers.keys[0..1]).to include(fake_number2[:phone_number], fake_number4[:phone_number])
+  		expect(phaxio_numbers.keys[2..4]).to include(fake_number1[:phone_number], fake_number3[:phone_number], fake_number5[:phone_number])
   	end
   end
 end
+

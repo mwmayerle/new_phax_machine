@@ -1,17 +1,17 @@
 <body class="bg-dark coverup">
   <div class="container coverup">
     <div class="card card-login mx-auto mt-5">
-      <div class="card-header">Client</div>
+      <div class="card-header">Organization</div>
       <div class="card-body">
         <div class="text-center mb-6">
-					<%= form_for client, class: "form-inline" do |f| %>
+					<%= form_for organization, class: "form-inline" do |f| %>
 						<% if is_admin? %>
 							<%= f.hidden_field :admin_id, value: "#{current_user.id}" %>
 						<% end %>
 							<div class="row">
 								<div class="col-lg-6 input-group align-self-center">
-									<%= f.label :client_label, "Client Name: ", class: "align-self-center" %>
-									<%= f.text_field :client_label, value: client.client_label, class: "form-control inline-input-margin" %>
+									<%= f.label :label, "Name: ", class: "align-self-center" %>
+									<%= f.text_field :label, value: organization.label, class: "form-control inline-input-margin" %>
 								</div>
 								<div class="col-lg-6 input-group align-self-center">
 									<%= f.submit "Submit", class: "form-inline btn btn-success" %>
@@ -22,8 +22,8 @@
 							<% if unallocated_fax_numbers.present? %>
 								<div class="col-lg-5">
 									<div class="form-group">
-										<% if client.client_label %>
-											<strong><p>Add the following fax numbers to <%= client.client_label %>:</p></strong>
+										<% if organization.label %>
+											<strong><p>Add the following fax numbers to <%= organization.label %>:</p></strong>
 										<% else %>
 											<strong><p>Add the following fax numbers:</p></strong>
 										<% end %>
@@ -41,7 +41,7 @@
 															<input type="checkbox" id="<%= fax_number.fax_number %>" name="fax_numbers[to_add][<%= fax_number.id %>]" value="<%= fax_number.fax_number %>">
 									    				<label><%= FaxNumber.format_pretty_fax_number(fax_number.fax_number) %></label>
 									    			</td>
-									    			<td class="text-center"><%= fax_number.fax_number_label %></td>
+									    			<td class="text-center"><%= fax_number.label %></td>
 													</tr>
 												<% end %>
 											</tbody>
@@ -50,19 +50,19 @@
 								</div>
 								<div class="col-lg-1"></div>
 							<% else %>
-								<% if is_admin? && !client.fax_numbers.present? %>
+								<% if is_admin? && !organization.fax_numbers.present? %>
 									<div class="col">
 										<p>
-											All fax numbers are currently in use. Head to <a href="https://console.phaxio.com/phone_numbers">your Phaxio account </a>to provision more fax numbers.
+											All fax numbers are currently in use. Head over to your <a href="https://console.phaxio.com/phone_numbers">Phaxio account </a>to provision more fax numbers.
 										</p>
 									</div>
 								<% end %>
 							<% end %>
 
-							<% if client.fax_numbers.present? %>
+							<% if organization.fax_numbers.present? %>
 								<div class="col-lg-5">
 									<div class="form-group">
-										<strong><p>Remove the following fax numbers from <%= client.client_label %>:</p></strong>
+										<strong><p>Remove the following fax numbers from <%= organization.label %>:</p></strong>
 											<table class="table table-hover table-sm">
 												<thead class="thead-dark">
 													<tr>
@@ -71,17 +71,17 @@
 													</tr>
 												</thead>
 												<tbody>
-													<% client.fax_numbers.each do |client_fax_number| %>
+													<% organization.fax_numbers.each do |organization_fax_number| %>
 														<tr>
 															<td class="text-center">
 																<div class="form-check form-check-inline">
-																	<input type="checkbox" id="<%= client_fax_number.fax_number %>" name="fax_numbers[to_remove][<%= client_fax_number.id %>]" value="<%= client_fax_number.fax_number %>" class="form-check-input">
-											    				<label for="<%= client_fax_number.fax_number %>">
-											    					<%= FaxNumber.format_pretty_fax_number(client_fax_number.fax_number) %>
+																	<input type="checkbox" id="<%= organization_fax_number.fax_number %>" name="fax_numbers[to_remove][<%= organization_fax_number.id %>]" value="<%= organization_fax_number.fax_number %>" class="form-check-input">
+											    				<label for="<%= organization_fax_number.fax_number %>">
+											    					<%= FaxNumber.format_pretty_fax_number(organization_fax_number.fax_number) %>
 											    				</label>
 																</div>
 										    			</td>
-										    			<td class="text-center"><%= client_fax_number.fax_number_label %></td>
+										    			<td class="text-center"><%= organization_fax_number.label %></td>
 										    		</tr>
 													<% end %>
 												</tbody>

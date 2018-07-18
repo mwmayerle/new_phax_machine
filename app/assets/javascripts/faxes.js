@@ -14,13 +14,8 @@ var fileCounter = 1;
 function toggleAttachAnotherButton() {
 	$(".file-attachments :file").change(function() {
 		let $button = $("#send-another");
-		if ($(".file-attachments :file").val() === "") {
-			$button.prop("disabled", true);
-			$button.addClass("disabled");
-		} else {
-			$button.prop("disabled", false);
-			$button.removeClass("disabled");
-		}
+		($(this)) ? $button.prop("disabled", true) : $button.prop("disabled", false);
+		$button.toggleClass("disabled");
 	});
 };
 

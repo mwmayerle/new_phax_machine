@@ -1,66 +1,36 @@
 class User < ApplicationRecord
 	include FaxTags
 
-	USER = "User"
-	ADMIN = "Admin"
-	CLIENT_MANAGER = "ClientManager"
-	USER_CHARACTER_LIMIT = 60
-
-  # Include default devise modules. Others available are:
+	USER_CHARACTER_LIMIT = 48
+	# Include default devise modules. Others available are:
   # :confirmable, :lockable, :trackable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable, :recoverable, :rememberable, :validatable #:confirmable
 
-	attr_readonly :type, :fax_tag
-	attr_accessor :invite, :caller_id_number
+  attr_accessor :sign_up_permission
 
-	belongs_to :client, optional: true
+	belongs_to :organization, optional: true
 
-	has_one :user_email
-	has_one :admin, through: :client
-	has_one :client_manager, through: :client
+	has_one :admin, through: :organization
+	has_one :manager, through: :organization
+	has_one :user_permission
+	has_many :user_fax_numbers, dependent: :destroy
+	has_many :fax_numbers, through: :user_fax_numbers
 
-	belongs_to :fax_number_user_email, optional: true
-
-	has_many :fax_numbers, through: :client
-
-	validates :email, length: { in: 5..USER_CHARACTER_LIMIT }, uniqueness: { case_senstive: false }
-	validates :client_id, presence: true, numericality: { integer_only: true }, if: :is_generic_user?
-	validates :fax_tag, length: { maximum: FaxTags::FAX_TAG_LIMIT }
-
-	before_validation :ensure_user_type, :check_for_unwanted_characters
 	before_validation :generate_fax_tag, :generate_temporary_password, on: :create
+
+	validates :email, presence: true, length: { in: 5..USER_CHARACTER_LIMIT }, uniqueness: { case_senstive: false }
+	validates :fax_tag, length: { maximum: FaxTags::FAX_TAG_LIMIT }
 
 	after_create { User.welcome(self.id) }
 
-	before_destroy :remove_client_manager, if: :is_client_manager?
+	accepts_nested_attributes_for :user_permission
 	
 	private
-		def check_for_unwanted_characters
-			self.email.downcase!
-			errors.add(:email, "Email may not contain spaces") if self.email.match(/\s/)
-		end
-
-		def remove_client_manager
-			Client.find(self.client.id).update_attributes(client_manager_id: nil)
-		end
-
-	  def ensure_user_type
-	  	self.type = USER if self.type.nil?
-	  end
-
-	  def is_client_manager?
-	  	self.type == CLIENT_MANAGER
-	  end
-
-	  def is_generic_user?
-	  	self.type == USER
-	  end
-
 		def generate_temporary_password
 			self.password = SecureRandom.uuid
 		end
 
-	  class << self
+		class << self
 			def welcome(user_id)
 		    user = User.find(user_id)
 		    @raw = nil
@@ -70,9 +40,10 @@ class User < ApplicationRecord
 		    user.save(validate: false)
 		    @raw = raw
 
-		    if user.type == CLIENT_MANAGER
-		    	PhaxMachineMailer.client_manager_welcome_invite(user, @raw).deliver_now
-		    elsif user.type == USER
+		    ###TODO Case statement this more intelligently
+		    if user.sign_up_permission == UserPermission::MANAGER
+		    	PhaxMachineMailer.manager_welcome_invite(user, @raw).deliver_now
+		    elsif user.sign_up_permission == UserPermission::USER
 		    	PhaxMachineMailer.user_welcome_invite(user, @raw).deliver_now
 		    else
 		    	PhaxMachineMailer.admin_welcome_invite(user, @raw).deliver_now
