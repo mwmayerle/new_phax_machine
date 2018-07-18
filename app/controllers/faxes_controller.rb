@@ -16,7 +16,7 @@ class FaxesController < ApplicationController
 			files: attached_files,
 			caller_id: current_user.caller_id_number,
 			tag: { 
-				sender_client_fax_tag: current_user.client.fax_tag, 
+				sender_client_fax_tag: current_user.organization.fax_tag, 
 				sender_email_fax_tag: current_user.fax_tag,
 			},
 		}
