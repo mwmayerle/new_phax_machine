@@ -16,7 +16,7 @@ Rails.application.routes.draw do
 
 	resources :faxes
 	resources :user_fax_numbers
-	resources :mailgun_faxes_controller, only: [:fax_received, :fax_sent, :mailgun]
+	resources :mailgun_faxes, only: [:fax_received, :fax_sent, :mailgun]
   resources :users, only: [:index, :show, :create]
 	resources :organizations
   resources :fax_numbers, only: [:index, :edit, :update]

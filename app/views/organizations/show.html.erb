@@ -26,7 +26,7 @@
 							<p><strong>Admin Label: </strong><%= organization_fax_number.label %></p>
 						</div>
 						<div class="row">
-							<p><strong>organization Label: </strong> <%= organization_fax_number.manager_label %></p>
+							<p><strong>Manager Label: </strong> <%= organization_fax_number.manager_label %></p>
 						</div>
 					</div>
 				<% else %>
@@ -76,17 +76,16 @@
 			</div>
 		</div>
 	<% end %>
-
+	
 	<br>
 	<div class="container-fluid user-form">
 		<h2><%= @organization.label %> Users</h2>
-		<div class="col">
-			<p><em>If you would only like to implement email-to-fax capabilities and do not wish for your users to log in to send a fax, uncheck the 'Invite User' box.</em></p>
-		</div>
+		<br>
 		<div class="row">
 			<div class="inline-input-margin col-lg-10">
 				<%= form_for :user, url: "/users", method: :post, class: "form-inline" do |f| %>
 					<%= f.hidden_field :organization_id, value: "#{@organization.id}" %>
+					<%= f.hidden_field :sign_up_permission, value: "#{UserPermission::USER}" %>
 					<div class="row">
 						<div class="form-group col-lg-4">
 							<strong><%= f.label :email, "Email:", class: "pull-left" %></strong>
@@ -104,10 +103,6 @@
 									 </option>
 								<% end %>
 							</select>
-						</div>
-						<div class="col force-down-checkbox inline-input-margin text-center">
-							<input type="checkbox" id="invite-new-user" class="form-check-input" name="user[invite]" checked="checked">
-							<label for="invite-new-user" class="form-check-label">Invite User</label>
 						</div>
 						<div class="col form-group force-down-button">
 							<%= f.submit "Create User", class: "btn btn-success" %>

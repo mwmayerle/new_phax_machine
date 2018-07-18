@@ -1,107 +1,83 @@
 # frozen_string_literal: true
-
 class Users::RegistrationsController < Devise::RegistrationsController
 	include SessionsHelper
   # before_action :configure_sign_up_params, only: [:create]
   # before_action :configure_account_update_params, only: [:update]
+  	before_action :verify_fax_numbers, only: [:create, :destroy]
   	before_action :verify_permissions, only: [:create, :destroy]
   	prepend_before_action :require_no_authentication, only: :cancel
 
   # POST /resource
   def create
-  	if sign_up_params[:invite].nil?
-    	new_email = UserEmail.create!(
-    		email_address: sign_up_params[:email],
-    		caller_id_number: sign_up_params[:caller_id_number], # make a UserEmail but no User
-    		client_id: sign_up_params[:client_id]
-    	)
-    	new_email ? flash[:notice] = "User successfully created." : flash[:alert] = @user_email.errors.full_messages.pop
-    # There is an "invite" attr_accessor in User model that determines whether a UserEmail, or both a User and
-    # a UserEmail object are created simultaneously. 'if sign_up_params[:invite]' above is addressing this.
-    else 
-	    build_resource(sign_up_params)
-	    resource.save
-	    yield resource if block_given?
-	    if resource.persisted?
-		    user = User.find(resource.id)   
+    build_resource(sign_up_params)
+    yield resource if block_given?
+    resource.save
+    if resource.persisted?
+	    user = User.find(resource.id)   
+	    UserPermission.create(user_id: user.id, permission: resource.sign_up_permission)
 
-	    	if resource.type == User::CLIENT_MANAGER
-		    	client = Client.find(resource.client_id)
-		    	client.update_attributes(client_manager_id: user.id)
-		    	existing_email = UserEmail.find_by(email_address: user.email)
-
-		    	if existing_email.nil?
-			    	new_email = UserEmail.create!(                            # 
-			    		email_address: user.email,                              # Creating a ClientManager user from
-			    		client_id: client.id,                                   # scratch w/no previously persisted
-			    		user_id: user.id,                                       # UserEmail object
-			    		caller_id_number: client.fax_numbers.first.fax_number   #
-			    	)
-			    	new_email ? flash[:notice] = "User successfully created." : flash[:alert] = @user_email.errors.full_messages.pop
-			    else																											#
-			    	existing_email.update_attributes(user_id: user.id.to_i) # Creating ClientManager with an existing UserEmail object
-			    end 																											#
-
-			  elsif resource.type == User::USER
-			  	existing_email = UserEmail.find_by(email_address: user.email)
-			  	if existing_email.nil?
-			    	new_email = UserEmail.create!(
-			    		caller_id_number: sign_up_params[:caller_id_number],
-			    		client_id: user.client.id,
-			    		email_address: user.email,               
-			    		user_id: user.id,
-			    	)
-			    	new_email ? flash[:notice] = "User successfully created." : flash[:alert] = @user_email.errors.full_messages.pop
-			    else																											#
-			    	existing_email.update_attributes(user_id: user.id.to_i) # Creating generic User with an existing UserEmail object
-			    end 																											# 																				
-		    else
-		    	UserEmail.find_by(email_address: user.email).update(user_id: user.id) # Creating a User from existing UserEmail
-		    end
-		    
-	      if resource.active_for_authentication?
-	        flash[:notice] = "#{resource.email} has been invited."
-	      else
-	        flash[:notice] = "signed_up_but_#{resource.inactive_message}"
-	        expire_data_after_sign_in!
-	      end
-
-	    else
-	    	flash[:alert] = resource.errors.full_messages.pop
-	      clean_up_passwords resource
-	      set_minimum_password_length
+	    # Sets Org's Manager as the newly created User if they're intended to be the Manager.
+    	if user.reload.user_permission.permission == UserPermission::MANAGER
+	    	organization = Organization.find(resource.organization_id)
+	    	organization.update_attributes(manager_id: user.id)
 	    end
-		end
-		if resource
-    	resource.type == User::USER ? redirect_to(client_path(resource.client)) : redirect_to(clients_path)
+	    
+      if resource.active_for_authentication?
+        flash[:notice] = "#{resource.email} has been invited."
+      else
+        flash[:notice] = "signed_up_but_#{resource.inactive_message}"
+        expire_data_after_sign_in!
+      end
+
     else
-    	redirect_to(client_path(sign_up_params[:client_id]))
+    	flash[:alert] = resource.errors.full_messages.pop
+      clean_up_passwords resource
+      set_minimum_password_length
+    end
+		if resource
+    	resource.sign_up_permission == UserPermission::USER ? redirect_to(organization_path(resource.organization)) : redirect_to(organizations_path)
+    else
+    	redirect_to(organization_path(sign_up_params[:organization_id]))
     end
   end
 
   # DELETE /resource
   def destroy
   	resource = User.find(params[:id])
-  	UserEmail.find_by(user_id: resource.id).update_attributes(user_id: nil) # retains the UserEmail obj
-
-		client = current_user.client.nil? ? Client.find(resource.client.id) : current_user.client
-		client.update_attributes(client_manager_id: nil) if resource.type == User::CLIENT_MANAGER # Removes client_manager privileges
+		organization = current_user.organization.nil? ? organization.find(resource.organization.id) : current_user.organization
+		# Removes organization_manager privileges
+		organization.update_attributes(manager_id: nil) if resource.user_permission.permission == UserPermission::MANAGER
 
     resource.destroy
     flash[:notice] = "Access for #{resource.email} revoked"
     yield resource if block_given?
-    redirect_to(client_path(client))
+    redirect_to(organization_path(organization))
   end
 
   protected
-
-	# 'is_client_manager?' returns true if the user is a ClientManager or Admin, so if they're not an 
-	# admin and a ClientManager user is trying to be created OR they're not an Admin or ClientManager 
-	# and a generic user is being created, then redirect
 	  def verify_permissions
-	  	if !is_admin? && sign_up_params[:type] == User::CLIENT_MANAGER || !is_client_manager?
+	  	# Ensures a new admin cannot be created and that a manager can only be created by an admin
+	  	if sign_up_params[:sign_up_permission] == UserPermission::USER
+	  		verify_is_manager_or_admin
+	  	elsif sign_up_params[:sign_up_permission] == UserPermission::MANAGER
+	  		verify_is_admin
+	  	else
+	  		flash[:alert] = "Permission denied reeeeeeeeeeeeeeeeeeeeeeee."
+	  		redirect_to(root_path)
+	  	end
+	  end
+
+	  def verify_fax_numbers
+	  	# Admins do not have an associated organization, otherwise compare the current_user.org.id to the desired caller_id_number
+	  	if is_admin?
+	  		existing_numbers = FaxNumber.where(fax_number: sign_up_params[:caller_id_number], organization_id: sign_up_params[:organization_id])
+	  	elsif is_manager?
+	  		existing_numbers = FaxNumber.where(fax_number: sign_up_params[:caller_id_number], organization_id: current_user.organization.id)
+	  	end
+	  	# Ensures users don't try to create users with caller_id_numbers that are not associated with their organization
+	  	if existing_numbers.nil?
 	  		flash[:alert] = "Permission denied."
-	  		redirect_to_root_path
+	  		redirect_to(root_path)
 	  	end
 	  end
 end

@@ -6,6 +6,8 @@ class OrganizationsController < ApplicationController
 	before_action :get_unallocated_numbers, only: [:new, :edit]
 	
 	def index
+		@user = User.new
+		@user.build_user_permission
 		FaxNumber.format_and_retrieve_fax_numbers_from_api if FaxNumber.first.nil?
 		@organizations = Organization.includes(:fax_numbers).order(label: :asc)
 	end

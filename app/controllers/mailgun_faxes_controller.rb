@@ -6,8 +6,8 @@ class MailgunFaxesController < ApplicationController
     recipient_number = Phonelib.parse(@fax['to_number']).e164
     fax_number = FaxNumber.find_by(fax_number: recipient_number)
 
-    email_addresses = FaxNumberUserEmail.where(fax_number_id: fax_number.id).all.map do |fax_num_email_obj|
-    	fax_num_email_obj.user_email.email_address
+    email_addresses = UserFaxNumber.where(fax_number_id: fax_number.id).all.map do |fax_num_email_obj|
+    	fax_num_email_obj.user.email
     end
 
     fax_from = @fax['from_number']
@@ -20,7 +20,7 @@ class MailgunFaxesController < ApplicationController
 
 	def fax_sent
 		@fax = JSON.parse(params['fax'])
-		email_addresses = UserEmail.find_by(fax_tag: @fax['tags']['sender_email_fax_tag']).email_address
+		email_addresses = User.find_by(fax_tag: @fax['tags']['sender_email_fax_tag']).email
 
     if @fax["status"] == "success"
     	email_subject = "Your fax was sent successfully"
@@ -36,7 +36,7 @@ class MailgunFaxesController < ApplicationController
     # return [400, "Must include a sender"] if !params['from']					# Make this send a fail email
     # return [400, "Must include a recipient"] if !params['recipient']	# Make this send a fail email
     sender = Mail::AddressList.new(params['from']).addresses.first.address
-    user_email = UserEmail.find_by(email_address: sender)
+    user_email = User.find_by(email: sender)
     attachment_count = params['attachment-count'].to_i
 
     i = 1

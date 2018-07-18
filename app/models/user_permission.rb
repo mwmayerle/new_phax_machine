@@ -1,8 +1,7 @@
 class UserPermission < ApplicationRecord
-	belongs_to :user
+	belongs_to :user, optional: true
 
 	USER = 'user'.freeze
   ADMIN = 'admin'.freeze
   MANAGER = 'manager'.freeze
-  SUPERADMIN = 'superadmin'.freeze
 end

@@ -18,9 +18,19 @@
 						<p>Managed by: <%= organization.manager.email %></p>
 				<% elsif organization.fax_numbers.present? %>
 					<div class="form-group">
-						<%= form_for :user, url: "users", method: :post, class: "form-inline" do |f| %>
+						<%= form_for @user, url: "users", method: :post, class: "form-inline" do |f| %>
+							<%= f.hidden_field :sign_up_permission, value: "#{UserPermission::MANAGER}" %>
 							<%= f.hidden_field :organization_id, value: organization.id %>
-							<%= f.hidden_field :invite, value: "on" %>
+							<div class="form-inline form-group inline-input-margin">
+								<label>Manager Caller ID:</label>
+								<select class="form-control form-inline inline-input-margin" name="user[caller_id_number]">
+									<% organization.fax_numbers.each do |organization_fax_number| %>
+										<option name="user[caller_id_number]" value="<%= organization_fax_number.fax_number %>" selected="selected">
+											<%= FaxNumber.format_pretty_fax_number(organization_fax_number.fax_number) %>
+										 </option>
+									<% end %>
+								</select>
+							</div>
 							<div class="mb-2 mr-sm-2 input-group align-self-center">
 								<%= f.email_field :email, placeholder: "manager@acme.com", class: "form-control mb-2 mr-sb-2" %>
 								<%= f.submit "Invite Manager", class: "btn btn-success btn-sm inline-object-margin align-self-center" %>
