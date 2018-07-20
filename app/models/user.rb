@@ -6,13 +6,13 @@ class User < ApplicationRecord
   # :confirmable, :lockable, :trackable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable, :recoverable, :rememberable, :validatable #:confirmable
 
-  attr_accessor :sign_up_permission
+  attr_accessor :permission
 
 	belongs_to :organization, optional: true
 
 	has_one :admin, through: :organization
 	has_one :manager, through: :organization
-	has_one :user_permission
+	has_one :user_permission, dependent: :destroy
 	has_many :user_fax_numbers, dependent: :destroy
 	has_many :fax_numbers, through: :user_fax_numbers
 
@@ -41,9 +41,9 @@ class User < ApplicationRecord
 		    @raw = raw
 
 		    ###TODO Case statement this more intelligently
-		    if user.sign_up_permission == UserPermission::MANAGER
+		    if user.permission == UserPermission::MANAGER
 		    	PhaxMachineMailer.manager_welcome_invite(user, @raw).deliver_now
-		    elsif user.sign_up_permission == UserPermission::USER
+		    elsif user.permission == UserPermission::USER
 		    	PhaxMachineMailer.user_welcome_invite(user, @raw).deliver_now
 		    else
 		    	PhaxMachineMailer.admin_welcome_invite(user, @raw).deliver_now

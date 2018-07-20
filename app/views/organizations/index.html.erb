@@ -19,7 +19,7 @@
 				<% elsif organization.fax_numbers.present? %>
 					<div class="form-group">
 						<%= form_for @user, url: "users", method: :post, class: "form-inline" do |f| %>
-							<%= f.hidden_field :sign_up_permission, value: "#{UserPermission::MANAGER}" %>
+							<%= f.hidden_field :permission, value: "#{UserPermission::MANAGER}" %>
 							<%= f.hidden_field :organization_id, value: organization.id %>
 							<div class="form-inline form-group inline-input-margin">
 								<label>Manager Caller ID:</label>

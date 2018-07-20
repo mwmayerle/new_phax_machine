@@ -5,7 +5,7 @@
   <ul class="list-unstyled components">
     <% if user_signed_in? %>
     	<% if is_admin? %>
-      	<li class="nav-item" data-toggle="tooltip" data-placement="right" title="Manage Clients">
+      	<li class="nav-item" data-toggle="tooltip" data-placement="right" title="Manage Organizations">
       		<a class="nav-link" href="/organizations">
         		<i class="fa fa-fw fa-id-card-o"></i>
         		<span class="nav-link-text">Manage Organizations</span>
@@ -19,7 +19,7 @@
 	      </li>
     	<% end %>
       <% if is_manager? && !is_admin? %>
-      	<li class="nav-item" data-toggle="tooltip" data-placement="right" title="Client Profile">
+      	<li class="nav-item" data-toggle="tooltip" data-placement="right" title="Organization Profile">
       		<a class="nav-link" href="/organizations/<%=current_user.organization.id%>">
       			<i class="fa fa-fw fa-id-card-o"></i>
       			<span class="nav-link-text">Organization Profile</span>
@@ -32,6 +32,12 @@
 			 		</a>
 				</li>
       <% end %>
+			<li class="nav-item" data-toggle="tooltip" data-placement="right" title="Edit Profile">
+      		<a class="nav-link" href="/users/edit.<%=current_user.id%>">
+      			<i class="fa fa-fw fa-user-circle-o"></i>
+      			<span class="nav-link-text">Edit Profile</span>
+      		</a>
+      	</li>
     <% else %>
     	<li class="nav-item" data-toggle="tooltip" data-placement="right" title="Log In">
       	<a class="nav-link" href="/users/sign_in">

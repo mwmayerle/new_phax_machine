@@ -10,7 +10,8 @@ class ApplicationController < ActionController::Base
 	    	:email,
 	    	:id,
 	    	:caller_id_number,
-	    	:sign_up_permission
+	    	:permission
 	    ])
+	    devise_parameter_sanitizer.sanitize(:account_update)
 	  end
 end

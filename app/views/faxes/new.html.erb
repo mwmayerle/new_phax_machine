@@ -6,8 +6,8 @@
 		<div class="col form-group form-inline">
 			<label for="to">To:</label>
 			<input id="to" name="fax[to]" type="tel" placeholder="+15558675309" class="form-control inline-input-margin send-fax-input" required>
-			<button type="button" id="send-another" class="disabled btn btn-success inline-input-margin">Attach Another File</button>
-			<button type="submit" value="Upload" class="btn btn-primary inline-input-margin">Send Fax</button>
+			<button type="button" id="send-another" class="disabled btn btn-success inline-input-margin"><i class="fa fa-fw fa-plus-circle" aria-hidden="true"></i> Attach Another File</button>
+			<button type="submit" value="Upload" class="btn btn-warning inline-input-margin"><i class="fa fa-fw fa-send" aria-hidden="true"></i>  Send Fax</button>
 		</div>
 	</div>
 
@@ -15,7 +15,7 @@
 		<div class="information-box file-attachments">
 			<div class="row inline-input-margin">
 				<div id="file1" class="form-group col">
-					<label class="file-counter">File:</label>
+					<label class="file-counter"></label>
 					<div class="file-drop" data-target="#faxFile1">
 							<!-- <h3>Drag a file onto this box to upload it.</h3> -->
 						<input id="faxFile1" name="fax[files][file1]" type="file" required>

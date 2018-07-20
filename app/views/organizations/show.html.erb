@@ -14,12 +14,9 @@
 		<div class="row information-box">
 			<div class="col-lg-5">
 				<h2>
-					<% if is_admin? %>
-						<%= link_to FaxNumber.format_pretty_fax_number(organization_fax_number.fax_number), edit_fax_number_path(organization_fax_number) %>
-					<% else %>
-						<%= FaxNumber.format_pretty_fax_number(organization_fax_number.fax_number) %>
-					<% end %>
+					<%= link_to FaxNumber.format_pretty_fax_number(organization_fax_number.fax_number), edit_fax_number_path(organization_fax_number) %>
 				</h2>
+
 				<% if is_admin? %>
 					<div class="col">
 						<div class="row">
@@ -66,9 +63,8 @@
 							<% end %>
 						<% else %>
 							<tr>
-								<td></td>
-								<td class="text-center"> None Assigned</td>
-								<td></td>
+								<td class="text-center">N/A</td>
+								<td class="text-center">N/A</td>
 							</tr>
 						<% end %>
 					</tbody>
@@ -78,14 +74,13 @@
 	<% end %>
 	
 	<br>
-	<div class="container-fluid user-form">
-		<h2><%= @organization.label %> Users</h2>
-		<br>
+	<div class="container-fluid user-form form-group">
+		<h2>Invite A New User</h2>
 		<div class="row">
 			<div class="inline-input-margin col-lg-10">
 				<%= form_for :user, url: "/users", method: :post, class: "form-inline" do |f| %>
 					<%= f.hidden_field :organization_id, value: "#{@organization.id}" %>
-					<%= f.hidden_field :sign_up_permission, value: "#{UserPermission::USER}" %>
+					<%= f.hidden_field :permission, value: "#{UserPermission::USER}" %>
 					<div class="row">
 						<div class="form-group col-lg-4">
 							<strong><%= f.label :email, "Email:", class: "pull-left" %></strong>
@@ -105,16 +100,17 @@
 							</select>
 						</div>
 						<div class="col form-group force-down-button">
-							<%= f.submit "Create User", class: "btn btn-success" %>
+							<%= f.submit "Invite User", class: "btn btn-success" %>
 						</div>
 					</div>
 				<% end %>
 			</div>
 		</div>
 	</div>
-
+	<br>
 	<% if @organization.users.present? %>
 		<div class="container-fluid">
+			<h2><%= @organization.label %> Users</h2>
 			<br>
 			<div class="col">
 				<p><em>Click 'Edit User' to grant an existing user to Phax Machine or to revoke their access.</em></p>
@@ -129,7 +125,9 @@
 								<tr>
 									<td class="text-center"><%= user.email %></td>
 									<td class="text-center">
-										<%= link_to "Edit User", edit_user_registration_path(id: user.id), class: "btn btn-sm btn-success" %>
+										<% if user != current_user %> <!-- Keeps Client Manager from revoking their own access -->
+											<%= link_to "Edit User", edit_user_path(user), class: "btn btn-success btn-sm" %>
+										<% end %>
 									</td>
 								</tr>
 							<% end %>
@@ -146,7 +144,9 @@
 								<tr>
 									<td class="text-center"><%= user.email %></td>
 									<td class="text-center">
-										<%= link_to "Edit User", edit_user_registration_path(id: user.id), class: "btn btn-sm btn-success" %>
+										<% if user != current_user %> <!-- Keeps Client Manager from revoking their own access -->
+											<%= link_to "Edit User", edit_user_path(user), class: "btn btn-success btn-sm" %>
+										<% end %>
 									</td>
 								</tr>
 							<% end %>
