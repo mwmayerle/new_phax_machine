@@ -2,9 +2,9 @@
 class Users::RegistrationsController < Devise::RegistrationsController
 	include SessionsHelper
   # before_action :configure_sign_up_params, only: [:create]
-  # before_action :configure_account_update_params, only: [:update]
-  	before_action :verify_fax_numbers, only: [:create, :destroy]
-  	before_action :verify_permissions, only: [:create, :destroy]
+  	before_action :verify_fax_numbers, only: [:create]
+  	before_action :verify_permissions_create, only: [:create]
+  	before_action :verify_is_manager_or_admin, only: [:destroy]
   	prepend_before_action :require_no_authentication, only: :cancel
 
   # POST /resource
@@ -14,7 +14,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
     resource.save
     if resource.persisted?
 	    user = User.find(resource.id)   
-	    UserPermission.create(user_id: user.id, permission: resource.sign_up_permission)
+	    UserPermission.create(user_id: user.id, permission: resource.permission)
 
 	    # Sets Org's Manager as the newly created User if they're intended to be the Manager.
     	if user.reload.user_permission.permission == UserPermission::MANAGER
@@ -35,34 +35,58 @@ class Users::RegistrationsController < Devise::RegistrationsController
       set_minimum_password_length
     end
 		if resource
-    	resource.sign_up_permission == UserPermission::USER ? redirect_to(organization_path(resource.organization)) : redirect_to(organizations_path)
+    	resource.permission == UserPermission::USER ? redirect_to(organization_path(resource.organization)) : redirect_to(organizations_path)
     else
     	redirect_to(organization_path(sign_up_params[:organization_id]))
+    end
+  end
+
+  # PUT /resource
+  def update
+    self.resource = resource_class.to_adapter.get!(send(:"current_#{resource_name}").to_key)
+    prev_unconfirmed_email = resource.unconfirmed_email if resource.respond_to?(:unconfirmed_email)
+
+    resource_updated = update_resource(resource, account_update_params)
+    yield resource if block_given?
+    if resource_updated
+      if is_flashing_format?
+        flash_key = update_needs_confirmation?(resource, prev_unconfirmed_email) ?
+          :update_needs_confirmation : :updated
+        set_flash_message :notice, flash_key
+      end
+      bypass_sign_in resource, scope: resource_name
+      respond_with resource, location: after_update_path_for(resource)
+    else
+      clean_up_passwords resource
+      set_minimum_password_length
+      respond_with resource
     end
   end
 
   # DELETE /resource
   def destroy
   	resource = User.find(params[:id])
-		organization = current_user.organization.nil? ? organization.find(resource.organization.id) : current_user.organization
-		# Removes organization_manager privileges
-		organization.update_attributes(manager_id: nil) if resource.user_permission.permission == UserPermission::MANAGER
+
+		# Removes Manager privileges if admin is revoking their access
+		if resource.user_permission.permission == UserPermission::MANAGER
+			organization = Organization.find(resource.organization.id).update_attributes(manager_id: nil)
+		end
 
     resource.destroy
     flash[:notice] = "Access for #{resource.email} revoked"
     yield resource if block_given?
-    redirect_to(organization_path(organization))
+    is_admin? ? redirect_to(organization_path(organization)) : redirect_to(organization_path(current_user.organization))
   end
 
   protected
-	  def verify_permissions
+	  def verify_permissions_create
 	  	# Ensures a new admin cannot be created and that a manager can only be created by an admin
-	  	if sign_up_params[:sign_up_permission] == UserPermission::USER
+	  	if sign_up_params[:permission] == UserPermission::USER
 	  		verify_is_manager_or_admin
-	  	elsif sign_up_params[:sign_up_permission] == UserPermission::MANAGER
+	  	elsif sign_up_params[:permission] == UserPermission::MANAGER
 	  		verify_is_admin
 	  	else
-	  		flash[:alert] = "Permission denied reeeeeeeeeeeeeeeeeeeeeeee."
+	  		flash[:alert] = ApplicationController::DENIED
 	  		redirect_to(root_path)
 	  	end
 	  end
@@ -76,7 +100,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 	  	end
 	  	# Ensures users don't try to create users with caller_id_numbers that are not associated with their organization
 	  	if existing_numbers.nil?
-	  		flash[:alert] = "Permission denied."
+	  		flash[:alert] = ApplicationController::DENIED
 	  		redirect_to(root_path)
 	  	end
 	  end

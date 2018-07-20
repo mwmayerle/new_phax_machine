@@ -37,6 +37,8 @@ class MailgunFaxesController < ApplicationController
     # return [400, "Must include a recipient"] if !params['recipient']	# Make this send a fail email
     sender = Mail::AddressList.new(params['from']).addresses.first.address
     user = User.find_by(email: sender)
+
+    # Currently fails if user is not in the DB
     attachment_count = params['attachment-count'].to_i
 
     i = 1

@@ -58,7 +58,7 @@ class FaxNumbersController < ApplicationController
 
 		def verify_authorized
 			return if is_admin?
-			if !authorized?(@fax_number.manager, :manager_id)
+			if !authorized?(@fax_number.manager, :id)
 				flash[:alert] = DENIED
 				redirect_to root_path
 			end

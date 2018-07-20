@@ -1,9 +1,14 @@
 $primary: #076892;
 $success: #2C4251;
 $danger: #D16666;
+$warning: #7EA16B;
 
 @import 'bootstrap';
 @import 'navbar';
+
+.smaller-card {
+	width: 50% !important;
+}
 
 #content {
 	overflow-x: hidden;
@@ -75,10 +80,6 @@ a[data-toggle="collapse"] {
 	width: 400px !important;
 }
 
-.user-form {
-	margin-left: 25px;
-}
-
 .the-x {
 	margin-right: 10px;
 	margin-bottom: 10px;
@@ -104,8 +105,18 @@ p {
 }
 
 a, a:hover, a:focus {
-  color: inherit;
+	color: inherit;
   transition: all 0.3s;
+}
+
+.hyperlink:link {
+	color: #0000EE;
+	transition: all 0.3s;
+}
+
+.hyperlink:visited {
+	color: #551A8B;
+	transition: all 0.3s;
 }
 
 ul ul a {

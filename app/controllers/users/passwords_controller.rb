@@ -2,6 +2,7 @@
 class Users::PasswordsController < Devise::PasswordsController
   # GET /resource/password/set_new_user_password?reset_password_token=abcdef
   def set_new_user_password
+  	puts params
     self.resource = resource_class.new
     set_minimum_password_length
     resource.reset_password_token = params[:reset_password_token]
@@ -31,7 +32,8 @@ class Users::PasswordsController < Devise::PasswordsController
       respond_with resource, location: after_resetting_password_path_for(resource)
     else
       set_minimum_password_length
-      respond_with resource
+      flash[:alert] = resource.errors.full_messages.pop
+    	redirect_to(users_password_set_new_user_password_path(:reset_password_token => params[:user][:reset_password_token], :new_user => true))
     end
   end
 

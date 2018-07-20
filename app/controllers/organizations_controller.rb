@@ -36,6 +36,7 @@ class OrganizationsController < ApplicationController
 	def show
 		@user = User.new
 		if authorized?(@organization, :manager_id)
+			@organization.fax_numbers.sort
 			@unassigned_users = Organization.get_unassigned_users(@organization)
 		else
 			flash[:alert] = DENIED
