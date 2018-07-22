@@ -1,8 +1,9 @@
 class MailgunFaxesController < ApplicationController
 	skip_before_action :verify_authenticity_token
-	before_action :verify_phaxio_callback, except: [:mailgun]
+	# before_action :verify_phaxio_callback, except: [:mailgun]
 
 	def fax_received
+		params = JSON.parse(params)
 		# @fax = JSON.parse(params['fax'])
 		@fax = strong_params[:fax]
     recipient_number = Phonelib.parse(@fax['to_number']).e164
@@ -24,6 +25,7 @@ class MailgunFaxesController < ApplicationController
 	end
 
 	def fax_sent
+		params = JSON.parse(params)
 		# @fax = JSON.parse(params['fax'])
 		@fax = strong_params[:fax]
 		email_addresses = User.find_by(fax_tag: @fax['tags']['sender_email_fax_tag']).email
@@ -64,7 +66,7 @@ class MailgunFaxesController < ApplicationController
 
 	private
 		def verify_phaxio_callback
-			params[:fax] = JSON.parse(params[:fax])
+			params = JSON.parse(params)
 			p strong_params
 			Fax.set_phaxio_creds
 	    signature = request.env['HTTP_X_PHAXIO_SIGNATURE']
@@ -97,9 +99,10 @@ class MailgunFaxesController < ApplicationController
 	  		:is_test,
 	  		:caller_id,
 	  		:from_number,
+	  		:to_number,
 	  		:caller_name,
 	  		:cost,
-	  		{ :tags => {} },
+	  		{ :tags => [] },
 	  		{ :recipients => {} },
 	  		{ :file => {} }
 	  	)
