@@ -1,6 +1,6 @@
 class MailgunFaxesController < ApplicationController
-	before_action :verify_phaxio_callback, except: [:mailgun]
 	skip_before_action :verify_authenticity_token
+	before_action :verify_phaxio_callback, except: [:mailgun]
 
 	def fax_received
 		@fax = JSON.parse(params['fax'])
@@ -65,14 +65,14 @@ class MailgunFaxesController < ApplicationController
 	    signature = request.env['HTTP_X_PHAXIO_SIGNATURE']
 	    url = request.url
 	    file_params = params['file']
-	    if Phaxio::Callback.valid_signature?(signature, url, callback_params, file_params)
-	    	p "=" * 60
+	    if Phaxio::Callback.valid_signature?(signature, url, callback_params.to_h, file_params)
+	    	p "=========================================================================================="
 	      	puts 'Success'
-	      p "=" * 60
+	      p "=========================================================================================="
 	    else
-	    	p "=" * 60
+	    	p "=========================================================================================="
 	      	puts 'Invalid callback signature'
-	      p "=" * 60
+	      p "=========================================================================================="
 	    end
 	  end
 
@@ -94,7 +94,7 @@ class MailgunFaxesController < ApplicationController
 	  		:caller_name,
 	  		:cost,
 	  		{ tags: {} },
-	  		{ recipients: [] }
+	  		{ recipients: [] },
 	  	)
 	  end
 end
