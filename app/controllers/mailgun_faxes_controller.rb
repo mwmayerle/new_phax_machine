@@ -60,11 +60,15 @@ class MailgunFaxesController < ApplicationController
 
 	private
 		def verify_phaxio_callback
+			p params
 			Fax.set_phaxio_creds
 	    signature = request.env['HTTP_X_PHAXIO_SIGNATURE']
 	    url = request.url
+	    phaxio_params = strong_phaxio_params
+	    p phaxio_params
+	    p phaxio_params.class
 	    file_params = params['file']
-	    if Phaxio::Callback.valid_signature?(signature, url, callback_params.to_h, file_params)
+	    if Phaxio::Callback.valid_signature?(signature, url, phaxio_params.to_h, file_params)
 	    	p "=========================================================================================="
 	      	puts 'Success'
 	      p "=========================================================================================="
@@ -76,7 +80,7 @@ class MailgunFaxesController < ApplicationController
 	  end
 
 	  def callback_params
-	    strong_phaxio_params.select do |key, _value|
+	    phaxio_params.select do |key, _value|
 	      %w(success is_test direction fax metadata message).include?(key)
 	    end
 	  end
