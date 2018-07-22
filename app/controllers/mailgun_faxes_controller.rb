@@ -65,6 +65,7 @@ class MailgunFaxesController < ApplicationController
 	    signature = request.env['HTTP_X_PHAXIO_SIGNATURE']
 	    url = request.url
 	    phaxio_params = strong_phaxio_params
+	    p "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"
 	    p phaxio_params
 	    p phaxio_params.class
 	    file_params = params['file']
@@ -97,7 +98,7 @@ class MailgunFaxesController < ApplicationController
 	  		'caller_name',
 	  		'cost',
 	  		{ 'tags' => {} },
-	  		{ 'recipients' => [] },
+	  		{ 'recipients' => {} },
 	  	)
 	  end
 end
