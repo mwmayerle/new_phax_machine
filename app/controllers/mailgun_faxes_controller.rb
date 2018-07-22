@@ -64,7 +64,7 @@ class MailgunFaxesController < ApplicationController
 			Fax.set_phaxio_creds
 	    signature = request.env['HTTP_X_PHAXIO_SIGNATURE']
 	    url = request.url
-	    phaxio_params = strong_params
+	    phaxio_params = strong_params[:fax]
 	    file_params = params['file']
 	    if Phaxio::Callback.valid_signature?(signature, url, phaxio_params.to_h, file_params)
 	    	p "=========================================================================================="
@@ -84,6 +84,19 @@ class MailgunFaxesController < ApplicationController
 	  end
 
 	  def strong_params
-	  	params.require(:fax).permit!
+	  	params.require(:fax).permit(
+	  		:id,
+	  		:direction,
+	  		:num_pages,
+	  		:status,
+	  		:is_test,
+	  		:caller_id,
+	  		:from_number,
+	  		:caller_name,
+	  		:cost,
+	  		{ :tags => {} },
+	  		{ :recipients => {} },
+	  		{ :file, => {} }
+	  	)
 	  end
 end
