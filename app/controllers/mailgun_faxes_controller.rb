@@ -62,7 +62,7 @@ class MailgunFaxesController < ApplicationController
 		def verify_phaxio_callback
 			Fax.set_phaxio_creds
 	    signature = request.env['HTTP_X_PHAXIO_SIGNATURE']
-	    file_params = strong_phaxio_params['filename']
+	    file_params = strong_phaxio_params['file']['filename']
 	    p "*****************************************************************************"
 	    puts file_params
 	    url = request.url
@@ -119,3 +119,5 @@ class MailgunFaxesController < ApplicationController
 	  	)
 	  end
 end
+
+Parameters: "fax"=>"{\"id\":78746160,\"direction\":\"received\",\"num_pages\":1,\"status\":\"success\",\"is_test\":false,\"created_at\":\"2018-07-22T13:50:59.000-05:00\",\"caller_id\":null,\"from_number\":\"+14243638444\",\"completed_at\":\"2018-07-22T13:50:57.000-05:00\",\"caller_name\":null,\"cost\":7,\"tags\":{},\"recipients\":null,\"to_number\":\"+12035834392\",\"error_id\":null,\"error_type\":null,\"error_message\":null,\"barcodes\":[]}", "file"=><ActionDispatch::Http::UploadedFile:0x0000000004da8348 @tempfile=<Tempfile:/tmp/RackMultipart20180722-4-9qs6l4.pdf>, @original_filename="Fax-78746160.pdf", @content_type="application/octet-stream", @headers="Content-Disposition: form-data; name=\"file\"; filename=\"Fax-78746160.pdf\"\r\nContent-Type: application/octet-stream\r\n">
