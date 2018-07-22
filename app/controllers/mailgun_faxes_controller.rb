@@ -135,7 +135,7 @@ class MailgunFaxesController < ApplicationController
     end
 
     def callback_token
-      Phaxio.callback_token
+      Phaxio.callback_token or raise(Phaxio::Error::PhaxioError, 'No callback token has been set')
     end
 
     def generate_params_string(params)
@@ -163,6 +163,6 @@ class MailgunFaxesController < ApplicationController
     end
 
     def generate_file_string(file)
-      file.original_filename + DIGEST.hexdigest(file[:tempfile].read)
+      file.original_filename + DIGEST.hexdigest(file.tempfile.read)
     end
 end
