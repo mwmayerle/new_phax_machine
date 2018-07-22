@@ -60,7 +60,7 @@ class MailgunFaxesController < ApplicationController
 
 	private
 		def verify_phaxio_callback
-			params[:fax].to_h
+			params[:fax] = JSON.parse(params[:fax])
 			Fax.set_phaxio_creds
 	    signature = request.env['HTTP_X_PHAXIO_SIGNATURE']
 	    url = request.url
