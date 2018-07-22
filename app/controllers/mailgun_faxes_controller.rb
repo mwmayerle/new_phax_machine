@@ -96,7 +96,7 @@ class MailgunFaxesController < ApplicationController
 	  		:cost,
 	  		{ :tags => {} },
 	  		{ :recipients => {} },
-	  		{ :file, => {} }
+	  		{ :file => {} }
 	  	)
 	  end
 end
