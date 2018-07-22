@@ -111,7 +111,7 @@ class MailgunFaxesController < ApplicationController
 	  		:error_id,
 	  		:error_type,
 	  		:error_message,
-	  		{ :file => [] },
+	  		:file,
 	  		{ :barcodes => [] },
 	  		{ :tags => [
 	  			:sender_organization_fax_tag,
