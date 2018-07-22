@@ -2,7 +2,8 @@ class MailgunFaxesController < ApplicationController
 	skip_before_action :verify_authenticity_token
 
 	def fax_received
-		p params
+		p "=========================================================================================="
+		p request.env['HTTP_X_PHAXIO_SIGNATURE']
 		@fax = JSON.parse(params['fax'])
     recipient_number = Phonelib.parse(@fax['to_number']).e164
     fax_number = FaxNumber.find_by(fax_number: recipient_number)
@@ -12,15 +13,25 @@ class MailgunFaxesController < ApplicationController
     end
 
     fax_from = @fax['from_number']
-    fax_file_name = params['filename'].original_filename
-    fax_file_contents = params['filename'].read
+
+    if params['file']
+    	# v2.1 Webhooks
+    	fax_file_name = params['file'].original_filename
+	    fax_file_contents = params['file'].read
+    else
+    	# v1 Webhooks
+	    fax_file_name = params['filename'].original_filename
+	    fax_file_contents = params['filename'].read
+    end
+
     email_subject = "Fax received from #{fax_from}"
 
 		MailgunMailer.fax_email(email_addresses, email_subject, @fax, fax_file_name, fax_file_contents).deliver_now
 	end
 
 	def fax_sent
-		p params
+		p "=========================================================================================="
+		p request.env['HTTP_X_PHAXIO_SIGNATURE']
 		@fax = JSON.parse(params['fax'])
 		email_addresses = User.find_by(fax_tag: @fax['tags']['sender_email_fax_tag']).email
 

@@ -11,7 +11,7 @@ class Fax
 		      file: options[:files],
 		      caller_id: options[:caller_id_number],
 		      tag: {
-		        sender_client_fax_tag: options[:tag][:sender_organization_fax_tag], 
+		        sender_organization_fax_tag: options[:tag][:sender_organization_fax_tag], 
 		        sender_email_fax_tag: options[:tag][:sender_email_fax_tag]
 		      }
 		    )
