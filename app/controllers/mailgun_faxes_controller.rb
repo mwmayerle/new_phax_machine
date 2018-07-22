@@ -56,3 +56,4 @@ class MailgunFaxesController < ApplicationController
 			MailgunMailer.failed_email_to_fax_email(sender, sent_fax_object).deliver_now
 		end
 	end
+end
