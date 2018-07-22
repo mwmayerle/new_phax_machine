@@ -101,7 +101,7 @@ class MailgunFaxesController < ApplicationController
 	  		:to_number,
 	  		:caller_name,
 	  		:cost,
-	  		{ :tags => {} },
-	  		{ :recipients => {} },)
+	  		{ :tags => [] },
+	  		{ :recipients => [] },)
 	  end
 end
