@@ -62,9 +62,15 @@ class MailgunFaxesController < ApplicationController
 		def verify_phaxio_callback
 			Fax.set_phaxio_creds
 	    signature = request.env['HTTP_X_PHAXIO_SIGNATURE']
-	    file_params = strong_phaxio_params['file']['filename']
+	    file_params = strong_phaxio_params['file']
 	    p "*****************************************************************************"
 	    puts file_params
+	    begin
+	    	puts file_params
+	    	puts file_params.class
+	    	puts file_params[:filename]
+	    	puts strong_phaxio_params[:filename]
+	    end
 	    url = request.url
 	    phaxio_params = strong_phaxio_params.to_h
 	    if Phaxio::Callback.valid_signature?(signature, url, phaxio_params, file_params)
