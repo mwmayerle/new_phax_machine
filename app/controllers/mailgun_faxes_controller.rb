@@ -70,7 +70,7 @@ class MailgunFaxesController < ApplicationController
 	    p url
 	    p file_params
 	    p strong_phaxio_params.to_h
-	    if Phaxio::Callback.valid_signature?(signature, url, strong_phaxio_params.to_h, file_params)
+	    if Phaxio::Callback.valid_signature?(signature, url, strong_phaxio_params.to_h, [file_params])
 	    	p "=========================================================================================="
 	      	puts 'Success'
 	      p "=========================================================================================="
