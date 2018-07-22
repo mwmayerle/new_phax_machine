@@ -70,6 +70,10 @@ class MailgunFaxesController < ApplicationController
 	    	puts file_params.class
 	    	puts file_params[:filename]
 	    	puts strong_phaxio_params[:filename]
+	    	puts params.class
+	    	puts params[:file]
+	    	puts params[:filename]
+	    	puts params[:file][:filename]
 	    end
 	    url = request.url
 	    phaxio_params = strong_phaxio_params.to_h
