@@ -149,9 +149,8 @@ class MailgunFaxesController < ApplicationController
       p "11111111111111111111111111111111"
       p files_array
       p "22222222222222222222222222222222"
-      files_array.each { |file| p file }
       ##############
-      sorted_files = files_array.sort_by { |file| file.original_filename }
+      sorted_files = files_array.sort_by { |file| file.name }
       ##############
       p sorted_files
       files_strings = sorted_files.map { |file| generate_file_string(file) }
@@ -163,6 +162,6 @@ class MailgunFaxesController < ApplicationController
     end
 
     def generate_file_string(file)
-      file.original_filename + DIGEST.hexdigest(file.tempfile.read)
+      file.name + DIGEST.hexdigest(file.tempfile.read)
     end
 end
