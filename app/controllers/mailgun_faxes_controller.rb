@@ -1,6 +1,6 @@
 class MailgunFaxesController < ApplicationController
 	skip_before_action :verify_authenticity_token
-	before_action :verify_phaxio_callback, except: [:mailgun]
+	before_action :verify_phaxio_callback, only: [:fax_received]
 
 	def fax_received
 		@fax = strong_phaxio_params
@@ -62,7 +62,7 @@ class MailgunFaxesController < ApplicationController
 		def verify_phaxio_callback
 			Fax.set_phaxio_creds
 	    file_params = params['file']
-	    file_params[:file] = file_params.original_filename # Phaxio gem uses 'sort_by [:name], so this replaces that. 
+	    file_params.file = file_params.original_filename # Phaxio gem uses 'sort_by [:name], so this replaces that. 
 	    signature = request.env['HTTP_X_PHAXIO_SIGNATURE']
 	    url = request.url
 	    if Phaxio::Callback.valid_signature?(signature, url, strong_phaxio_params.to_h, file_params)
