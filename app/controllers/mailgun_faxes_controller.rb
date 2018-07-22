@@ -3,7 +3,8 @@ class MailgunFaxesController < ApplicationController
 	before_action :verify_phaxio_callback, except: [:mailgun]
 
 	def fax_received
-		@fax = JSON.parse(params['fax'])
+		# @fax = JSON.parse(params['fax'])
+		@fax = strong_params[:fax]
     recipient_number = Phonelib.parse(@fax['to_number']).e164
     fax_number = FaxNumber.find_by(fax_number: recipient_number)
 
@@ -12,8 +13,10 @@ class MailgunFaxesController < ApplicationController
     end
 
     fax_from = @fax['from_number']
-  	fax_file_name = params['file'].original_filename
-    fax_file_contents = params['file'].read
+  	# fax_file_name = params['file'].original_filename
+   #  fax_file_contents = params['file'].read
+    fax_file_name = strong_params['file'].original_filename
+    fax_file_contents = strong_params['file'].read
 
     email_subject = "Fax received from #{fax_from}"
 
@@ -21,7 +24,8 @@ class MailgunFaxesController < ApplicationController
 	end
 
 	def fax_sent
-		@fax = JSON.parse(params['fax'])
+		# @fax = JSON.parse(params['fax'])
+		@fax = strong_params[:fax]
 		email_addresses = User.find_by(fax_tag: @fax['tags']['sender_email_fax_tag']).email
 
     if @fax["status"] == "success"
@@ -61,11 +65,12 @@ class MailgunFaxesController < ApplicationController
 	private
 		def verify_phaxio_callback
 			params[:fax] = JSON.parse(params[:fax])
+			p strong_params
 			Fax.set_phaxio_creds
 	    signature = request.env['HTTP_X_PHAXIO_SIGNATURE']
 	    url = request.url
 	    phaxio_params = strong_params
-	    file_params = params['file']
+	    file_params = strong_params['file']
 	    if Phaxio::Callback.valid_signature?(signature, url, phaxio_params.to_h, file_params)
 	    	p "=========================================================================================="
 	      	puts 'Success'
