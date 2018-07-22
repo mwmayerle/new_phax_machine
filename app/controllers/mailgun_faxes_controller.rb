@@ -63,9 +63,9 @@ class MailgunFaxesController < ApplicationController
 	private
 		def verify_phaxio_callback
 			Fax.set_phaxio_creds
+	    file_params = params['file']
 	    signature = request.env['HTTP_X_PHAXIO_SIGNATURE']
 	    url = request.url
-	    file_params = strong_phaxio_params['file']
 	    p signature
 	    p url
 	    p file_params
