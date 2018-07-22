@@ -84,18 +84,6 @@ class MailgunFaxesController < ApplicationController
 	  end
 
 	  def strong_params
-	  	params.require(:fax).permit(
-	  		:id,
-	  		:direction,
-	  		:num_pages,
-	  		:status,
-	  		:is_test,
-	  		:caller_id,
-	  		:from_number,
-	  		:caller_name,
-	  		:cost,
-	  		{ :tags => {} },
-	  		{ :recipients => {} },
-	  	)
+	  	params.require(:fax).permit!
 	  end
 end
