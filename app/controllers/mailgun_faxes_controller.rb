@@ -3,7 +3,8 @@ class MailgunFaxesController < ApplicationController
 	before_action :verify_phaxio_callback, except: [:mailgun]
 
 	def fax_received
-		@fax = JSON.parse(params['fax'])
+		# @fax = JSON.parse(params['fax'])
+		@fax = strong_phaxio_params
     recipient_number = Phonelib.parse(@fax['to_number']).e164
     fax_number = FaxNumber.find_by(fax_number: recipient_number)
 
@@ -21,7 +22,8 @@ class MailgunFaxesController < ApplicationController
 	end
 
 	def fax_sent
-		@fax = JSON.parse(params['fax'])
+		# @fax = JSON.parse(params['fax'])
+		@fax = strong_phaxio_params
 		email_addresses = User.find_by(fax_tag: @fax['tags']['sender_email_fax_tag']).email
 
     if @fax["status"] == "success"
@@ -63,13 +65,8 @@ class MailgunFaxesController < ApplicationController
 			Fax.set_phaxio_creds
 	    signature = request.env['HTTP_X_PHAXIO_SIGNATURE']
 	    url = request.url
-	    phaxio_params = strong_params
-	    p "------------------------------------"
-	    p phaxio_params
-	    p phaxio_params.to_h
-	    p "------------------------------------"
-	    file_params = params['file']
-	    if Phaxio::Callback.valid_signature?(signature, url, phaxio_params, file_params)
+	    file_params = strong_phaxio_params['file']
+	    if Phaxio::Callback.valid_signature?(signature, url, strong_phaxio_params.to_h, file_params)
 	    	p "=========================================================================================="
 	      	puts 'Success'
 	      p "=========================================================================================="
@@ -86,11 +83,9 @@ class MailgunFaxesController < ApplicationController
 	    end
 	  end
 
-	  def strong_params
-	  	p "************************************************************"
+	  def strong_phaxio_params
 	  	new_params = ActionController::Parameters.new({:fax => JSON.parse(params[:fax])})
-	  	p new_params
-	  	p new_params.require(:fax).permit(	  		
+	  	new_params.require(:fax).permit(	  		
 	  		:id,
 	  		:direction,
 	  		:num_pages,
@@ -106,7 +101,7 @@ class MailgunFaxesController < ApplicationController
 	  		:error_id,
 	  		:error_type,
 	  		:error_message,
-	  		{ :barcodes => []},
+	  		{ :barcodes => [] },
 	  		{ :tags => [:sender_organization_fax_tag, :sender_email_fax_tag] },
 	  		{ :recipients => [
 	  				:phone_number,
