@@ -62,7 +62,7 @@ class MailgunFaxesController < ApplicationController
 		def verify_phaxio_callback
 			Fax.set_phaxio_creds
 	    signature = request.env['HTTP_X_PHAXIO_SIGNATURE']
-	    file_params = strong_phaxio_params['file']
+	    file_params = params['file']
 	    p "*****************************************************************************"
 	    puts file_params
 	    p strong_phaxio_params
@@ -70,7 +70,6 @@ class MailgunFaxesController < ApplicationController
 	    	puts file_params
 	    	puts file_params.class
 	    	puts file_params[:filename]
-	    	puts strong_phaxio_params[:filename]
 	    	puts params.class
 	    	puts params[:file]
 	    	puts params[:filename]
