@@ -88,7 +88,20 @@ class MailgunFaxesController < ApplicationController
 
 	  def strong_params
 	  	params = ActionController::Parameters.new({:fax => JSON.parse(params[:fax])})
+	  	p "************************************************************"
 	  	p params
-	  	params.require(:fax).permit(JSON.parse(params[:fax]))
+	  	params.require(:fax).permit(	  		
+	  		:id,
+	  		:direction,
+	  		:num_pages,
+	  		:status,
+	  		:is_test,
+	  		:caller_id,
+	  		:from_number,
+	  		:to_number,
+	  		:caller_name,
+	  		:cost,
+	  		{ :tags => {} },
+	  		{ :recipients => {} },)
 	  end
 end
