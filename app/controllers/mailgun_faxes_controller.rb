@@ -90,18 +90,33 @@ class MailgunFaxesController < ApplicationController
 	  	p "************************************************************"
 	  	new_params = ActionController::Parameters.new({:fax => JSON.parse(params[:fax])})
 	  	p new_params
-	  	new_params.require(:fax).permit(	  		
+	  	p new_params.require(:fax).permit(	  		
 	  		:id,
 	  		:direction,
 	  		:num_pages,
 	  		:status,
 	  		:is_test,
 	  		:caller_id,
+	  		:caller_name,
 	  		:from_number,
-	  		:to_number,
 	  		:caller_name,
 	  		:cost,
-	  		{ :tags => [] },
-	  		{ :recipients => [] },)
+	  		:file,
+	  		:to_number,
+	  		:error_id,
+	  		:error_type,
+	  		:error_message,
+	  		{ :barcodes => []},
+	  		{ :tags => [:sender_organization_fax_tag, :sender_email_fax_tag] },
+	  		{ :recipients => [
+	  				:phone_number,
+	  				:status,
+	  				:error_type,
+	  				:error_id,
+	  				:error_message,
+	  				:to_number
+	  			]
+	  		},
+	  	)
 	  end
 end
