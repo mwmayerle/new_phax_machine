@@ -65,7 +65,13 @@ class MailgunFaxesController < ApplicationController
 	    file_params = strong_phaxio_params['filename']
 	    url = request.url
 	    phaxio_params = strong_phaxio_params.to_h
-	    Phaxio::Callback.valid_signature?(signature, url, phaxio_params, file_params) ? render(status: 200) : render(status: 422)
+	    if Phaxio::Callback.valid_signature?(signature, url, phaxio_params, file_params)
+	    	puts "IT WORKED!!!!!!!!!!!!!!!"
+	    	render(status: 200)
+	    else
+	    	puts "IT BROKE!!!!!!!!!!!!!!!!!"
+	    	render(status: 422)
+	    end
 	  end
 
 	  def callback_params
