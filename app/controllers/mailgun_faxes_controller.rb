@@ -62,9 +62,9 @@ class MailgunFaxesController < ApplicationController
 		def verify_phaxio_callback
 			Fax.set_phaxio_creds
 	    file_params = params['file']
+	    file_params[:file] = file_params.original_filename # Phaxio gem uses 'sort_by [:name], so this replaces that. 
 	    signature = request.env['HTTP_X_PHAXIO_SIGNATURE']
 	    url = request.url
-	    p file_params.original_filename
 	    if Phaxio::Callback.valid_signature?(signature, url, strong_phaxio_params.to_h, file_params)
 	    	p "=========================================================================================="
 	      	puts 'Success'
