@@ -102,12 +102,11 @@ class MailgunFaxesController < ApplicationController
 	  		:from_number,
 	  		:caller_name,
 	  		:cost,
-	  		:file,
-	  		:filename,
 	  		:to_number,
 	  		:error_id,
 	  		:error_type,
 	  		:error_message,
+	  		{ :file => [] },
 	  		{ :barcodes => [] },
 	  		{ :tags => [
 	  			:sender_organization_fax_tag,
