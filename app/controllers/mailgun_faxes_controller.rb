@@ -6,6 +6,9 @@ class MailgunFaxesController < ApplicationController
 		p request.env['HTTP_X_PHAXIO_SIGNATURE']
 		@fax = JSON.parse(params['fax'])
     recipient_number = Phonelib.parse(@fax['to_number']).e164
+    p "recipient"
+    p @fax['to_number']
+    p recipient_number
     fax_number = FaxNumber.find_by(fax_number: recipient_number)
 
     email_addresses = UserFaxNumber.where(fax_number_id: fax_number.id).all.map do |fax_num_email_obj|
