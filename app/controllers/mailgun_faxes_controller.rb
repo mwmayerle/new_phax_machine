@@ -65,9 +65,7 @@ class MailgunFaxesController < ApplicationController
 	    signature = request.env['HTTP_X_PHAXIO_SIGNATURE']
 	    url = request.url
 	    p file_params
-	    p file_params[:name]
 	    p file_params[:original_filename]
-	    p file_params.name
 	    p file_params.original_filename
 	    if Phaxio::Callback.valid_signature?(signature, url, strong_phaxio_params.to_h, file_params)
 	    	p "=========================================================================================="
