@@ -64,20 +64,9 @@ class MailgunFaxesController < ApplicationController
 	    signature = request.env['HTTP_X_PHAXIO_SIGNATURE']
 	    file_params = params['file']
 	    p "*****************************************************************************"
-	    puts file_params
-	    p strong_phaxio_params
-	    begin
-	    	puts file_params
-	    	puts file_params.class
-	    	puts file_params[:filename]
-	    	puts params.class
-	    	puts params[:file]
-	    	puts params[:filename]
-	    	puts params[:file][:filename]
-	    end
 	    url = request.url
 	    phaxio_params = strong_phaxio_params.to_h
-	    if Phaxio::Callback.valid_signature?(signature, url, phaxio_params, file_params)
+	    if valid_signature?(signature, url, phaxio_params, file_params)
 	    	puts "IT WORKED!!!!!!!!!!!!!!!"
 	    	render(status: 200)
 	    else
@@ -127,4 +116,48 @@ class MailgunFaxesController < ApplicationController
 	  		},
 	  	)
 	  end
+
+	  ####################################################
+
+	  def valid_signature? signature, url, params, files = []
+      check_signature = generate_check_signature url, params, files
+      check_signature == signature
+    end
+
+	  def generate_check_signature url, params, files = []
+      params_string = generate_params_string(params)
+      files_string = generate_files_string(files)
+      callback_data = "#{url}#{params_string}#{files_string}"
+      OpenSSL::HMAC.hexdigest(DIGEST, callback_token, callback_data)
+    end
+
+    def callback_token
+      Phaxio.callback_token
+    end
+
+    def generate_params_string(params)
+      sorted_params = params.keys.sort_by { |key, _value| key }
+      params_strings = sorted_params.map { |key, value| "#{key}#{value}" }
+      params_strings.join
+    end
+
+    def generate_files_string(files)
+      files_array = files_to_array(files).reject(&:nil?)
+      p "11111111111111111111111111111111"
+      p files_array
+      p "22222222222222222222222222222222"
+      files_array.each { |file| p file }
+      sorted_files = files_array.sort_by { |file| file[:name] }
+      p sorted_files
+      files_strings = sorted_files.map { |file| generate_file_string(file) }
+      files_strings.join
+    end
+
+    def files_to_array(files)
+      files.is_a?(Array) ? files : [files]
+    end
+
+    def generate_file_string(file)
+      file[:name] + DIGEST.hexdigest(file[:tempfile].read)
+    end
 end
