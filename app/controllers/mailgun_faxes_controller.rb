@@ -67,12 +67,12 @@ class MailgunFaxesController < ApplicationController
 	    if Phaxio::Callback.valid_signature?(signature, url, strong_phaxio_params.to_h, file_params)
 	    	p "=========================================================================================="
 	      	puts 'Success'
-	      	return status: 200
+	      	render(status: 200)
 	      p "=========================================================================================="
 	    else
 	    	p "=========================================================================================="
 	      	puts 'Invalid callback signature'
-	      	return status: 422
+	      	render(status: 422)
 	      p "=========================================================================================="
 	    end
 	  end
