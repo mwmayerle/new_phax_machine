@@ -63,8 +63,6 @@ class MailgunFaxesController < ApplicationController
 			Fax.set_phaxio_creds
 	    signature = request.env['HTTP_X_PHAXIO_SIGNATURE']
 	    url = request.url
-	    p "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-	    p params.to_h
 	    phaxio_params = strong_params
 	    p "------------------------------------"
 	    p phaxio_params
