@@ -2,6 +2,9 @@ class MailgunFaxesController < ApplicationController
 	skip_before_action :verify_authenticity_token
 	before_action :verify_phaxio_callback, only: [:fax_received]
 
+	DIGEST = OpenSSL::Digest.new('sha1')
+  private_constant :DIGEST
+
 	def fax_received
 		@fax = strong_phaxio_params
     recipient_number = Phonelib.parse(@fax['to_number']).e164
