@@ -147,7 +147,7 @@ class MailgunFaxesController < ApplicationController
       p files_array
       p "22222222222222222222222222222222"
       files_array.each { |file| p file }
-      sorted_files = files_array.sort_by { |file| file[:name] }
+      sorted_files = files_array.sort_by { |file| file.original_filename }
       p sorted_files
       files_strings = sorted_files.map { |file| generate_file_string(file) }
       files_strings.join
