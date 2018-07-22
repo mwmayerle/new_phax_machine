@@ -3,9 +3,7 @@ class MailgunFaxesController < ApplicationController
 	# before_action :verify_phaxio_callback, except: [:mailgun]
 
 	def fax_received
-		params = JSON.parse(params)
-		# @fax = JSON.parse(params['fax'])
-		@fax = strong_params[:fax]
+		@fax = JSON.parse(params['fax'])
     recipient_number = Phonelib.parse(@fax['to_number']).e164
     fax_number = FaxNumber.find_by(fax_number: recipient_number)
 
@@ -14,10 +12,8 @@ class MailgunFaxesController < ApplicationController
     end
 
     fax_from = @fax['from_number']
-  	# fax_file_name = params['file'].original_filename
-   #  fax_file_contents = params['file'].read
-    fax_file_name = strong_params['file'].original_filename
-    fax_file_contents = strong_params['file'].read
+  	fax_file_name = params['file'].original_filename
+    fax_file_contents = params['file'].read
 
     email_subject = "Fax received from #{fax_from}"
 
@@ -25,9 +21,7 @@ class MailgunFaxesController < ApplicationController
 	end
 
 	def fax_sent
-		params = JSON.parse(params)
-		# @fax = JSON.parse(params['fax'])
-		@fax = strong_params[:fax]
+		@fax = JSON.parse(params['fax'])
 		email_addresses = User.find_by(fax_tag: @fax['tags']['sender_email_fax_tag']).email
 
     if @fax["status"] == "success"
@@ -66,14 +60,13 @@ class MailgunFaxesController < ApplicationController
 
 	private
 		def verify_phaxio_callback
-			params = JSON.parse(params)
-			p strong_params
 			Fax.set_phaxio_creds
 	    signature = request.env['HTTP_X_PHAXIO_SIGNATURE']
 	    url = request.url
 	    phaxio_params = strong_params
-	    file_params = strong_params['file']
-	    if Phaxio::Callback.valid_signature?(signature, url, phaxio_params.to_h, file_params)
+	    p phaxio_params
+	    file_params = params['file']
+	    if Phaxio::Callback.valid_signature?(signature, url, phaxio_params, file_params)
 	    	p "=========================================================================================="
 	      	puts 'Success'
 	      p "=========================================================================================="
@@ -91,7 +84,7 @@ class MailgunFaxesController < ApplicationController
 	  end
 
 	  def strong_params
-	  	params.require(:fax).permit(
+	  	JSON.parse(params.require(:fax).permit(
 	  		:id,
 	  		:direction,
 	  		:num_pages,
@@ -99,12 +92,10 @@ class MailgunFaxesController < ApplicationController
 	  		:is_test,
 	  		:caller_id,
 	  		:from_number,
-	  		:to_number,
 	  		:caller_name,
 	  		:cost,
-	  		{ :tags => [] },
+	  		{ :tags => {} },
 	  		{ :recipients => {} },
-	  		{ :file => {} }
-	  	)
+	  	))
 	  end
 end
