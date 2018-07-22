@@ -3,7 +3,6 @@ class MailgunFaxesController < ApplicationController
 	before_action :verify_phaxio_callback, except: [:mailgun]
 
 	def fax_received
-		# @fax = JSON.parse(params['fax'])
 		@fax = strong_phaxio_params
     recipient_number = Phonelib.parse(@fax['to_number']).e164
     fax_number = FaxNumber.find_by(fax_number: recipient_number)
@@ -22,7 +21,6 @@ class MailgunFaxesController < ApplicationController
 	end
 
 	def fax_sent
-		# @fax = JSON.parse(params['fax'])
 		@fax = strong_phaxio_params
 		email_addresses = User.find_by(fax_tag: @fax['tags']['sender_email_fax_tag']).email
 
@@ -66,11 +64,12 @@ class MailgunFaxesController < ApplicationController
 	    file_params = params['file']
 	    signature = request.env['HTTP_X_PHAXIO_SIGNATURE']
 	    url = request.url
-	    p signature
-	    p url
 	    p file_params
-	    p strong_phaxio_params.to_h
-	    if Phaxio::Callback.valid_signature?(signature, url, strong_phaxio_params.to_h, [file_params])
+	    p file_params[:name]
+	    p file_params[:original_filename]
+	    p file_params.name
+	    p file_params.original_filename
+	    if Phaxio::Callback.valid_signature?(signature, url, strong_phaxio_params.to_h, file_params)
 	    	p "=========================================================================================="
 	      	puts 'Success'
 	      p "=========================================================================================="
@@ -88,6 +87,7 @@ class MailgunFaxesController < ApplicationController
 	  end
 
 	  def strong_phaxio_params
+	  	# Create new params from the existing params and then filter them due to the JSON component returned from the Phaxio API
 	  	new_params = ActionController::Parameters.new({:fax => JSON.parse(params[:fax])})
 	  	new_params.require(:fax).permit(	  		
 	  		:id,
