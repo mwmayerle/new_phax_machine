@@ -65,6 +65,7 @@ class MailgunFaxesController < ApplicationController
 	    file_params = strong_phaxio_params['file']
 	    p "*****************************************************************************"
 	    puts file_params
+	    p strong_phaxio_params
 	    begin
 	    	puts file_params
 	    	puts file_params.class
