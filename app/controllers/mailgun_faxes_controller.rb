@@ -1,6 +1,6 @@
 class MailgunFaxesController < ApplicationController
 	skip_before_action :verify_authenticity_token
-	before_action :verify_phaxio_callback, except: [:mailgun]
+	# before_action :verify_phaxio_callback, except: [:mailgun]
 
 	def fax_received
 		@fax = JSON.parse(params['fax'])
@@ -84,8 +84,7 @@ class MailgunFaxesController < ApplicationController
 	  end
 
 	  def strong_params
-	  	fax_params = JSON.parse(params[:fax])
-  		fax_params.permit(
+	  	params.permit(
 	  		:id,
 	  		:direction,
 	  		:num_pages,
@@ -97,6 +96,6 @@ class MailgunFaxesController < ApplicationController
 	  		:cost,
 	  		{ :tags => {} },
 	  		{ :recipients => {} },
-  		)
+	  	)
 	  end
 end
