@@ -15,8 +15,8 @@ class FaxesController < ApplicationController
 			to: fax_params[:to],
 			files: attached_files,
 			caller_id: current_user.caller_id_number,
-			tag: { 
-				sender_client_fax_tag: current_user.organization.fax_tag, 
+			tag: { # Update strong_params filter looks for these tags in mailgun_faxes_controller
+				sender_organization_fax_tag: current_user.organization.fax_tag, 
 				sender_email_fax_tag: current_user.fax_tag,
 			},
 		}
@@ -37,10 +37,7 @@ class FaxesController < ApplicationController
 		end
 
 		def verify_user_signed_in
-			if !user_signed_in?
-				# flash[:alert] = "You must be logged in to send a fax"
-				redirect_to new_user_session_path
-			end
+			redirect_to new_user_session_path if !user_signed_in?
 		end
 
 		def set_phaxio_creds

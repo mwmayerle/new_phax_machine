@@ -2,7 +2,7 @@ class MailgunFaxesController < ApplicationController
 	skip_before_action :verify_authenticity_token
 
 	def fax_received
-		@fax = JSON.parse(params['fax'])
+		@fax = JSON.parse(params[:fax])
     recipient_number = Phonelib.parse(@fax['to_number']).e164
     fax_number = FaxNumber.find_by(fax_number: recipient_number)
 
@@ -11,15 +11,16 @@ class MailgunFaxesController < ApplicationController
     end
 
     fax_from = @fax['from_number']
-    fax_file_name = params['filename'].original_filename
-    fax_file_contents = params['filename'].read
+  	fax_file_name = params['file'].original_filename
+    fax_file_contents = params['file'].read
+
     email_subject = "Fax received from #{fax_from}"
 
 		MailgunMailer.fax_email(email_addresses, email_subject, @fax, fax_file_name, fax_file_contents).deliver_now
 	end
 
 	def fax_sent
-		@fax = JSON.parse(params['fax'])
+		@fax = JSON.parse(params[:fax])
 		email_addresses = User.find_by(fax_tag: @fax['tags']['sender_email_fax_tag']).email
 
     if @fax["status"] == "success"
@@ -33,8 +34,6 @@ class MailgunFaxesController < ApplicationController
 	end
 
 	def mailgun(files = [])
-    # return [400, "Must include a sender"] if !params['from']					# Make this send a fail email
-    # return [400, "Must include a recipient"] if !params['recipient']	# Make this send a fail email
     sender = Mail::AddressList.new(params['from']).addresses.first.address
     user = User.find_by(email: sender)
 
