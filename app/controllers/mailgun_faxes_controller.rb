@@ -6,7 +6,7 @@ class MailgunFaxesController < ApplicationController
     recipient_number = Phonelib.parse(@fax['to_number']).e164
     fax_number = FaxNumber.find_by(fax_number: recipient_number)
 
-    email_addresses = UserFaxNumber.where(fax_number_id: fax_number.id).all.map do |fax_num_email_obj|
+    email_addresses = UserFaxNumber.where(fax_number_id: fax_number.id.to_i).all.map do |fax_num_email_obj|
     	fax_num_email_obj.user.email
     end
 
@@ -15,7 +15,8 @@ class MailgunFaxesController < ApplicationController
     fax_file_contents = params['file'].read
 
     email_subject = "Fax received from #{fax_from}"
-
+    p "================================="
+    p email_addresses
 		MailgunMailer.fax_email(email_addresses, email_subject, @fax, fax_file_name, fax_file_contents).deliver_now
 	end
 
