@@ -40,7 +40,6 @@ class User < ApplicationRecord
 		    user.save(validate: false)
 		    @raw = raw
 
-		    ###TODO Case statement this more intelligently
 		    if user.permission == UserPermission::MANAGER
 		    	PhaxMachineMailer.manager_welcome_invite(user, @raw).deliver_now
 		    elsif user.permission == UserPermission::USER

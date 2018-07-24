@@ -14,8 +14,8 @@ Rails.application.routes.draw do
 	  delete "/users/sign_out/:id", to: "users/sessions#destroy"
 	end
 
-	resources :faxes
-	resources :user_fax_numbers
+	resources :faxes, only: [:new, :create]
+	resources :user_fax_numbers, only: [:edit, :update]
 	resources :mailgun_faxes, only: [:fax_received, :fax_sent, :mailgun]
   resources :users, only: [:index, :show, :create, :edit, :update]
 	resources :organizations
@@ -26,5 +26,7 @@ Rails.application.routes.draw do
   post "/fax_received", to: "mailgun_faxes#fax_received"
   post "/fax_sent", to: "mailgun_faxes#fax_sent"
   post "/mailgun", to: "mailgun_faxes#mailgun"
+
+  put "/organizations/edit_logo/:id", to: "organizations#update_logo"
 end
 

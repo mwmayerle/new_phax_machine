@@ -5,6 +5,25 @@ $warning: #7EA16B;
 
 @import 'bootstrap';
 @import 'navbar';
+@import 'faxes';
+
+.logout {
+	cursor: pointer;
+  width: 100%;
+}
+
+.logout-button {
+	margin-left: -5px;
+	width: 110%;
+  height: 110% !important;
+	background: none !important;
+	color: inherit;
+	border: none; 
+	padding: 0 !important;
+	font: inherit;
+	cursor: pointer;
+	text-align: left;
+}
 
 .smaller-card {
 	width: 50% !important;
@@ -13,7 +32,7 @@ $warning: #7EA16B;
 #content {
 	overflow-x: hidden;
 	margin-left: 240px;
-	margin-top: 70px;
+	margin-top: 20px;
 }
 
 .wrapper {

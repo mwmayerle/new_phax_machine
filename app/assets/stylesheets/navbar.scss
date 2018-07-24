@@ -6,6 +6,11 @@
   min-height: 100vh;
 }
 
+.logo {
+	max-width: 220px;
+	padding-bottom: 10px;
+}
+
 #sidebar.active {
   margin-left: -250px;
 }
@@ -16,14 +21,17 @@
   transition: all 0.3s;
 }
 
+#sidebar h3 {
+	font-size: 26px;
+}
+
 #sidebar .sidebar-header {
-  padding-top: 10px;
-  padding-bottom: 10px;
+	padding-top: 20px;
   background: #202634;
+  padding-bottom: 10px;
 }
 
 #sidebar ul.components {
-  // padding: 20px 0;
   border-bottom: 1px solid #202634;
 }
 
