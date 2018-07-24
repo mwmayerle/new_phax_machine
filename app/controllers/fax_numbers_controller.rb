@@ -32,7 +32,6 @@ class FaxNumbersController < ApplicationController
 			flash[:notice] = "Changes successfully saved."
 
 			# This ternary is for editing a fax number's label before the Organization object is created
-			redirect_to(fax_numbers_path) if is_admin?
 			@fax_number.organization ? redirect_to(organization_path(@fax_number.organization)) : redirect_to(fax_numbers_path)
 		else
 			flash[:alert] = @fax_number.errors.full_messages.pop
