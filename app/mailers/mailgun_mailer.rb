@@ -2,12 +2,12 @@ class MailgunMailer < ApplicationMailer
 	default from: ENV["SMTP_FROM"]
 
 	def fax_email(email_addresses, email_subject, fax, fax_file_name = '', fax_file_contents = '')
-		puts "**********************************************************************************"
+		p "**********************************************"
   	p @email_addresses = email_addresses
-  	p @email_subject = email_subject
   	p @fax = fax
+  	p @email_subject = email_subject
   	mail.attachments[fax_file_name] = fax_file_contents if fax_file_name != ''
-  	@email_addresses.each { |email_address| mail(to: email_address, subject: @email_subject) }
+  	mail(to: @email_addresses, subject: @email_subject)
   end
 
   def failed_email_to_fax_email(sender, sent_fax_object)
