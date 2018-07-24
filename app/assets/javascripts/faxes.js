@@ -1,7 +1,21 @@
 $(document).ready(() => {
 	addUploadedFile();
 	removeUploadedFile();
+	dragOverColorChange();
+	dragLeaveColorChange();
 });
+
+function dragOverColorChange() {
+	$(".drag-drop-input").on('dragover', (event) => {
+		$(event.target).css('background-color', '#e0e0e0')
+	});
+};
+
+function dragLeaveColorChange() {
+	$(".drag-drop-input").on('dragleave', (event) => {
+		$(event.target).css('background-color', '#fafafa')
+	});
+};
 
 var fileCounter = 1;
 
@@ -24,7 +38,7 @@ function addUploadedFile() {
 
 			$("#all-files").append(
 				`<div id='faxFile${fileCounter}' class="form-group col-lg-8 files">
-					<input type='file' id='file${fileCounter}' name='fax[files][file${fileCounter}]'>
+					<input type='file' id='file${fileCounter}' class='drag-drop-input' name='fax[files][file${fileCounter}]'>
 				</div>`
 			);
 
