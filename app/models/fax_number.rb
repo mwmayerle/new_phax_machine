@@ -12,7 +12,7 @@ class FaxNumber < ApplicationRecord
 	has_many :users, through: :user_fax_numbers
 
 	validates :fax_number, presence: true, length: { maximum: FAX_NUMBER_DIGIT_LIMIT }, phone: {possible: true}, uniqueness: true
-	validates :label, length: { maximum: FAX_NUMBER_CHARACTER_LIMIT }, uniqueness: { allow_nil: true }
+	validates :label, length: { maximum: FAX_NUMBER_CHARACTER_LIMIT }
 	
 	before_validation :fax_number, :format_fax_number
 
