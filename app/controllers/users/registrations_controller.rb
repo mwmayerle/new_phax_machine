@@ -74,7 +74,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
     resource.destroy
     flash[:notice] = "Access for #{resource.email} revoked"
     yield resource if block_given?
-    is_admin? ? redirect_to(organization_path(organization)) : redirect_to(organization_path(current_user.organization))
+    is_admin? ? redirect_to(organization_path(id: organization.id)) : redirect_to(organization_path(current_user.organization))
   end
 
   protected
