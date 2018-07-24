@@ -32,7 +32,7 @@
       <p><b>Number:</b> <%= recipient["phone_number"] %></p>
       <p><b>Status:</b> <%= recipient["status"] %></p>
       <% if @fax["status"] != "success" %>
-				<p><b>Error Message:</b> <%= recipient["error_code"] %></p>
+				<p><b>Error Message:</b> <%= recipient["error_message"] %></p>
 			<% end %>
     </div>
   <% end %>
