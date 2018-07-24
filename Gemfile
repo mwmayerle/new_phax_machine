@@ -34,6 +34,7 @@ gem 'bcrypt', '~> 3.1.7'
 # Security/Stats
 gem 'devise'
 gem "paranoia"
+gem "httparty"
 
 # Environment variables
 gem 'dotenv-rails'

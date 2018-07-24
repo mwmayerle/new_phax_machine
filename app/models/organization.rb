@@ -1,5 +1,6 @@
 class Organization < ApplicationRecord
 	include FaxTags
+	include HTTParty
 	
 	ORGANIZATION_CHARACTER_LIMIT = 48
 
