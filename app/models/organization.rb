@@ -21,7 +21,7 @@ class Organization < ApplicationRecord
 
 	private
 		def remove_fax_number_associations
-			self.fax_numbers.each { |fax_number| fax_number.update_attributes(organization_id: nil, manager_id: nil) } if self.fax_numbers.present?
+			self.fax_numbers.each { |fax_number| fax_number.update_attributes(organization_id: nil) } if self.fax_numbers.present?
 		end
 
 		class << self
