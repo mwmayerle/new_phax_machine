@@ -66,11 +66,10 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # DELETE /resource
   def destroy
   	resource = User.find(params[:id])
+  	organization = Organization.find(resource.organization.id).
 
 		# Removes Manager privileges if admin is revoking their access
-		if resource.user_permission.permission == UserPermission::MANAGER
-			organization = Organization.find(resource.organization.id).update_attributes(manager_id: nil)
-		end
+		organization.update_attributes(manager_id: nil) if resource.user_permission.permission == UserPermission::MANAGER
 
     resource.destroy
     flash[:notice] = "Access for #{resource.email} revoked"
