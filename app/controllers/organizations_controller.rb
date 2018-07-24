@@ -1,10 +1,10 @@
 class OrganizationsController < ApplicationController
 	include SessionsHelper
 
-	before_action :verify_is_admin, except: [:show]
-	before_action :set_organization, only: [:show, :edit, :update, :destroy, :user_index]
+	before_action :verify_is_admin, except: [:show, :edit_logo, :update_logo]
+	before_action :set_organization, only: [:show, :edit, :update, :destroy, :edit_logo, :update_logo]
 	before_action :get_unallocated_numbers, only: [:new, :edit]
-	
+
 	def index
 		@user = User.new
 		@user.build_user_permission
@@ -47,6 +47,21 @@ class OrganizationsController < ApplicationController
 	def edit
 	end
 
+	def update_logo
+		if is_manager? || current_user.manager == @organization.manager
+			if @organization && @organization.update_attributes(logo: logo_params[:logo])
+				flash[:notice] = "Logo successfully updated!"
+				redirect_to(organization_path(@organization))
+			else
+				flash[:alert] = @organization.errors.full_messages.pop
+				render(:edit_logo)
+			end
+		else
+			flash[:alert] = ApplicationController::DENIED
+			redirect_to root_path
+		end
+	end
+
 	def update
 		if @organization.update_attributes(organization_params)
 
@@ -80,8 +95,12 @@ class OrganizationsController < ApplicationController
 			@unallocated_fax_numbers = FaxNumber.where({organization_id: nil, has_webhook_url: false})
 		end
 
+		def logo_params
+			params.require(:organization).permit(:logo)
+		end
+
 		def organization_params
-			params.require(:organization).permit(:id, :manager_id, :label, :admin_id)
+			params.require(:organization).permit(:id, :manager_id, :label, :admin_id, :logo)
 		end
 
 		def organization_association_params

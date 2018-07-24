@@ -1,28 +1,34 @@
 <h1>Send a Fax</h1>
-<form enctype="multipart/form-data" id="sendFaxForm" method="POST" action="/faxes" class="form">
-	<input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
-	<br>
-	<div class="row inline-input-margin">
-		<div class="col form-group form-inline">
-			<label for="to">To:</label>
-			<input id="to" name="fax[to]" type="tel" placeholder="+15558675309" class="form-control inline-input-margin send-fax-input" required>
-			<button type="button" id="send-another" class="disabled btn btn-success inline-input-margin"><i class="fa fa-fw fa-plus-circle" aria-hidden="true"></i> Attach Another File</button>
-			<button type="submit" value="Upload" class="btn btn-warning inline-input-margin"><i class="fa fa-fw fa-send" aria-hidden="true"></i>  Send Fax</button>
-		</div>
-	</div>
+<div class="row">
+	<div class="col">
+    <form enctype="multipart/form-data" id="sendFaxForm" method="POST" action="/faxes" class="form">
+			<input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+			<br>
 
-	<div id="all-files">
-		<div class="information-box file-attachments">
 			<div class="row inline-input-margin">
-				<div id="file1" class="form-group col">
-					<label class="file-counter"></label>
-					<div class="file-drop" data-target="#faxFile1">
-							<!-- <h3>Drag a file onto this box to upload it.</h3> -->
-						<input id="faxFile1" name="fax[files][file1]" type="file" required>
-						<!-- <div class="faxFileProgress" hidden="hidden"></div> -->
-					</div>
+				<div class="col form-group form-inline">
+					<label for="to">To:</label>
+					<input id="to" name="fax[to]" type="tel" placeholder="+15558675309" class="form-control inline-input-margin send-fax-input" required>
+	        <button type="submit" value="Upload" class="btn btn-warning inline-input-margin"><i class="fa fa-fw fa-send" aria-hidden="true"></i>  Send Fax</button>   
 				</div>
 			</div>
-		</div>
+
+	    <div id="all-files">
+				<div id="faxFile1" class="form-group col-lg-8 files">
+					<input id="file1" class="drag-drop-input" name="fax[files][file1]" type="file" required>
+				</div>
+			</div>
+
+    </form> 
+  </div>
+</div>
+
+<div class="row">
+	<div class="col-lg-8">
+		<p>Attached Files:</p>
+		<table class="table-sm">
+			<tbody class="added-files">
+			</tbody>
+		</table>
 	</div>
-</form>
+</div>

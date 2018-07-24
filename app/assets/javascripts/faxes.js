@@ -1,73 +1,61 @@
-// Place all the behaviors and hooks related to the matching controller here.
-// All this logic will automatically be available in application.js.
-
-$(document).ready(function() {
-	$("#send-another").prop("disabled", true);
-	addAdditionalFileInput();
-	closeFileUploadWindow();
-	adjustAttachmentCount();
-	toggleAttachAnotherButton();
+$(document).ready(() => {
+	addUploadedFile();
+	removeUploadedFile();
+	dragOverColorChange();
+	dragLeaveColorChange();
 });
+
+function dragOverColorChange() {
+	$(".drag-drop-input").on('dragover', (event) => {
+		$(event.target).css('background-color', '#e0e0e0')
+	});
+};
+
+function dragLeaveColorChange() {
+	$(".drag-drop-input").on('dragleave', (event) => {
+		$(event.target).css('background-color', '#fafafa')
+	});
+};
 
 var fileCounter = 1;
 
-function toggleAttachAnotherButton() {
-	$(".file-attachments :file").change(function() {
-		let $button = $("#send-another");
-		($(this).val()) ? $button.prop("disabled", false) : $button.prop("disabled", true);
-		$button.toggleClass("disabled");
-	});
-};
+function addUploadedFile() {
+	$("#all-files").change((event) => {
+		if ($(".close-button").length < 10) {
+			$(".added-files").append(
+				`<tr id='faxFile${fileCounter}tr'>
+					<td>
+						<button class='close-button btn btn-sm btn-danger'>
+							<i class="fa fa-trash-o" aria-hidden="false"></i>
+						</button>
+						${event.target.files[0].name}
+					</td>
+				</tr>`
+			);
 
-function adjustAttachmentCount() {
-	let files = $(".file-counter");
-	let filesArray = $.makeArray(files)
-	filesArray.forEach(function(fileLabel) {
-		$(fileLabel).text("File: " + (filesArray.indexOf(fileLabel) + 1))
-	});
-};
+			$(`#faxFile${fileCounter}`).hide();
+			fileCounter += 1;
 
-function closeFileUploadWindow() {
-	$("#all-files").on("click", $(".close"), function(event) {
-		if ($(event.target).parent().hasClass("close") || $(event.target).hasClass("close")) {
-			$(event.target).closest(".file-attachments").remove();
+			$("#all-files").append(
+				`<div id='faxFile${fileCounter}' class="form-group col-lg-8 files">
+					<input type='file' id='file${fileCounter}' class='drag-drop-input' name='fax[files][file${fileCounter}]'>
+				</div>`
+			);
+
+		} else {
+			console.log('farts')
+			createAlert('danger', 'A maximum of 10 files per fax can be attached.')
 		}
-	adjustAttachmentCount();
-	// FileDrop.registerAll();
-	fileCounter -= 1;
 	});
 };
 
-function addAdditionalFileInput() {
-	$("#send-another").on("click", function(event) {
-		// if ($(".file-attachments :file").val() === "") {
-		// 	FileDrop.removeEventListener('dragenter', handleDragEnter);
-	 //    FileDrop.removeEventListener('dragover', handleDragOver);
-	 //    FileDrop.removeEventListener('drop', handleDrop);
-	 //    FileDrop.removeEventListener('dragleave', handleDragLeave);
-	 //    FileDrop.registerAll();
-		// } else {
-			if ($(".file-attachments :file").length < 10) {
-				fileCounter += 1;
-				$("#all-files").append(
-					"<div class='information-box file-attachments'>" +
-						"<div class='row inline-input-margin'>" +
-							"<div id='file" + fileCounter + "' class='form-group col'>" +
-								"<button type='button' class='close' data-dismiss='#faxfile" + fileCounter + "' aria-label='Close'>" + 
-									"<span class='the-x'>&times;</span>" +
-								"</button>" +
-								"<label class='file-counter'>File " + fileCounter + ":</label>" +
-								"<div class='file-drop' data-target='#faxFile" + fileCounter + "'>" +
-									// "<h3>Drag a file onto this box to upload it.</h3>" +
-									"<input id='faxFile" + fileCounter + "' name='fax[files][file" + fileCounter +"]' type='file' required>" +
-								"</div>" +
-							// "<div class='faxFileProgress' hidden='hidden'></div>" +
-							"</div>" +
-						"</div>" +
-					"</div>"
-					);
-				adjustAttachmentCount();
-			}
-		// }
+function removeUploadedFile() {
+	$(".added-files").on('click', $("tbody"), (event) => {
+		let $button = $(event.target);
+		if ($button.hasClass("close-button") || $button.hasClass("fa fa-trash-o")) {
+			let $inputDivToDelete = $button.closest("tr").attr("id").slice(0, -2);
+			$button.closest("tr").remove();
+			$(`#${$inputDivToDelete}`).remove();
+		}
 	});
 };

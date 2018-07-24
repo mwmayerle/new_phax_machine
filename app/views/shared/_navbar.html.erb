@@ -1,6 +1,14 @@
 <nav id="sidebar" class="fixed-top">
 	<div class="sidebar-header">
-		<h3><%= link_to "Phax Machine", root_path, class: "nav-link" %></h3>
+		<% if user_signed_in? && !is_admin? %>
+			<% if current_user.organization.logo.nil? %>
+				<h3><%= link_to "Phax Machine", root_path, class: "nav-link" %></h3>
+			<% else %>
+				<%= image_tag current_user.organization.logo, class: "logo" %>
+			<% end %>
+		<% else %>
+			<h3><%= link_to "Phax Machine", root_path, class: "nav-link" %></h3>
+		<% end %>
   </div>
   <ul class="list-unstyled components">
     <% if user_signed_in? %>
@@ -33,11 +41,21 @@
 				</li>
       <% end %>
 			<li class="nav-item" data-toggle="tooltip" data-placement="right" title="Edit Profile">
-      		<a class="nav-link" href="/users/edit.<%=current_user.id%>">
-      			<i class="fa fa-fw fa-user-circle-o"></i>
-      			<span class="nav-link-text">Edit Profile</span>
-      		</a>
-      	</li>
+    		<a class="nav-link" href="/users/edit.<%=current_user.id%>">
+    			<i class="fa fa-fw fa-user-circle-o"></i>
+    			<span class="nav-link-text">Edit Profile</span>
+    		</a>
+    	</li>
+    	<li class="nav-item logout" data-toggle="tooltip" data-placement="right" title="Log Out">
+				<form action="/users/sign_out/<%= current_user.id %>" method="POST" class="nav-link">
+					<input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+					<input type="hidden" name="_method" value="delete">
+					<button type="submit" class="logout-button">
+			      <i class="fa fa-fw fa-sign-out"></i>
+			      <span class="nav-link-text"> Log Out</span>
+					</button>
+				</form>
+			</li>
     <% else %>
     	<li class="nav-item" data-toggle="tooltip" data-placement="right" title="Log In">
       	<a class="nav-link" href="/users/sign_in">
@@ -48,23 +66,3 @@
     <% end %>
   </ul>
 </nav>
-<!--     <li>
-      <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="true" class="dropdown-toggle">Pages</a>
-      <ul class="collapse list-unstyled" id="pageSubmenu">
-        <li>
-          <a href="#">Page 1</a>
-        </li>
-        <li>
-          <a href="#">Page 2</a>
-        </li>
-        <li>
-          <a href="#">Page 3</a>
-        </li>
-      </ul>
-    </li>
-    <li>
-      <a href="#">Portfolio</a>
-    </li>
-    <li>
-      <a href="#">Contact</a>
-    </li> -->

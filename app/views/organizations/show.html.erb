@@ -8,6 +8,16 @@
 		<% end %>
 	</div>
 </div>
+<div class="row">
+	<div class="col form-inline form-group">
+		<% if current_user.manager == @organization.manager || is_admin? %>
+			<%= form_for @organization, url: "/organizations/edit_logo/#{@organization.id}", method: :put, class: "form-inline" do |f| %>
+				<%= f.text_field :logo, placeholder: "Paste logo URL here to edit", class: "form-inline form-control inline-input-margin send-fax-input", value: nil %>
+				<%= f.submit "Submit", class: "btn btn-success form-inline inline-input-margin" %>
+			<% end %>
+		<% end %>
+	</div>
+</div>
 
 <% if @organization.fax_numbers.present? %>
 	<% @organization.fax_numbers.each do |organization_fax_number| %>
