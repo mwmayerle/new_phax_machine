@@ -1,14 +1,14 @@
 <nav id="sidebar" class="fixed-top">
 	<div class="sidebar-header">
-		<% if user_signed_in? && !is_admin? %>
-			<% if current_user.organization.logo.nil? %>
-				<h3><%= link_to "Phax Machine", root_path, class: "nav-link" %></h3>
-			<% else %>
-				<%= image_tag current_user.organization.logo, class: "logo" %>
-			<% end %>
-		<% else %>
+		<%# if user_signed_in? && !is_admin? %>
+			<%# if current_user.organization.logo.nil? %>
+				<!-- <h3><%#= link_to "Phax Machine", root_path, class: "nav-link" %></h3> -->
+			<%# else %>
+				<%#= image_tag current_user.organization.logo, class: "logo" %>
+			<%# end %>
+		<%# else %>
 			<h3><%= link_to "Phax Machine", root_path, class: "nav-link" %></h3>
-		<% end %>
+		<%# end %>
   </div>
   <ul class="list-unstyled components">
     <% if user_signed_in? %>
