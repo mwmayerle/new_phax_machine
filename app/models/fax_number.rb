@@ -54,7 +54,8 @@ class FaxNumber < ApplicationRecord
 					phaxio_numbers[api_fax_number[:phone_number]][:cost] = format_cost(api_fax_number[:cost])
 					phaxio_numbers[api_fax_number[:phone_number]][:callback_url] = !!api_fax_number[:callback_url]
 
-					db_number = self.find_or_create_by!(fax_number: api_fax_number[:phone_number], has_webhook_url: !!api_fax_number[:callback_url])
+					db_number = self.find_or_create_by!(fax_number: api_fax_number[:phone_number])
+
 					phaxio_numbers[api_fax_number[:phone_number]][:id] = db_number.id
 
 					# Add associated Organization data to hash
