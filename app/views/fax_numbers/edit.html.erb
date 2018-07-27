@@ -36,6 +36,11 @@
 											<option name="fax_number[organization_id]" value="<%= organization.id %>"><%= organization.label %></option>
 										<% end %>
 									<% end %>
+									<% if @fax_number.organization.present? %>
+										<option name="fax_number[organization_id]" value="">N/A (Will remove this number from the organization)</option>
+									<% else %>
+										<option name="fax_number[organization_id]" value="" selected>N/A (Removes this number from the organization)</option>
+									<% end %>
 								</select>
 							</div>
 							<% end %>

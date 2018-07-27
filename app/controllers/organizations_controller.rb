@@ -36,7 +36,6 @@ class OrganizationsController < ApplicationController
 	def show
 		@user = User.new
 		if authorized?(@organization, :manager_id)
-			@organization.fax_numbers.sort
 			@unassigned_users = Organization.get_unassigned_users(@organization)
 		else
 			flash[:alert] = DENIED
@@ -88,7 +87,11 @@ class OrganizationsController < ApplicationController
 	private
 
 		def set_organization
-			@organization ||= Organization.includes(:fax_numbers).find(params[:id])
+			if is_admin?
+				@organization ||= Organization.includes(:fax_numbers).order("fax_numbers.label ASC").find(params[:id])
+			else
+				@organization ||= Organization.includes(:fax_numbers).order("fax_numbers.manager_label ASC").find(params[:id])
+			end
 		end
 
 		def get_unallocated_numbers 
