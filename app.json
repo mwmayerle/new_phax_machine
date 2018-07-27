@@ -57,5 +57,5 @@
   "logo": "https://avatars3.githubusercontent.com/u/929026?v=2&s=200",
   "scripts": {
     "postdeploy": "rails db:migrate && rails db:seed"
-  },
+  }
 }
