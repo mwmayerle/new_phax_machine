@@ -8,7 +8,6 @@
     "mailgun",
   ],
   "addons": ["heroku-postgresql"],
-},
   "env": {
     "PHAXIO_API_KEY": {
       "description": "Your Phaxio API Key",
@@ -55,10 +54,9 @@
     	"required": true,
     }
   },
-{
   "repository": "https://github.com/mwmayerle/new_phax_machine",
   "logo": "https://avatars3.githubusercontent.com/u/929026?v=2&s=200",
   "scripts": {
     "postdeploy": "rails db:migrate rails db:seed",
-  }
+  },
 }
