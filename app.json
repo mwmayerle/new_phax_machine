@@ -8,6 +8,8 @@
     "mailgun",
   ],
   "addons": [],
+},
+{
   "env": {
     "PHAXIO_API_KEY": {
       "description": "Your Phaxio API Key"
@@ -44,6 +46,8 @@
     	"description": "The domain this application will be deployed to."
     }
   },
+},
+{
   "repository": "https://github.com/mwmayerle/new_phax_machine",
   "logo": "https://avatars3.githubusercontent.com/u/929026?v=2&s=200",
   "scripts": {
