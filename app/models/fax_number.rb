@@ -54,7 +54,17 @@ class FaxNumber < ApplicationRecord
 					phaxio_numbers[api_fax_number[:phone_number]][:cost] = format_cost(api_fax_number[:cost])
 					phaxio_numbers[api_fax_number[:phone_number]][:callback_url] = !!api_fax_number[:callback_url]
 
-					db_number = self.find_or_create_by!(fax_number: api_fax_number[:phone_number])
+
+					db_number = self.find_by(fax_number: api_fax_number[:phone_number], has_webhook_url: !!api_fax_number[:callback_url])
+
+					if db_number.nil?
+						db_number = self.find_by(fax_number: api_fax_number[:phone_number])
+						if db_number
+							db_number.update_attributes(has_webhook_url: !!api_fax_number[:callback_url])
+						else
+							db_number = FaxNumber.create!(fax_number: api_fax_number[:phone_number], has_webhook_url: !!api_fax_number[:callback_url])
+						end
+					end
 
 					phaxio_numbers[api_fax_number[:phone_number]][:id] = db_number.id
 
@@ -64,11 +74,6 @@ class FaxNumber < ApplicationRecord
 						phaxio_numbers[api_fax_number[:phone_number]][:organization_id] = db_number.organization.id
 					end
 
-					# Updates the saved has_webhook_url boolean column in the database if the database column doesn't
-					# match what was pulled down from the Phaxio API. !!nil is false
-					if !!db_number[:has_webhook_url] != !!api_fax_number[:callback_url]
-						db_number.update_attributes(has_webhook_url: !!api_fax_number[:callback_url])
-					end
 					phaxio_numbers[api_fax_number[:phone_number]][:label] = db_number.label if db_number.label
 				end
 

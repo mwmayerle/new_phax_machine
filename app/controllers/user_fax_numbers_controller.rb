@@ -27,12 +27,12 @@ class UserFaxNumbersController < ApplicationController
 			params.require(:users).permit(:to_add => {}, :to_remove => {})
 		end
 
-		def add_user_associations(param_input, fax_number_object) # equivalent of @fax_number << UserEmail
+		def add_user_associations(param_input, fax_number_object)
 			param_input.keys.each { |user_object_id| fax_number_object.users << User.find(user_object_id.to_i) }
 		end
 
 		def remove_user_associations(param_input, fax_number_object)
-			param_input.keys.each { |user_object_id| UserFaxNumber.where( { user_id: user_object_id } ).destroy_all }
+			param_input.keys.each { |user_object_id| UserFaxNumber.where( { user_id: user_object_id, fax_number_id: @fax_number.id } ).destroy_all }
 		end
 
 		def verify_authorized

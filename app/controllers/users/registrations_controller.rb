@@ -13,6 +13,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
     yield resource if block_given?
     resource.save
     if resource.persisted?
+    	resource.permission
 	    user = User.find(resource.id)   
 	    UserPermission.create(user_id: user.id, permission: resource.permission)
 
