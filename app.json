@@ -7,46 +7,54 @@
     "phaxio",
     "mailgun",
   ],
-  "addons": [],
+  "addons": ["heroku-postgresql"],
 },
-{
   "env": {
     "PHAXIO_API_KEY": {
-      "description": "Your Phaxio API Key"
+      "description": "Your Phaxio API Key",
+      "required": true,
     },
     "PHAXIO_API_SECRET": {
-      "description": "Your Phaxio API Secret"
+      "description": "Your Phaxio API Secret",
+      "required": true,
     },
     "PHAXIO_CALLBACK_TOKEN": {
-    	"description": "Your Phaxio Callback token (found in Webhooks Settings)"
+    	"description": "Your Phaxio Callback token (found in Webhooks Settings)",
+    	"required": true,
     },
     "SMTP_HOST": {
       "description": "SMTP host for outgoing email (for failure alerts)",
+      "required": true,
     },
     "SMTP_USER": {
       "description": "SMTP username for outgoing email (for failure alerts)",
+      "required": true,
     },
     "SMTP_PASSWORD": {
       "description": "SMTP password for outgoing email (for failure alerts)",
+      "required": true,
     },
     "SMTP_PORT": {
       "description": "SMTP port for outgoing email (for failure alerts)",
+      "required": true,
     },
     "SMTP_TLS": {
       "description": "Should use TLS on outgoing email? (true or blank)",
+      "required": true,
     },
     "FROM_EMAIL": {
       "description": "The From address for any outgoing email from mailphax.",
       "required": false
     },
     "ADMIN_EMAIL": {
-    	"description": "The email address used by the Administrator to log in."
+    	"description": "The email address used by the Administrator to log in.",
+    	"required": true,
     },
     "DOMAIN_URL": {
-    	"description": "The domain this application will be deployed to."
+    	"description": "The domain this application will be deployed to.",
+    	"required": true,
     }
   },
-},
 {
   "repository": "https://github.com/mwmayerle/new_phax_machine",
   "logo": "https://avatars3.githubusercontent.com/u/929026?v=2&s=200",
