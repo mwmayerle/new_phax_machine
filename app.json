@@ -53,7 +53,8 @@
     	"required": true
     },
     "LOGO_URL": {
-    	"description": "A link to your corporate logo."
+    	"description": "A link to your corporate logo.",
+    	"required": false
     }
   },
   "repository": "https://github.com/mwmayerle/new_phax_machine",
