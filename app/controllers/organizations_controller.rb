@@ -103,7 +103,7 @@ class OrganizationsController < ApplicationController
 		end
 
 		def organization_params
-			params.require(:organization).permit(:id, :manager_id, :label, :admin_id, :logo)
+			params.require(:organization).permit(:id, :manager_id, :label, :admin_id)
 		end
 
 		def organization_association_params

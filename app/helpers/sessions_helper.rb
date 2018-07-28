@@ -22,6 +22,11 @@ module SessionsHelper
 		end
 	end
 
+	def current_logo
+		@current_logo = session[:logo_url]
+		@current_logo ||= LogoLink.first.logo_url if LogoLink.first
+	end
+
 	def verify_is_manager_or_admin
 		if !is_manager?
 			flash[:alert] = ApplicationController::DENIED

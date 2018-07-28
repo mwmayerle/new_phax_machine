@@ -1,7 +1,9 @@
 class UsersController < ApplicationController
+	include SessionsHelper
+
 	before_action :verify_is_manager_or_admin
 	before_action :set_user, only: [:edit, :update]
-	include SessionsHelper
+	
 
 	# def create
 		# go to /users/registrations_controller.rb

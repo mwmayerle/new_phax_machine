@@ -1,15 +1,12 @@
 <nav id="sidebar" class="fixed-top">
-	<div class="sidebar-header">
-		<%# if user_signed_in? && !is_admin? %>
-			<%# if current_user.organization.logo.nil? %>
-				<!-- <h3><%#= link_to "Phax Machine", root_path, class: "nav-link" %></h3> -->
-			<%# else %>
-				<%#= image_tag current_user.organization.logo, class: "logo" %>
-			<%# end %>
-		<%# else %>
-			<h3><%= link_to "Phax Machine", root_path, class: "nav-link" %></h3>
-		<%# end %>
+	<div class="sidebar-header"">
+		<% if current_logo == "" || current_logo.nil? %>
+				<%= image_tag 'phaxio.png', style: "background-color:fafafa"%>
+		<% else %>
+			<img src="<%= sanitize(current_logo) %>", class="logo", alt="&nbsp;&nbsp;Invalid Logo Url">
+		<% end %>
   </div>
+  <div id="transition-zone"></div>
   <ul class="list-unstyled components">
 
     <% if user_signed_in? %>
@@ -18,13 +15,13 @@
       	<li class="nav-item" data-toggle="tooltip" data-placement="right" title="Manage Organizations">
       		<a class="nav-link" href="/organizations">
         		<i class="fa fa-fw fa-id-card-o"></i>
-        		<span class="nav-link-text">Manage Organizations</span>
+        		<span class="nav-link-text">&nbsp;Manage Organizations</span>
       		</a>
 	      </li>
 	      <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Manage Fax Numbers">
       		<a class="nav-link" href="/fax_numbers">
         		<i class="fa fa-fw fa-phone"></i>
-        		<span class="nav-link-text">Manage Numbers</span>
+        		<span class="nav-link-text">&nbsp;Manage Numbers</span>
       		</a>
 	      </li>
     	<% end %>
@@ -33,13 +30,13 @@
       	<li class="nav-item" data-toggle="tooltip" data-placement="right" title="Organization Profile">
       		<a class="nav-link" href="/organizations/<%=current_user.organization.id%>">
       			<i class="fa fa-fw fa-id-card-o"></i>
-      			<span class="nav-link-text">Organization Profile</span>
+      			<span class="nav-link-text">&nbsp;Organization Profile</span>
       		</a>
       	</li>
       	<li class="nav-item" data-toggle="tooltip" data-placement="right" title="Send a Fax">
 	      	<a class="nav-link" href="/faxes/new">
 		    		<i class="fa fa-fw fa-fax"></i>
-			   		<span class="nav-link-text">Send a Fax</span>
+			   		<span class="nav-link-text">&nbsp;Send a Fax</span>
 			 		</a>
 				</li>
       <% end %>
@@ -48,7 +45,7 @@
 	      <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Send a Fax">
 	      	<a class="nav-link" href="/faxes/new">
 		    		<i class="fa fa-fw fa-fax"></i>
-			   		<span class="nav-link-text">Send a Fax</span>
+			   		<span class="nav-link-text">&nbsp;Send a Fax</span>
 			 		</a>
 				</li>
 			<% end %>
@@ -56,7 +53,7 @@
 			<li class="nav-item" data-toggle="tooltip" data-placement="right" title="Edit Profile">
     		<a class="nav-link" href="/users/edit.<%=current_user.id%>">
     			<i class="fa fa-fw fa-user-circle-o"></i>
-    			<span class="nav-link-text">Edit Profile</span>
+    			<span class="nav-link-text">&nbsp;Edit Profile</span>
     		</a>
     	</li>
     	<li class="nav-item logout" data-toggle="tooltip" data-placement="right" title="Log Out">
@@ -65,7 +62,7 @@
 					<input type="hidden" name="_method" value="delete">
 					<button type="submit" class="logout-button">
 			      <i class="fa fa-fw fa-sign-out"></i>
-			      <span class="nav-link-text"> Log Out</span>
+			      <span class="nav-link-text">&nbsp;Log Out</span>
 					</button>
 				</form>
 			</li>
@@ -74,7 +71,7 @@
     	<li class="nav-item" data-toggle="tooltip" data-placement="right" title="Log In">
       	<a class="nav-link" href="/users/sign_in">
       		<i class="fa fa-fw fa-sign-in"></i>
-      		<span class="nav-link-text">Log In</span>
+      		<span class="nav-link-text">&nbsp;Log In</span>
       	</a>
       </li>
     <% end %>

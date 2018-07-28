@@ -9,32 +9,52 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   # POST /resource
   def create
-    build_resource(sign_up_params)
-    yield resource if block_given?
-    resource.save
-    if resource.persisted?
-    	resource.permission
-	    user = User.find(resource.id)   
-	    UserPermission.create(user_id: user.id, permission: resource.permission)
+  	# Restores soft-deleted user and associations. See Paranoia gem docs
+  	possible_user = User.only_deleted.select { |user| user.email == sign_up_params[:email] }
+  	if possible_user != []
+  		possible_user = possible_user.pop
+  		possible_user.restore(:recursive => true)
 
-	    # Sets Org's Manager as the newly created User if they're intended to be the Manager.
-    	if user.reload.user_permission.permission == UserPermission::MANAGER
-	    	organization = Organization.find(resource.organization_id)
-	    	organization.update_attributes(manager_id: user.id)
+  		if possible_user.organization_id != sign_up_params[:organization_id]
+  			possible_user.update_attributes(organization_id: sign_up_params[:organization_id])
+  		end
+
+  		# If restored user is being invited as a manager is laters the permission and sets the Org's manager_id
+  		UserPermission.find(possible_user.id).update_attributes(permission: sign_up_params[:permission])
+
+  		if sign_up_params[:permission] == UserPermission::MANAGER
+  			Organization.find(sign_up_params[:organization_id]).update_attributes(manager_id: possible_user.id)
+  		end
+  		flash[:notice] = "Access has been reinstated for #{possible_user.email}"
+
+  	else
+	    build_resource(sign_up_params)
+	    yield resource if block_given?
+	    resource.save
+	    if resource.persisted?
+	    	resource.permission
+		    user = User.find(resource.id)
+		    UserPermission.create(user_id: user.id, permission: resource.permission)
+
+		    # Sets Org's Manager as the newly created User if they're intended to be the Manager.
+	    	if user.reload.user_permission.permission == UserPermission::MANAGER
+		    	organization = Organization.find(resource.organization_id)
+		    	organization.update_attributes(manager_id: user.id)
+		    end
+		    
+	      if resource.active_for_authentication?
+	        flash[:notice] = "#{resource.email} has been invited."
+	      else
+	        flash[:notice] = "signed_up_but_#{resource.inactive_message}"
+	        expire_data_after_sign_in!
+	      end
+
+	    else
+	    	flash[:alert] = resource.errors.full_messages.pop
+	      clean_up_passwords resource
+	      set_minimum_password_length
 	    end
-	    
-      if resource.active_for_authentication?
-        flash[:notice] = "#{resource.email} has been invited."
-      else
-        flash[:notice] = "signed_up_but_#{resource.inactive_message}"
-        expire_data_after_sign_in!
-      end
-
-    else
-    	flash[:alert] = resource.errors.full_messages.pop
-      clean_up_passwords resource
-      set_minimum_password_length
-    end
+	  end
 		if resource
     	resource.permission == UserPermission::USER ? redirect_to(organization_path(resource.organization)) : redirect_to(organizations_path)
     else
@@ -46,17 +66,26 @@ class Users::RegistrationsController < Devise::RegistrationsController
   def update
     self.resource = resource_class.to_adapter.get!(send(:"current_#{resource_name}").to_key)
     prev_unconfirmed_email = resource.unconfirmed_email if resource.respond_to?(:unconfirmed_email)
-
     resource_updated = update_resource(resource, account_update_params)
     yield resource if block_given?
     if resource_updated
       if is_flashing_format?
-        flash_key = update_needs_confirmation?(resource, prev_unconfirmed_email) ?
-          :update_needs_confirmation : :updated
+        flash_key = update_needs_confirmation?(resource, prev_unconfirmed_email) ? :update_needs_confirmation : :updated
         set_flash_message :notice, flash_key
       end
       bypass_sign_in resource, scope: resource_name
-      respond_with resource, location: after_update_path_for(resource)
+
+      # Admin-only site logo
+      logo = LogoLink.first
+  		if logo.update_attributes(logo_url: account_update_params[:logo_url])
+	  		flash[:notice] << " Logo successfully updated"
+			else
+				flash[:notice] << " However, #{logo.errors.full_messages.pop}. Please try again."
+		  end
+			session[:logo_url] = account_update_params[:logo_url]
+			
+			# Sends user back to edit page if the image update fails
+      logo.errors.full_messages.present? ? (render :edit) : (respond_with resource, location: after_update_path_for(resource))
     else
       clean_up_passwords resource
       set_minimum_password_length

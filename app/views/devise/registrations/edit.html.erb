@@ -20,6 +20,13 @@
 					    <%= f.password_field :password_confirmation, autocomplete: "off", class: "inline-input-margin form-control" %>
 					  </div>
 
+					  <% if is_admin? %>
+						  <div class="form-group col-lg-8">
+						  	<strong><%= f.label :logo_url, "Logo URL:" %></strong>
+						  	<%= f.text_field :logo_url, value: "#{current_logo}", class: "inline-input-margin form-control" %>
+						  </div>
+						<% end %>
+
 					  <div class="form-group col-lg-8">
 					    <strong><%= f.label :current_password, "Current Password:" %></strong>
 					    <small><i>(we need your current password to confirm your changes)</i></small>
