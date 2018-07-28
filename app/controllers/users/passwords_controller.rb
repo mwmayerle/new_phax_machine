@@ -2,7 +2,6 @@
 class Users::PasswordsController < Devise::PasswordsController
   # GET /resource/password/set_new_user_password?reset_password_token=abcdef
   def set_new_user_password
-  	puts params
     self.resource = resource_class.new
     set_minimum_password_length
     resource.reset_password_token = params[:reset_password_token]

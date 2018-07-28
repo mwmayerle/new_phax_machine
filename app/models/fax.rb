@@ -40,7 +40,7 @@ class Fax
 		def most_common_error(fax, errors = {})
 			fax["recipients"].each do |recipient|
 		  	key = recipient["error_message"]
-		  	errors.has_key?(key) ? errors[key]["frequency"] += 1 : errors[key] = {"frequency" => 1}
+		  	errors.has_key?(key) ? errors[key]["frequency"] += 1 : errors[key] = { "frequency" => 1 }
 			end
 	  	errors.max_by { |error_code, amount| amount["frequency"] }.shift
 		end

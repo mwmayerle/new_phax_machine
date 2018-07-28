@@ -1,4 +1,6 @@
 class ApplicationController < ActionController::Base
+	include SessionsHelper
+
 	before_action :authenticate_user!, if: :devise_controller?
 	before_action :configure_permitted_parameters, if: :devise_controller?
 	DENIED = "Permission denied.".freeze
@@ -12,6 +14,10 @@ class ApplicationController < ActionController::Base
 	    	:caller_id_number,
 	    	:permission
 	    ])
-	    devise_parameter_sanitizer.sanitize(:account_update)
+	    if is_admin?
+	    	devise_parameter_sanitizer.permit(:account_update, keys: [:logo_url])
+	    else
+	    	devise_parameter_sanitizer.sanitize(:account_update)
+	    end
 	  end
 end

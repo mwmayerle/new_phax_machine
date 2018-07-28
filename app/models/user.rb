@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+	acts_as_paranoid
+	
 	include FaxTags
 
 	USER_CHARACTER_LIMIT = 48
@@ -6,7 +8,7 @@ class User < ApplicationRecord
   # :confirmable, :lockable, :trackable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable, :recoverable, :rememberable, :validatable #:confirmable
 
-  attr_accessor :permission
+  attr_accessor :permission, :logo_url
 
 	belongs_to :organization, optional: true
 
@@ -45,6 +47,9 @@ class User < ApplicationRecord
 		    elsif user.permission == UserPermission::USER
 		    	PhaxMachineMailer.user_welcome_invite(user, @raw).deliver_now
 		    else
+		    	logo = LogoLink.new(logo_url: ENV.fetch("LOGO_URL", nil))
+		    	logo.logo_url = nil if logo.logo_url.to_s.length > 1000
+		    	logo.save(validate: false)
 		    	PhaxMachineMailer.admin_welcome_invite(user, @raw).deliver_now
 		    end
 		  end

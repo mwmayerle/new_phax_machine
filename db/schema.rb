@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_07_23_165545) do
+ActiveRecord::Schema.define(version: 2018_07_28_230214) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,6 +25,12 @@ ActiveRecord::Schema.define(version: 2018_07_23_165545) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "logo_links", force: :cascade do |t|
+    t.string "logo_url"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "organizations", force: :cascade do |t|
     t.integer "admin_id", null: false
     t.integer "manager_id"
@@ -32,7 +38,6 @@ ActiveRecord::Schema.define(version: 2018_07_23_165545) do
     t.string "fax_tag"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "logo"
   end
 
   create_table "user_fax_numbers", force: :cascade do |t|
@@ -45,6 +50,8 @@ ActiveRecord::Schema.define(version: 2018_07_23_165545) do
   create_table "user_permissions", force: :cascade do |t|
     t.integer "user_id", null: false
     t.string "permission", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_user_permissions_on_deleted_at"
   end
 
   create_table "users", force: :cascade do |t|

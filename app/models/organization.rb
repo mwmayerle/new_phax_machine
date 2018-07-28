@@ -14,7 +14,6 @@ class Organization < ApplicationRecord
 
 	validates :label, uniqueness: true, length: { maximum: ORGANIZATION_CHARACTER_LIMIT }, presence: true
 	validates :fax_tag, uniqueness: true, length: { maximum: FAX_TAG_LIMIT }, presence: true
-	validates :logo, length: { maximum: 1000 }
 
 	before_validation :generate_fax_tag, on: :create
 	before_destroy :remove_fax_number_associations

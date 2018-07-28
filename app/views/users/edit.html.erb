@@ -72,7 +72,7 @@
 					</div>
 
 					<div class="col force-down-button">
-						<% if @user != current_user %> <!-- Keeps organization Manager from revoking their own user -->
+						<% if @user != current_user %> <!-- Keeps organization Manager from revoking their own identity -->
 							<%= form_for :user, url: "/users/#{@user.id}", method: :delete do |f| %>
 								<%= f.hidden_field :email, value: @user.email %>
 								<%= f.submit "Revoke Access", class: "btn btn-danger" %>
