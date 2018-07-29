@@ -1,10 +1,3 @@
-$(document).ready(() => {
-	addUploadedFile();
-	removeUploadedFile();
-	dragOverColorChange();
-	dragLeaveColorChange();
-});
-
 function dragOverColorChange() {
 	$(".drag-drop-input").on('dragover', (event) => {
 		$(event.target).css('background-color', '#e0e0e0')
@@ -43,9 +36,9 @@ function addUploadedFile() {
 			);
 
 		} else {
-			console.log('farts')
 			createAlert('danger', 'A maximum of 10 files per fax can be attached.')
 		}
+		adjustAttachedFileCount();
 	});
 };
 
@@ -57,5 +50,10 @@ function removeUploadedFile() {
 			$button.closest("tr").remove();
 			$(`#${$inputDivToDelete}`).remove();
 		}
+	adjustAttachedFileCount();
 	});
+};
+
+function adjustAttachedFileCount() {
+	$("#attached-file-counter").text(`Attached Files: ${$("tr").length}`);
 };

@@ -7,17 +7,15 @@
 					<%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f| %>
 					  <%= devise_error_messages! %>
 					  <div class="row">
-					  	<div class="col"></div>
-						  <div class="form-group col">
-						    <%= f.label :email, "Email Address:" %>
-						    <%= f.email_field :email, autofocus: true, autocomplete: "email", class: 'form-control' %>
+					  	<div class="col-lg-1"></div>
+						  <div class="form-group form-inline col-lg-6">
+						    <strong><%= f.label :email, "Email Address:" %></strong>
+						    <%= f.email_field :email, autofocus: true, autocomplete: "email", class: 'form-control col-lg-8 inline-input-margin' %>
 						  </div>
-
-						  <div class="col"></div>
+						  <div class="form-group form-inline col-lg-4">
+						    <%= f.submit "Send me reset password instructions", class: "btn btn-success" %>
+						  </div>
 						</div>
-					  <div class="form-group">
-					    <%= f.submit "Send me reset password instructions", class: "btn btn-success" %>
-					  </div>
 					<% end %>
 	      </div>
 	    </div>

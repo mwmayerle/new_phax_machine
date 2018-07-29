@@ -22,6 +22,21 @@
 
 $(document).ready(() => {
 	informationBoxMouseOver();
+
+	// See organization.js
+	deleteOrganizationPopup();
+
+	// See faxes.js
+	addUploadedFile();
+	removeUploadedFile();
+	dragOverColorChange();
+	dragLeaveColorChange();
+
+	// See users.js
+	revokeUserPopup();
+
+	// See navbar.js
+	collapseSidebar();
 });
 
 var informationBoxMouseOver = function() {

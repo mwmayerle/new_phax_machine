@@ -7,24 +7,6 @@ $warning: #7EA16B;
 @import 'navbar';
 @import 'faxes';
 
-.logout {
-	cursor: pointer;
-  width: 100%;
-}
-
-.logout-button {
-	margin-left: -5px;
-	width: 110%;
-  height: 110% !important;
-	background: none !important;
-	color: inherit;
-	border: none; 
-	padding: 0 !important;
-	font: inherit;
-	cursor: pointer;
-	text-align: left;
-}
-
 .smaller-card {
 	width: 50% !important;
 }
@@ -84,7 +66,7 @@ a[data-toggle="collapse"] {
 }
 
 .force-down-button { //I'm not proud...
-	margin-top: 30px;
+	margin-top: 31px;
 }
 
 .force-down-checkbox { //I'm not proud a second time...
@@ -142,4 +124,37 @@ ul ul a {
   font-size: 0.6em !important;
   padding-left: 20px !important;
   background: #202634;
+}
+td {
+	vertical-align: middle !important;
+}
+
+.push-down-text {
+	padding-top: 5px;
+}
+
+.custom-control-description {
+	margin-left: 15px;
+	box-shadow: none;
+}
+
+.custom-control-input~.custom-control-indicator {
+	margin-left: 10px;
+	background-color: white;
+	border: 2px solid #999999;
+	margin-top: 2px;
+	height: 20px;
+	width: 20px;
+	box-shadow: none !important;
+	transition: 0.2s;
+}
+
+.custom-control-input:checked~.custom-control-indicator {
+	background-color: #2a313f;
+	transition: 0.2s;
+	box-shadow: none !important;
+}
+
+.indent-me {
+	margin-left: 20px;
 }

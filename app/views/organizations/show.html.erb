@@ -8,16 +8,6 @@
 		<% end %>
 	</div>
 </div>
-<!-- <div class="row">
-	<div class="col form-inline form-group"> -->
-		<%# if current_user.manager == @organization.manager || is_admin? %>
-			<%#= form_for @organization, url: "/organizations/edit_logo/#{@organization.id}", method: :put, class: "form-inline" do |f| %>
-				<%#= f.text_field :logo, placeholder: "Paste logo URL here to edit", class: "form-inline form-control inline-input-margin send-fax-input", value: nil %>
-				<%#= f.submit "Submit", class: "btn btn-success form-inline inline-input-margin" %>
-			<%# end %>
-		<%# end %>
-	<!-- </div> -->
-<!-- </div> -->
 
 <% if @organization.fax_numbers.present? %>
 	<% @organization.fax_numbers.each do |organization_fax_number| %>
@@ -56,7 +46,7 @@
 			</div>
 			
 			<div class="col-lg-7 align-self-center">
-				<table class="table table-hover table-striped table-sm">
+				<table class="table table-hover table-striped table-sm table-bordered">
 					<thead class="thead-dark">
 						<tr>
 							<th class="text-center">Email</th>
@@ -127,8 +117,8 @@
 			</div>
 		</div>
 		<div class="row information-box">
-			<div class="col-lg-6">
-				<table class="table table-sm table-hover">
+			<div class="col-lg-5">
+				<table class="table table-sm table-hover table-bordered">
 					<tbody>
 						<% @organization.users.each do |user| %>
 							<% if @organization.users.index(user).even? %>
@@ -146,8 +136,8 @@
 				</table>
 			</div>
 
-			<div class="col-lg-6">
-				<table class="table table-sm table-hover">
+			<div class="col-lg-5">
+				<table class="table table-sm table-hover table-bordered">
 					<tbody>
 						<% @organization.users.each do |user| %>
 							<% if @organization.users.index(user).odd? %>
