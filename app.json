@@ -20,10 +20,10 @@
     	"description": "Your Phaxio Callback token (found in Webhooks Settings)",
     	"required": true
     },
-    "SMTP_HOST": {
-      "description": "SMTP host for outgoing email (for failure alerts)",
-      "required": true
-    },
+    // "SMTP_HOST": {
+    //   "description": "SMTP host for outgoing email (for failure alerts)",
+    //   "required": false
+    // },
     "SMTP_USER": {
       "description": "SMTP username for outgoing email (for failure alerts)",
       "required": true
@@ -32,28 +32,28 @@
       "description": "SMTP password for outgoing email (for failure alerts)",
       "required": true
     },
-    "SMTP_PORT": {
-      "description": "SMTP port for outgoing email (for failure alerts)",
-      "required": true
-    },
-    "SMTP_TLS": {
-      "description": "Should use TLS on outgoing email? (true or blank)",
-      "required": true
-    },
+    // "SMTP_PORT": {
+    //   "description": "SMTP port for outgoing email.",
+    //   "required": false
+    // },
+    // "SMTP_TLS": {
+    //   "description": "Should use TLS on outgoing email? (true or blank)",
+    //   "required": false
+    // },
     "FROM_EMAIL": {
-      "description": "The From address for any outgoing email from mailphax.",
-      "required": false
+      "description": "The From address for any outgoing email. Ensure this is a valid email address.",
+      "required": true
     },
     "ADMIN_EMAIL": {
     	"description": "The email address used by the Administrator to log in.",
     	"required": true
     },
     "DOMAIN_URL": {
-    	"description": "The domain this application will be deployed to.",
+    	"description": "The domain this application will be deployed to. If you're not using a custom domain this will be 'https://YOURAPPNAMEHERE.herokuapp.com'.",
     	"required": true
     },
     "LOGO_URL": {
-    	"description": "A link to your corporate logo.",
+    	"description": "A link to your corporate logo. This can be edited by the Admin later.",
     	"required": false
     }
   },
