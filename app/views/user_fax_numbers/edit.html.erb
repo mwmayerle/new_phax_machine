@@ -3,61 +3,69 @@
     <div class="card card-login mx-auto mt-5">
       <div class="card-header">Link / Unlink Users:</div>
       <div class="card-body">
-      	<div class="container">
-    			<%= form_for(:fax_number, url: "/user_fax_numbers/#{@fax_number.id}", method: :put) do |f| %>
-						<div class="row">
-							<% if @fax_number.unassigned_organization_users.present? %>
-								<div class="col-lg-6">
-									<p><strong>Link These Users to <%= FaxNumber.format_pretty_fax_number(@fax_number.fax_number) %>:</strong></p>
-									<table class="table table-hover table-striped table-sm">
-										<thead class="thead-dark">
+  			<%= form_for(:fax_number, url: "/user_fax_numbers/#{@fax_number.id}", method: :put) do |f| %>
+					<div class="row">
+						<% if @fax_number.unassigned_organization_users.present? %>
+							<div class="col-lg-6">
+								<p><strong>Link These Users to <%= FaxNumber.format_pretty_fax_number(@fax_number.fax_number) %>:</strong></p>
+								<table class="table table-hover table-striped table-sm table-bordered">
+									<thead class="thead-dark">
+										<tr>
+											<th class="text-center">Add</th>
+											<th class="text-center">Caller ID</th>
+										</tr>
+									</thead>
+									<tbody>
+										<% @fax_number.unassigned_organization_users.each do |unassigned_user| %>
 											<tr>
-												<th class="text-center">Add</th>
-												<th class="text-center">Caller ID</th>
+												<td class="text-left">
+													<label class="custom-control custom-checkbox push-down-text">
+														<input class="custom-control-input" type="checkbox" name="users[to_add][<%= unassigned_user.id %>]" value="">
+														<span class="custom-control-indicator"></span>
+														<span class="custom-control-description">
+															<%= unassigned_user.email %>
+														</span>
+													</label>
+												</td>
+							    			<td class="text-center"><%= FaxNumber.format_pretty_fax_number(unassigned_user.caller_id_number) %></td>
 											</tr>
-										</thead>
-										<tbody>
-											<% @fax_number.unassigned_organization_users.each do |unassigned_user| %>
-												<tr>
-													<td class="text-center">
-														<input class="form-check-input add-checkbox" type="checkbox" id="<%= unassigned_user.email %>" name="users[to_add][<%= unassigned_user.id %>]">
-														<label for="<%= unassigned_user.email %>" class="form-check-label"><%= unassigned_user.email %></label>
-													</td>
-								    			<td class="text-center"><%= FaxNumber.format_pretty_fax_number(unassigned_user.caller_id_number) %></td>
-												</tr>
-											<% end %>
-										</tbody>
-									</table>
-								</div>
-							<% end %>
-							<% if @fax_number.users.present? %>
-								<div class="col-lg-6">
-									<p><strong>Unlink These Users from <%= FaxNumber.format_pretty_fax_number(@fax_number.fax_number) %>:</strong></p>
-									<table class="table table-hover table-striped table-sm">
-										<thead class="thead-dark">
-											<tr>
-												<th class="text-center">Remove</th>
-												<th class="text-center">Caller ID</th>
-											</tr>
-										</thead>
-										<tbody>
-											<% @fax_number.users.each do |user| %>
-												<tr>
-													<td class="text-center">
-														<input class="form-check-input" type="checkbox" id="<%= user.email %>" name="users[to_remove][<%= user.id %>]">
-														<label for="<%= user.email %>" class="form-check-label"><%= user.email %></label>
-													</td>
-								    			<td class="text-center"><%= FaxNumber.format_pretty_fax_number(user.caller_id_number) %></td>
-												</tr>
 										<% end %>
-										</tbody>
-									</table>
-								</div>
-							<% end %>
-						</div>
-						<%= f.submit "Submit", class: "btn btn-success" %>
-					<% end %>
-	      </div>
+									</tbody>
+								</table>
+							</div>
+						<% end %>
+						<% if @fax_number.users.present? %>
+							<div class="col-lg-6">
+								<p><strong>Unlink These Users from <%= FaxNumber.format_pretty_fax_number(@fax_number.fax_number) %>:</strong></p>
+								<table class="table table-hover table-striped table-sm table-bordered">
+									<thead class="thead-dark">
+										<tr>
+											<th class="text-center">Remove</th>
+											<th class="text-center">Caller ID</th>
+										</tr>
+									</thead>
+									<tbody>
+										<% @fax_number.users.each do |user| %>
+											<tr>
+												<td class="text-left">
+													<label class="custom-control custom-checkbox push-down-text">
+														<input class="custom-control-input" type="checkbox" name="users[to_remove][<%= user.id %>]" value="">
+														<span class="custom-control-indicator"></span>
+														<span class="custom-control-description">
+															<%= user.email %>
+														</span>
+													</label>
+												</td>
+							    			<td class="text-center"><%= FaxNumber.format_pretty_fax_number(user.caller_id_number) %></td>
+											</tr>
+									<% end %>
+									</tbody>
+								</table>
+							</div>
+						<% end %>
+					</div>
+					<%= f.submit "Submit", class: "btn btn-success" %>
+				<% end %>
 	    </div>
 	  </div>
 	</div>

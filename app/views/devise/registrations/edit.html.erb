@@ -11,26 +11,26 @@
 					  <div class="form-group col-lg-8">
 					    <strong><%= f.label :password, "New Password:" %></strong>
 					    <small><i>(leave blank if you don't want to change it)</i></small>
-					    <%= f.password_field :password, autocomplete: "off", class: "inline-input-margin form-control" %>
+					    <%= f.password_field :password, autocomplete: "off", class: "form-control" %>
 					  </div>
 
 					  <div class="form-group col-lg-8">
 					    <strong><%= f.label :password_confirmation, "Confirm New Password:" %></strong>
 					    <small><i>(leave blank if you don't want to change it)</i></small>
-					    <%= f.password_field :password_confirmation, autocomplete: "off", class: "inline-input-margin form-control" %>
+					    <%= f.password_field :password_confirmation, autocomplete: "off", class: "form-control" %>
 					  </div>
 
 					  <% if is_admin? %>
 						  <div class="form-group col-lg-8">
 						  	<strong><%= f.label :logo_url, "Logo URL:" %></strong>
-						  	<%= f.text_field :logo_url, value: "#{current_logo}", class: "inline-input-margin form-control" %>
+						  	<%= f.text_field :logo_url, value: "#{current_logo}", class: "form-control" %>
 						  </div>
 						<% end %>
 
 					  <div class="form-group col-lg-8">
 					    <strong><%= f.label :current_password, "Current Password:" %></strong>
 					    <small><i>(we need your current password to confirm your changes)</i></small>
-					    <%= f.password_field :current_password, autocomplete: "off", class: "inline-input-margin form-control" %>
+					    <%= f.password_field :current_password, autocomplete: "off", class: "form-control" %>
 					  </div>
 
 					  <div class="col">

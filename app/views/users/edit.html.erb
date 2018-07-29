@@ -65,7 +65,7 @@
 								<% end %>
 
 								<div class="col-lg-2 form-group force-down-button">
-									<%= f.submit "Submit", class: "btn btn-success" %>
+									<%= f.submit "Submit Changes", class: "btn btn-success" %>
 								</div>
 							</div>
 						<% end %>
@@ -75,7 +75,9 @@
 						<% if @user != current_user %> <!-- Keeps organization Manager from revoking their own identity -->
 							<%= form_for :user, url: "/users/#{@user.id}", method: :delete do |f| %>
 								<%= f.hidden_field :email, value: @user.email %>
-								<%= f.submit "Revoke Access", class: "btn btn-danger" %>
+								<button type="submit" class="btn btn-danger inline-input-margin revoke-access">
+									<i class="fa fa-fw fa-remove" aria-hidden="true"></i>  Revoke Access
+								</button>   
 							<% end %>
 						<% end %>
 					</div>

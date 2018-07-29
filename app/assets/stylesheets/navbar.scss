@@ -5,6 +5,24 @@
 	padding-bottom: 10px !important;
 }
 
+.logout {
+	cursor: pointer;
+  width: 100%;
+}
+
+.logout-button {
+	margin-left: -5px;
+	width: 110%;
+  height: 110% !important;
+	background: none !important;
+	color: inherit;
+	border: none; 
+	padding: 0 !important;
+	font: inherit;
+	cursor: pointer;
+	text-align: left;
+}
+
 #transition-zone {
 	height: 3px;
 	background: linear-gradient(#fafafa, #202634) 
