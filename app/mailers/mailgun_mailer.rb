@@ -1,5 +1,5 @@
 class MailgunMailer < ApplicationMailer
-	default from: ENV["SMTP_FROM"]
+	default from: ENV["FROM_EMAIL"]
 
 	def fax_email(email_addresses, email_subject, fax, fax_file_name = '', fax_file_contents = '')
   	@email_addresses = email_addresses
