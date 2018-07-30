@@ -3,15 +3,15 @@ class MailgunFaxesController < ApplicationController
 
 	def fax_received
 		@fax = JSON.parse(params['fax'])
-    recipient_number = Phonelib.parse(@fax['to_number']).e164
-    fax_number = FaxNumber.find_by(fax_number: recipient_number)
+    p recipient_number = Phonelib.parse(@fax['to_number']).e164
+    p fax_number = FaxNumber.find_by(fax_number: recipient_number)
 
-    email_addresses = UserFaxNumber.where(fax_number_id: fax_number.id).all.map do |fax_num_email_obj|
+    p email_addresses = UserFaxNumber.where(fax_number_id: fax_number.id).all.map do |fax_num_email_obj|
     	fax_num_email_obj.user.email
     end
 
-    fax_from = @fax['from_number']
-  	fax_file_name = params['file'].original_filename
+    p fax_from = @fax['from_number']
+  	p fax_file_name = params['file'].original_filename
     fax_file_contents = params['file'].read
 
     email_subject = "Fax received from #{fax_from}"
@@ -20,7 +20,7 @@ class MailgunFaxesController < ApplicationController
 
 	def fax_sent
 		@fax = JSON.parse(params['fax'])
-		email_addresses = User.find_by(fax_tag: @fax['tags']['sender_email_fax_tag']).email
+		p email_addresses = User.find_by(fax_tag: @fax['tags']['sender_email_fax_tag']).email
 
     if @fax["status"] == "success"
     	email_subject = "Your fax was sent successfully"
