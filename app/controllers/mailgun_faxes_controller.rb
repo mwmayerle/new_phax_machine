@@ -2,6 +2,7 @@ class MailgunFaxesController < ApplicationController
 	skip_before_action :verify_authenticity_token
 
 	def fax_received
+		p params
 		@fax = JSON.parse(params[:fax])
     recipient_number = Phonelib.parse(@fax['to_number']).e164
     fax_number = FaxNumber.find_by(fax_number: recipient_number)
@@ -19,6 +20,7 @@ class MailgunFaxesController < ApplicationController
 	end
 
 	def fax_sent
+		p params
 		@fax = JSON.parse(params[:fax])
 		email_addresses = User.find_by(fax_tag: @fax['tags']['sender_email_fax_tag']).email
 
@@ -33,6 +35,7 @@ class MailgunFaxesController < ApplicationController
 	end
 
 	def mailgun(files = [])
+		p params
     sender = Mail::AddressList.new(params['from']).addresses.first.address
     user = User.find_by(email: sender)
 
