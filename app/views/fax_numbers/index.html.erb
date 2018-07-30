@@ -42,12 +42,8 @@
 					<% end %>
 					<td class="text-center align-middle"><%= info_hash[:provisioned_at] %></td>
 					<td class="text-center align-middle">
-						<% if !info_hash[:callback_url] %>
-							<%= link_to "Edit", edit_fax_number_path(id: info_hash[:id]), params: { fax_number: { id: info_hash[:id] } },
+						<%= link_to "Edit", edit_fax_number_path(id: info_hash[:id]), params: { fax_number: { id: info_hash[:id] } },
 								class: "btn btn-success btn-sm align-middle" %>
-						<% else %>
-							<td></td>
-						<% end %>
 					</td>
 				</tr>
 			<% end %>
