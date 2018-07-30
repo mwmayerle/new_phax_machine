@@ -95,7 +95,7 @@ class OrganizationsController < ApplicationController
 		end
 
 		def get_unallocated_numbers 
-			@unallocated_fax_numbers = FaxNumber.where({organization_id: nil, has_webhook_url: false})
+			@unallocated_fax_numbers = FaxNumber.where(organization_id: nil)
 		end
 
 		def logo_params

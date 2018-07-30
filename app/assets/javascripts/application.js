@@ -31,6 +31,7 @@ $(document).ready(() => {
 	removeUploadedFile();
 	dragOverColorChange();
 	dragLeaveColorChange();
+	adjustAttachedFileCount();
 
 	// See users.js
 	revokeUserPopup();

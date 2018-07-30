@@ -1,4 +1,1 @@
-<% if @organization.manager.present? %>
-	<p> Manager: <%= @organization.manager.email %> </p>
-<% end %>
 <%= render partial: "form", locals: { organization: @organization, unallocated_fax_numbers: @unallocated_fax_numbers }, layout: false %>

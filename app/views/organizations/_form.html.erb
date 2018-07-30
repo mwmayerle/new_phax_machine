@@ -1,7 +1,18 @@
 <body class="bg-dark coverup">
   <div class="container coverup">
     <div class="card card-login mx-auto mt-5">
-      <div class="card-header">Organization</div>
+    	<% if @organization.label %>
+    		<div class="card-header"><%= @organization.label %></div>
+    		<% if @organization.manager.present? %>
+    			<div class="row">
+    				<div class="col">
+							<p class="indent-me"> Manager: <%= @organization.manager.email %> </p>
+						</div>
+					</div>
+				<% end %>
+    	<% else %>
+	      <div class="card-header">Add Organization</div>
+    	<% end %>
       <div class="card-body">
         <div class="text-center mb-6">
 					<%= form_for organization, class: "form-inline" do |f| %>
@@ -10,7 +21,7 @@
 						<% end %>
 							<div class="row">
 								<div class="col-lg-6 input-group align-self-center">
-									<%= f.label :label, "Name: ", class: "align-self-center" %>
+									<strong><%= f.label :label, "Name: ", class: "align-self-center" %></strong>
 									<%= f.text_field :label, value: organization.label, class: "form-control inline-input-margin" %>
 								</div>
 								<div class="col-lg-6 input-group align-self-center">

@@ -21,7 +21,7 @@ function addUploadedFile() {
 						<button class='close-button btn btn-sm btn-danger'>
 							<i class="fa fa-trash-o" aria-hidden="false"></i>
 						</button>
-						${event.target.files[0].name}
+						&nbsp;&nbsp;${event.target.files[0].name}
 					</td>
 				</tr>`
 			);
