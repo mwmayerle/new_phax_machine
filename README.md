@@ -1,6 +1,6 @@
 <!-- [![Build Status](https://travis-ci.org/mwmayerle/new_phax_machine.svg?branch=master)](https://travis-ci.org/mwmayerle/new_phax_machine) -->
 
-<!-- ----------------------------------------- -->
+<!--------------------------------------------->
 
 # PhaxMachine
 
