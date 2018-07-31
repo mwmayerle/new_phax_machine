@@ -1,12 +1,12 @@
 function dragOverColorChange() {
-	$(".drag-drop-input").on('dragover', (event) => {
-		$(event.target).css('background-color', '#e0e0e0')
+	$("#all-files").on('dragover', $(".drag-drop-input"), (event) => {
+		$(event.target).css('background-color', '#e0e0e0');
 	});
 };
 
 function dragLeaveColorChange() {
-	$(".drag-drop-input").on('dragleave', (event) => {
-		$(event.target).css('background-color', '#fafafa')
+	$("#all-files").on('dragleave', $(".drag-drop-input"), (event) => {
+		$(event.target).css('background-color', '#fafafa');
 	});
 };
 
