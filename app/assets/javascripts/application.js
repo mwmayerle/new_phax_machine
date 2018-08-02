@@ -38,6 +38,9 @@ $(document).ready(() => {
 
 	// See navbar.js
 	collapseSidebar();
+
+	// See fax_logs.js
+	getInitialFaxData();
 });
 
 var informationBoxMouseOver = function() {

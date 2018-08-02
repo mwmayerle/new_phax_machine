@@ -15,7 +15,7 @@ class FaxesController < ApplicationController
 			to: fax_params[:to],
 			files: attached_files,
 			caller_id: current_user.caller_id_number,
-			tag: { # Update strong_params filter looks for these tags in mailgun_faxes_controller
+			tag: {
 				sender_organization_fax_tag: current_user.organization.fax_tag, 
 				sender_email_fax_tag: current_user.fax_tag,
 			},

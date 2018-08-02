@@ -26,6 +26,15 @@
 	      </li>
     	<% end %>
 
+    	<% if is_manager? %>
+    		<li class="nav-item" data-toggle="tooltip" data-placement="right" title="Fax Logs">
+	      	<a class="nav-link" href="/fax_logs">
+		    		<i class="fa fa-fw fa-pie-chart"></i>
+			   		<span class="nav-link-text">&nbsp;Fax Logs</span>
+			 		</a>
+				</li>
+    	<% end %>
+
       <% if is_manager? && !is_admin? %>
       	<li class="nav-item" data-toggle="tooltip" data-placement="right" title="Organization Profile">
       		<a class="nav-link" href="/organizations/<%=current_user.organization.id%>">

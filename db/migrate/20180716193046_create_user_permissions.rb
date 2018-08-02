@@ -4,7 +4,7 @@ class CreateUserPermissions < ActiveRecord::Migration[5.2]
     	t.integer  :user_id, null: false
     	t.string   :permission, null: false
 
-    	t.timestamp
+    	t.timestamps
     end
   end
 end

@@ -1,4 +1,4 @@
-class Fax
+class Fax < ApplicationRecord
 	class << self
 		def get_fax_information(sent_fax_object)
 			Phaxio::Fax.get(sent_fax_object.id)
@@ -9,7 +9,7 @@ class Fax
 		    sent_fax_response = Phaxio::Fax.create(
 		      to: options[:to],
 		      file: options[:files],
-		      caller_id: options[:caller_id_number],
+		      caller_id: options[:caller_id],
 		      tag: {
 		        sender_organization_fax_tag: options[:tag][:sender_organization_fax_tag], 
 		        sender_email_fax_tag: options[:tag][:sender_email_fax_tag]
@@ -46,7 +46,7 @@ class Fax
 		end
 
 		def set_phaxio_creds
-			Phaxio::Config.api_endpoint = "https://api.staging.phaxio.com/v2/".freeze # <-- REMOVE THIS LINE TO GET OFF OF STAGING CREDENTIALS
+			# Phaxio::Config.api_endpoint = "https://api.staging.phaxio.com/v2/".freeze # <-- REMOVE THIS LINE TO GET OFF OF STAGING CREDENTIALS
 			Phaxio.api_key = ENV.fetch('PHAXIO_API_KEY')
 			Phaxio.api_secret = ENV.fetch('PHAXIO_API_SECRET')
 			Phaxio.callback_token = ENV.fetch('PHAXIO_CALLBACK_TOKEN')

@@ -19,8 +19,12 @@ class Users::RegistrationsController < Devise::RegistrationsController
   			possible_user.update_attributes(organization_id: sign_up_params[:organization_id])
   		end
 
-  		# If restored user is being invited as a manager is laters the permission and sets the Org's manager_id
-  		UserPermission.find(possible_user.id).update_attributes(permission: sign_up_params[:permission])
+  		if possible_user.caller_id_number != sign_up_params[:caller_id_number]
+  			possible_user.update_attributes(caller_id_number: sign_up_params[:caller_id_number])
+  		end
+
+  		# If restored user is being invited as a manager and sets the Org's manager_id
+  		UserPermission.find_by(user_id: possible_user.id).update_attributes(permission: sign_up_params[:permission])
 
   		if sign_up_params[:permission] == UserPermission::MANAGER
   			Organization.find(sign_up_params[:organization_id]).update_attributes(manager_id: possible_user.id)
