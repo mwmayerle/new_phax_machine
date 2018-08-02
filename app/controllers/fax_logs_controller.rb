@@ -30,6 +30,7 @@ class FaxLogsController < ApplicationController
 			User.all.each_with_index do |user_object, index|
 				users[index] = {}
 				users[index][:email] = user_object.email
+				users[index][:caller_id_number] = user_object.caller_id_number
 				users[index][:user_created_at] = user_object.created_at
 				users[index][:fax_tag] = user_object.fax_tag
 			end
@@ -43,6 +44,7 @@ class FaxLogsController < ApplicationController
 			organization.users.each_with_index do |user_object, index|
 				users[index] = {}
 				users[index][:email] = user_object.email
+				users[index][:caller_id_number] = user_object.caller_id_number
 				users[index][:user_created_at] = user_object.created_at
 				users[index][:fax_tag] = user_object.fax_tag
 			end

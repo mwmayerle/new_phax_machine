@@ -41,6 +41,12 @@ class FaxLog < ApplicationRecord
 				fax_data[fax_object.id][:direction] = fax_object.direction.titleize
 
 				if fax_object.direction == "received"
+					users.each do |user_obj_key, user_obj_data|
+						if fax_object.from_number == user_obj_data[:caller_id_number] && fax_object_is_younger?(fax_object.created_at.to_time, user_obj_data[:user_created_at]) 
+							fax_data[fax_object.id][:sent_by] = user_obj_data[:email]
+						end
+					end
+
 					# Checks to make sure that the fax object existed after the organization was created
 					if fax_numbers[fax_object.to_number] && fax_object_is_younger?(fax_object.created_at, fax_numbers[fax_object.to_number]['org_created_at']) 
 						fax_data[fax_object.id][:organization] = fax_numbers[fax_object.to_number]['label']
@@ -97,13 +103,20 @@ class FaxLog < ApplicationRecord
 				fax_data[fax_object['id']][:direction] = fax_object['direction'].titleize
 
 				if fax_object['direction'] == "received"
+					users.each do |user_obj_key, user_obj_data|
+						if fax_object['from_number'] == user_obj_data[:caller_id_number] && fax_object_is_younger?(fax_object['created_at'].to_time, user_obj_data[:user_created_at]) 
+							fax_data[fax_object['id']][:sent_by] = user_obj_data[:email]
+						end
+					end
+
 					# Checks to make sure that the fax object existed after the organization was created
 					fax_data[fax_object['id']][:to_number] = FaxNumber.format_pretty_fax_number(fax_object['to_number'])
 					fax_data[fax_object['id']][:from_number] = FaxNumber.format_pretty_fax_number(fax_object['from_number'])
-				else
+
+				else # fax_object["direction"] == "sent"
 
 					users.each do |user_obj_key, user_obj_data|
-						if fax_object['tags']['sender_email_fax_tag'] == user_obj_data[:fax_tag] #&& fax_object_is_younger?(fax_object['created_at'].to_time, user_obj_data[:user_created_at])
+						if fax_object['tags']['sender_email_fax_tag'] == user_obj_data[:fax_tag] && fax_object_is_younger?(fax_object['created_at'].to_time, user_obj_data[:user_created_at])
 							fax_data[fax_object['id']][:sent_by] = user_obj_data[:email]
 						end
 					end
