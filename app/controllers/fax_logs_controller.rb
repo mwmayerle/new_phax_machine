@@ -9,14 +9,14 @@ class FaxLogsController < ApplicationController
 			fax_log = FaxLog.get_first_twenty_five_faxes
 			
 			# Create a hash to reference for Organizations. Prevents program from querying the database constantly
-			organizations = {}
+			@organizations = {}
 			Organization.all.each do |organization_object| 
-				organizations[organization_object.fax_tag] = {}
-				organizations[organization_object.fax_tag]['label'] = organization_object.label
-				organizations[organization_object.fax_tag]['org_created_at'] = organization_object.created_at
+				@organizations[organization_object.fax_tag] = {}
+				@organizations[organization_object.fax_tag]['label'] = organization_object.label
+				@organizations[organization_object.fax_tag]['org_created_at'] = organization_object.created_at
 			end
 
-			# Same logic as the organizations hash created above
+			# Same logic as the @organizations hash created above
 			fax_numbers = {}
 			FaxNumber.all.each do |fax_num| 
 				if fax_num.organization 
@@ -35,7 +35,13 @@ class FaxLogsController < ApplicationController
 				users[index][:fax_tag] = user_object.fax_tag
 			end
 
-			@sorted_faxes = FaxLog.format_first_twenty_five_faxes_admin(fax_log, organizations, fax_numbers, users)
+			@fax_numbers = fax_numbers.keys.map { |fax_number| FaxNumber.format_pretty_fax_number(fax_number) }
+			@fax_numbers.unshift("All")
+
+			@organizations[:All] = {}
+			@organizations[:All]['label'] = 'All'
+
+			@sorted_faxes = FaxLog.format_first_twenty_five_faxes_admin(fax_log, @organizations, fax_numbers, users)
 
 		elsif is_manager?
 			organization = Organization.find(current_user.organization_id)
@@ -57,8 +63,20 @@ class FaxLogsController < ApplicationController
 		end
 	end
 
+	# create in this controller is for user-designated filtering
+	def create
+		start_time = log_filter_params[:start_time].to_datetime.rfc3339 if params[:fax_log][:start_time] != ""
+		end_time = log_filter_params[:end_time].to_datetime.rfc3339 if params[:fax_log][:end_time] != ""
+		fax_number = Phonelib.parse(log_filter_params[:fax_number].prepend('1')).e164 if params[:fax_log][:fax_number] != "All"
+		org_fax_tag = log_filter_params[:organization] if params[:fax_log][:organization] != "All" && is_admin?
+	end
+
 	private
 		def set_phaxio_creds
 			Fax.set_phaxio_creds
+		end
+
+		def log_filter_params
+			params.require(:fax_log).permit(:start_time, :end_time, :fax_number, :organization)
 		end
 end

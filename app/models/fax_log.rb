@@ -1,20 +1,19 @@
 class FaxLog < ApplicationRecord
 	include SessionsHelper
 
+	#TODO iterate thru deleted orgs (add them to paranoia) and then put a symbol next to them to indicate they have been ripep'ed
 	class << self
 		def get_first_twenty_five_faxes(fax_tag = nil, organization_id = nil, fax_numbers = nil) # Phaxio API returns 25 by default
 			if fax_tag.nil?
-				fax_data = Phaxio::Fax.list({:created_before => Time.now, :created_after => 1.years.ago, :per_page => 24 })
+				fax_data = Phaxio::Fax.list({:per_page => 20}) #created_before defaults to now, created_after defaults to a week ago
 			else
-				per_page_number =  24 / fax_numbers.length
+				per_page_number =  20 / fax_numbers.length
 
 				# First search for faxes using each fax_number associated with the Organization
 				fax_data = []
 				fax_numbers.each do |fax_number|
 					current_data = Phaxio::Fax.list({
 						:phone_number => fax_number,
-						:created_before => Time.now,
-						:created_after => 1.years.ago,
 						:per_page => per_page_number
 					})
 					fax_data.push(current_data.raw_data)

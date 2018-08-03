@@ -6,6 +6,8 @@ $warning: #7EA16B;
 @import 'bootstrap';
 @import 'navbar';
 @import 'faxes';
+// *= require jquery-ui/datepicker
+@import 'jquery-ui/datepicker';
 
 .smaller-card {
 	width: 50% !important;

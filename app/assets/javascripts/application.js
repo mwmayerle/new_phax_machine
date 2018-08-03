@@ -12,6 +12,7 @@
 //
 
 //= require jquery3
+//= require jquery-ui/widgets/datepicker
 //= require popper
 //= require bootstrap
 
@@ -40,7 +41,7 @@ $(document).ready(() => {
 	collapseSidebar();
 
 	// See fax_logs.js
-	getInitialFaxData();
+	loadDatePicker();
 });
 
 var informationBoxMouseOver = function() {

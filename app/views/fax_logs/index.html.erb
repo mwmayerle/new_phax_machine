@@ -1,9 +1,66 @@
+<head>
+	<link href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" rel="stylesheet" type="text/css">
+</head>
+
 <% if is_admin? %>
 	<h1>Fax Logs</h1>
 <% else %>
 	<h1>Fax Logs - <%= current_user.organization.label %></h1>
 <% end %>
 <div class="col">
+
+	<%= @users %>
+
+	<div class="filtering-form">
+		<%= form_for(:fax_log, class: "form-inline", remote: true) do |f| %>
+			<div class="row">
+				<div class="form-group col-md-2">
+
+					<% if is_admin? %>
+						<%= f.label :organization, "Organization:", class: 'control-label' %>
+						<select class="form-control form-inline" name="fax_log[organization]">
+							<% @organizations.each do |organization_fax_tag, organization_data| %>
+								<% if organization_data['label'] == "All" %>
+									<option name="fax_log[organization]" value="<%= organization_fax_tag %>" selected="selected">All</option>
+								<% else %>
+									<option name="fax_log[organization]" value="<%= organization_fax_tag %>"><%= organization_data['label'] %></option>
+								<% end %>
+							<% end %>
+						</select>
+					<% end %>
+				</div>
+
+				<div class="form-group col-md-2">
+					<%= f.label :fax_number, "Fax Number:", class: 'control-label' %>
+					<select class="form-control form-inline" name="fax_log[fax_number]">
+						<% @fax_numbers.each do |fax_number| %>
+							<% if fax_number == "All" %>
+								<option name="fax_log[fax_number]" value="<%= fax_number %>" selected="selected"><%= fax_number %></option>
+							<% else %>
+								<option name="fax_log[fax_number]" value="<%= fax_number %>"><%= fax_number %></option>
+							<% end %>
+						<% end %>
+					</select>
+				</div>
+
+				<div class="form-group col-sm-2">
+					<%= f.label :start_time, 'Start Date:', class: 'control-label' %>
+					<%= f.text_field :start_time, data:{ provide: 'datepicker' }, class: ' datepicker-inline form-control' %>
+				</div>
+
+				<div class="form-group col-sm-2">
+					<%= f.label :end_time, 'End Date:', class: 'control-label' %>
+					<%= f.text_field :end_time, data:{ provide: 'datepicker' }, class: 'datepicker-inline form-control', id: "end-date-field" %>
+				</div>
+
+				<div class="form-group col-md-2 form-inline">
+					<%= f.submit "Filter", class: "btn btn-success force-down-button" %>
+				</div>
+
+			</div>
+		<% end %>
+	</div>
+
 	<table class="table table-sm table-striped table-hover table-bordered">
 		<thead class="thead-dark">
 			<tr>

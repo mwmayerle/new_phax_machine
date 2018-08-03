@@ -20,7 +20,7 @@ Rails.application.routes.draw do
   resources :users, only: [:index, :show, :create, :edit, :update]
 	resources :organizations
   resources :fax_numbers, only: [:index, :edit, :update]
-  resources :fax_logs, only: [:index]
+  resources :fax_logs, only: [:index, :create]
 
   root to: "faxes#new"
 
