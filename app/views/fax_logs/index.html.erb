@@ -9,21 +9,19 @@
 <% end %>
 <div class="col">
 
-	<%= @users %>
-
 	<div class="filtering-form">
 		<%= form_for(:fax_log, class: "form-inline", remote: true) do |f| %>
 			<div class="row">
-				<div class="form-group col-md-2">
 
+				<div class="form-group col-md-2">
 					<% if is_admin? %>
 						<%= f.label :organization, "Organization:", class: 'control-label' %>
-						<select class="form-control form-inline" name="fax_log[organization]">
+						<select id="org-select" class="form-control form-inline" name="fax_log[organization]">
 							<% @organizations.each do |organization_fax_tag, organization_data| %>
-								<% if organization_data['label'] == "All" %>
-									<option name="fax_log[organization]" value="<%= organization_fax_tag %>" selected="selected">All</option>
+								<% if organization_fax_tag == :All %>
+									<option class="all-org" name="fax_log[organization]" value="<%= organization_fax_tag %>" selected="selected">All</option>
 								<% else %>
-									<option name="fax_log[organization]" value="<%= organization_fax_tag %>"><%= organization_data['label'] %></option>
+									<option class="<%= organization_data['org_id'] %>" name="fax_log[organization]" value="<%= organization_fax_tag %>"><%= organization_data['label'] %></option>
 								<% end %>
 							<% end %>
 						</select>
@@ -32,12 +30,16 @@
 
 				<div class="form-group col-md-2">
 					<%= f.label :fax_number, "Fax Number:", class: 'control-label' %>
-					<select class="form-control form-inline" name="fax_log[fax_number]">
-						<% @fax_numbers.each do |fax_number| %>
-							<% if fax_number == "All" %>
-								<option name="fax_log[fax_number]" value="<%= fax_number %>" selected="selected"><%= fax_number %></option>
+					<select id="fax-select" class="form-control form-inline" name="fax_log[fax_number]">
+						<% @fax_numbers.each do |fax_number_key, fax_number_data| %>
+							<% if fax_number_key == :All %>
+								<option class="all-fax" name="fax_log[fax_number]" value="<%= fax_number_key %>" selected="selected">
+									All
+								</option>
 							<% else %>
-								<option name="fax_log[fax_number]" value="<%= fax_number %>"><%= fax_number %></option>
+								<option class="<%= fax_number_data['org_id'] %>" name="fax_log[fax_number]" value="<%= fax_number_key %>">
+									<%= FaxNumber.format_pretty_fax_number(fax_number_key)%>
+								</option>
 							<% end %>
 						<% end %>
 					</select>

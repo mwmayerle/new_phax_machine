@@ -14,15 +14,17 @@ class FaxLogsController < ApplicationController
 				@organizations[organization_object.fax_tag] = {}
 				@organizations[organization_object.fax_tag]['label'] = organization_object.label
 				@organizations[organization_object.fax_tag]['org_created_at'] = organization_object.created_at
+				@organizations[organization_object.fax_tag]['org_id'] = organization_object.id
 			end
 
 			# Same logic as the @organizations hash created above
-			fax_numbers = {}
+			@fax_numbers = {}
 			FaxNumber.all.each do |fax_num| 
 				if fax_num.organization 
-					fax_numbers[fax_num.fax_number] = {}
-					fax_numbers[fax_num.fax_number]['label'] = fax_num.organization.label
-					fax_numbers[fax_num.fax_number]['org_created_at'] = fax_num.organization.created_at
+					@fax_numbers[fax_num.fax_number] = {}
+					@fax_numbers[fax_num.fax_number]['label'] = fax_num.organization.label
+					@fax_numbers[fax_num.fax_number]['org_created_at'] = fax_num.organization.created_at
+					@fax_numbers[fax_num.fax_number]['org_id'] = fax_num.organization.id
 				end
 			end
 
@@ -33,15 +35,16 @@ class FaxLogsController < ApplicationController
 				users[index][:caller_id_number] = user_object.caller_id_number
 				users[index][:user_created_at] = user_object.created_at
 				users[index][:fax_tag] = user_object.fax_tag
+				users[index][:org_id] = user_object.organization.id if user_object.user_permission.permission != UserPermission::ADMIN
 			end
 
-			@fax_numbers = fax_numbers.keys.map { |fax_number| FaxNumber.format_pretty_fax_number(fax_number) }
-			@fax_numbers.unshift("All")
+			@fax_numbers[:All] = {}
+			@fax_numbers[:All]['label'] = "All"
 
 			@organizations[:All] = {}
 			@organizations[:All]['label'] = 'All'
 
-			@sorted_faxes = FaxLog.format_first_twenty_five_faxes_admin(fax_log, @organizations, fax_numbers, users)
+			@sorted_faxes = FaxLog.format_first_twenty_five_faxes_admin(fax_log, @organizations, @fax_numbers, users)
 
 		elsif is_manager?
 			organization = Organization.find(current_user.organization_id)

@@ -41,7 +41,9 @@ $(document).ready(() => {
 	collapseSidebar();
 
 	// See fax_logs.js
+	limitSelectableFaxNumbersToOrg();
 	loadDatePicker();
+	limitOrg();
 });
 
 var informationBoxMouseOver = function() {
