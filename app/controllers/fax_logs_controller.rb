@@ -31,24 +31,24 @@ class FaxLogsController < ApplicationController
 			User.all.each_with_index do |user_object, index|
 				if user_object.user_permission.permission != UserPermission::ADMIN #admin does not send/receive faxes
 					@users[index] = {}
-					@users[index][:email] = user_object.email
-					@users[index][:caller_id_number] = user_object.caller_id_number
-					@users[index][:user_created_at] = user_object.created_at
-					@users[index][:fax_tag] = user_object.fax_tag
-					@users[index][:org_id] = user_object.organization.id if user_object.user_permission.permission != UserPermission::ADMIN
+					@users[index]['email'] = user_object.email
+					@users[index]['caller_id_number'] = user_object.caller_id_number
+					@users[index]['user_created_at'] = user_object.created_at
+					@users[index]['fax_tag'] = user_object.fax_tag
+					@users[index]['org_id'] = user_object.organization.id if user_object.user_permission.permission != UserPermission::ADMIN
 				end
 			end
 
-			@fax_numbers[:All] = {}
-			@fax_numbers[:All]['label'] = "All"
+			@fax_numbers['All'] = {}
+			@fax_numbers['All']['label'] = "All"
 
-			@organizations[:All] = {}
-			@organizations[:All]['label'] = 'All'
+			@organizations['All'] = {}
+			@organizations['All']['label'] = 'All'
 
-			@users[:All] = {}
-			@users[:All]['label'] = "All"
+			@users['All'] = {}
+			@users['All']['label'] = "All"
 
-			@sorted_faxes = FaxLog.format_first_twenty_five_faxes_admin(fax_log, @organizations, @fax_numbers, @users)
+			@sorted_faxes = FaxLog.format_faxes(current_user, fax_log, @organizations, @fax_numbers, @users)
 
 		elsif is_manager?
 			organization = Organization.find(current_user.organization_id)
@@ -56,10 +56,10 @@ class FaxLogsController < ApplicationController
 			@users = {}
 			organization.users.each_with_index do |user_object, index|
 				@users[index] = {}
-				@users[index][:email] = user_object.email
-				@users[index][:caller_id_number] = user_object.caller_id_number
-				@users[index][:user_created_at] = user_object.created_at
-				@users[index][:fax_tag] = user_object.fax_tag
+				@users[index]['email'] = user_object.email
+				@users[index]['caller_id_number'] = user_object.caller_id_number
+				@users[index]['user_created_at'] = user_object.created_at
+				@users[index]['fax_tag'] = user_object.fax_tag
 			end
 
 			@fax_numbers = {}
@@ -74,13 +74,13 @@ class FaxLogsController < ApplicationController
 
 			fax_log = FaxLog.get_first_twenty_five_faxes({ sender_organization_fax_tag: organization.fax_tag }, organization.id, @fax_numbers)
 
-			@fax_numbers[:All] = {}
-			@fax_numbers[:All]['label'] = "All"
+			@fax_numbers['All'] = {}
+			@fax_numbers['All']['label'] = "All"
 
-			@users[:All] = {}
-			@users[:All]['label'] = "All"
+			@users['All'] = {}
+			@users['All']['label'] = "All"
 
-			@sorted_faxes = FaxLog.format_first_twenty_five_faxes_manager(fax_log, @fax_numbers, organization, @users)
+			@sorted_faxes = FaxLog.format_faxes(current_user, fax_log, @fax_numbers, organization, @users)
 
 		else #UserPermission::USER
 			organization = Organization.find(current_user.organization_id)
@@ -94,21 +94,21 @@ class FaxLogsController < ApplicationController
 			end
 
 			@users = {} # This looks odd b/c it allows code reuse in other methods
-			@users[:user] = {}
-			@users[:user][:email] = current_user.email
-			@users[:user][:caller_id_number] = current_user.caller_id_number
-			@users[:user][:user_created_at] = current_user.created_at
-			@users[:user][:fax_tag] = current_user.fax_tag
+			@users['user'] = {}
+			@users['user']['email'] = current_user.email
+			@users['user']['caller_id_number'] = current_user.caller_id_number
+			@users['user']['user_created_at'] = current_user.created_at
+			@users['user']['fax_tag'] = current_user.fax_tag
 
 			fax_log = FaxLog.get_first_twenty_five_faxes({ sender_email_fax_tag: current_user.fax_tag }, organization.id, @fax_numbers)
 
-			@fax_numbers[:All] = {}
-			@fax_numbers[:All]['label'] = "All"
+			@fax_numbers['All'] = {}
+			@fax_numbers['All']['label'] = "All"
 
-			@users[:All] = {}
-			@users[:All]['label'] = "All"
+			@users['All'] = {}
+			@users['All']['label'] = "All"
 
-			@sorted_faxes = FaxLog.format_first_twenty_five_faxes_user(fax_log, @fax_numbers, organization, @users)
+			@sorted_faxes = FaxLog.format_faxes(fax_log, @fax_numbers, organization, @users)
 		end
 	end
 
