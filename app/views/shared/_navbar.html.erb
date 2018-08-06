@@ -58,14 +58,12 @@
     		</a>
     	</li>
 
-    	<% if is_manager? %>
-    		<li class="nav-item" data-toggle="tooltip" data-placement="right" title="Fax Logs">
-	      	<a class="nav-link" href="/fax_logs">
-		    		<i class="fa fa-fw fa-pie-chart"></i>
-			   		<span class="nav-link-text">&nbsp;Fax Logs</span>
-			 		</a>
-				</li>
-    	<% end %>
+  		<li class="nav-item" data-toggle="tooltip" data-placement="right" title="Fax Logs">
+      	<a class="nav-link" href="/fax_logs">
+	    		<i class="fa fa-fw fa-pie-chart"></i>
+		   		<span class="nav-link-text">&nbsp;Fax Logs</span>
+		 		</a>
+			</li>
 
     	<li class="nav-item logout" data-toggle="tooltip" data-placement="right" title="Log Out">
 				<form action="/users/sign_out/<%= current_user.id %>" method="POST" class="nav-link">
