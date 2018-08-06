@@ -4,110 +4,41 @@ class FaxLogsController < ApplicationController
 	before_action :set_phaxio_creds
 
 	def index
+			@fax_numbers = {}
+			@users = {}
+
 		if is_admin?
 			# Create a hash to reference for Organizations. Prevents program from querying the database constantly
 			@organizations = {}
-			Organization.all.each do |organization_object| 
-				@organizations[organization_object.fax_tag] = {}
-				@organizations[organization_object.fax_tag]['label'] = organization_object.label
-				@organizations[organization_object.fax_tag]['org_created_at'] = organization_object.created_at
-				@organizations[organization_object.fax_tag]['org_id'] = organization_object.id
-			end
+			Organization.all.each { |organization_obj| FaxLog.create_orgs_hash(@organizations, organization_obj) }
 
-			# Same logic as the @organizations hash created above
-			@fax_numbers = {}
-			FaxNumber.all.each do |fax_num| 
-				if fax_num.organization 
-					@fax_numbers[fax_num.fax_number] = {}
-					@fax_numbers[fax_num.fax_number]['label'] = fax_num.organization.label
-					@fax_numbers[fax_num.fax_number]['org_created_at'] = fax_num.organization.created_at
-					@fax_numbers[fax_num.fax_number]['org_id'] = fax_num.organization.id
-				end
-			end
+			# Same logic as the @organizations hash created above. Gets all Fax Numbers w/an associated Organization
+			FaxNumber.where.not(organization_id: nil).each { |fax_number_obj| FaxLog.create_fax_nums_hash(@fax_numbers, fax_number_obj) }
 
-			@users = {}
-			User.all.each_with_index do |user_object, index|
-				if user_object.user_permission.permission != UserPermission::ADMIN #admin does not send/receive faxes
-					@users[index] = {}
-					@users[index]['email'] = user_object.email
-					@users[index]['caller_id_number'] = user_object.caller_id_number
-					@users[index]['user_created_at'] = user_object.created_at
-					@users[index]['fax_tag'] = user_object.fax_tag
-					@users[index]['org_id'] = user_object.organization.id if user_object.user_permission.permission != UserPermission::ADMIN
-				end
-			end
-
-			@fax_numbers['All'] = {}
-			@fax_numbers['All']['label'] = "All"
-
-			@organizations['All'] = {}
-			@organizations['All']['label'] = 'All'
-
-			@users['All'] = {}
-			@users['All']['label'] = "All"
+			User.all.each_with_index { |user_obj, index| FaxLog.create_users_hash(@users, user_obj, index) }
 
 			fax_log = FaxLog.get_first_twenty_five_faxes
-			@sorted_faxes = FaxLog.format_faxes(current_user, fax_log, @organizations, @fax_numbers, @users)
+		else
+			# Find a single Organization b/c User and Manager can only be in 1
+			org = Organization.find(current_user.organization_id)
 
-		elsif is_manager?
-			organization = Organization.find(current_user.organization_id)
+			# Isolate Fax Numbers w/the found organization's ID
+			FaxNumber.where({ organization_id: org.id }).each { |fax_num_obj| FaxLog.create_fax_nums_hash(@fax_numbers = {}, fax_num_obj) }
 
-			@users = {}
-			organization.users.each_with_index do |user_object, index|
-				@users[index] = {}
-				@users[index]['email'] = user_object.email
-				@users[index]['caller_id_number'] = user_object.caller_id_number
-				@users[index]['user_created_at'] = user_object.created_at
-				@users[index]['fax_tag'] = user_object.fax_tag
-			end
+			# Get users in an Organization is viewer is Manager, otherwise just use the current user.
+			criteria_array = is_manager? ? org.users : [current_user] # current_user is in array for iterating/code reuse
+			criteria_array.each_with_index { |user_obj, index| FaxLog.create_users_hash(@users = {}, user_obj, index) }
 
-			@fax_numbers = {}
-			FaxNumber.where({ organization_id: organization.id }).each do |fax_num| 
-				if fax_num.organization 
-					@fax_numbers[fax_num.fax_number] = {}
-					@fax_numbers[fax_num.fax_number]['label'] = fax_num.organization.label
-					@fax_numbers[fax_num.fax_number]['org_created_at'] = fax_num.organization.created_at
-					@fax_numbers[fax_num.fax_number]['org_id'] = fax_num.organization.id
-				end
-			end
-
-			fax_log = FaxLog.get_first_twenty_five_faxes({ sender_organization_fax_tag: organization.fax_tag }, organization.id, @fax_numbers)
-
-			@fax_numbers['All'] = {}
-			@fax_numbers['All']['label'] = "All"
-
-			@users['All'] = {}
-			@users['All']['label'] = "All"
-
-			@sorted_faxes = FaxLog.format_faxes(current_user, fax_log, @fax_numbers, organization, @users)
-
-		else #UserPermission::USER
-			organization = Organization.find(current_user.organization_id)
-
-			@fax_numbers = {}
-			current_user.fax_numbers.each do |fax_num| 
-				@fax_numbers[fax_num.fax_number] = {}
-				@fax_numbers[fax_num.fax_number]['label'] = fax_num.organization.label
-				@fax_numbers[fax_num.fax_number]['org_created_at'] = fax_num.organization.created_at
-				@fax_numbers[fax_num.fax_number]['org_id'] = fax_num.organization.id
-			end
-
-			@users = {} # This looks odd b/c it allows code reuse in other methods
-			@users['user'] = {}
-			@users['user']['email'] = current_user.email
-			@users['user']['caller_id_number'] = current_user.caller_id_number
-			@users['user']['user_created_at'] = current_user.created_at
-			@users['user']['fax_tag'] = current_user.fax_tag
-
-			fax_log = FaxLog.get_first_twenty_five_faxes({ sender_email_fax_tag: current_user.fax_tag }, organization.id, @fax_numbers)
-
-			@fax_numbers['All'] = {}
-			@fax_numbers['All']['label'] = "All"
-
-			@users['All'] = {}
-			@users['All']['label'] = "All"
-
-			@sorted_faxes = FaxLog.format_faxes(current_user, fax_log, @fax_numbers, organization, @users)
+			fax_tag_criteria = is_manager? ? {sender_organization_fax_tag: org.fax_tag} : {sender_email_fax_tag: current_user.fax_tag}
+			fax_log = FaxLog.get_first_twenty_five_faxes(fax_tag_criteria, org.id, @fax_numbers)
+		end
+		
+		if is_admin?
+			FaxLog.add_all_attribute_to_hashes( [@users, @fax_numbers, @organizations] )
+			@sorted_faxes = FaxLog.format_faxes(current_user, fax_log, @fax_numbers, @organizations,  @users)
+		else
+			FaxLog.add_all_attribute_to_hashes( [@users, @fax_numbers] )
+			@sorted_faxes = FaxLog.format_faxes(current_user, fax_log, @fax_numbers, org, @users)
 		end
 	end
 
