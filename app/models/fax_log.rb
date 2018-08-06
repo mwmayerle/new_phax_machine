@@ -28,10 +28,9 @@ class FaxLog < ApplicationRecord
 					:per_page => per_page_number
 				})
 				fax_data.push(tag_data.raw_data)
-
+				
 			else #fax_tag[:sender_email_fax_tag]
 				per_page_number =  20 / fax_numbers.length
-
 				# First search for faxes using each fax_number associated with the user (user.fax_numbers)
 				fax_numbers.keys.each do |fax_number|
 					current_data = Phaxio::Fax.list({

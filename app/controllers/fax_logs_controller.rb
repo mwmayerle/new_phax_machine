@@ -5,8 +5,6 @@ class FaxLogsController < ApplicationController
 
 	def index
 		if is_admin?
-			fax_log = FaxLog.get_first_twenty_five_faxes
-			
 			# Create a hash to reference for Organizations. Prevents program from querying the database constantly
 			@organizations = {}
 			Organization.all.each do |organization_object| 
@@ -48,6 +46,7 @@ class FaxLogsController < ApplicationController
 			@users['All'] = {}
 			@users['All']['label'] = "All"
 
+			fax_log = FaxLog.get_first_twenty_five_faxes
 			@sorted_faxes = FaxLog.format_faxes(current_user, fax_log, @organizations, @fax_numbers, @users)
 
 		elsif is_manager?
@@ -108,7 +107,7 @@ class FaxLogsController < ApplicationController
 			@users['All'] = {}
 			@users['All']['label'] = "All"
 
-			@sorted_faxes = FaxLog.format_faxes(fax_log, @fax_numbers, organization, @users)
+			@sorted_faxes = FaxLog.format_faxes(current_user, fax_log, @fax_numbers, organization, @users)
 		end
 	end
 
