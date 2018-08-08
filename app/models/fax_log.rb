@@ -81,8 +81,11 @@ class FaxLog < ApplicationRecord
 						end
 					end
 
+
+					# {"+12035834392"=>{"label"=>"Numbers With 200 Area Codes", "org_created_at"=>Thu, 02 Aug 2018 20:49:16 UTC +00:00, "org_id"=>1}
+
 					# Checks to make sure that the fax object existed after the organization was created
-					if fax_numbers[fax_object['to_number']] && fax_object_is_younger?(fax_object['created_at'].to_time, fax_numbers[fax_object['to_number']]['org_created_at'].to_time) 
+					if fax_numbers[fax_object['to_number']] && fax_object_is_younger?(fax_object['created_at'].to_time, fax_numbers[fax_object['to_number']]['org_created_at'].to_time)
 						fax_data[fax_object['id']]['organization'] = fax_numbers[fax_object['to_number']]['label']
 					end
 
@@ -127,7 +130,6 @@ class FaxLog < ApplicationRecord
 		end
 
 		def format_fax_log_time(time)
-			# https://ruby-doc.org/core-2.2.0/Time.html#method-i-strftime
 			time.to_time.strftime("%I:%M:%S%P - %m/%d/%y")
 		end
 

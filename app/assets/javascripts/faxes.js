@@ -34,7 +34,6 @@ function addUploadedFile() {
 					<input type='file' id='file${fileCounter}' class='drag-drop-input' name='fax[files][file${fileCounter}]'>
 				</div>`
 			);
-
 		} else {
 			createAlert('danger', 'A maximum of 10 files per fax can be attached.')
 		}

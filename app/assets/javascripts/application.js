@@ -41,9 +41,9 @@ $(document).ready(() => {
 	collapseSidebar();
 
 	// See fax_logs.js
-	limitSelectableFaxNumbers();
-	limitSelectableUser();
-	limitSelectableOrg();
+	faxSelectOnChange();
+	orgSelectOnChange();
+	userSelectOnChange();
 	changeStatusColor();
 	loadDatePicker();
 });

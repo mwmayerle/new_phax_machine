@@ -89,7 +89,6 @@
 		<thead class="thead-dark">
 			<tr>
 				<th></th>
-				<th class="text-center">Fax ID</th>
 				<% if is_admin? %>
 					<th class="text-center">Organization</th>
 					<th class="text-center">Sent By</th>
@@ -107,7 +106,6 @@
 			<% @sorted_faxes.each do |fax_id_key, fax_data| %>
 				<tr>
 					<td class="text-center"><i class="fa fa-fw fa-download" aria-hidden="true"></i></td>
-					<td class="text-center"><%= "#" << fax_id_key.to_s %></td>
 					<% if is_admin? %>
 						<td class="text-center"><%= fax_data['organization'] %></td>
 						<td class="text-center"><%= fax_data['sent_by'] %></td>
