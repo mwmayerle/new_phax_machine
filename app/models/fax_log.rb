@@ -3,59 +3,47 @@ class FaxLog < ApplicationRecord
 	class << self
 		def get_first_twenty_five_faxes(fax_tag = nil, organization_id = nil, fax_numbers = nil, fax_data = [])
 			if fax_tag.nil? # Admin gets everything
-				initial_data = Phaxio::Fax.list({:per_page => 20}) #created_before defaults to now, created_after defaults to a week ago
+				options = { 
+					:per_page => 20,
+					:status => "success",
+					:created_before => Time.now,
+					:created_after => 1.years.ago
+				}
+				initial_data = Phaxio::Fax.list(options) #created_before defaults to now, created_after defaults to a week ago
 				fax_data.push(initial_data.raw_data)
 
-			elsif fax_tag[:sender_organization_fax_tag] != nil # Manager
+			else
 				per_page_number =  20 / fax_numbers.length
-
 				# First search for faxes using each fax_number associated with the Organization
 				fax_numbers.keys.each do |fax_number|
-					current_data = Phaxio::Fax.list({
+					options = {
 						:phone_number => fax_number,
-						:per_page => per_page_number
-					})
+						:status => "success",
+						:per_page => per_page_number,
+						:created_before => Time.now,
+						:created_after => 1.years.ago
+					}
+					current_data = Phaxio::Fax.list(options)
 					fax_data.push(current_data.raw_data)
 				end
 
-				# Then search for faxes via organization's fax tag and insert these faxes. Searching by fax number only
-				# does not include these.
-				tag_data = Phaxio::Fax.list({
-					:tag => { 
-						:sender_organization_fax_tag => fax_tag[:sender_organization_fax_tag]
-					},
+				# Then search for faxes via organization or user's fax tag and insert these faxes. Searching by fax
+				# number only does not include these.
+				options = {
+					:tag => fax_tag,
+					:status => "success",
 					:created_before => Time.now,
 					:created_after => 1.years.ago,
 					:per_page => per_page_number
-				})
+				}
+				tag_data = Phaxio::Fax.list(options)
 				fax_data.push(tag_data.raw_data)
-				
-			else #fax_tag[:sender_email_fax_tag]
-				per_page_number =  20 / fax_numbers.length
-				# First search for faxes using each fax_number associated with the user (user.fax_numbers)
-				fax_numbers.keys.each do |fax_number|
-					current_data = Phaxio::Fax.list({
-						:phone_number => fax_number,
-						:per_page => per_page_number
-					})
-					fax_data.push(current_data.raw_data)
-				end
-
-				# Then search for faxes via user's fax tag and insert these faxes. Searching by fax number only does
-				# not include these. This currently brings back data from previous fax_numbers the user was
-				# associated with as well.
-				tag_data = Phaxio::Fax.list({
-					:tag => { 
-						:sender_email_fax_tag => fax_tag[:sender_email_fax_tag]
-					},
-					:created_before => Time.now,
-					:created_after => 1.years.ago,
-					:per_page => per_page_number
-				})
-				fax_data.push(tag_data.raw_data)
-
 			end
 			fax_data
+		end
+
+		def get_filtered_faxes(options)
+			
 		end
 
 		def format_faxes(current_user, fax_log, organizations, fax_numbers, users, fax_data = {}, all_faxes = [])
@@ -80,9 +68,6 @@ class FaxLog < ApplicationRecord
 							fax_data[fax_object['id']]['sent_by'] = user_obj_data['email']
 						end
 					end
-
-
-					# {"+12035834392"=>{"label"=>"Numbers With 200 Area Codes", "org_created_at"=>Thu, 02 Aug 2018 20:49:16 UTC +00:00, "org_id"=>1}
 
 					# Checks to make sure that the fax object existed after the organization was created
 					if fax_numbers[fax_object['to_number']] && fax_object_is_younger?(fax_object['created_at'].to_time, fax_numbers[fax_object['to_number']]['org_created_at'].to_time)
@@ -157,7 +142,7 @@ class FaxLog < ApplicationRecord
 		end
 
 		def add_all_attribute_to_hashes(hashes)
-			hashes.each { |hash_obj| hash_obj['All'] = { 'label' => 'All' } }
+			hashes.each { |hash_obj| hash_obj['all'] = { 'label' => 'all' } }
 		end
 
 	end

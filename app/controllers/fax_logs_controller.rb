@@ -1,6 +1,5 @@
 class FaxLogsController < ApplicationController
 	include SessionsHelper
-	
 	before_action :set_phaxio_creds
 
 	def index
@@ -32,7 +31,7 @@ class FaxLogsController < ApplicationController
 			fax_tag_criteria = is_manager? ? {sender_organization_fax_tag: org.fax_tag} : {sender_email_fax_tag: current_user.fax_tag}
 			fax_log = FaxLog.get_first_twenty_five_faxes(fax_tag_criteria, org.id, @fax_numbers)
 		end
-		
+
 		if is_admin?
 			FaxLog.add_all_attribute_to_hashes([@users, @fax_numbers, @organizations])
 			@sorted_faxes = FaxLog.format_faxes(current_user, fax_log, @organizations, @fax_numbers, @users)
@@ -40,14 +39,44 @@ class FaxLogsController < ApplicationController
 			FaxLog.add_all_attribute_to_hashes( [@users, @fax_numbers] )
 			@sorted_faxes = FaxLog.format_faxes(current_user, fax_log, @fax_numbers, org, @users)
 		end
+
+		respond_to do |format|
+			format.html {}
+			format.js {}
+			format.json {
+				render json: @sorted_faxes
+			}
+		end
 	end
 
 	# create in this controller is for user-designated filtering
 	def create
-		start_time = log_filter_params[:start_time].to_datetime.rfc3339 if params[:fax_log][:start_time] != ""
-		end_time = log_filter_params[:end_time].to_datetime.rfc3339 if params[:fax_log][:end_time] != ""
-		fax_number = Phonelib.parse(log_filter_params[:fax_number].prepend('1')).e164 if params[:fax_log][:fax_number] != "All"
-		org_fax_tag = log_filter_params[:organization] if params[:fax_log][:organization] != "All" && is_admin?
+		options = {}
+		options[:tag] = {}
+		options[:per_page] = 1000
+		options[:start_time] = log_filter_params[:start_time].to_datetime.rfc3339 if params[:fax_log][:start_time] != ""
+		options[:end_time] = log_filter_params[:end_time].to_datetime.rfc3339 if params[:fax_log][:end_time] != ""
+		options[:status] = log_filter_params[:status]
+
+		if params[:fax_log][:fax_number] != "all" || params[:fax_log][:fax_number] != "all-linked"
+			options[:fax_number] = Phonelib.parse(log_filter_params[:fax_number].prepend('1')).e164 if params[:fax_log][:fax_number]
+		end
+
+		if params[:fax_log][:organization] != "all" || params[:fax_log][:organization] != "all" && is_admin?
+			options[:tag][:sender_organization_fax_tag] = log_filter_params[:organization]
+		end
+
+		if params[:fax_log][:user] != "all" || params[:fax_log][:user] != "all" && is_admin?
+			options[:tag][:sender_email_fax_tag] = log_filter_params[:user]
+		end
+
+		@sorted_faxes = FaxLog.get_filtered_faxes(options)
+
+		respond_to do |format|
+			format.html { }
+			format.js { }
+			format.json { }
+		end
 	end
 
 	private
@@ -56,6 +85,6 @@ class FaxLogsController < ApplicationController
 		end
 
 		def log_filter_params
-			params.require(:fax_log).permit(:start_time, :end_time, :fax_number, :organization, :user)
+			params.require(:fax_log).permit(:start_time, :end_time, :fax_number, :organization, :user, :status)
 		end
 end
