@@ -12,33 +12,16 @@
 //
 
 //= require jquery3
+//= require jquery-ui/widgets/datepicker
 //= require popper
 //= require bootstrap
 
 //= require rails-ujs
 //= require activestorage
 //= require bootstrap-sprockets
-//= require_tree .
 
-$(document).ready(() => {
-	informationBoxMouseOver();
-
-	// See organization.js
-	deleteOrganizationPopup();
-
-	// See faxes.js
-	addUploadedFile();
-	removeUploadedFile();
-	dragOverColorChange();
-	dragLeaveColorChange();
-	adjustAttachedFileCount();
-
-	// See users.js
-	revokeUserPopup();
-
-	// See navbar.js
-	collapseSidebar();
-});
+//= require ./_setup
+//= require_tree ./pages
 
 var informationBoxMouseOver = function() {
 	$(".information-box").hover(function(event) {
@@ -56,4 +39,4 @@ function createAlert(type, message) {
 	alert.append(closeAlertButton);
 	alert.append(message);
 	$("#flash-messages").append(alert);
-}
+};
