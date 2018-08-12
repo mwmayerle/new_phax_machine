@@ -13,7 +13,7 @@
 <% end %>
 
 <div class="filtering-form">
-	<%= form_for(:fax_log, class: "form-inline", remote: true) do |f| %>
+	<%= form_with(url: fax_logs_path, class: "form-inline") do |f| %>
 		<div class="row">
 
 			<div class="form-group col-md-2">
@@ -89,7 +89,7 @@
 			</div>
 
 			<div class="form-group col-md-1">
-				<button type="submit" value="Filter" class="btn btn-success force-down-button">
+				<button type="submit" id="filter-button" value="Filter" class="btn btn-success force-down-button">
 					<i class="fa fa-fw fa-search" aria-hidden="true"></i>&nbsp;&nbsp;Filter
 				</button>
 			</div>
@@ -119,13 +119,13 @@
 			<% end %>
 			<th class="text-center">From Number</th>
 			<th class="text-center">To Number</th>
-			<th class="text-center">Status</th>
+			<th style="text-indent:22px;">Status</th>
 			<th class="text-center">Time</th>
 			<th class="text-center">File</th>
 		</tr>
 	</thead>
 	<tbody id="table-body-start">
-		<%#= render partial: 'tbody', locals: { sorted_faxes: @sorted_faxes }, layout: false %>
+		<%= render partial: 'tbody', locals: { sorted_faxes: @sorted_faxes }, layout: false %>
 	</tbody>
 </table>
 <div id="load-icon" class="row">

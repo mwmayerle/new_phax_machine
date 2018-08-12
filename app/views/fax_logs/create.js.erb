@@ -1,0 +1,6 @@
+var response = <%= @sorted_faxes %>
+console.log(response)
+if (response) {
+	$("#load-icon").hide();
+	buildTableRows(response);
+}
