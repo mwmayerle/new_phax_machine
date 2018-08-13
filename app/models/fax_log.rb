@@ -4,12 +4,13 @@ class FaxLog < ApplicationRecord
 	#TODO iterate thru deleted orgs (add them to paranoia) and then put a symbol next to them to indicate they have been ripep'ed
 	class << self
 		def get_faxes(current_user, options, fax_numbers = nil, fax_data = [])
-
+			p options
 			if options[:tag].nil? # Admin gets everything
 				initial_data = Phaxio::Fax.list({
 					created_before: options[:end_time],
 					created_after: options[:start_time],
-					per_page: options[:per_page]
+					per_page: options[:per_page],
+					status: options[:status]
 				}) # created_before defaults to now, created_after defaults to a week ago
 				fax_data.push(initial_data.raw_data)
 
@@ -38,9 +39,13 @@ class FaxLog < ApplicationRecord
 
 			options[:tag] = filtered_params[:tag] unless filtered_params[:tag].nil?
 
-			filtered_params[:status] =~ /[all]/i ? options.delete(:status) : options[:status] = filtered_params[:status]
+			if filtered_params[:status]
+				if filtered_params[:status] == "all"
+				else
+					options[:status] = filtered_params[:status]
+				end
+			end
 
-			# in the next 3 if blockas, the regex is looking for 'all' or 'all-linked'
 			if filtered_params[:fax_number]
 				if filtered_params[:fax_number] =~ /[all]/i
 				else
@@ -120,7 +125,7 @@ class FaxLog < ApplicationRecord
 							fax_data[fax_object['id']]['sent_by'] = user_obj_data['email']
 						end
 					end
-					
+
 				end #the if/else for fax direction
 
 				fax_data[fax_object['id']]['created_at'] = format_fax_log_time(fax_object['created_at'])
