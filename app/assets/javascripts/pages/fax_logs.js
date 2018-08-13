@@ -101,32 +101,32 @@ function getTodaysFormattedDate () {
 };
 
 function buildTableRows(faxData) {
-		let sentIcon = `<i style="color:green" class="fa fa-fw fa-arrow-circle-right" aria-hidden="true"></i>`;
-		let receivedIcon = `<i style="color:darkblue" class="fa fa-fw fa-arrow-circle-left" aria-hidden="true"></i>`;
+	let sentIcon = `<i style="color:green" class="fa fa-fw fa-arrow-circle-right" aria-hidden="true"></i>`;
+	let receivedIcon = `<i style="color:darkblue" class="fa fa-fw fa-arrow-circle-left" aria-hidden="true"></i>`;
 
-		Object.keys(faxData).forEach((faxDatum) => {
-			if (faxData[faxDatum].sent_by === undefined) { faxData[faxDatum].sent_by = ""; };
-			let heading = `<tr>
-				<td class="text-center">
-						${ (faxData[faxDatum].direction === "Sent") ? sentIcon : receivedIcon }
-				</td>`; //it will concatenate the rest of the string on later to close the <tr>
+	Object.keys(faxData).forEach((faxDatum) => {
+		if (faxData[faxDatum].sent_by === undefined) { faxData[faxDatum].sent_by = ""; };
+		let heading = `<tr>
+			<td class="text-center">
+					${ (faxData[faxDatum].direction === "Sent") ? sentIcon : receivedIcon }
+			</td>`; //it will concatenate the rest of the string on later to close the <tr>
 
-			if ($('th').length === 8) { heading = heading.concat('', `<td class="text-center">${faxData[faxDatum].organization}</td>`); }
-			// Admin has 8 <th>, Manager has 7 <th>, User has only 6. These if blocks add/remove data for these permissions
-			if ($('th').length > 6) { heading = heading.concat('', `<td class="text-center">${faxData[faxDatum].sent_by}</td>`); }
+		if ($('#fax-log-table th').length === 8) { heading = heading.concat('', `<td class="text-center">${faxData[faxDatum].organization}</td>`); }
+		// Admin has 8 <th>, Manager has 7 <th>, User has only 6. These if blocks add/remove data for these permissions
+		if ($('#fax-log-table th').length > 6) { heading = heading.concat('', `<td class="text-center">${faxData[faxDatum].sent_by}</td>`); }
 
-			heading = heading.concat('', `
-				<td class="text-center">${faxData[faxDatum].from_number}</td>
-				<td class="text-center">${faxData[faxDatum].to_number}</td>
-				<td class="status">${faxData[faxDatum].status}</td>
-				<td class="text-center">${faxData[faxDatum].created_at}</td>
-				<td class="text-center"><i class="fa fa-fw fa-download" aria-hidden="true"></i></td>
-			</tr>
-			`);
-			$("tbody").prepend(heading);
-		});
-		changeStatusColor();
-	};
+		heading = heading.concat('', `
+			<td class="text-center">${faxData[faxDatum].from_number}</td>
+			<td class="text-center">${faxData[faxDatum].to_number}</td>
+			<td class="status">${faxData[faxDatum].status}</td>
+			<td class="text-center">${faxData[faxDatum].created_at}</td>
+			<td class="text-center"><i class="fa fa-fw fa-download" aria-hidden="true"></i></td>
+		</tr>
+		`);
+		$("tbody").prepend(heading);
+	});
+	changeStatusColor();
+};
 
 function changeStatusColor() {
 	$.each($('.status'), function() { // $(this) is the entire <td> tag within the $.each()

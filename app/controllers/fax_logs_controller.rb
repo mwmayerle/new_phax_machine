@@ -18,32 +18,26 @@ class FaxLogsController < ApplicationController
 			FaxLog.add_all_attribute_to_hashes( [@users, @fax_numbers] )
 			@sorted_faxes = FaxLog.format_faxes(current_user, fax_log, @fax_numbers, @organization, @users)
 		end
-
-		respond_to do |format|
-			format.html {}
-			format.js {}
-		end
 	end
 
-	# create in this controller is for user-designated filtering
+	# create method in this controller is for user-designated filtering
 	def create
 		options = FaxLog.build_options(current_user, filtering_params)
 		options[:per_page] = 1000
-		p options
 		fax_log = FaxLog.get_faxes(current_user, options, @fax_numbers)
 
 		if is_admin?
 			FaxLog.add_all_attribute_to_hashes([@fax_numbers, @organizations])
-			@sorted_faxes = FaxLog.format_faxes(current_user, fax_log, @organizations, @fax_numbers)
+			@sorted_faxes = FaxLog.format_faxes(current_user, fax_log, @organizations, @fax_numbers, @users)
 		else
 			FaxLog.add_all_attribute_to_hashes( [@users, @fax_numbers] )
 			@sorted_faxes = FaxLog.format_faxes(current_user, fax_log, @organization, @fax_numbers, @users)
 		end
 
 		respond_to do |format|
-			format.html {}
-			format.js {}
-			format.json { render json: @sorted_faxes }
+			format.html
+			format.js
+			format.json { render :json => @sorted_faxes }
 		end
 	end
 
@@ -86,9 +80,12 @@ class FaxLogsController < ApplicationController
 
 		# Get users in an Organization is viewer is Manager, otherwise just use the current user.
 		def set_users
-			return if is_admin?
 			@users = {}
-			criteria_array = is_manager? ? @organization.users : [current_user] # current_user is in array for iterating/code reuse
-			criteria_array.each_with_index { |user_obj, index| FaxLog.create_users_hash(@users, user_obj, index) }
+			if is_admin?
+				User.all.each_with_index { |user_obj, index| FaxLog.create_users_hash(@users, user_obj, index) if user_obj.id != 1 }
+			else
+				criteria_array = is_manager? ? @organization.users : [current_user] # current_user is in array for iterating/code reuse
+				criteria_array.each_with_index { |user_obj, index| FaxLog.create_users_hash(@users, user_obj, index) }
+			end
 		end
 end

@@ -1,9 +1,16 @@
+require 'date'
+
 class FaxLog < ApplicationRecord
 	#TODO iterate thru deleted orgs (add them to paranoia) and then put a symbol next to them to indicate they have been ripep'ed
 	class << self
 		def get_faxes(current_user, options, fax_numbers = nil, fax_data = [])
+
 			if options[:tag].nil? # Admin gets everything
-				initial_data = Phaxio::Fax.list(options) #created_before defaults to now, created_after defaults to a week ago
+				initial_data = Phaxio::Fax.list({
+					created_before: options[:end_time],
+					created_after: options[:start_time],
+					per_page: options[:per_page]
+				}) # created_before defaults to now, created_after defaults to a week ago
 				fax_data.push(initial_data.raw_data)
 
 			else
@@ -26,30 +33,41 @@ class FaxLog < ApplicationRecord
 		end
 
 		def build_options(current_user, filtered_params, options = {})
-			# time if blocks are using ' .to_s == "" ' instead of something like .nil? b/c ' nil.to_s = "" ''
-			options[:start_time] = add_start_time(filtered_params[:start_time])
-			options[:end_time] = add_end_time(filtered_params[:end_time])
+			options[:start_time] = add_start_time(filtered_params[:start_time]) if filtered_params[:start_time]
+			options[:end_time] = add_end_time(filtered_params[:end_time]) if filtered_params[:end_time]
 
 			options[:tag] = filtered_params[:tag] unless filtered_params[:tag].nil?
-			options[:status] = filtered_params[:status] if filtered_params[:status] != "All"
 
-			# in the next 3 if blockas, the regex is looking for 'all' or 'all-linked'. =~ returns nil if no matches, !!nil is false
-			if filtered_params[:fax_number] =~ /[all]/i
-				options[:fax_number] = Phonelib.parse(filtered_params[:fax_number].prepend('1')).e164
+			filtered_params[:status] =~ /[all]/i ? options.delete(:status) : options[:status] = filtered_params[:status]
+
+			# in the next 3 if blockas, the regex is looking for 'all' or 'all-linked'
+			if filtered_params[:fax_number]
+				if filtered_params[:fax_number] =~ /[all]/i
+				else
+					options[:fax_number] = Phonelib.parse(filtered_params[:fax_number]).e164
+				end
 			end
 
-			if filtered_params[:organization] =~ /[all]/i && current_user.user_permission.permission == UserPermission::ADMIN
-				options[:tag] = { :sender_organization_fax_tag => filtered_params[:organization] }
+			if filtered_params[:organization]
+				if filtered_params[:organization] =~ /[all]/i #&& current_user.user_permission.permission == UserPermission::ADMIN
+				else
+					options[:tag] = { :sender_organization_fax_tag => filtered_params[:organization] }
+				end
 			end
 
-			if filtered_params[:user] =~ /[all]/i && current_user.user_permission.permission == UserPermission::MANAGER
-				options[:tag] = { :sender_email_fax_tag => filtered_params[:user] }
+			if filtered_params[:user]
+				if filtered_params[:user] =~ /[all]/i && current_user.user_permission.permission == UserPermission::MANAGER
+				else
+					options[:tag] = { :sender_email_fax_tag => filtered_params[:user] }
+				end
 			end
+
 			options
 		end
 
 		def format_faxes(current_user, fax_log, organizations, fax_numbers, users = nil, fax_data = {})
 			all_faxes = sort_faxes(fax_log)
+
 			all_faxes.each do |fax_object|
 				fax_data[fax_object['id']] = {}
 				fax_data[fax_object['id']]['status'] = fax_object['status'].titleize
@@ -57,11 +75,9 @@ class FaxLog < ApplicationRecord
 
 				if fax_object['direction'] == 'received'
 
-					if current_user.user_permission.permission != UserPermission::ADMIN # Admin has no users object to work with
-						users.each do |user_obj_key, user_obj_data|
-							if fax_object['from_number'] == user_obj_data['caller_id_number'] && fax_object_is_younger?(fax_object['created_at'], user_obj_data['user_created_at']) 
-								fax_data[fax_object['id']]['sent_by'] = user_obj_data['email']
-							end
+					users.each do |user_obj_key, user_obj_data|
+						if fax_object['from_number'] == user_obj_data['caller_id_number'] && fax_object_is_younger?(fax_object['created_at'], user_obj_data['user_created_at']) 
+							fax_data[fax_object['id']]['sent_by'] = user_obj_data['email']
 						end
 					end
 
@@ -99,14 +115,12 @@ class FaxLog < ApplicationRecord
 						fax_data[fax_object['id']]['to_number'] = "Multiple"
 					end
 
-				if current_user.user_permission.permission != UserPermission::ADMIN # Admin has no users object to work with
 					users.each do |user_obj_key, user_obj_data|
 						if fax_object['tags']['sender_email_fax_tag'] == user_obj_data['fax_tag']
 							fax_data[fax_object['id']]['sent_by'] = user_obj_data['email']
 						end
 					end
-				end
-
+					
 				end #the if/else for fax direction
 
 				fax_data[fax_object['id']]['created_at'] = format_fax_log_time(fax_object['created_at'])
@@ -114,13 +128,19 @@ class FaxLog < ApplicationRecord
 			fax_data
 		end
 
+		def format_date(input_time)
+			original_year = input_time[6..-1]
+			original_month = input_time[0..2]
+			original_day = input_time[3..5]
+			original_day.concat(original_month).concat(original_year)
+		end
 
 		def add_start_time(input_time)
-			start_time = input_time.to_s == "" ? 7.days.ago.to_datetime.rfc3339 : input_time.to_datetime.rfc3339
+			input_time.to_s == "" ? 7.days.ago.to_datetime : format_date(input_time).to_datetime
 		end
 
 		def add_end_time(input_time)
-			end_time = input_time.to_s == "" ? DateTime.now.rfc3339 : input_time.to_datetime.rfc3339
+			input_time.to_s == "" ? DateTime.now : format_date(input_time).to_datetime
 		end
 
 		def fax_object_is_younger?(fax_object_timestamp, comparison_obj_timestamp)
