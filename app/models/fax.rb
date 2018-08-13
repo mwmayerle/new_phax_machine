@@ -46,7 +46,7 @@ class Fax < ApplicationRecord
 		end
 
 		def set_phaxio_creds
-			# Phaxio::Config.api_endpoint = "https://api.staging.phaxio.com/v2/".freeze # <-- REMOVE THIS LINE TO GET OFF OF STAGING CREDENTIALS
+			Phaxio::Config.api_endpoint = "https://api.staging.phaxio.com/v2/".freeze # <-- REMOVE THIS LINE TO GET OFF OF STAGING CREDENTIALS
 			Phaxio.api_key = ENV.fetch('PHAXIO_API_KEY')
 			Phaxio.api_secret = ENV.fetch('PHAXIO_API_SECRET')
 			Phaxio.callback_token = ENV.fetch('PHAXIO_CALLBACK_TOKEN')
