@@ -5,19 +5,21 @@ phaxMachine.pages['fax-logs'] = {
 		organizationOptions = $("#org-select option"),
 		userOptions = $("#user-select option"),
 		faxNumberOptions = $("#fax-select option"),
-		
-		$.getJSON("/fax_logs", {}, function(response) {
-			if (response) { // Each permission has different amounts of data
-				$("#load-icon").hide();
-				if ($('th').length === 8) {
-					buildTableRowsAdmin(response);
-				} else if ($('th').length === 7) {
-					buildTableRowsManager(response);
-				} else {
-					buildTableRowsUser(response);
-				}
-			}
+
+		$("#load-icon").hide();
+
+		$("#filter-button").on('click', function(event) {
+			$("tbody").empty();
+			$("#load-icon").show();
 		});
+
+		$('.datepicker-inline').datepicker({
+	    dateFormat: 'mm-dd-yy',
+	    endDate: '+0d',
+	    autoclose: true,
+	    maxDate: (0),
+	  }),
+		$('#end-date-field').val(getTodaysFormattedDate());
 
 		$("#org-select").change((event) => {
 			event.stopPropagation();
@@ -35,39 +37,54 @@ phaxMachine.pages['fax-logs'] = {
 
 			} else {
 			 	$faxSelect.append(`<option class="all-linked" name="fax_log[fax_number]" value="all-linked">All Linked Numbers</option>`);
-				createSelectTagWithConditional(faxNumberOptions, $faxSelect, organizationClass);
+				createSelectTagMultipleConditionals(faxNumberOptions, $faxSelect, [organizationClass, 'all-fax']);
 			 	$("#fax-select option").first().prop('selected', 'selected');
 			}
 		});
 
 		$("#fax-select").change((event) => {
 			event.stopPropagation();
+
 			let organizationClass = $("#org-select option:selected").attr('class');
 			let faxNumberClass = $("#fax-select option:selected").attr('class');
 			let userClass = $("#user-select option:selected").attr('class');
-			let $faxSelect = $("#fax-select");
 			let $userSelect = $("#user-select");
 			let $orgSelect = $("#org-select");
 
-			switch(faxNumberClass) {
-				case userClass === "all-user":
-					$(userSelect).empty();
-					createSelectTagMultipleConditionals(userOptions, $userSelect, [faxNumberClass, 'all-user']);
-					$userSelect.append(`<option class="all-linked" name="fax_log[user]" value="all-linked">All Linked Users</option>`);
-					selectDesiredOption(desiredOptionId, userOptions)
-					$("#user-select option").first(userSelectedClass).prop('selected', 'selected');
-					break;
+			if (userClass === 'all-user') {
+				let = desiredOptionId = $("#user-select option:selected").attr('id');
+				$($userSelect).empty();
+				$userSelect.append(`<option class="all-linked" name="fax_log[user]" value="all-linked">All Linked Users</option>`);
+				createSelectTagMultipleConditionals(userOptions, $userSelect, [faxNumberClass, 'all-user']);
+				$("#user-select option").first().prop('selected', 'selected');
+			} else if (userClass === 'all-linked' || faxNumberClass === 'all-linked') {
+				// do nothing
+			} else if (faxNumberClass === 'all-fax') {
+				$($orgSelect).empty();
+				restoreSelectTag(organizationOptions, $orgSelect);
+
+			} else if (organizationClass === 'all-org' || faxNumberClass !== organizationClass) {
+				$($orgSelect).empty();
+				createSelectTagMultipleConditionals(organizationOptions, $orgSelect, [faxNumberClass, 'all-org']);
+				$("#org-select option").first().prop('selected', 'selected');
 			}
 		});
 
-		$('.datepicker-inline').datepicker({
-	    dateFormat: 'mm-dd-yy',
-	    endDate: '+0d',
-	    autoclose: true,
-	    maxDate: (0),
-	  }),
-		$('#end-date-field').val(getTodaysFormattedDate());
+		$("#user-select").change((event) => {
+			event.stopPropagation();
 
+			let userClass = $("#user-select option:selected").attr('class');
+			let $userSelect = $("#user-select");
+			let $faxSelect = $("#fax-select");
+
+			if (userClass === "all-user") {
+				$faxSelect.empty();
+				$($userSelect).empty();
+				restoreSelectTag(faxNumberOptions, $faxSelect);
+				restoreSelectTag(userOptions, $userSelect);
+			}
+		});
+		changeStatusColor();
 	}
 };
 
@@ -84,114 +101,29 @@ function getTodaysFormattedDate () {
 };
 
 function buildTableRows(faxData) {
-		let sentIcon = `<i style="color:green" class="fa fa-fw fa-arrow-circle-right" aria-hidden="true"></i>`;
-		let receivedIcon = `<i style="color:darkblue" class="fa fa-fw fa-arrow-circle-left" aria-hidden="true"></i>`;
-		let $tableBody = $("tbody");
-		Object.keys(faxData).forEach((faxDatum) => {
-			if (faxData[faxDatum].sent_by === undefined) {
-				faxData[faxDatum].sent_by = "";
-			};
-			$tableBody.prepend(`
-				<tr>
-				<td class="text-center">
-					${ (faxData[faxDatum].direction === "Sent") ? sentIcon : receivedIcon }
-				</td>
-			`);
-			if ($('th').length === 8) { // Admin has the most <th>'s'
-				$tableBody.prepend(`
-					<td class="text-center">${faxData[faxDatum].organization}</td>
-					<td class="text-center">${faxData[faxDatum].sent_by}</td>
-				`);
-			}
-			if ($('th').length === 7) {
-				$tableBody.prepend(`
-					<td class="text-center">${faxData[faxDatum].organization}</td>
-				`);	
-			}
-			$tableBody.prepend(`
-				<td class="text-center">${faxData[faxDatum].from_number}</td>
-				<td class="text-center">${faxData[faxDatum].to_number}</td>
-				<td class="text-center status">${faxData[faxDatum].status}</td>
-				<td class="text-center">${faxData[faxDatum].created_at}</td>
-				<td class="text-center"><i class="fa fa-fw fa-download" aria-hidden="true"></i></td>
-			</tr>
-			`);
-		});
-		changeStatusColor();
-	};
-
-function buildTableRowsAdmin (faxData) {
-	let sentIcon = `<i style="color:green" class="fa fa-fw fa-arrow-circle-right" aria-hidden="true"></i>`;
-	let receivedIcon = `<i style="color:darkblue" class="fa fa-fw fa-arrow-circle-left" aria-hidden="true"></i>`;
-	$("tbody").empty(); // Clears loading message
-
-	Object.keys(faxData).forEach((faxDatum) => {
-		if (faxData[faxDatum].sent_by === undefined) {
-			faxData[faxDatum].sent_by = "";
-		};
-		$("tbody").prepend(`
-			<tr>
-				<td class="text-center">
-					${(faxData[faxDatum].direction === "Sent") ? sentIcon : receivedIcon}
-				</td>
-				<td class="text-center">${faxData[faxDatum].organization}</td>
-				<td class="text-center">${faxData[faxDatum].sent_by}</td>
-				<td class="text-center">${faxData[faxDatum].from_number}</td>
-				<td class="text-center">${faxData[faxDatum].to_number}</td>
-				<td class="text-center status">${faxData[faxDatum].status}</td>
-				<td class="text-center">${faxData[faxDatum].created_at}</td>
-				<td class="text-center"><i class="fa fa-fw fa-download" aria-hidden="true"></i></td>
-			</tr>
-		`);
-	});
-	changeStatusColor();
-};
-
-function buildTableRowsManager(faxData) {
 	let sentIcon = `<i style="color:green" class="fa fa-fw fa-arrow-circle-right" aria-hidden="true"></i>`;
 	let receivedIcon = `<i style="color:darkblue" class="fa fa-fw fa-arrow-circle-left" aria-hidden="true"></i>`;
 
 	Object.keys(faxData).forEach((faxDatum) => {
-		if (faxData[faxDatum].sent_by === undefined) {
-			faxData[faxDatum].sent_by = "";
-		};
-		$("tbody").prepend(`
-			<tr>
-				<td class="text-center">
+		if (faxData[faxDatum].sent_by === undefined) { faxData[faxDatum].sent_by = ""; };
+		let heading = `<tr>
+			<td class="text-center">
 					${ (faxData[faxDatum].direction === "Sent") ? sentIcon : receivedIcon }
-				</td>
-				<td class="text-center">${faxData[faxDatum].sent_by}</td>
-				<td class="text-center">${faxData[faxDatum].from_number}</td>
-				<td class="text-center">${faxData[faxDatum].to_number}</td>
-				<td class="text-center status">${faxData[faxDatum].status}</td>
-				<td class="text-center">${faxData[faxDatum].created_at}</td>
-				<td class="text-center"><i class="fa fa-fw fa-download" aria-hidden="true"></i></td>
-			</tr>
-		`);
-	});
-	changeStatusColor();
-};
+			</td>`; //it will concatenate the rest of the string on later to close the <tr>
 
-function buildTableRowsUser(faxData) {
-	let sentIcon = `<i style="color:green" class="fa fa-fw fa-arrow-circle-right" aria-hidden="true"></i>`;
-	let receivedIcon = `<i style="color:darkblue" class="fa fa-fw fa-arrow-circle-left" aria-hidden="true"></i>`;
+		if ($('#fax-log-table th').length === 8) { heading = heading.concat('', `<td class="text-center">${faxData[faxDatum].organization}</td>`); }
+		// Admin has 8 <th>, Manager has 7 <th>, User has only 6. These if blocks add/remove data for these permissions
+		if ($('#fax-log-table th').length > 6) { heading = heading.concat('', `<td class="text-center">${faxData[faxDatum].sent_by}</td>`); }
 
-	Object.keys(faxData).forEach((faxDatum) => {
-		if (faxData[faxDatum].sent_by === undefined) {
-			faxData[faxDatum].sent_by = "";
-		};
-		$("tbody").prepend(`
-			<tr>
-				<td class="text-center">
-					${ (faxData[faxDatum].direction === "Sent") ? sentIcon : receivedIcon }
-				</td>
-				<td class="text-center">${faxData[faxDatum].from_number}</td>
-				<td class="text-center">${faxData[faxDatum].to_number}</td>
-				<td class="text-center status">${faxData[faxDatum].status}</td>
-				<td class="text-center">${faxData[faxDatum].created_at}</td>
-				<td class="text-center"><i class="fa fa-fw fa-download" aria-hidden="true"></i></td>
-			</tr>
+		heading = heading.concat('', `
+			<td class="text-center">${faxData[faxDatum].from_number}</td>
+			<td class="text-center">${faxData[faxDatum].to_number}</td>
+			<td class="status">${faxData[faxDatum].status}</td>
+			<td class="text-center">${faxData[faxDatum].created_at}</td>
+			<td class="text-center"><i class="fa fa-fw fa-download" aria-hidden="true"></i></td>
+		</tr>
 		`);
+		$("tbody").prepend(heading);
 	});
 	changeStatusColor();
 };
@@ -201,35 +133,34 @@ function changeStatusColor() {
 		switch($(this).text()) {
 			case 'Success':
 				$(this).prepend(`
-					<span style='color:limegreen'>&nbsp;<i style='font-size:10px' class="fa fa-fw fa-circle"></i>&nbsp;&nbsp;</span>
+					<span style='color:limegreen'>&nbsp;<i style='font-size:10px' class="fa fa-fw fa-circle"></i>&nbsp;</span>
 				`);
 				break;
 			case 'Queued':
 				$(this).prepend(`
-					<span style='color:darkgrey'>&nbsp;<i style='font-size:10px' class="fa fa-fw fa-circle"></i>&nbsp;&nbsp;</span>
+					<span style='color:darkgrey'>&nbsp;<i style='font-size:10px' class="fa fa-fw fa-circle"></i>&nbsp;</span>
 				`);
 				break;
 			case 'Inprogress':
 				$(this).text('In Progress');
 				$(this).prepend(`
-					<span style='color:darkblue'>&nbsp;<i style='font-size:10px' class="fa fa-fw fa-circle"></i>&nbsp;&nbsp;</span>
+					<span style='color:darkblue'>&nbsp;<i style='font-size:10px' class="fa fa-fw fa-circle"></i>&nbsp;</span>
 				`)
 				break;
 			case 'Failure':
 				$(this).prepend(`
-					<span style='color:crimson'>&nbsp;<i style='font-size:10px' class="fa fa-fw fa-circle"></i>&nbsp;&nbsp;</span>
+					<span style='color:crimson'>&nbsp;<i style='font-size:10px' class="fa fa-fw fa-circle"></i>&nbsp;</span>
 				`);
 				break;
 			case 'Partialsuccess':
 				$(this).text('Partial Success')
 				$(this).prepend(`
-					<span style='color:darkorange'>&nbsp;<i style='font-size:10px' class="fa fa-fw fa-circle"></i>&nbsp;&nbsp;</span>
+					<span style='color:darkorange'>&nbsp;<i style='font-size:10px' class="fa fa-fw fa-circle"></i>&nbsp;</span>
 				`);
 				break;
 		}
 	});
 };
-
 
 function restoreSelectTag(originalTagData, tagBeingRestored) {
 	$.each(originalTagData, function() { tagBeingRestored.append($(this)); });
@@ -242,165 +173,3 @@ function createSelectTagMultipleConditionals(originalTagData, tagBeingRestored, 
 		});
 	});
 };
-
-function createSelectTagWithConditional(originalTagData, tagBeingRestored, addIfClass) {
-	$.each(originalTagData, function() {
-		if ($(this).hasClass(addIfClass)) { tagBeingRestored.append($(this)); }
-	});
-};
-
-function selectDesiredOption(desiredOptionId, options) {
-	$.each(options, function() {
-		if ($(this).attr('id') === desiredOptionId) { $(this).prop('selected', 'selected'); }
-	});
-}
-
-		// function faxSelectOnChange() {
-		// 	$("#fax-select").change((event) => {
-		// 		event.stopPropagation();
-
-		// 		let faxNumberClass = $("#fax-select option:selected").attr('class');
-		// 		let userClass = $("#user-select option:selected").attr('class');
-		// 		let orgClass = $("#org-select option:selected").attr('class');
-
-		// 		let $orgSelect = $("#org-select");
-		// 		let $userSelect = $("#user-select");
-		// 		let $faxSelect = $("#fax-select");
-
-		// 		if (faxNumberClass === orgClass && faxNumberClass === userClass) {
-		// 			$userSelect.empty();
-		// 			$orgSelect.empty();
-
-		// 			let userSelectedClass = $("#user-select option:selected").attr('class');
-		// 			let orgSelectedClass = $("#org-select option:selected").attr('class');
-
-		// 			createSelectTagMultipleConditionals(userOptions, $userSelect, [faxNumberClass, 'all-user']);
-		// 			$userSelect.append(`<option class="all-linked" name="fax_log[user]" value="all-linked">All Linked Users</option>`);
-		// 			$("#user-select option").first(userSelectedClass).prop('selected', 'selected');
-
-		// 			createSelectTagMultipleConditionals(organizationOptions, $orgSelect, [faxNumberClass, 'all-org']);
-		// 			$("#org-select option").first(orgSelectedClass).prop('selected', 'selected');
-
-		// 		} else if (faxNumberClass === 'all-fax') {
-		// 			$userSelect.empty();
-		// 			$orgSelect.empty();
-
-		// 			restoreSelectTag(organizationOptions, $orgSelect);
-		// 			restoreSelectTag(userOptions, $userSelect);
-
-		// 			$faxSelect.empty();
-		// 			restoreSelectTag(faxNumberOptions, $faxSelect);
-
-		// 		} else if (orgClass === 'all-org' && userClass === undefined) {
-		// 			let orgSelectedClass = $("#org-select option:selected").attr('class');
-		// 			$orgSelect.empty();
-		// 			createSelectTagMultipleConditionals(organizationOptions, $orgSelect, [faxNumberClass, 'all-org']);
-		// 			$("#org-select option").first(orgSelectedClass).prop('selected', 'selected');
-
-		// 		} else if (faxNumberClass === 'all-linked') {
-		// 			// do nothing
-
-		// 		} else if (orgClass === 'all-org') {
-		// 			$userSelect.empty();
-		// 			$orgSelect.empty();
-					
-		// 			let faxSelectedId = $("#fax-select option:selected").attr('id');
-
-		// 			$faxSelect.empty();
-		// 			createSelectTagMultipleConditionals(faxNumberOptions, $faxSelect, [faxNumberClass, 'all-fax']);
-		// 			$("#fax-select option").first(faxSelectedId).prop('selected', 'selected');
-
-		// 			createSelectTagMultipleConditionals(organizationOptions, $orgSelect, [faxNumberClass, 'all-org']);
-		// 			$("#org-select option").first().prop('selected', 'selected');
-
-		// 			$userSelect.append(`<option class="all-linked" name="fax_log[user]" value="all-linked">All Linked Users</option>`);
-		// 			createSelectTagMultipleConditionals(userOptions, $userSelect, [faxNumberClass, 'all-user']);
-		// 			$("#user-select option").first().prop('selected', 'selected');
-
-		// 		} else if (faxNumberClass !== 'all-linked' && orgClass === undefined ) {
-		// 			$userSelect.empty();
-		// 			$orgSelect.empty();
-		// 			let faxSelectedId = $("#fax-select option:selected").attr('id');
-					
-		// 			$userSelect.append(`<option class="all-linked" name="fax_log[user]" value="all-linked">All Linked Users</option>`);
-		// 			createSelectTagMultipleConditionals(userOptions, $userSelect, [faxNumberClass, 'all-user']);
-		// 			$("#user-select option").first().prop('selected', 'selected');
-
-		// 			createSelectTagMultipleConditionals(organizationOptions, $orgSelect, [faxNumberClass, 'all-org']);
-		// 			$("#org-select option").first().prop('selected', 'selected');
-
-		// 			$faxSelect.empty();
-		// 			createSelectTagMultipleConditionals(faxNumberOptions, $faxSelect, [faxNumberClass, 'all-fax']);
-		// 			$.each($("#fax-select option"), function() {
-		// 				if ($(this).attr('id') === faxSelectedId) {
-		// 					$(this).prop('selected', 'selected');
-		// 					return;
-		// 				}
-		// 			});
-					
-		// 		} else if (faxNumberClass !== 'all-linked') {
-		// 			let faxSelectedId = $("#fax-select option:selected").attr('id');
-		// 			$userSelect.empty();
-		// 			$orgSelect.empty();
-		// 			$faxSelect.empty();
-
-		// 			$userSelect.append(`<option class="all-linked" name="fax_log[user]" value="all-linked">All Linked Users</option>`);
-		// 			createSelectTagMultipleConditionals(userOptions, $userSelect, [faxNumberClass, 'all-user']);
-		// 			$("#user-select option").first().prop('selected', 'selected');
-
-		// 			createSelectTagMultipleConditionals(organizationOptions, $orgSelect, [faxNumberClass, 'all-org']);
-		// 			$("#org-select option").first().prop('selected', 'selected');
-
-		// 			$faxSelect.append(`<option class="all-linked" name="fax_log[fax]" value="all-linked">All Linked Numbers</option>`);
-		// 			createSelectTagMultipleConditionals(faxNumberOptions, $faxSelect, [faxNumberClass, 'all-fax']);
-		// 			$.each($("#fax-select option"), function() {
-		// 				if ($(this).attr('id') === faxSelectedId) { $(this).prop('selected', 'selected'); }
-		// 			});
-		// 		}
-		// 	});
-		// },
-
-		// userSelectOnChange: function() {
-		// 	$("#user-select").change((event) => {
-		// 		event.stopPropagation();
-
-		// 		let orgClass = $("#org-select option:selected").attr('class');
-		// 		let faxNumClass = $("#fax-select option:selected").attr('class');
-		// 		let userClass = $("#user-select option:selected").attr('class');
-
-		// 		let $faxSelect = $("#fax-select");
-		// 		let $orgSelect = $("#org-select");
-
-		// 		if (userClass === 'all-linked') {
-		// 			// do nothing
-		// 		} else if (userClass === faxNumClass) {
-		// 			$orgSelect.empty();
-		// 			createSelectTagMultipleConditionals(organizationOptions, $orgSelect, [userClass, 'all-org']);
-		// 			$("#org-select option").first().prop('selected', 'selected');
-
-		// 		} else if (userClass === 'all-user') {
-		// 			$orgSelect.empty();
-		// 			restoreSelectTag(organizationOptions, $orgSelect);
-		// 			$faxSelect.empty();
-		// 			restoreSelectTag(faxNumberOptions, $faxSelect);
-
-		// 		}	else if (userClass !== 'all-linked') {
-		// 			$orgSelect.empty();
-		// 			createSelectTagMultipleConditionals(organizationOptions, $orgSelect, [userClass, 'all-org']);
-		// 			$("#org-select option").first().prop('selected', 'selected');
-
-		// 			$faxSelect.empty();
-		// 			$faxSelect.append(`
-		// 				<option class="all-linked" name="fax_log[fax_number]" value="all-linked">All Linked Numbers</option>
-		// 			`);
-		// 			createSelectTagMultipleConditionals(faxNumberOptions, $faxSelect, [userClass, 'all-fax']);
-		// 			$("#fax-select option").first().prop('selected', 'selected');
-
-		// 		} else if (faxNumClass !== 'all-linked' && orgClass === undefined ) {
-		// 			$userSelect.empty();
-		// 			restoreSelectTag(userOptions, $userSelect);
-		// 		}
-		// 	});
-		// },
-	// }
-// }

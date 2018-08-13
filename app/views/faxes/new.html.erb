@@ -1,36 +1,38 @@
-<h1>Send a Fax</h1>
-<div class="row">
-	<div class="col">
-    <form enctype="multipart/form-data" id="sendFaxForm" method="POST" action="/faxes" class="form">
-			<input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
-			<br>
+<body data-page="send-fax">
+	<h1>Send a Fax</h1>
+	<div class="row">
+		<div class="col">
+	    <form enctype="multipart/form-data" id="sendFaxForm" method="POST" action="/faxes" class="form">
+				<input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+				<br>
 
-			<div class="row inline-input-margin">
-				<div class="col form-group form-inline">
-					<label for="to">To:</label>
-					<input id="to" name="fax[to]" type="tel" placeholder="+15558675309" class="form-control inline-input-margin send-fax-input" required>
-	        <button type="submit" value="Upload" class="btn btn-warning inline-input-margin"><i class="fa fa-fw fa-send" aria-hidden="true"></i>&nbsp;&nbsp;Send Fax&nbsp;</button>  
+				<div class="row inline-input-margin">
+					<div class="col form-group form-inline">
+						<label for="to">To:</label>
+						<input id="to" name="fax[to]" type="tel" placeholder="+15558675309" class="form-control inline-input-margin send-fax-input" required>
+		        <button type="submit" value="Upload" class="btn btn-warning inline-input-margin"><i class="fa fa-fw fa-send" aria-hidden="true"></i>&nbsp;&nbsp;Send Fax&nbsp;</button>  
+					</div>
 				</div>
-			</div>
-      <div class="col indent-me"> 
-				<p>Upload up to ten files or drag and drop them in the order you would like them sent into the box below:</p>
-			</div>
-	    <div id="all-files">
-				<div id="faxFile1" class="form-group col-lg-8 files">
-					<input id="file1" class="drag-drop-input" name="fax[files][file1]" type="file" required>
+	      <div class="col indent-me"> 
+					<p>Upload up to ten files or drag and drop them in the order you would like them sent into the box below:</p>
 				</div>
-			</div>
+		    <div id="all-files">
+					<div id="faxFile1" class="form-group col-lg-8 files">
+						<input id="file1" class="drag-drop-input" name="fax[files][file1]" type="file" required>
+					</div>
+				</div>
 
-    </form> 
-  </div>
-</div>
-
-<div class="row">
-	<div class="col-lg-8 indent-me">
-		<p id="attached-file-counter">Attached Files:</p>
-		<table class="table-sm">
-			<tbody class="added-files">
-			</tbody>
-		</table>
+	    </form> 
+	  </div>
 	</div>
-</div>
+
+	<div class="row">
+		<div class="col-lg-8 indent-me">
+			<p id="attached-file-counter">Attached Files:</p>
+			<table class="table-sm">
+				<tbody class="added-files">
+				</tbody>
+			</table>
+		</div>
+	</div>
+</body>

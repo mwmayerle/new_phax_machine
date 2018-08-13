@@ -4,133 +4,134 @@
 
 <body data-page="fax-logs">
 
-<% if is_admin? %>
-	<h1>Fax Logs</h1>
-<% elsif is_manager? %>
-	<h1>Fax Logs - <%= current_user.organization.label %></h1>
-<% else %>
-		<h1>Fax Logs - <%= current_user.email %></h1>
-<% end %>
+	<% if is_admin? %>
+		<h1>Fax Logs</h1>
+	<% elsif is_manager? %>
+		<h1>Fax Logs - <%= current_user.organization.label %></h1>
+	<% else %>
+			<h1>Fax Logs - <%= current_user.email %></h1>
+	<% end %>
 
-<div class="filtering-form">
-	<%= form_for(:fax_log, class: "form-inline", remote: true) do |f| %>
-		<div class="row">
+	<div class="filtering-form">
+		<%= form_with(url: fax_logs_path, class: "form-inline") do |f| %>
+			<div class="row">
 
-			<div class="form-group col-md-2">
-				<%= f.label "Status:", class: "control-label" %>
-				<select id="status" class="form-control form-inline" name="fax_log[status]">
-					<option id="all" name="fax_log[status]" value="both">All</option>
-					<option id="success" name="fax_log[status]" value="success" selected>Success</option>
-					<option id="failure" name="fax_log[status]" value="failure">Failure</option>
-					<option id="inprogress" name="fax_log[status]" value="inprogress">In Progress</option>
-					<option id="queued" name="fax_log[status]" value="queued">Queued</option>
-				</select>
-			</div>
-
-			<% if is_admin? %>
 				<div class="form-group col-md-2">
-					<%= f.label :organization, "Organization:", class: 'control-label' %>
-					<select id="org-select" class="form-control form-inline" name="fax_log[organization]">
-						<% @organizations.each do |organization_fax_tag, organization_data| %>
-							<% if organization_fax_tag == 'all' %>
-								<option id="all-org" class="all-org" name="fax_log[organization]" value="<%= organization_fax_tag %>" selected="selected">All</option>
-							<% else %>
-								<option id="<%= organization_data['label'] %>" class="<%= organization_data['org_id'] %>" name="fax_log[organization]" value="<%= organization_fax_tag %>"><%= organization_data['label'] %></option>
-							<% end %>
-						<% end %>
+					<%= f.label "Status:", class: "control-label" %>
+					<select id="status" class="form-control form-inline" name="fax_log[status]">
+						<option id="all" name="fax_log[status]" value="all" selected>All</option>
+						<option id="success" name="fax_log[status]" value="success">Success</option>
+						<option id="failure" name="fax_log[status]" value="failure">Failure</option>
+						<option id="inprogress" name="fax_log[status]" value="inprogress">In Progress</option>
+						<option id="queued" name="fax_log[status]" value="queued">Queued</option>
 					</select>
 				</div>
-			<% end %>
 
-			<div class="form-group col-md-2">
-				<%= f.label :fax_number, "Fax Number:", class: 'control-label' %>
-				<select id="fax-select" class="form-control form-inline" name="fax_log[fax_number]">
-					<% @fax_numbers.each do |fax_number_key, fax_number_data| %>
-						<% if fax_number_key == 'all' %>
-							<option id="all-fax" class="all-fax" name="fax_log[fax_number]" value="<%= fax_number_key %>" selected="selected">
-								All
-							</option>
-						<% else %>
-							<option id="<%= fax_number_key %>" class="<%= fax_number_data['org_id'] %>" name="fax_log[fax_number]" value="<%= fax_number_key %>">
-								<%= FaxNumber.format_pretty_fax_number(fax_number_key) %>
-							</option>
-						<% end %>
-					<% end %>
-				</select>
-			</div>
+				<% if is_admin? %>
+					<div class="form-group col-md-2">
+						<%= f.label :organization, "Organization:", class: 'control-label' %>
+						<select id="org-select" class="form-control form-inline" name="fax_log[organization]">
+							<% @organizations.each do |organization_fax_tag, organization_data| %>
+								<% if organization_fax_tag == 'all' %>
+									<option id="all-org" class="all-org" name="fax_log[organization]" value="all" selected="selected">All</option>
+								<% else %>
+									<option id="<%= organization_data['label'] %>" class="<%= organization_data['org_id'] %>" name="fax_log[organization]" value="<%= organization_fax_tag %>"><%= organization_data['label'] %></option>
+								<% end %>
+							<% end %>
+						</select>
+					</div>
+				<% end %>
 
-			<% if is_manager? && !is_admin? %>
 				<div class="form-group col-md-2">
-					<%= f.label :user, "User:", class: 'control-label' %>
-					<select id="user-select" class="form-control form-inline" name="fax_log[user]">
-						<% @users.each do |user_key, user_data| %>
-							<% if user_key == 'all' %>
-								<option id="all-user" class="all-user" name="fax_log[user]" value="<%= user_key %>" selected="selected">
+					<%= f.label :fax_number, "Fax Number:", class: 'control-label' %>
+					<select id="fax-select" class="form-control form-inline" name="fax_log[fax_number]">
+						<% @fax_numbers.each do |fax_number_key, fax_number_data| %>
+							<% if fax_number_key == 'all' %>
+								<option id="all-fax" class="all-fax" name="fax_log[fax_number]" value="all" selected="selected">
 									All
 								</option>
 							<% else %>
-								<option id="<%= user_data['email'] %>" class="<%= user_data['org_id'] %>" name="fax_log[user]" value="<%= user_data['email'] %>">
-									<%= user_data['email'] %>
+								<option id="<%= fax_number_key %>" class="<%= fax_number_data['org_id'] %>" name="fax_log[fax_number]" value="<%= fax_number_key %>">
+									<%= FaxNumber.format_pretty_fax_number(fax_number_key) %>
 								</option>
 							<% end %>
 						<% end %>
 					</select>
 				</div>
-			<% end %>
 
-			<div class="form-group col-md-2">
-				<%= f.label :start_time, 'Start Date:', class: 'control-label' %>
-				<%= f.text_field :start_time, data:{ provide: 'datepicker' }, class: ' datepicker-inline form-control' %>
+				<% if is_manager? && !is_admin? %>
+					<div class="form-group col-md-2">
+						<%= f.label :user, "User:", class: 'control-label' %>
+						<select id="user-select" class="form-control form-inline" name="fax_log[user]">
+							<% @users.each do |user_key, user_data| %>
+								<% if user_key == 'all' %>
+									<option id="all-user" class="all-user" name="fax_log[user]" value="all" selected="selected">
+										All
+									</option>
+								<% else %>
+									<option id="<%= user_data['email'] %>" class="<%= user_data['org_id'] %>" name="fax_log[user]" value="<%= user_data['email'] %>">
+										<%= user_data['email'] %>
+									</option>
+								<% end %>
+							<% end %>
+						</select>
+					</div>
+				<% end %>
+
+				<div class="form-group col-md-2">
+					<%= f.label :start_time, 'Start Date:', class: 'control-label' %>
+					<%= f.text_field :start_time, data:{ provide: 'datepicker' }, class: ' datepicker-inline form-control', name: "fax_log[start_time]" %>
+				</div>
+
+				<div class="form-group col-md-2">
+					<%= f.label :end_time, 'End Date:', class: 'control-label' %>
+					<%= f.text_field :end_time, data:{ provide: 'datepicker' }, class: 'datepicker-inline form-control', id: "end-date-field", name: "fax_log[end_time]" %>
+				</div>
+
+				<div class="form-group col-md-1">
+					<button type="submit" id="filter-button" value="Filter" class="btn btn-success force-down-button">
+						<i class="fa fa-fw fa-search" aria-hidden="true"></i>&nbsp;&nbsp;Filter
+					</button>
+				</div>
+
 			</div>
+		<% end %>
+	</div>
 
-			<div class="form-group col-md-2">
-				<%= f.label :end_time, 'End Date:', class: 'control-label' %>
-				<%= f.text_field :end_time, data:{ provide: 'datepicker' }, class: 'datepicker-inline form-control', id: "end-date-field" %>
-			</div>
-
-			<div class="form-group col-md-1">
-				<button type="submit" value="Filter" class="btn btn-success force-down-button">
-					<i class="fa fa-fw fa-search" aria-hidden="true"></i>&nbsp;&nbsp;Filter
-				</button>
-			</div>
-
+	<div class="row">
+		<div class="col">
+			<p>
+				Sent:&nbsp;<i style="color:green" class="fa fa-fw fa-arrow-circle-right" aria-hidden="true"></i>&nbsp;&nbsp;
+				Received:&nbsp;<i style="color:darkblue" class="fa fa-fw fa-arrow-circle-left" aria-hidden="true"></i>&nbsp;&nbsp;
+			</p>
 		</div>
-	<% end %>
-</div>
-
-<div class="row">
-	<div class="col">
-		<p>
-			Sent:&nbsp;<i style="color:green" class="fa fa-fw fa-arrow-circle-right" aria-hidden="true"></i>&nbsp;&nbsp;
-			Received:&nbsp;<i style="color:darkblue" class="fa fa-fw fa-arrow-circle-left" aria-hidden="true"></i>&nbsp;&nbsp;
-		</p>
 	</div>
-</div>
 
-<table class="table table-sm table-striped table-hover table-bordered">
-	<thead class="thead-dark">
-		<tr>
-			<th class="text-center">Path</th>
-			<% if is_admin? %>
-				<th class="text-center">Organization</th>
-				<th class="text-center">Sent By</th>
-			<% elsif is_manager? %>
-				<th class="text-center">Sent By</th>
-			<% end %>
-			<th class="text-center">From Number</th>
-			<th class="text-center">To Number</th>
-			<th class="text-center">Status</th>
-			<th class="text-center">Time</th>
-			<th class="text-center">File</th>
-		</tr>
-	</thead>
-	<tbody id="table-body-start">
-		<%#= render partial: 'tbody', locals: { sorted_faxes: @sorted_faxes }, layout: false %>
-	</tbody>
-</table>
-<div id="load-icon" class="row">
-	<div class="col text-center">
-		<i style="padding: none; width: 48px;" class="fa fa-spinner fa-spin fa-3x fa-fw">&nbsp;&nbsp;</i><h3>Loading Data...</h3>
-		<span class="sr-only">Loading...</span>
+	<table id="fax-log-table" class="table table-sm table-striped table-hover table-bordered">
+		<thead class="thead-dark">
+			<tr>
+				<th class="text-center">Path</th>
+				<% if is_admin? %>
+					<th class="text-center">Organization</th>
+					<th class="text-center">Sent By</th>
+				<% elsif is_manager? %>
+					<th class="text-center">Sent By</th>
+				<% end %>
+				<th class="text-center">From Number</th>
+				<th class="text-center">To Number</th>
+				<th style="text-indent:22px;">Status</th>
+				<th class="text-center">Time</th>
+				<th class="text-center">File</th>
+			</tr>
+		</thead>
+		<tbody id="table-body-start">
+			<%= render partial: 'tbody', locals: { sorted_faxes: @sorted_faxes }, layout: false %>
+		</tbody>
+	</table>
+	<div id="load-icon" class="row">
+		<div class="col text-center">
+			<i style="padding: none; width: 48px;" class="fa fa-spinner fa-spin fa-3x fa-fw">&nbsp;&nbsp;</i><h3>Loading Data...</h3>
+			<span class="sr-only">Loading...</span>
+		</div>
 	</div>
-</div>
+</body>
