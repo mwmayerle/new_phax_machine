@@ -1,10 +1,10 @@
 <div class="row">
-	<div class="col-lg-8">
+	<div class="col">
 		<h1><%= @organization.label %></h1>
 	</div>
-	<div class="col-lg-4 align-self-center">
+	<div class="col">
 		<% if is_admin? %>
-			<%= link_to "Manage Client Fax Numbers / Details", edit_organization_path(@organization), class: "btn btn-success btn-lg" %>
+			<%= link_to "Manage #{@organization.label} Fax Numbers / Details", edit_organization_path(@organization), style: "margin-right:25px;", class: "btn btn-success btn-lg pull-right" %>
 		<% end %>
 	</div>
 </div>
@@ -46,7 +46,7 @@
 			</div>
 			
 			<div class="col-lg-7 align-self-center">
-				<table class="table table-hover table-striped table-sm table-bordered">
+				<table id="<%=organization_fax_number.id%>-users" class="table table-hover table-striped table-sm table-bordered">
 					<thead class="thead-dark">
 						<tr>
 							<th class="text-center">Email</th>
@@ -118,7 +118,7 @@
 		</div>
 		<div class="row information-box">
 			<div class="col-lg-5">
-				<table class="table table-sm table-hover table-bordered">
+				<table id="<%=@organization.id%>-even-users" class="table table-sm table-hover table-bordered">
 					<tbody>
 						<% @organization.users.each do |user| %>
 							<% if @organization.users.index(user).even? %>
@@ -137,7 +137,7 @@
 			</div>
 
 			<div class="col-lg-5">
-				<table class="table table-sm table-hover table-bordered">
+				<table id="<%=@organization.id%>-odd-users" class="table table-sm table-hover table-bordered">
 					<tbody>
 						<% @organization.users.each do |user| %>
 							<% if @organization.users.index(user).odd? %>

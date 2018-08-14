@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_07_28_230214) do
+ActiveRecord::Schema.define(version: 2018_08_14_145905) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -38,6 +38,8 @@ ActiveRecord::Schema.define(version: 2018_07_28_230214) do
     t.string "fax_tag"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_organizations_on_deleted_at"
   end
 
   create_table "user_fax_numbers", force: :cascade do |t|

@@ -57,18 +57,22 @@ RSpec.describe Organization, :type => :model do
 			FaxNumber.all.each { |fax_number| organization.fax_numbers.push(fax_number) }
 			user1.update_attributes(organization_id: organization.id)
 			user2.update_attributes(organization_id: organization.id)
+			organization.reload
 		end
 
 		it "has many fax numbers" do
 			assoc = Organization.reflect_on_association(:fax_numbers)
    		expect(assoc.macro).to eq(:has_many)
-   		expect(organization.fax_numbers).to eq([fax_number1, fax_number2, fax_number3])
+   		expect(organization.fax_numbers).to include(fax_number1)
+   		expect(organization.fax_numbers).to include(fax_number2)
+   		expect(organization.fax_numbers).to include(fax_number3)
 		end
 
 		it "has many users" do
 			assoc = Organization.reflect_on_association(:users)
    		expect(assoc.macro).to eq(:has_many)
-   		expect(organization.users).to eq([user1, user2])
+   		expect(organization.users).to include(user1)
+   		expect(organization.users).to include(user2)
 		end
 
 		it "belongs to the admin" do

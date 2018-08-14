@@ -8,7 +8,7 @@
 						<% if @fax_number.unassigned_organization_users.present? %>
 							<div class="col-lg-6">
 								<p><strong>Link These Users to <%= FaxNumber.format_pretty_fax_number(@fax_number.fax_number) %>:</strong></p>
-								<table class="table table-hover table-striped table-sm table-bordered">
+								<table id="unlinked-users" class="table table-hover table-striped table-sm table-bordered">
 									<thead class="thead-dark">
 										<tr>
 											<th class="text-center">Add</th>
@@ -37,7 +37,7 @@
 						<% if @fax_number.users.present? %>
 							<div class="col-lg-6">
 								<p><strong>Unlink These Users from <%= FaxNumber.format_pretty_fax_number(@fax_number.fax_number) %>:</strong></p>
-								<table class="table table-hover table-striped table-sm table-bordered">
+								<table id='linked-users' class="table table-hover table-striped table-sm table-bordered">
 									<thead class="thead-dark">
 										<tr>
 											<th class="text-center">Remove</th>

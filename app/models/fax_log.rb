@@ -4,7 +4,6 @@ class FaxLog < ApplicationRecord
 	#TODO iterate thru deleted orgs (add them to paranoia) and then put a symbol next to them to indicate they have been ripep'ed
 	class << self
 		def get_faxes(current_user, options, fax_numbers = nil, fax_data = [])
-			p options
 			if options[:tag].nil? # Admin gets everything
 				initial_data = Phaxio::Fax.list({
 					created_before: options[:end_time],
@@ -40,29 +39,21 @@ class FaxLog < ApplicationRecord
 			options[:tag] = filtered_params[:tag] unless filtered_params[:tag].nil?
 
 			if filtered_params[:status]
-				if filtered_params[:status] == "all"
-				else
-					options[:status] = filtered_params[:status]
-				end
+				options[:status] = filtered_params[:status] unless filtered_params[:status] == "all"	
 			end
 
 			if filtered_params[:fax_number]
-				if filtered_params[:fax_number] =~ /[all]/i
-				else
-					options[:fax_number] = Phonelib.parse(filtered_params[:fax_number]).e164
-				end
+				options[:fax_number] = Phonelib.parse(filtered_params[:fax_number]).e164 unless filtered_params[:fax_number] =~ /[all]/i
 			end
 
 			if filtered_params[:organization]
-				if filtered_params[:organization] =~ /[all]/i #&& current_user.user_permission.permission == UserPermission::ADMIN
-				else
+				unless filtered_params[:organization] =~ /[all]/i
 					options[:tag] = { :sender_organization_fax_tag => filtered_params[:organization] }
 				end
 			end
 
 			if filtered_params[:user]
-				if filtered_params[:user] =~ /[all]/i && current_user.user_permission.permission == UserPermission::MANAGER
-				else
+				unless filtered_params[:user] =~ /[all]/i && current_user.user_permission.permission == UserPermission::MANAGER
 					options[:tag] = { :sender_email_fax_tag => filtered_params[:user] }
 				end
 			end
@@ -163,7 +154,7 @@ class FaxLog < ApplicationRecord
 					all_faxes.push(fax_object)
 				end
 			end
-			all_faxes.sort_by { |fax| fax['created_at'] }
+			all_faxes.sort_by { |fax| fax['created_at'] }.reverse!
 		end
 
 		def create_orgs_hash(organizations_hash, organization_object)
