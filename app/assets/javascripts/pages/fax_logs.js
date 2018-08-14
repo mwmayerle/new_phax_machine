@@ -109,7 +109,9 @@ function buildTableRows(faxData) {
 		let heading = `<tr>
 			<td class="text-center">
 					${ (faxData[faxDatum].direction === "Sent") ? sentIcon : receivedIcon }
-			</td>`; //it will concatenate the rest of the string on later to close the <tr>
+			</td>
+			<td class="text-center">${faxDatum}</td>`; //remove this line to kill IDs
+			// //it will concatenate the rest of the string on later to close the <tr>
 
 		if ($('#fax-log-table th').length === 8) { heading = heading.concat('', `<td class="text-center">${faxData[faxDatum].organization}</td>`); }
 		// Admin has 8 <th>, Manager has 7 <th>, User has only 6. These if blocks add/remove data for these permissions

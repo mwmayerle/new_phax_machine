@@ -1,10 +1,10 @@
 <div class="row">
-	<div class="col-lg-8">
+	<div class="col">
 		<h1><%= @organization.label %></h1>
 	</div>
-	<div class="col-lg-4 align-self-center">
+	<div class="col">
 		<% if is_admin? %>
-			<%= link_to "Manage Client Fax Numbers / Details", edit_organization_path(@organization), class: "btn btn-success btn-lg" %>
+			<%= link_to "Manage #{@organization.label} Fax Numbers / Details", edit_organization_path(@organization), style: "margin-right:25px;", class: "btn btn-success btn-lg pull-right" %>
 		<% end %>
 	</div>
 </div>

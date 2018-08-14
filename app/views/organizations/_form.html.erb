@@ -21,7 +21,7 @@
 						<% end %>
 							<div class="row">
 								<div class="col-lg-6 input-group align-self-center">
-									<strong><%= f.label :label, "Name: ", class: "align-self-center" %></strong>
+									<strong><%= f.label :label, "Name: ", class: "align-self-center push-down-text" %></strong>
 									<%= f.text_field :label, value: organization.label, class: "form-control inline-input-margin" %>
 								</div>
 								<div class="col-lg-6 input-group align-self-center">
@@ -38,7 +38,7 @@
 										<% else %>
 											<strong><p>Add fax numbers:</p></strong>
 										<% end %>
-										<table class="table table-hover table-sm table-striped table-bordered">
+										<table id="unlinked-numbers" class="table table-hover table-sm table-striped table-bordered">
 											<thead class="thead-dark">
 												<tr>
 													<th class="text-center">Fax Number</th>
@@ -79,7 +79,7 @@
 								<div class="col-lg-5">
 									<div class="form-group">
 										<strong><p>Remove fax numbers from <%= organization.label %>:</p></strong>
-											<table class="table table-hover table-sm table-striped table-bordered">
+											<table id="linked-numbers" class="table table-hover table-sm table-striped table-bordered">
 												<thead class="thead-dark">
 													<tr>
 														<th class="text-center">Fax Number</th>

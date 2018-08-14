@@ -1,6 +1,8 @@
 class Organization < ApplicationRecord
+	acts_as_paranoid
+	
 	include FaxTags
-	include HTTParty
+	# include HTTParty
 	
 	ORGANIZATION_CHARACTER_LIMIT = 48
 
