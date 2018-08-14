@@ -24,7 +24,7 @@ class FaxNumber < ApplicationRecord
 		class << self
 			# Converts '+12223334444' to '(222) 333-4444'
 			def format_pretty_fax_number(fax_number)
-				fax_number.slice(2, fax_number.length).insert(0,"(").insert(4,") ").insert(9, "-")
+				fax_number.slice(2, fax_number.length).insert(0,"(").insert(4,") ").insert(9, "-") if fax_number[0] != "("
 			end
 
 			# Converts '210' to '$2.10'

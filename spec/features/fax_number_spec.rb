@@ -54,7 +54,14 @@ RSpec.feature "Fax Number Pages", :type => :feature do
 			expect(page.current_url).to include('/edit')
 			expect(page).not_to have_field("fax_number[manager_label]")
 			expect(page).to have_field("fax_number[label]")
-			expect(page).to have_field("fax_number[organization_id]")
+			expect(page).to have_select(
+				"fax_number[organization_id]",
+				options: [
+					"#{org.label}",
+					"#{org2.label}",
+					"N/A (Removes this number from the organization)"
+				]
+			)
 			expect(page).to have_button('Save Changes')
 
 			fill_in('fax_number[label]', with: "New Label!")
