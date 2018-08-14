@@ -1,5 +1,7 @@
 require "rails_helper"
 
+#TODO: SWITCH A FAX NUMBER TO A DIFFERENT ORGANIZATION
+
 RSpec.feature "Fax Number Pages", :type => :feature do
 	let! (:admin) { User.create!( email: 'fake@phaxio.com', user_permission_attributes: { permission: UserPermission::ADMIN }) }
 	let!(:org) { Organization.create(label: "Phaxio Test Company", admin_id: admin.id) }
@@ -29,6 +31,7 @@ RSpec.feature "Fax Number Pages", :type => :feature do
 			expect(page).to have_field("user[password]")
 			expect(page.current_url).to eq("http://www.example.com/users/sign_in")
 			expect(page).to have_link('Log In', href: new_user_session_path)
+			expect(page).to have_text(ApplicationController::DENIED)
 		end
 
 		it "displays the page when an admin is logged in" do
@@ -76,18 +79,27 @@ RSpec.feature "Fax Number Pages", :type => :feature do
 			login_as(user)
 			visit(fax_numbers_path)
 			expect(page.current_url).to eq("http://www.example.com/")
+			expect(page).to have_text(ApplicationController::DENIED)
 		end
 
 		it "redirects to root if a non-admin and non-manager user tries to access the fax_numbers_path (index)" do
 			login_as(manager)
 			visit(fax_numbers_path)
 			expect(page.current_url).to eq("http://www.example.com/")
+			expect(page).to have_text(ApplicationController::DENIED)
 		end
 
 		it "redirects to root if a manager tries to access a fax_number that is not part of their organization" do
 			login_as(manager2)
 			visit(edit_fax_number_path(fax_number))
 			expect(page.current_url).to eq("http://www.example.com/")
+			expect(page).to have_text(ApplicationController::DENIED)
+		end
+
+		it "redirects to sign_in if nobody is logged in" do
+			visit(edit_fax_number_path(fax_number))
+			expect(page.current_url).to eq("http://www.example.com/users/sign_in")
+			expect(page).to have_text(ApplicationController::DENIED)
 		end
 
 		it "allows a manager of a fax number to access its edit page but does not include the organization select tag" do

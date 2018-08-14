@@ -107,6 +107,7 @@ RSpec.describe FaxNumber, type: :model do
 		fake_number3 = {:phone_number => "+14442146845", :city=>"San Antonio", :state=>"Texas", :last_billed_at=>"2018-07-09T11:37:51.000-05:00", :provisioned_at=>"2018-01-09T11:37:50.000-06:00", :cost=>200, :callback_url=>'www.weeeeee.com', :id=>5} 
 		fake_number4 = {:phone_number => "+14442146995", :city=>"San Francisco", :state=>"California", :last_billed_at=>"2018-07-09T11:37:51.000-05:00", :provisioned_at=>"2018-01-09T11:37:50.000-06:00", :cost=>200, :callback_url=>nil, :id=>4}
 		fake_number5 = {:phone_number => "+19992146995", :city=>"Las Vegas", :state=>"Nevada", :last_billed_at=>"2018-07-09T11:37:51.000-05:00", :provisioned_at=>"2018-01-09T11:37:50.000-06:00", :cost=>200, :callback_url=>'www.google.com', :id=>4}
+		persisted_fax_number = {:phone_number => "+17738675309", :city=>"Las Vegas", :state=>"Nevada", :last_billed_at=>"2018-07-09T11:37:51.000-05:00", :provisioned_at=>"2018-01-09T11:37:50.000-06:00", :cost=>200, :callback_url=>'www.google.com', :id=>4}
 		fax_numbers_from_api = [fake_number1, fake_number2, fake_number3, fake_number4, fake_number5]
 
   	it "deletes fax numbers that are not in the api response from the database and from the hash being sent to the index view" do
@@ -120,6 +121,16 @@ RSpec.describe FaxNumber, type: :model do
   		phaxio_numbers = FaxNumber.format_fax_numbers(fax_numbers_from_api)
   		expect(phaxio_numbers.keys[0..1]).to include(fake_number2[:phone_number], fake_number4[:phone_number])
   		expect(phaxio_numbers.keys[2..4]).to include(fake_number1[:phone_number], fake_number3[:phone_number], fake_number5[:phone_number])
+  	end
+
+  	it "alters the has_webhook_url attribute if the Phaxio API returns a different value" do
+  		fax_number.save
+  		expect(FaxNumber.find(fax_number.id).has_webhook_url).to be_nil
+
+  		fax_numbers_from_api = [fake_number1, fake_number2, fake_number3, fake_number4, fake_number5, persisted_fax_number]
+  		# what comes from the API has a callback_url, what's saved doesn't, so it will update
+  		phaxio_numbers = FaxNumber.format_fax_numbers(fax_numbers_from_api)
+  		expect(FaxNumber.find(fax_number.id).has_webhook_url).to be(true) 
   	end
   end
 end

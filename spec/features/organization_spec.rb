@@ -5,7 +5,7 @@ RSpec.feature "Organization Pages", :type => :feature do
 	let!(:org) { Organization.create(label: "Phaxio Test Company", admin_id: admin.id) }
 	let!(:org2) { Organization.create(label: "Phaxio Test Company2", admin_id: admin.id) }
 	let! (:manager) do 
-		User.create!(email: 'manager@phaxio.com', user_permission_attributes: { permission: UserPermission::MANAGER },organization_id: org.id)
+		User.create!(email: 'manager@phaxio.com', user_permission_attributes: { permission: UserPermission::MANAGER }, organization_id: org.id, caller_id_number: '+17738675307')
 	end
 	let! (:manager2) do
 		User.create!(email: 'manager2@phaxio.com', user_permission_attributes: { permission: UserPermission::MANAGER }, organization_id: org2.id, caller_id_number: '+17738675309')
@@ -50,7 +50,7 @@ RSpec.feature "Organization Pages", :type => :feature do
 			visit(organizations_path)
 			expect(page.current_url).to eq("http://www.example.com/organizations")
 
-			# The following are the navbar links
+			# navbar links
 			expect(page).to have_link('Add New Organization') # This appears as a button
 			expect(page).to have_link('Manage Organizations', href: organizations_path)
 			expect(page).to have_link('Manage Numbers', href: fax_numbers_path)
@@ -135,12 +135,20 @@ RSpec.feature "Organization Pages", :type => :feature do
 			login_as(user1)
 			visit(organizations_path)
 			expect(page.current_url).to eq("http://www.example.com/")
+			expect(page).to have_text(ApplicationController::DENIED)
 		end
 
 		it "redirects to root if a non-admin and non-manager user tries to access the organizations_path (index)" do
 			login_as(manager)
 			visit(organizations_path)
 			expect(page.current_url).to eq("http://www.example.com/")
+			expect(page).to have_text(ApplicationController::DENIED)
+		end
+
+		it "redirects to sign_in if nobody is logged in" do
+			visit(organizations_path)
+			expect(page.current_url).to eq("http://www.example.com/users/sign_in")
+			expect(page).to have_text(ApplicationController::DENIED)
 		end
 	end
 
@@ -215,61 +223,25 @@ RSpec.feature "Organization Pages", :type => :feature do
 			login_as(user1)
 			visit(organization_path(org))
 			expect(page.current_url).to eq("http://www.example.com/")
+			expect(page).to have_text(ApplicationController::DENIED)
 		end
-	end
 
-	describe "admin swapping organization phone numbers and editing its name" do
-		it "allows the admin to add/remove fax numbers and edit the organization name" do
+		it "does not enable the 'Edit User' button for the manager while the manager is logged in" do
+			login_as(manager)
+			visit(organization_path(org))
+			within_table("#{org.id}-even-users") do
+				expect(page).to have_text("manager@phaxio.com")
+				expect(page).not_to have_link("Edit User", href: edit_user_path(manager))
+			end
+		end
+
+		it "does enable the 'Edit User' button for the manager user if the Admin is logged in" do
 			login_as(admin)
 			visit(organization_path(org))
-			expect(page).to have_selector("h1", text: "Phaxio Test Company")
-			click_link("Manage Phaxio Test Company Fax Numbers / Details")
-			
-			expect(page.current_url).to eq("http://www.example.com/organizations/#{org.id}/edit")
-			expect(page).to have_field("organization[label]")
-			
-			expect(page).to have_table("unlinked-numbers")
-			within_table("unlinked-numbers") do
-				expect(page).to have_field("fax_numbers[to_add][#{fax_number3.id}]")
-			end
-
-			expect(page).to have_table("linked-numbers")
-			within_table("linked-numbers") do
-				expect(page).to have_field("fax_numbers[to_remove][#{fax_number1.id}]")
-				expect(page).to have_field("fax_numbers[to_remove][#{fax_number2.id}]")
-			end
-
-			# Remove(unlink) fax_number1, add(link) fax_number3
-			check("fax_numbers[to_remove][#{fax_number1.id}]")
-			check("fax_numbers[to_add][#{fax_number3.id}]")
-			fill_in("organization[label]", with: "An Edited Label")
-			click_button("Submit")
-
-			expect(page.current_url).to eq("http://www.example.com/organizations/#{org.id}")
-			expect(page).to have_selector("h1", text: "An Edited Label")
-
-			expect(page).to have_link("#{FaxNumber.format_pretty_fax_number(fax_number2.fax_number)}")
-			expect(page).to have_link("#{FaxNumber.format_pretty_fax_number(fax_number3.fax_number)}")
-
-			expect(page).to have_table("#{fax_number2.id}-users")
-			within_table("#{fax_number2.id}-users") do
-				expect(page).to have_text("Email")
-				expect(page).to have_text("Caller ID")
-				expect(page).to have_text("matt@phaxio.com")
-				expect(page).to have_text("#{FaxNumber.format_pretty_fax_number('+17738675309')}")
-				expect(page).not_to have_text("matt2@phaxio.com")
-				expect(page).not_to have_text("#{FaxNumber.format_pretty_fax_number('+17738675308')}")
-				expect(page).not_to have_text("matt3@phaxio.com") # this shouldn't be in the table
-			end
-
-			expect(page).to have_table("#{fax_number3.id}-users")
-			within_table("#{fax_number3.id}-users") do # now fax_number3 obj
-				expect(page).to have_text("Email")
-				expect(page).to have_text("Caller ID")
-				expect(page).not_to have_text("matt2@phaxio.com")
-				expect(page).not_to have_text("#{FaxNumber.format_pretty_fax_number('+17738675308')}") # <-- matt2's caller_id_number
+			within_table("#{org.id}-even-users") do
+				expect(page).to have_text("manager@phaxio.com")
+				expect(page).to have_link("Edit User", href: edit_user_path(manager))
 			end
 		end
 	end
-
 end
