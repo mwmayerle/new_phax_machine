@@ -3,27 +3,42 @@ class FaxNumbersController < ApplicationController
 	
 	before_action :verify_is_admin, only: [:index]
 	before_action :set_fax_number, only: [:edit, :update]
-	before_action :verify_authorized, only: [:edit, :update]
+	before_action :verify_authorized
 
+	# Table of all fax numbers in your account
 	def index
+		@area_codes = FaxNumber.get_area_code_list
+		@states = FaxNumber.create_states_for_numbers(@area_codes)
 		@fax_numbers = FaxNumber.format_and_retrieve_fax_numbers_from_api
 	end
 
+	 # Post request for purchasing the new number
+	def create
+		api_response = FaxNumber.provision(provision_number_params[:area_code])
+		if api_response.raw_data
+			flash[:notice] = "Number Provisioned Successfully"
+			redirect_to fax_numbers_path
+		else
+			flash[:alert] = "Something went wrong"
+			render :new
+		end
+	end
+
+	# Form for editing a fax number
 	def edit
 		@user = User.new
 		@organizations = Organization.order(label: :asc) if is_admin?
 	end
 
-	def update
+	def update #LOOK AT THIS TO ENSURE IT'S STILL OKAY
 		param_filter_type = is_admin? ? admin_fax_number_params : manager_fax_number_params
 		
 		original_organization = @fax_number.organization
 
 		if @fax_number.update_attributes(param_filter_type)
-
 			# this if block spoofs the "user[:to_remove]" portion of params by creating and passing in a similar hash
 			if original_organization && original_organization != @fax_number.organization
-				@fax_number.update_attributes(manager_label: nil)
+				@fax_number.update_attributes(manager_label: nil, organization_id: nil) # <--untested added org_id here 08/15/18
 				original_organization_user_ids = {}
 				original_organization.users.each { |user| original_organization_user_ids[user.id] = 'on' }
 				remove_user_associations(original_organization_user_ids, @fax_number)
@@ -50,6 +65,14 @@ class FaxNumbersController < ApplicationController
 
 		def manager_fax_number_params
 			params.require(:fax_number).permit(:id, :manager_label)
+		end
+
+		def provision_number_params
+			params.require(:fax_number).permit(:area_code)
+		end
+
+		def list_area_code_params
+			params.require(:fax_number).permit(:area_code, :toll_free, :state)
 		end
 
 		def remove_user_associations(param_input, fax_number_object)

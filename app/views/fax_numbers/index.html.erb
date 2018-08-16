@@ -1,56 +1,98 @@
-<div class="row">
-	<div class="col-lg-9">
+<body data-page="fax-index">
+	<div class="col-lg-10">
 		<h1>Manage Fax Numbers</h1>
 	</div>
-</div>
-<br>
-<div class="col">
-	<p><span style="color:green"><i class="fa fa-fw fa-check" aria-hidden="true"></i></span><i>  indicates this number does not have primary callback_url </i></p>
-</div>
-<table id="fax-number-table" class='table table-hover table-bordered'>
-	<thead class="thead-dark">
-		<tr>
-			<th class="text-center"></th>
-			<th class="text-center">Fax Number</th>
-			<th class="text-center">Organization</th>
-			<th class="text-center">Label</th>
-			<th class="text-center">Fax Number Location</th>
-			<th class="text-center">Date Provisioned</th>
-			<th class="text-center">Edit</th>
-		</tr>
-	</thead>
-	<tbody>
-		<% if @fax_numbers %>
-			<% @fax_numbers.each do |fax_number, info_hash| %>
-				<tr>
-					<% if !info_hash[:callback_url] %>
-						<td class="text-center align-middle"><span style="color:green"><i class="fa fa-check" aria-hidden="true"></i></span></td>
-					<% else %>
-						<td class="text-center align-middle"></td>
-					<% end %>
-					<td class="text-center align-middle"><%= FaxNumber.format_pretty_fax_number(fax_number) %></td>
-					<td class="text-center align-middle">
-						<% if !info_hash[:organization].nil? %>
-							<%= link_to info_hash[:organization], edit_organization_path(id: info_hash[:organization_id]) %>
+
+	<div class="row">
+		<div class="container">
+			<div id="purchase-number-form" style="margin-top:10px">
+				<%= form_for :fax_number, url: '/fax_numbers', class: 'form-inline' do |f| %>
+					<div class="row">
+
+						<div class="form-group col-lg-4">
+					 		<strong><%= f.label :state, "State/Province:" %></strong>
+							<select id="states" class="form-control" name="fax_number[state]">
+								<option id="All" name="fax_number[state]" value="all">All</option>
+								<% @states.each do |state| %>
+									<option id="<%= state %>" name="fax_number[state]" value="<%= state %>">
+										<%= state %>
+									</option>
+								<% end %>
+							</select>
+						</div>
+
+						<div class="form-group col-lg-4">
+							<strong><%= f.label :area_code, "Area Code:" %></strong>
+							<select id="area-codes" class="form-control" name="fax_number[area_code]">
+								<% @area_codes.each do |area_code_key, area_code_data| %>
+									<option id="<%= area_code_data[:state] %>" class="form-group" name="fax_number[area_code]" value="<%= area_code_key %>">
+										<%= area_code_key %> - <%= area_code_data[:city] %>
+									</option>
+								<% end %>
+							</select>
+						</div>
+
+						<div class="form-group col-lg-4">
+							<button type="submit" class="btn btn-success force-down-button">
+								<i class="fa fa-fw fa-shopping-cart" aria-hidden="true"></i>&nbsp;&nbsp;Purchase Number
+							</button>
+						</div>
+
+					</div>
+				<% end %>
+			</div>
+		</div>
+	</div>
+
+	<div class="col-lg-4">
+		<p><span style="color:green"><i class="fa fa-fw fa-check" aria-hidden="true"></i></span><i>  indicates this number does not have primary callback_url </i></p>
+	</div>
+
+	<table id="fax-number-table" class='table table-hover table-bordered'>
+		<thead class="thead-dark">
+			<tr>
+				<th class="text-center"></th>
+				<th class="text-center">Fax Number</th>
+				<th class="text-center">Organization</th>
+				<th class="text-center">Label</th>
+				<th class="text-center">Fax Number Location</th>
+				<th class="text-center">Date Provisioned</th>
+				<th class="text-center">Edit</th>
+			</tr>
+		</thead>
+		<tbody>
+			<% if @fax_numbers %>
+				<% @fax_numbers.each do |fax_number, info_hash| %>
+					<tr>
+						<% if !info_hash[:callback_url] %>
+							<td class="text-center align-middle"><span style="color:green"><i class="fa fa-check" aria-hidden="true"></i></span></td>
+						<% else %>
+							<td class="text-center align-middle"></td>
 						<% end %>
-					</td>
-					<td class="text-center align-middle"><%= info_hash[:label] %></td>
-					<% if info_hash[:city] && info_hash[:state] %>
-						<td class="text-center align-middle"> <%= info_hash[:city] %>, <%= info_hash[:state] %></td>
-					<% else %>
-						<td class="text-center align-middle"></td>
-					<% end %>
-					<td class="text-center align-middle"><%= info_hash[:provisioned_at] %></td>
-					<td class="text-center align-middle">
-						<%= link_to "Edit", edit_fax_number_path(id: info_hash[:id]), params: { fax_number: { id: info_hash[:id] } },
-								class: "btn btn-success btn-sm align-middle" %>
-					</td>
+						<td class="text-center align-middle"><%= FaxNumber.format_pretty_fax_number(fax_number) %></td>
+						<td class="text-center align-middle">
+							<% if !info_hash[:organization].nil? %>
+								<%= link_to info_hash[:organization], edit_organization_path(id: info_hash[:organization_id]) %>
+							<% end %>
+						</td>
+						<td class="text-center align-middle"><%= info_hash[:label] %></td>
+						<% if info_hash[:city] && info_hash[:state] %>
+							<td class="text-center align-middle"> <%= info_hash[:city] %>, <%= info_hash[:state] %></td>
+						<% else %>
+							<td class="text-center align-middle"></td>
+						<% end %>
+						<td class="text-center align-middle"><%= info_hash[:provisioned_at] %></td>
+						<td class="text-center align-middle">
+							<%= link_to "Edit", edit_fax_number_path(id: info_hash[:id]), params: { fax_number: { id: info_hash[:id] } },
+									class: "btn btn-success btn-sm align-middle" %>
+						</td>
+					</tr>
+				<% end %>
+			<% else %>
+				<tr>
+					<td class="text-center">No fax numbers have been added yet</td>
 				</tr>
 			<% end %>
-		<% else %>
-			<tr>
-				<td class="text-center">No fax numbers have been added yet</td>
-			</tr>
-		<% end %>
-	</tbody>
-</table>
+		</tbody>
+	</table>
+</body>

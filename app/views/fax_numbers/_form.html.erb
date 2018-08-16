@@ -1,0 +1,19 @@
+<div id="purchase-number-form" style="margin-top:10px" class="col-lg-3">
+	<%= form_for :fax_number, url: '/fax_numbers', class: 'form' do |f| %>
+		<div class="form-group">
+			<strong><%= f.label :area_code, "Area Code:" %></strong>
+			<select id="area_codes" class="form-control" name="fax_number[area_code]">
+				<% @area_codes.each do |area_code_key, area_code_data| %>
+					<option id="<%= area_code_key %>" class="form-group" name="fax_number[area_code]" value="<%= area_code_key %>">
+						<%= area_code_key %> - <%= area_code_data[:city] %>
+					</option>
+				<% end %>
+			</select>
+			<div class="form-group buy-form">
+				<button type="submit" class="btn btn-success">
+					<i class="fa fa-fw fa-shopping-cart" aria-hidden="true"></i>&nbsp;&nbsp;Purchase Number
+				</button>
+			</div>
+		</div>
+	<% end %>
+</div>

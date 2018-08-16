@@ -7,6 +7,7 @@ RSpec.describe FaxNumber, type: :model do
 	)
 	end
 	let!(:org) { Organization.create(label: "Phaxio Test Company", admin_id: admin.id) }
+	let!(:org2) { Organization.create(label: "Phaxio Test Company2", admin_id: admin.id) }
 	let!(:manager) do 
 		User.create!(
 			email: 'manager@phaxio.com',
