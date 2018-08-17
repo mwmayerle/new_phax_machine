@@ -3,7 +3,7 @@ class FaxNumbersController < ApplicationController
 	
 	before_action :verify_is_admin, only: [:index]
 	before_action :set_fax_number, only: [:edit, :update]
-	before_action :verify_authorized, except: [:create]
+	before_action :verify_authorized, except: [:create, :new]
 
 	# Table of all fax numbers in your account
 	def index
