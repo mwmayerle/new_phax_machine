@@ -40,7 +40,7 @@ RSpec.feature "Fax Number Pages", :type => :feature do
 
 			# The following are the navbar links
 			expect(page).to have_link('Manage Organizations', href: organizations_path)
-			expect(page).to have_link('Manage Numbers', href: fax_numbers_path)
+			expect(page).to have_link('Fax Numbers', href: fax_numbers_path)
 			expect(page).to have_link('Edit Profile')
 			expect(page).to have_link('Fax Logs', href: fax_logs_path)
 

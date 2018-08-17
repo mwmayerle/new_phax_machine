@@ -5,6 +5,7 @@ class CreateOrganizations < ActiveRecord::Migration[5.2]
     	t.integer  :manager_id
     	t.string   :label, null: false
     	t.string   :fax_tag
+    	t.boolean  :fax_numbers_purchasable, default: false
 
       t.timestamps
     end

@@ -36,6 +36,7 @@ ActiveRecord::Schema.define(version: 2018_08_14_145905) do
     t.integer "manager_id"
     t.string "label", null: false
     t.string "fax_tag"
+    t.boolean "fax_numbers_purchasable", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "deleted_at"

@@ -2,14 +2,11 @@
   <div class="container coverup">
     <div class="card card-login mx-auto mt-5">
     	<% if @organization.label %>
-    		<div class="card-header"><%= @organization.label %></div>
-    		<% if @organization.manager.present? %>
-    			<div class="row">
-    				<div class="col">
-							<p class="indent-me"> Manager: <%= @organization.manager.email %> </p>
-						</div>
-					</div>
-				<% end %>
+    		<div class="card-header row"><p class="indent-me"><%= @organization.label %>:</p>
+    			<% if @organization.manager.present? %>
+    			  <p class="indent-me" style="font-size:16px;padding-top:10px;"> Manager: <%= @organization.manager.email %> </p>
+					<% end %>
+    		</div>
     	<% else %>
 	      <div class="card-header">Add Organization</div>
     	<% end %>
@@ -19,16 +16,31 @@
 						<% if is_admin? %>
 							<%= f.hidden_field :admin_id, value: "#{current_user.id}" %>
 						<% end %>
-							<div class="row">
-								<div class="col-lg-6 input-group align-self-center">
-									<strong><%= f.label :label, "Name: ", class: "align-self-center push-down-text" %></strong>
-									<%= f.text_field :label, value: organization.label, class: "form-control inline-input-margin" %>
-								</div>
-								<div class="col-lg-6 input-group align-self-center">
-									<%= f.submit "Submit", class: "form-inline btn btn-success" %>
-								</div>
+						<div class="row col">
+							<div class="col-lg-5 input-group align-self-center">
+								<strong><%= f.label :label, "Name: ", class: "align-self-center push-down-text" %></strong>
+								<%= f.text_field :label, value: organization.label, class: "form-control inline-input-margin" %>
 							</div>
-					<br>
+							<div class="col-lg-5 input-group align-self-center">
+								<label class="custom-control custom-checkbox push-down-text">
+									<% if @organization && @organization.fax_numbers_purchasable %>
+										<input class="custom-control-input" type="checkbox" name="organization[fax_numbers_purchasable]" value=true checked="checked">
+									<% else %>
+										<input class="custom-control-input" type="checkbox" name="organization[fax_numbers_purchasable]" value=true>
+									<% end %>
+									<span class="custom-control-indicator"></span>
+									<span class="custom-control-description">
+										Allow organization to purchase numbers?
+									</span>
+								</label>
+							</div>
+							<div class="col-lg-2 input-group align-self-center">
+								<%= f.submit "Submit", class: "form-inline btn btn-success" %>
+							</div>
+						</div>
+
+						<div class="underline"></div>
+
 						<div class="row">
 							<% if unallocated_fax_numbers.present? %>
 								<div class="col-lg-5">

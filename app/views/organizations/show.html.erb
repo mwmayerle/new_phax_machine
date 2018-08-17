@@ -1,168 +1,176 @@
-<div class="row">
-	<div class="col">
-		<h1><%= @organization.label %></h1>
+<body data-page="organization-show">
+	<div class="row">
+		<div class="col">
+			<h1><%= @organization.label %></h1>
+		</div>
+		<div style="padding-right:20px" class="btn-group">
+			<% if @organization.fax_numbers_purchasable %>
+				<%= link_to "Provision Fax Number", new_fax_number_path(:fax_number => {:organization_id => @organization.id}), class: "btn btn-success btn-lg pull-right btn-inline", id: "buy-number-link-btn" %>
+			<% end %>
+			<% if is_admin? %>
+				<%= link_to "Manage #{@organization.label} Fax Numbers / Details", edit_organization_path(@organization), style: "margin-right:25px;", class: "btn btn-success btn-lg pull-right btn-inline" %>
+			<% end %>
+		</div>
 	</div>
-	<div class="col">
-		<% if is_admin? %>
-			<%= link_to "Manage #{@organization.label} Fax Numbers / Details", edit_organization_path(@organization), style: "margin-right:25px;", class: "btn btn-success btn-lg pull-right" %>
-		<% end %>
-	</div>
-</div>
 
-<% if @organization.fax_numbers.present? %>
-	<% @organization.fax_numbers.each do |organization_fax_number| %>
-		<div class="row information-box">
-			<div class="col-lg-5">
-				<h2>
-					<%= link_to FaxNumber.format_pretty_fax_number(organization_fax_number.fax_number), edit_fax_number_path(organization_fax_number) %>
-				</h2>
+	<div class="underline"></div>
 
-				<% if is_admin? %>
-					<div class="col">
-						<div class="row">
-							<p><strong>Admin Label: </strong><%= organization_fax_number.label %></p>
-						</div>
-						<div class="row">
-							<p><strong>Manager Label: </strong> <%= organization_fax_number.manager_label %></p>
-						</div>
-					</div>
-				<% else %>
-					<div class="col">
-						<div class="row">
-							<p><%= organization_fax_number.manager_label %></p>
-						</div>
-					</div>
-				<% end %>
+	<% if @organization.fax_numbers.present? %>
+		<% @organization.fax_numbers.each do |organization_fax_number| %>
+			<div class="row information-box">
+				<div class="col-lg-5">
+					<h2>
+						<%= link_to FaxNumber.format_pretty_fax_number(organization_fax_number.fax_number), edit_fax_number_path(organization_fax_number) %>
+					</h2>
 
-				<div class="form-group">
-					<% if organization_fax_number.organization.users.present? %>
-						<%= link_to "Link / Unlink Users", edit_user_fax_number_path(organization_fax_number), class: "btn btn-success" %>
+					<% if is_admin? %>
+						<div class="col">
+							<div class="row">
+								<p><strong>Admin Label: </strong><%= organization_fax_number.label %></p>
+							</div>
+							<div class="row">
+								<p><strong>Manager Label: </strong> <%= organization_fax_number.manager_label %></p>
+							</div>
+						</div>
 					<% else %>
 						<div class="col">
-							<p><em> Add users below to start linking them to your fax numbers</em></p>
+							<div class="row">
+								<p><%= organization_fax_number.manager_label %></p>
+							</div>
+						</div>
+					<% end %>
+
+					<div class="form-group">
+						<% if organization_fax_number.organization.users.present? %>
+							<%= link_to "Link / Unlink Users", edit_user_fax_number_path(organization_fax_number), class: "btn btn-success" %>
+						<% else %>
+							<div class="col">
+								<p><em> Add users below to start linking them to your fax numbers</em></p>
+							</div>
+						<% end %>
+					</div>
+				</div>
+				
+				<div class="col-lg-7 align-self-center">
+					<table id="<%=organization_fax_number.id%>-users" class="table table-hover table-striped table-sm table-bordered">
+						<thead class="thead-dark">
+							<tr>
+								<th class="text-center">Email</th>
+								<th class="text-center">Caller ID</th>
+							</tr>
+						</thead>
+						<tbody>
+							<% if organization_fax_number.users.present? %>
+								<% organization_fax_number.users.each do |user| %>
+									<tr>
+										<td class="text-center"><%= user.email %></td>
+										<td class="text-center"><%= FaxNumber.format_pretty_fax_number(user.caller_id_number) %></td>
+									</tr>
+								<% end %>
+							<% else %>
+								<tr>
+									<td class="text-center">N/A</td>
+									<td class="text-center">N/A</td>
+								</tr>
+							<% end %>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		<% end %>
+		
+		<div class="underline"></div>
+
+		<div class="container-fluid user-form form-group">
+			<h2>Invite A New User</h2>
+			<div class="row">
+				<div class="inline-input-margin col-lg-10">
+					<%= form_for :user, url: "/users", method: :post, class: "form-inline" do |f| %>
+						<%= f.hidden_field :organization_id, value: "#{@organization.id}" %>
+						<%= f.hidden_field :permission, value: "#{UserPermission::USER}" %>
+						<div class="row">
+							<div class="form-group col-lg-4">
+								<strong><%= f.label :email, "Email:", class: "pull-left" %></strong>
+								<%= f.email_field :email, class: "form-control" %>
+							</div>
+							<div class="form-group col-lg-4">
+								<strong><%= f.label :caller_id_number, "Caller ID Number:", class: "pull-left" %></strong>
+								<select class="form-control form-inline" name="user[caller_id_number]">
+									<% @organization.fax_numbers.each do |organization_fax_number| %>
+										<option name="user[caller_id_number]" value="<%= organization_fax_number.fax_number %>" selected="selected">
+											<%= FaxNumber.format_pretty_fax_number(organization_fax_number.fax_number) %>
+											<% if organization_fax_number.manager_label.present? %>
+										 		- <%= organization_fax_number.manager_label %>
+										 	<% end %>
+										 </option>
+									<% end %>
+								</select>
+							</div>
+							<div class="col form-group force-down-button">
+								<%= f.submit "Invite User", class: "btn btn-success" %>
+							</div>
 						</div>
 					<% end %>
 				</div>
 			</div>
-			
-			<div class="col-lg-7 align-self-center">
-				<table id="<%=organization_fax_number.id%>-users" class="table table-hover table-striped table-sm table-bordered">
-					<thead class="thead-dark">
-						<tr>
-							<th class="text-center">Email</th>
-							<th class="text-center">Caller ID</th>
-						</tr>
-					</thead>
-					<tbody>
-						<% if organization_fax_number.users.present? %>
-							<% organization_fax_number.users.each do |user| %>
-								<tr>
-									<td class="text-center"><%= user.email %></td>
-									<td class="text-center"><%= FaxNumber.format_pretty_fax_number(user.caller_id_number) %></td>
-								</tr>
-							<% end %>
-						<% else %>
-							<tr>
-								<td class="text-center">N/A</td>
-								<td class="text-center">N/A</td>
-							</tr>
-						<% end %>
-					</tbody>
-				</table>
-			</div>
 		</div>
-	<% end %>
-	
-	<br>
-	<div class="container-fluid user-form form-group">
-		<h2>Invite A New User</h2>
-		<div class="row">
-			<div class="inline-input-margin col-lg-10">
-				<%= form_for :user, url: "/users", method: :post, class: "form-inline" do |f| %>
-					<%= f.hidden_field :organization_id, value: "#{@organization.id}" %>
-					<%= f.hidden_field :permission, value: "#{UserPermission::USER}" %>
-					<div class="row">
-						<div class="form-group col-lg-4">
-							<strong><%= f.label :email, "Email:", class: "pull-left" %></strong>
-							<%= f.email_field :email, class: "form-control" %>
-						</div>
-						<div class="form-group col-lg-4">
-							<strong><%= f.label :caller_id_number, "Caller ID Number:", class: "pull-left" %></strong>
-							<select class="form-control form-inline" name="user[caller_id_number]">
-								<% @organization.fax_numbers.each do |organization_fax_number| %>
-									<option name="user[caller_id_number]" value="<%= organization_fax_number.fax_number %>" selected="selected">
-										<%= FaxNumber.format_pretty_fax_number(organization_fax_number.fax_number) %>
-										<% if organization_fax_number.manager_label.present? %>
-									 		- <%= organization_fax_number.manager_label %>
-									 	<% end %>
-									 </option>
+		<br>
+		<% if @organization.users.present? %>
+			<div class="container-fluid">
+				<h2><%= @organization.label %> Users</h2>
+				<br>
+				<div class="col">
+					<p><em>Click 'Edit User' to grant an existing user to Phax Machine or to revoke their access.</em></p>
+				</div>
+			</div>
+			<div class="row information-box">
+				<div class="col-lg-5">
+					<table id="<%=@organization.id%>-even-users" class="table table-sm table-hover table-bordered">
+						<tbody>
+							<% @organization.users.each do |user| %>
+								<% if @organization.users.index(user).even? %>
+									<tr>
+										<td class="text-center"><%= user.email %></td>
+										<td class="text-center">
+											<% if user != current_user %> <!-- Keeps Client Manager from revoking their own access -->
+												<%= link_to "Edit User", edit_user_path(user), class: "btn btn-success btn-sm" %>
+											<% end %>
+										</td>
+									</tr>
 								<% end %>
-							</select>
-						</div>
-						<div class="col form-group force-down-button">
-							<%= f.submit "Invite User", class: "btn btn-success" %>
-						</div>
-					</div>
-				<% end %>
-			</div>
-		</div>
-	</div>
-	<br>
-	<% if @organization.users.present? %>
-		<div class="container-fluid">
-			<h2><%= @organization.label %> Users</h2>
-			<br>
-			<div class="col">
-				<p><em>Click 'Edit User' to grant an existing user to Phax Machine or to revoke their access.</em></p>
-			</div>
-		</div>
-		<div class="row information-box">
-			<div class="col-lg-5">
-				<table id="<%=@organization.id%>-even-users" class="table table-sm table-hover table-bordered">
-					<tbody>
-						<% @organization.users.each do |user| %>
-							<% if @organization.users.index(user).even? %>
-								<tr>
-									<td class="text-center"><%= user.email %></td>
-									<td class="text-center">
-										<% if user != current_user %> <!-- Keeps Client Manager from revoking their own access -->
-											<%= link_to "Edit User", edit_user_path(user), class: "btn btn-success btn-sm" %>
-										<% end %>
-									</td>
-								</tr>
 							<% end %>
-						<% end %>
-					</tbody>
-				</table>
-			</div>
+						</tbody>
+					</table>
+				</div>
 
-			<div class="col-lg-5">
-				<table id="<%=@organization.id%>-odd-users" class="table table-sm table-hover table-bordered">
-					<tbody>
-						<% @organization.users.each do |user| %>
-							<% if @organization.users.index(user).odd? %>
-								<tr>
-									<td class="text-center"><%= user.email %></td>
-									<td class="text-center">
-										<% if user != current_user %> <!-- Keeps Client Manager from revoking their own access -->
-											<%= link_to "Edit User", edit_user_path(user), class: "btn btn-success btn-sm" %>
-										<% end %>
-									</td>
-								</tr>
+				<div class="col-lg-5">
+					<table id="<%=@organization.id%>-odd-users" class="table table-sm table-hover table-bordered">
+						<tbody>
+							<% @organization.users.each do |user| %>
+								<% if @organization.users.index(user).odd? %>
+									<tr>
+										<td class="text-center"><%= user.email %></td>
+										<td class="text-center">
+											<% if user != current_user %> <!-- Keeps Client Manager from revoking their own access -->
+												<%= link_to "Edit User", edit_user_path(user), class: "btn btn-success btn-sm" %>
+											<% end %>
+										</td>
+									</tr>
+								<% end %>
 							<% end %>
-						<% end %>
-					</tbody>
-				</table>
+						</tbody>
+					</table>
+				</div>
 			</div>
-		</div>
-	<% end %>
+		<% end %>
 
-<% else %>
-	<% if is_admin? %>
-		<div class="row information-box">
-			<div class="col">
-				<p>No Fax Numbers are associated with this account. Please click 'Manage Organization Fax Numbers / Details' above to assign a fax number to this Organization.</p>
+	<% else %>
+		<% if is_admin? %>
+			<div class="row information-box">
+				<div class="col">
+					<p>No Fax Numbers are associated with this account. Please click 'Manage Organization Fax Numbers / Details' above to assign a fax number to this Organization.</p>
+				</div>
 			</div>
-		</div>
+		<% end %>
 	<% end %>
-<% end %>
+</body>

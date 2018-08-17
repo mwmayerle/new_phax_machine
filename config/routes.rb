@@ -19,7 +19,7 @@ Rails.application.routes.draw do
 	resources :mailgun_faxes, only: [:fax_received, :fax_sent, :mailgun]
   resources :users, only: [:index, :show, :create, :edit, :update]
 	resources :organizations
-  resources :fax_numbers, only: [:index, :edit, :update]
+  resources :fax_numbers, only: [:index, :edit, :update, :new, :create]
   resources :fax_logs, only: [:index, :create]
 
   root to: "faxes#new"

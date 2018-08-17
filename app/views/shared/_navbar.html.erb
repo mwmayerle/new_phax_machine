@@ -18,20 +18,20 @@
         		<span class="nav-link-text">&nbsp;Manage Organizations</span>
       		</a>
 	      </li>
-	      <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Manage Fax Numbers">
+	      <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Fax Numbers">
       		<a class="nav-link" href="/fax_numbers">
         		<i class="fa fa-fw fa-phone"></i>
-        		<span class="nav-link-text">&nbsp;Manage Numbers</span>
+        		<span class="nav-link-text">&nbsp;Fax Numbers</span>
       		</a>
 	      </li>
     	<% end %>
 
 
       <% if is_manager? && !is_admin? %>
-      	<li class="nav-item" data-toggle="tooltip" data-placement="right" title="Organization Profile">
+      	<li class="nav-item" data-toggle="tooltip" data-placement="right" title="Dashboard">
       		<a class="nav-link" href="/organizations/<%=current_user.organization.id%>">
       			<i class="fa fa-fw fa-id-card-o"></i>
-      			<span class="nav-link-text">&nbsp;Organization Profile</span>
+      			<span class="nav-link-text">&nbsp;Dashboard</span>
       		</a>
       	</li>
       	<li class="nav-item" data-toggle="tooltip" data-placement="right" title="Send a Fax">

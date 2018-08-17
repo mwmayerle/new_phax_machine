@@ -1,6 +1,11 @@
 class FaxNumber < ApplicationRecord
 	include FaxTags
 
+	STATE_AND_PROVINCE_NAME_TO_ABBR = {
+		'Alabama' => 'AL','Alaska' => 'AK','America Samoa' => 'AS','Arizona' => 'AZ','Arkansas' => 'AR','California' => 'CA','Colorado' => 'CO','Connecticut' => 'CT','Delaware' => 'DE','District of Columbia' => 'DC','Federated States of Micronesia' => 'FM','Florida' => 'FL','Georgia' => 'GA','Guam' => 'GU','Hawaii' => 'HI','Idaho' => 'ID','Illinois' => 'IL','Indiana' => 'IN','Iowa' => 'IA','Kansas' => 'KS','Kentucky' => 'KY','Louisiana' => 'LA','Maine' => 'ME','Maryland' => 'MD','Massachusetts' => 'MA','Marshall Islands' => 'MH','Michigan' => 'MI','Minnesota' => 'MN','Mississippi' => 'MS','Missouri' => 'MO','Montana' => 'MT','Nebraska' => 'NE','Nevada' => 'NV','New Hampshire' => 'NH','New Jersey' => 'NJ','New Mexico' => 'NM','New York' => 'NY','North Carolina' => 'NC','North Dakota' => 'ND','Northern Mariana Islands' => 'MP','Ohio' => 'OH','Oklahoma' => 'OK','Oregon' => 'OR','Palau' => 'PW','Pennsylvania' => 'PA','Puerto Rico' => 'PR','Rhode Island' => 'RI','South Carolina' => 'SC','South Dakota' => 'SD','Tennessee' => 'TN','Texas' => 'TX','Utah' => 'UT','Vermont' => 'VT','Virgin Island' => 'VI','Virginia' => 'VA','Washington' => 'WA','West Virginia' => 'WV','Wisconsin' => 'WI','Wyoming' => 'WY', 
+
+		'Alberta'=>'AB', 'British Columbia' => 'BC', 'Manitoba' => 'MB', 'New Brunswick' => 'NB', 'Newfoundland and Labrador' => 'NL', 'Nova Scotia, Prince Edward Island' => 'NS', 'Northwest Territories, Nunavut, Yukon' => 'NT', 'Ontario' => 'ON', 'Quebec' => 'QC', 'Saskatchewan' => 'SK'
+	}
 	FAX_NUMBER_CHARACTER_LIMIT = 36
 	FAX_NUMBER_DIGIT_LIMIT = 60 # Took this value from Phax Machine, is it real?
 
@@ -36,7 +41,47 @@ class FaxNumber < ApplicationRecord
 				time.to_time.strftime("%B %-d, %Y")
 			end
 
-			# Retrieves all numbers from Phaxio
+			def provision(area_code)
+				Fax.set_phaxio_creds
+				Phaxio::PhoneNumber.create({:area_code => area_code, :country_code => 1})
+			end
+
+			def get_area_code_list(options = {})
+				if options[:state]
+					if options[:state] != "Non-Geographic"
+						options[:state] = STATE_AND_PROVINCE_NAME_TO_ABBR[options[:state]]
+					else
+						options.delete(:state)
+						options[:toll_free] = true
+					end
+				end
+
+				Fax.set_phaxio_creds
+				options.merge!({country_code: 1, per_page: 1000 })
+				area_codes_from_api = Phaxio::Public::AreaCode.list(options)
+				format_area_codes(area_codes_from_api.raw_data, options)
+			end
+
+			def format_area_codes(area_codes_from_api, options, area_codes = {})
+				area_codes_from_api = area_codes_from_api.sort_by { |area_code| area_code['area_code'] }
+				area_codes_from_api.each do |area_code_object|
+					area_codes[area_code_object['area_code'].to_s] = {
+						city: area_code_object['city'],
+						state: area_code_object['state'],
+						toll_free: area_code_object['toll_free']
+					}
+				end
+				area_codes
+			end
+
+			def create_states_for_numbers(area_codes, states = [])
+				area_codes.each do |area_code_key, area_code_data|
+					states.push(area_code_data[:state]) if !states.include?(area_code_data[:state])
+				end
+				states.sort!
+			end
+
+			# Retrieves all fax numbers from Phaxio
 			def format_and_retrieve_fax_numbers_from_api
 				Fax.set_phaxio_creds
 				api_response = Phaxio::PhoneNumber.list
