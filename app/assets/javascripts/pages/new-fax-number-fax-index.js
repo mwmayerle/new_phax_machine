@@ -1,7 +1,6 @@
 phaxMachine.pages['new-fax-number-fax-index'] = {
 
 	render: function() {
-		alert('hi')
 		if ($("#clickable-dropdown").length > 0) {
 			$("#show-form").on('click', function(event) {
 				$(".purchase-number-form").slideToggle(300);

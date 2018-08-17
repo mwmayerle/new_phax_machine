@@ -3,13 +3,12 @@
 		<div class="col">
 			<h1><%= @organization.label %></h1>
 		</div>
-		<div class="col">
-			<% if is_admin? %>
-				<%= link_to "Manage #{@organization.label} Fax Numbers / Details", edit_organization_path(@organization), style: "margin-right:25px;", class: "btn btn-success btn-lg pull-right" %>
-			<% end %>
+		<div style="padding-right:20px" class="btn-group">
 			<% if @organization.fax_numbers_purchasable %>
-			<% p @organization.id %>
-				<%= link_to "Provision Fax Number", new_fax_number_path(:fax_number => {:organization_id => @organization.id}), class: "btn btn-success btn-lg pull-right", id: "buy-number-link-btn" %>
+				<%= link_to "Provision Fax Number", new_fax_number_path(:fax_number => {:organization_id => @organization.id}), class: "btn btn-success btn-lg pull-right btn-inline", id: "buy-number-link-btn" %>
+			<% end %>
+			<% if is_admin? %>
+				<%= link_to "Manage #{@organization.label} Fax Numbers / Details", edit_organization_path(@organization), style: "margin-right:25px;", class: "btn btn-success btn-lg pull-right btn-inline" %>
 			<% end %>
 		</div>
 	</div>
