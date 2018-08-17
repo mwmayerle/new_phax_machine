@@ -36,6 +36,10 @@ class OrganizationsController < ApplicationController
 	def show
 		@user = User.new
 		if authorized?(@organization, :manager_id)
+			if @organization.fax_numbers_purchasable
+				@area_codes = FaxNumber.get_area_code_list
+				@states = FaxNumber.create_states_for_numbers(@area_codes)
+			end
 			@unassigned_users = Organization.get_unassigned_users(@organization)
 		else
 			flash[:alert] = DENIED
@@ -62,6 +66,7 @@ class OrganizationsController < ApplicationController
 	# end
 
 	def update
+		params[:organization][:fax_numbers_purchasable] = false if params[:organization][:fax_numbers_purchasable].nil?
 		if @organization.update_attributes(organization_params)
 
 			unless params[:fax_numbers].nil?
@@ -103,7 +108,7 @@ class OrganizationsController < ApplicationController
 		# end
 
 		def organization_params
-			params.require(:organization).permit(:id, :manager_id, :label, :admin_id)
+			params.require(:organization).permit(:id, :manager_id, :label, :admin_id, :fax_numbers_purchasable)
 		end
 
 		def organization_association_params

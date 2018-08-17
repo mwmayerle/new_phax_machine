@@ -65,11 +65,10 @@ Rails.application.configure do
   config.action_mailer.delivery_method = :smtp
 	config.action_mailer.smtp_settings = {
     :authentication => :plain,
-    :enable_starttls_auto => ENV['SMTP_TLS'],
-    :address => ENV["SMTP_HOST"],
-    :port => ENV["SMTP_PORT"],
+    :enable_starttls_auto => ENV.fetch('SMTP_TLS', true),
+    :address => ENV.fetch("SMTP_HOST", 'smtp.mailgun.org'),
+    :port => ENV.fetch("SMTP_PORT", 587),
     :user_name => ENV["SMTP_USER"],
     :password => ENV["SMTP_PASSWORD"]
   }
-
 end

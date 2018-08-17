@@ -3,7 +3,7 @@ class FaxNumbersController < ApplicationController
 	
 	before_action :verify_is_admin, only: [:index]
 	before_action :set_fax_number, only: [:edit, :update]
-	before_action :verify_authorized
+	before_action :verify_authorized, except: [:create]
 
 	# Table of all fax numbers in your account
 	def index
@@ -12,12 +12,29 @@ class FaxNumbersController < ApplicationController
 		@fax_numbers = FaxNumber.format_and_retrieve_fax_numbers_from_api
 	end
 
+	# Purchase Number Form page
+	def new
+		verify_is_manager_or_admin
+		@area_codes = FaxNumber.get_area_code_list
+		@states = FaxNumber.create_states_for_numbers(@area_codes)
+		@organization = Organization.find(manager_fax_number_params[:organization_id]) if is_manager?
+	end
+
 	 # Post request for purchasing the new number
 	def create
-		api_response = FaxNumber.provision(provision_number_params[:area_code])
-		if api_response.raw_data
+		# api_response = FaxNumber.provision(provision_number_params[:area_code])
+		if api_response.phone_number
+			FaxNumber.create!(fax_number: api_response.phone_number, has_webhook_url: false)
 			flash[:notice] = "Number Provisioned Successfully"
-			redirect_to fax_numbers_path
+
+			# Adds fax number to the organization immediately 
+			if provision_number_params[:organization_id]
+				number = FaxNumber.find_by(fax_number: api_response.phone_number)
+				number.update_attributes(organization_id: provision_number_params[:organization_id])
+				redirect_to organization_path(provision_number_params[:organization_id])
+			else
+				redirect_to fax_numbers_path
+			end
 		else
 			flash[:alert] = "Something went wrong"
 			render :new
@@ -64,11 +81,11 @@ class FaxNumbersController < ApplicationController
 		end
 
 		def manager_fax_number_params
-			params.require(:fax_number).permit(:id, :manager_label)
+			params.require(:fax_number).permit(:id, :manager_label, :organization_id)
 		end
 
 		def provision_number_params
-			params.require(:fax_number).permit(:area_code)
+			params.require(:fax_number).permit(:area_code, :organization_id)
 		end
 
 		def list_area_code_params

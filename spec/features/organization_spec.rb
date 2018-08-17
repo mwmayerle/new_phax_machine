@@ -53,7 +53,7 @@ RSpec.feature "Organization Pages", :type => :feature do
 			# navbar links
 			expect(page).to have_link('Add New Organization') # This appears as a button
 			expect(page).to have_link('Manage Organizations', href: organizations_path)
-			expect(page).to have_link('Manage Numbers', href: fax_numbers_path)
+			expect(page).to have_link('Fax Numbers', href: fax_numbers_path)
 			expect(page).to have_link('Edit Profile')
 			expect(page).to have_link('Fax Logs', href: fax_logs_path)
 			expect(page).to have_link("Phaxio Test Company", href: organization_path(org))

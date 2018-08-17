@@ -43,13 +43,8 @@ class FaxNumber < ApplicationRecord
 
 			def provision(area_code)
 				Fax.set_phaxio_creds
-				Phaxio::PhoneNumber.create({
-					:area_code => area_code,
-					:country_code => 1
-				})
+				Phaxio::PhoneNumber.create({:area_code => area_code, :country_code => 1})
 			end
-			# Phone Number create response WAS NOT 
-			#<Phaxio::Resources::PhoneNumber:0x00007f1fd01919b8 @raw_data={"phone_number"=>"+18017690715", "city"=>"Ogden, Provo, Salt Lake City", "state"=>"Utah", "country"=>"United States of America", "cost"=>200, "last_billed_at"=>"2018-08-15T16:28:11.000-05:00", "provisioned_at"=>"2018-08-15T16:28:11.000-05:00", "callback_url"=>nil}, @phone_number="+18017690715", @city="Ogden, Provo, Salt Lake City", @state="Utah", @country="United States of America", @cost=200, @callback_url=nil, @provisioned_at=2018-08-15 16:28:11 -0500, @last_billed_at=2018-08-15 16:28:11 -0500>
 
 			def get_area_code_list(options = {})
 				if options[:state]
@@ -62,14 +57,13 @@ class FaxNumber < ApplicationRecord
 				end
 
 				Fax.set_phaxio_creds
-				options.merge!({
-					country_code: 1,
-					per_page: 1000 })
-				p area_codes_from_api = Phaxio::Public::AreaCode.list(options)
+				options.merge!({country_code: 1, per_page: 1000 })
+				area_codes_from_api = Phaxio::Public::AreaCode.list(options)
 				format_area_codes(area_codes_from_api.raw_data, options)
 			end
 
 			def format_area_codes(area_codes_from_api, options, area_codes = {})
+				area_codes_from_api = area_codes_from_api.sort_by { |area_code| area_code['area_code'] }
 				area_codes_from_api.each do |area_code_object|
 					area_codes[area_code_object['area_code'].to_s] = {
 						city: area_code_object['city'],

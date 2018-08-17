@@ -1,20 +1,5 @@
-
-<%= form_with(url: new_fax_number_path, method: :get, class: 'form col-lg-3', id: "filter-area-code-form") do |f| %>
-	<% if @states %>
- 		<div class="form-group">
- 			<strong><%= f.label :state, "State/Province:" %></strong>
-			<select id="states" class="form-control" name="fax_number[state]">
-				<% @states.each do |state| %>
-					<option id="<%= state %>" name="fax_number[state]" value="<%= state %>">
-						<%= state %>
-					</option>
-				<% end %>
-			</select>
-		</div>
-	<% end %>
-	<div class="form-group buy-form">
-		<button type="submit" id="filter-button" value="Filter" class="btn btn-success">
-			<i class="fa fa-fw fa-search" aria-hidden="true"></i>&nbsp;&nbsp;Filter By State
-		</button>
-	</div>
-<% end %>
+<body data-page="new-fax-number-fax-index">
+	<h1>Purchase A New Fax Number</h1>
+	<div class="underline"></div>
+	<%= render partial: "form", layout: false, locals: { area_codes: @area_codes, states: @states, organization: @organization } %>
+</body>
