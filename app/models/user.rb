@@ -1,6 +1,6 @@
 class User < ApplicationRecord
 	acts_as_paranoid
-	
+	# -> { with_deleted } links the soft-deleted association. See Paranoia gem docs.
 	include FaxTags
 
 	USER_CHARACTER_LIMIT = 48
@@ -14,7 +14,7 @@ class User < ApplicationRecord
 
 	has_one :admin, through: :organization
 	has_one :manager, through: :organization
-	has_one :user_permission, dependent: :destroy
+	has_one :user_permission, -> { with_deleted }, dependent: :destroy
 	has_many :user_fax_numbers, dependent: :destroy
 	has_many :fax_numbers, through: :user_fax_numbers
 

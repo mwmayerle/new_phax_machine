@@ -8,6 +8,10 @@ $warning: #7EA16B;
 @import 'faxes';
 @import 'jquery-ui/datepicker';
 
+#fax-number-table-title {
+	margin-bottom: 5px;
+}
+
 #buy-number-link-btn {
 	margin-right: 20px;
 }

@@ -35,6 +35,7 @@ class OrganizationsController < ApplicationController
 
 	def show
 		@user = User.new
+
 		if authorized?(@organization, :manager_id)
 			if @organization.fax_numbers_purchasable
 				@area_codes = FaxNumber.get_area_code_list
@@ -92,11 +93,7 @@ class OrganizationsController < ApplicationController
 	private
 
 		def set_organization
-			if is_admin?
-				@organization ||= Organization.includes(:fax_numbers).order("fax_numbers.label ASC").find(params[:id])
-			else
-				@organization ||= Organization.includes(:fax_numbers).order("fax_numbers.manager_label ASC").find(params[:id])
-			end
+			@organization ||= Organization.includes(:fax_numbers).order("fax_numbers.fax_number").find(params[:id])
 		end
 
 		def get_unallocated_numbers 
