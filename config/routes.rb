@@ -17,12 +17,14 @@ Rails.application.routes.draw do
 	resources :faxes, only: [:new, :create]
 	resources :user_fax_numbers, only: [:edit, :update]
 	resources :mailgun_faxes, only: [:fax_received, :fax_sent, :mailgun]
-  resources :users, only: [:index, :show, :create, :edit, :update]
+  resources :users, only: [:index, :edit, :update, :org_index]
 	resources :organizations
   resources :fax_numbers, only: [:index, :edit, :update, :new, :create]
   resources :fax_logs, only: [:index, :create]
 
   root to: "faxes#new"
+
+  get "/org-users", to: "users#org_index"
 
   post "/fax_received", to: "mailgun_faxes#fax_received"
   post "/fax_sent", to: "mailgun_faxes#fax_sent"

@@ -1,19 +1,24 @@
+# go to /users/registrations_controller.rb for create and destroy methods
 class UsersController < ApplicationController
 	include SessionsHelper
 
-	before_action :verify_is_manager_or_admin
+	before_action :verify_is_admin, only: [:org_index]
+	before_action :verify_is_manager_or_admin, except: [:org_index]
 	before_action :set_user, only: [:edit, :update]
+	before_action :set_organization, only: [:index]
 	
+	# Get list of organizations for the Admin, after an org is selected, it goes to the Index route in this controller
+	def org_index
+		@organizations = Organization.all
+	end
 
-	# def create
-		# go to /users/registrations_controller.rb
-	# end
-
-	# def destroy
-		# go to /users/registrations_controller.rb
-	# end
+	def index #with_deleted is a Paranoia gem method that includes soft-deleted users
+		@users = User.with_deleted.where(organization_id: @organization.id).order(:email)
+	end
 
 	def edit
+		p @user
+		p @user.user_permission
 	end
 	
 	# Users editing their passwords is done through the Devise registration controller. This
@@ -46,12 +51,16 @@ class UsersController < ApplicationController
 	end
 
 	private
+		def set_organization
+			@organization = is_admin? ? Organization.find(user_params[:organization_id]) : Organization.find(current_user.organization_id)
+		end
+
 		def set_user
-			@user ||= User.find(params[:id])
+			@user ||= User.with_deleted.includes(:user_permission).find(params[:id])
 		end
 
 		def user_params
-			params.require(:user).permit(:caller_id_number, :email)
+			params.require(:user).permit(:caller_id_number, :email, :organization_id)
 		end
 
 		def permission_params

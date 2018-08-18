@@ -36,8 +36,8 @@
   color: #fafafa;
   transition: all 0.3s;
   z-index: 999;
-  min-width: 242px;
-  max-width: 242px;
+  min-width: 212px;
+  max-width: 212px;
   min-height: 100vh;
 }
 
@@ -54,13 +54,23 @@
 	padding-right: 20px;
 	padding-left: 20px;
 	padding-top: 10px;
-	min-width: 242px;
-  max-width: 242px;
+	min-width: 212px;
+  max-width: 212px;
 }
 
 #sidebar ul.components {
   border-bottom: 1px solid #202634;
-  padding-left: 10px;
+}
+
+.logout:hover {
+	color: #fafafa;
+  background: #191e29;
+}
+
+.logout {
+  padding-left: 12px;
+  font-size: 18px;
+  display: block;
 }
 
 #sidebar ul p {
@@ -70,23 +80,14 @@
 
 #sidebar ul li a {
   padding: 10px;
-  font-size: 1.1em;
+  padding-left: 24px;
+  font-size: 18px;
   display: block;
 }
 
 #sidebar ul li a:hover {
   color: #fafafa;
   background: #191e29;
-}
-
-.logout:hover {
-	color: #fafafa;
-  background: #191e29;
-}
-
-.logout {
-	z-index: 1;
-	margin-right: 20px
 }
 
 #sidebar ul li.active > a, a[aria-expanded="true"] {

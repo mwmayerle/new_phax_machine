@@ -3,9 +3,9 @@ class FaxNumber < ApplicationRecord
 
 	STATE_AND_PROVINCE_NAME_TO_ABBR = {
 		'Alabama' => 'AL','Alaska' => 'AK','America Samoa' => 'AS','Arizona' => 'AZ','Arkansas' => 'AR','California' => 'CA','Colorado' => 'CO','Connecticut' => 'CT','Delaware' => 'DE','District of Columbia' => 'DC','Federated States of Micronesia' => 'FM','Florida' => 'FL','Georgia' => 'GA','Guam' => 'GU','Hawaii' => 'HI','Idaho' => 'ID','Illinois' => 'IL','Indiana' => 'IN','Iowa' => 'IA','Kansas' => 'KS','Kentucky' => 'KY','Louisiana' => 'LA','Maine' => 'ME','Maryland' => 'MD','Massachusetts' => 'MA','Marshall Islands' => 'MH','Michigan' => 'MI','Minnesota' => 'MN','Mississippi' => 'MS','Missouri' => 'MO','Montana' => 'MT','Nebraska' => 'NE','Nevada' => 'NV','New Hampshire' => 'NH','New Jersey' => 'NJ','New Mexico' => 'NM','New York' => 'NY','North Carolina' => 'NC','North Dakota' => 'ND','Northern Mariana Islands' => 'MP','Ohio' => 'OH','Oklahoma' => 'OK','Oregon' => 'OR','Palau' => 'PW','Pennsylvania' => 'PA','Puerto Rico' => 'PR','Rhode Island' => 'RI','South Carolina' => 'SC','South Dakota' => 'SD','Tennessee' => 'TN','Texas' => 'TX','Utah' => 'UT','Vermont' => 'VT','Virgin Island' => 'VI','Virginia' => 'VA','Washington' => 'WA','West Virginia' => 'WV','Wisconsin' => 'WI','Wyoming' => 'WY', 
-
+		# These code chunks are the same hash, I'm seperating them for the inevitable bug that comes from hard-coding
 		'Alberta'=>'AB', 'British Columbia' => 'BC', 'Manitoba' => 'MB', 'New Brunswick' => 'NB', 'Newfoundland and Labrador' => 'NL', 'Nova Scotia, Prince Edward Island' => 'NS', 'Northwest Territories, Nunavut, Yukon' => 'NT', 'Ontario' => 'ON', 'Quebec' => 'QC', 'Saskatchewan' => 'SK'
-	}
+	}.freeze
 	FAX_NUMBER_CHARACTER_LIMIT = 36
 	FAX_NUMBER_DIGIT_LIMIT = 60 # Took this value from Phax Machine, is it real?
 
