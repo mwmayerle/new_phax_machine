@@ -15,6 +15,14 @@ RSpec.describe User, type: :model do
 			organization_id: org.id
 		)
 	end
+	let!(:manager) do 
+		User.new(
+			email: 'matt2@phaxio.org',
+			user_permission_attributes: { permission: UserPermission::MANAGER },
+			caller_id_number: '17755575399',
+			organization_id: org.id
+		)
+	end
 	let!(:fax_number1) { FaxNumber.create!(fax_number: '17738675309', organization_id: org.id) }
 	let!(:fax_number2) { FaxNumber.create!(fax_number: '12025550141', organization_id: org.id) }
 
@@ -39,6 +47,16 @@ RSpec.describe User, type: :model do
   		expect(user.password).to be_nil
   		user.save
   		expect(user.password).not_to be_nil
+  	end
+
+  	it "has a 'permission' attribute (user.permission is an attr_accessor for Devise), which tells the after_create which email to send" do
+  		manager.permission = UserPermission::MANAGER
+  		user.permission = UserPermission::USER
+  		manager.save
+  		user.save
+  		expect(User.find(admin.id).user_permission.permission).to eq(UserPermission::ADMIN)
+  		expect(User.find(manager.id).user_permission.permission).to eq(UserPermission::MANAGER)
+  		expect(User.find(user.id).user_permission.permission).to eq(UserPermission::USER)
   	end
   end
 

@@ -2,8 +2,8 @@ require "rails_helper"
 
 RSpec.feature "Organization Pages", :type => :feature do
 	let! (:admin) { User.create!( email: 'fake@phaxio.com', user_permission_attributes: { permission: UserPermission::ADMIN }) }
-	let!(:org) { Organization.create(label: "Phaxio Test Company", admin_id: admin.id) }
-	let!(:org2) { Organization.create(label: "Phaxio Test Company2", admin_id: admin.id) }
+	let!(:org) { Organization.create!(label: "Phaxio Test Company", admin_id: admin.id) }
+	let!(:org2) { Organization.create!(label: "Phaxio Test Company2", admin_id: admin.id) }
 	let! (:manager) do 
 		User.create!(email: 'manager@phaxio.com', user_permission_attributes: { permission: UserPermission::MANAGER }, organization_id: org.id, caller_id_number: '+17738675307')
 	end
@@ -11,13 +11,13 @@ RSpec.feature "Organization Pages", :type => :feature do
 		User.create!(email: 'manager2@phaxio.com', user_permission_attributes: { permission: UserPermission::MANAGER }, organization_id: org2.id, caller_id_number: '+17738675309')
 	end
 	let!(:user1) do 
-		User.create(email: 'matt@phaxio.com', user_permission_attributes: { permission: UserPermission::USER }, caller_id_number: '+17738675309', organization_id: org.id)
+		User.create!(email: 'matt@phaxio.com', user_permission_attributes: { permission: UserPermission::USER }, caller_id_number: '+17738675309', organization_id: org.id)
 	end
 	let!(:user2) do 
-		User.create(email: 'matt2@phaxio.com', user_permission_attributes: { permission: UserPermission::USER }, caller_id_number: '+17738675308', organization_id: org.id)
+		User.create!(email: 'matt2@phaxio.com', user_permission_attributes: { permission: UserPermission::USER }, caller_id_number: '+17738675308', organization_id: org.id)
 	end
 	let!(:user3) do 
-		User.create(email: 'matt3@phaxio.com', user_permission_attributes: { permission: UserPermission::USER }, caller_id_number: '+17738675309', organization_id: org.id)
+		User.create!(email: 'matt3@phaxio.com', user_permission_attributes: { permission: UserPermission::USER }, caller_id_number: '+17738675309', organization_id: org.id)
 	end
 	let!(:fax_number1) { FaxNumber.create!(fax_number: '+17738675307', organization_id: org.id) }
 	let!(:fax_number2) { FaxNumber.create!(fax_number: '+17738675308', organization_id: org.id, label: "OG Label", manager_label: "Manager-Set Label") }
@@ -26,13 +26,13 @@ RSpec.feature "Organization Pages", :type => :feature do
 	before(:each) do 
 		org.update_attributes(manager_id: manager.id)
 		org2.update_attributes(manager_id: manager2.id)
-		org.fax_numbers << fax_number1
-		org.fax_numbers << fax_number2
 		org.users << user1
 		org.users << user2
 		user1.fax_numbers << fax_number1
 		user1.fax_numbers << fax_number2
 		user2.fax_numbers << fax_number1
+		org.fax_numbers << fax_number1
+		org.fax_numbers << fax_number2
 	end
 
 	describe "organization index when logged in as an admin" do
@@ -187,30 +187,6 @@ RSpec.feature "Organization Pages", :type => :feature do
 					expect(page).not_to have_text("matt2@phaxio.com")
 					expect(page).not_to have_text("#{FaxNumber.format_pretty_fax_number('+17738675308')}")
 				end
-
-				expect(page).to have_table("#{org.id}-even-users")
-				within_table("#{org.id}-even-users") do
-					expect(page).to have_text("matt2@phaxio.com")
-					expect(page).to have_link("Edit User", href: edit_user_path(user2))
-				end
-
-				expect(page).to have_table("#{org.id}-odd-users")
-				within_table("#{org.id}-odd-users") do
-					expect(page).to have_text("matt@phaxio.com")
-					expect(page).to have_link("Edit User", href: edit_user_path(user1))
-					expect(page).to have_text("matt3@phaxio.com")
-					expect(page).to have_link("Edit User", href: edit_user_path(user3))
-				end
-
-				expect(page).to have_field("user[email]")
-				expect(page).to have_button("Invite User")
-				expect(page).to have_select(
-					"user[caller_id_number]", 
-					options: [
-					"#{FaxNumber.format_pretty_fax_number(fax_number1.fax_number)}", 
-					"#{FaxNumber.format_pretty_fax_number(fax_number2.fax_number)} - #{fax_number2.manager_label}"
-					]
-				)
 			end
 		end
 

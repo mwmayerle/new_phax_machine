@@ -23,7 +23,7 @@ class User < ApplicationRecord
 	validates :email, presence: true, length: { in: 5..USER_CHARACTER_LIMIT }, uniqueness: { case_senstive: false }
 	validates :fax_tag, length: { maximum: FaxTags::FAX_TAG_LIMIT }
 
-	after_create { User.welcome(self.id) }
+	after_create { User.welcome(self.id, self.permission) }
 
 	accepts_nested_attributes_for :user_permission
 	
@@ -33,7 +33,7 @@ class User < ApplicationRecord
 		end
 
 		class << self
-			def welcome(user_id)
+			def welcome(user_id, permission)
 		    user = User.find(user_id)
 		    @raw = nil
 		    raw, enc = Devise.token_generator.generate(user.class, :reset_password_token)
@@ -42,9 +42,9 @@ class User < ApplicationRecord
 		    user.save(validate: false)
 		    @raw = raw
 
-		    if user.permission == UserPermission::MANAGER
+		    if permission == UserPermission::MANAGER
 		    	PhaxMachineMailer.manager_welcome_invite(user, @raw).deliver_now
-		    elsif user.permission == UserPermission::USER
+		    elsif permission == UserPermission::USER
 		    	PhaxMachineMailer.user_welcome_invite(user, @raw).deliver_now
 		    else
 		    	PhaxMachineMailer.admin_welcome_invite(user, @raw).deliver_now

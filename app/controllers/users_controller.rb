@@ -12,7 +12,7 @@ class UsersController < ApplicationController
 		@organizations = Organization.all
 	end
 
-	def index #with_deleted is a Paranoia gem method that includes soft-deleted users
+	def index # with_deleted is a Paranoia gem method that includes soft-deleted users
 		@users = User.with_deleted.where(organization_id: @organization.id).order(:email)
 	end
 
@@ -49,7 +49,11 @@ class UsersController < ApplicationController
 
 	private
 		def set_organization
-			@organization = is_admin? ? Organization.find(org_index_params) : Organization.find(current_user.organization_id)
+			if is_admin?
+				@organization = Organization.includes(:fax_numbers).find(org_index_params)
+			else
+				@organization = Organization.includes(:fax_numbers).find(current_user.organization_id)
+			end
 		end
 
 		def org_index_params
