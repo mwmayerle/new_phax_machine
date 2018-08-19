@@ -121,10 +121,9 @@ RSpec.feature "User Fax Number Pages", :type => :feature do
 			within_table("#{fax_number2.id}-users") do
 				expect(page).to have_text("#{user1.email}")
 			end
-			click_link("Link / Unlink Users", match: :first)
 
-			expect(page.current_url).to eq("http://www.example.com/user_fax_numbers/#{fax_number2.id}/edit")
-
+			click_link("Link / Unlink Users", href: "/user_fax_numbers/#{fax_number2.id}/edit")
+			expect(page).to have_current_path(edit_user_fax_number_path(fax_number2))
 			expect(page).to have_table('unlinked-users')
 			within_table('unlinked-users') do
 				expect(page).to have_text("#{manager.email}")
@@ -160,9 +159,9 @@ RSpec.feature "User Fax Number Pages", :type => :feature do
 			within_table("#{fax_number2.id}-users") do
 				expect(page).to have_text("#{user1.email}")
 			end
-			click_link("Link / Unlink Users", match: :first)
 
-			expect(page.current_url).to eq("http://www.example.com/user_fax_numbers/#{fax_number2.id}/edit")
+			click_link("Link / Unlink Users", href: "/user_fax_numbers/#{fax_number2.id}/edit")
+			expect(page).to have_current_path(edit_user_fax_number_path(fax_number2))
 
 			expect(page).to have_table('unlinked-users')
 			within_table('unlinked-users') do

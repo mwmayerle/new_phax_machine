@@ -5,7 +5,7 @@ class PhaxMachineMailer < Devise::Mailer
 
   def manager_welcome_invite(record, token, opts = {})
   	opts[:from] = ENV.fetch('ADMIN_EMAIL')
-  	opts[:subject] = "You've been invited to manage #{record.client.client_label}."
+  	opts[:subject] = "You've been invited to manage #{record.organization.label}."
     @token = token
     devise_mail(record, :manager_welcome_invite, opts)
   end
@@ -18,7 +18,7 @@ class PhaxMachineMailer < Devise::Mailer
   end
 
   def admin_welcome_invite(record, token, opts = {})
-  	opts[:subject] = "You've been invited to Phax Machine"
+  	opts[:subject] = "You've been invited to be the administer of Phax Machine"
     @token = token
     devise_mail(record, :admin_welcome_invite, opts)
   end

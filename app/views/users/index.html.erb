@@ -3,7 +3,6 @@
     <div class="card card-login mx-auto mt-5">
       <div class="card-header"><%= @organization.label %></div>
       <div class="card-body">
-
         <div class="mb-8">
 					<% if @users %>
 					<div class="container-fluid user-form form-group">
@@ -42,7 +41,7 @@
 						<div class="col-lg-5">
 							<p><span style="color:green"><i class="fa fa-fw fa-check" aria-hidden="true"></i></span><i> Indicates the user is <%= @organization.label %>'s manager </i></p>
 						</div>
-						<table class="table table-sm table-hover">
+						<table id="user-table" class="table table-sm table-hover">
 							<thead class="thead-dark">
 								<tr>
 									<th></th>

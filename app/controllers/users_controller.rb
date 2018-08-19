@@ -12,13 +12,11 @@ class UsersController < ApplicationController
 		@organizations = Organization.all
 	end
 
-	def index #with_deleted is a Paranoia gem method that includes soft-deleted users
+	def index # with_deleted is a Paranoia gem method that includes soft-deleted users
 		@users = User.with_deleted.where(organization_id: @organization.id).order(:email)
 	end
 
 	def edit
-		p @user
-		p @user.user_permission
 	end
 	
 	# Users editing their passwords is done through the Devise registration controller. This
@@ -29,7 +27,6 @@ class UsersController < ApplicationController
 		params[:user_permission] = { permission: original_permission } if params[:user_permission].nil?
 
 		if @user.update_attributes(user_params)
-
 			# Update user permissions if needed. Demote manager to normal user, promote a normal user
 			# See if the user's original permission is different than the one provided
 			if original_permission != permission_params[:permission] && original_permission
@@ -52,7 +49,15 @@ class UsersController < ApplicationController
 
 	private
 		def set_organization
-			@organization = is_admin? ? Organization.find(user_params[:organization_id]) : Organization.find(current_user.organization_id)
+			if is_admin?
+				@organization = Organization.includes(:fax_numbers).find(org_index_params)
+			else
+				@organization = Organization.includes(:fax_numbers).find(current_user.organization_id)
+			end
+		end
+
+		def org_index_params
+			params.require(:organization_id)
 		end
 
 		def set_user
