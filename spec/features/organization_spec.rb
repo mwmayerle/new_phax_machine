@@ -226,23 +226,5 @@ RSpec.feature "Organization Pages", :type => :feature do
 			expect(page.current_url).to eq("http://www.example.com/")
 			expect(page).to have_text(ApplicationController::DENIED)
 		end
-
-		it "does not enable the 'Edit User' button for the manager while the manager is logged in" do
-			login_as(manager)
-			visit(organization_path(org))
-			within_table("#{org.id}-even-users") do
-				expect(page).to have_text("manager@phaxio.com")
-				expect(page).not_to have_link("Edit User", href: edit_user_path(manager))
-			end
-		end
-
-		it "does enable the 'Edit User' button for the manager user if the Admin is logged in" do
-			login_as(admin)
-			visit(organization_path(org))
-			within_table("#{org.id}-even-users") do
-				expect(page).to have_text("manager@phaxio.com")
-				expect(page).to have_link("Edit User", href: edit_user_path(manager))
-			end
-		end
 	end
 end

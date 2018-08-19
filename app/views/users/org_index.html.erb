@@ -1,10 +1,15 @@
 <h1>Users</h1>
 <div class="underline"></div>
 <p><i>Select and organization below to view its users</i></p>
+
 <% if @organizations %>
-	<% @organizations.each do |organization| %>
-		<%= link_to users_path(user: { organization_id: "#{organization.id}"}) do %>
-			<h2><%= organization.label %></h2>
-		<% end %>
-	<% end %>
+	<div class="col">
+		<ul class="list-unstyled">
+			<% @organizations.each do |organization| %>
+				<li>
+					<%= link_to "#{organization.label}", users_path(organization_id: organization.id) %>
+				</li>
+			<% end %>
+		</ul>
+	</div>
 <% end %>

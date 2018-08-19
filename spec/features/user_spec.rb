@@ -34,4 +34,29 @@ RSpec.feature "User Pages", :type => :feature do
 		user1.fax_numbers << fax_number2
 		user2.fax_numbers << fax_number1
 	end
+
+	describe "editing an organization's users as an admin" do
+		it "allows the admin and only the admin to access the 'org-index' page" do
+			login_as(admin)
+			visit(root_path)
+			click_link('Users')
+			expect(page.current_url).to eq('http://www.example.com/org-users')
+			expect(page).to have_link('Phaxio Test Company', href: users_path(organization_id: org.id))
+			expect(page).to have_link('Phaxio Test Company2', href: users_path(organization_id: org2.id))
+		end
+
+		it "a user cannot access the 'org-index' page" do
+			login_as(user1)
+			visit('https://www.example.com/org-users')
+			expect(page.current_url).to eq("https://www.example.com/")
+			expect(page).to have_text(ApplicationController::DENIED)
+		end
+
+		it "a manager cannot access the 'org-index' page" do
+			login_as(manager)
+			visit('https://www.example.com/org-users')
+			expect(page.current_url).to eq("https://www.example.com/")
+			expect(page).to have_text(ApplicationController::DENIED)
+		end
+	end
 end
