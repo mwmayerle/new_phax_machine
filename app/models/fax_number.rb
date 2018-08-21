@@ -2,7 +2,7 @@ class FaxNumber < ApplicationRecord
 	include FaxTags
 
 	STATE_AND_PROVINCE_NAME_TO_ABBR = {
-		'Alabama' => 'AL','Alaska' => 'AK','America Samoa' => 'AS','Arizona' => 'AZ','Arkansas' => 'AR','California' => 'CA','Colorado' => 'CO','Connecticut' => 'CT','Delaware' => 'DE','District of Columbia' => 'DC','Federated States of Micronesia' => 'FM','Florida' => 'FL','Georgia' => 'GA','Guam' => 'GU','Hawaii' => 'HI','Idaho' => 'ID','Illinois' => 'IL','Indiana' => 'IN','Iowa' => 'IA','Kansas' => 'KS','Kentucky' => 'KY','Louisiana' => 'LA','Maine' => 'ME','Maryland' => 'MD','Massachusetts' => 'MA','Marshall Islands' => 'MH','Michigan' => 'MI','Minnesota' => 'MN','Mississippi' => 'MS','Missouri' => 'MO','Montana' => 'MT','Nebraska' => 'NE','Nevada' => 'NV','New Hampshire' => 'NH','New Jersey' => 'NJ','New Mexico' => 'NM','New York' => 'NY','North Carolina' => 'NC','North Dakota' => 'ND','Northern Mariana Islands' => 'MP','Ohio' => 'OH','Oklahoma' => 'OK','Oregon' => 'OR','Palau' => 'PW','Pennsylvania' => 'PA','Puerto Rico' => 'PR','Rhode Island' => 'RI','South Carolina' => 'SC','South Dakota' => 'SD','Tennessee' => 'TN','Texas' => 'TX','Utah' => 'UT','Vermont' => 'VT','Virgin Island' => 'VI','Virginia' => 'VA','Washington' => 'WA','West Virginia' => 'WV','Wisconsin' => 'WI','Wyoming' => 'WY', 
+		'Alabama' => 'AL','Alaska' => 'AK','America Samoa' => 'AS','Arizona' => 'AZ','Arkansas' => 'AR','California' => 'CA','Colorado' => 'CO','Connecticut' => 'CT','Delaware' => 'DE','District of Columbia' => 'DC','Federated States of Micronesia' => 'FM','Florida' => 'FL','Georgia' => 'GA','Guam' => 'GU','Hawaii' => 'HI','Idaho' => 'ID','Illinois' => 'IL','Indiana' => 'IN','Iowa' => 'IA','Kansas' => 'KS','Kentucky' => 'KY','Louisiana' => 'LA','Maine' => 'ME','Maryland' => 'MD','Massachusetts' => 'MA','Marshall Islands' => 'MH','Michigan' => 'MI','Minnesota' => 'MN','Mississippi' => 'MS','Missouri' => 'MO','Montana' => 'MT','Nebraska' => 'NE','Nevada' => 'NV', 'Non-Geographic' => 'Non-Geographic', 'New Hampshire' => 'NH','New Jersey' => 'NJ','New Mexico' => 'NM','New York' => 'NY','North Carolina' => 'NC','North Dakota' => 'ND','Northern Mariana Islands' => 'MP','Ohio' => 'OH','Oklahoma' => 'OK','Oregon' => 'OR','Palau' => 'PW','Pennsylvania' => 'PA','Puerto Rico' => 'PR','Rhode Island' => 'RI','South Carolina' => 'SC','South Dakota' => 'SD','Tennessee' => 'TN','Texas' => 'TX','Utah' => 'UT','Vermont' => 'VT','Virgin Island' => 'VI','Virginia' => 'VA','Washington' => 'WA','West Virginia' => 'WV','Wisconsin' => 'WI','Wyoming' => 'WY', 
 		# These code chunks are the same hash, I'm seperating them for the inevitable bug that comes from hard-coding
 		'Alberta'=>'AB', 'British Columbia' => 'BC', 'Manitoba' => 'MB', 'New Brunswick' => 'NB', 'Newfoundland and Labrador' => 'NL', 'Nova Scotia, Prince Edward Island' => 'NS', 'Northwest Territories, Nunavut, Yukon' => 'NT', 'Ontario' => 'ON', 'Quebec' => 'QC', 'Saskatchewan' => 'SK'
 	}.freeze
@@ -47,15 +47,6 @@ class FaxNumber < ApplicationRecord
 			end
 
 			def get_area_code_list(options = {})
-				if options[:state]
-					if options[:state] != "Non-Geographic"
-						options[:state] = STATE_AND_PROVINCE_NAME_TO_ABBR[options[:state]]
-					else
-						options.delete(:state)
-						options[:toll_free] = true
-					end
-				end
-
 				Fax.set_phaxio_creds
 				options.merge!({country_code: 1, per_page: 1000 })
 				area_codes_from_api = Phaxio::Public::AreaCode.list(options)

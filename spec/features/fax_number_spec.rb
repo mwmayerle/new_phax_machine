@@ -4,7 +4,7 @@ require "rails_helper"
 
 RSpec.feature "Fax Number Pages", :type => :feature do
 	let! (:admin) { User.create!( email: 'fake@phaxio.com', user_permission_attributes: { permission: UserPermission::ADMIN }) }
-	let!(:org) { Organization.create(label: "Phaxio Test Company", admin_id: admin.id) }
+	let!(:org) { Organization.create(label: "Phaxio Test Company", admin_id: admin.id, fax_numbers_purchasable: true) }
 	let!(:org2) { Organization.create(label: "Phaxio Test Company2", admin_id: admin.id) }
 	let! (:manager) do 
 		User.create!(email: 'manager@phaxio.com', user_permission_attributes: { permission: UserPermission::MANAGER },organization_id: org.id)
@@ -29,7 +29,7 @@ RSpec.feature "Fax Number Pages", :type => :feature do
 			expect(page).to have_button("Log In")
 			expect(page).to have_field("user[email]")
 			expect(page).to have_field("user[password]")
-			expect(page.current_url).to eq("http://www.example.com/users/sign_in")
+			expect(page).to have_current_path("http://www.example.com/users/sign_in")
 			expect(page).to have_link('Log In', href: new_user_session_path)
 			expect(page).to have_text(ApplicationController::DENIED)
 		end
@@ -38,6 +38,11 @@ RSpec.feature "Fax Number Pages", :type => :feature do
 			login_as(admin)
 			visit(fax_numbers_path)
 
+			# Buy fax number form
+			expect(page).to have_field("fax_number[state]")
+			expect(page).to have_field("fax_number[area_code]")
+			expect(page).to have_button("Purchase Number")
+			
 			# The following are the navbar links
 			expect(page).to have_link('Organizations', href: organizations_path)
 			expect(page).to have_link('Fax Numbers', href: fax_numbers_path)
@@ -79,27 +84,27 @@ RSpec.feature "Fax Number Pages", :type => :feature do
 		it "redirects to root if a non-admin user tries to access the fax_numbers_path (index)" do
 			login_as(user)
 			visit(fax_numbers_path)
-			expect(page.current_url).to eq("http://www.example.com/")
+			expect(page).to have_current_path("http://www.example.com/")
 			expect(page).to have_text(ApplicationController::DENIED)
 		end
 
 		it "redirects to root if a non-admin and non-manager user tries to access the fax_numbers_path (index)" do
 			login_as(manager)
 			visit(fax_numbers_path)
-			expect(page.current_url).to eq("http://www.example.com/")
+			expect(page).to have_current_path("http://www.example.com/")
 			expect(page).to have_text(ApplicationController::DENIED)
 		end
 
 		it "redirects to root if a manager tries to access a fax_number that is not part of their organization" do
 			login_as(manager2)
 			visit(edit_fax_number_path(fax_number))
-			expect(page.current_url).to eq("http://www.example.com/")
+			expect(page).to have_current_path("http://www.example.com/")
 			expect(page).to have_text(ApplicationController::DENIED)
 		end
 
 		it "redirects to sign_in if nobody is logged in" do
 			visit(edit_fax_number_path(fax_number))
-			expect(page.current_url).to eq("http://www.example.com/users/sign_in")
+			expect(page).to have_current_path("http://www.example.com/users/sign_in")
 			expect(page).to have_text(ApplicationController::DENIED)
 		end
 
@@ -115,6 +120,42 @@ RSpec.feature "Fax Number Pages", :type => :feature do
 			fill_in('fax_number[manager_label]', with: "New Manager Label!")
 			click_on('Save Changes')
 			expect(fax_number.reload.manager_label).to eq("New Manager Label!")
+		end
+	end
+
+	describe "Provisioning fax numbers" do
+		it "allows the manager to access the new_fax_number page if their account allows purchasing fax_numbers" do
+			login_as(manager)
+			visit(new_fax_number_path(params: {fax_number: {organization_id: org.id}}))
+			expect(page.current_path).to include(new_fax_number_path)
+			expect(page).to have_field("fax_number[state]")
+			expect(page).to have_field("fax_number[area_code]")
+			expect(page).to have_button("Purchase Number")
+		end
+
+		it "redirects if the manager tries to access the new_fax_number page if their account does not allow purchasing fax_numbers" do
+			login_as(manager2)
+			visit(new_fax_number_path(params: {fax_number: {organization_id: org2.id}}))
+			expect(page).to have_current_path("http://www.example.com/")
+			expect(page).to have_text(ApplicationController::DENIED)
+		end
+
+		it "redirects if the manager tries to access the new_fax_number page for an organization they are not the manager of. The organization they're attempting to access does allow fax number provisioning." do
+			login_as(manager2)
+			visit(new_fax_number_path(params: {fax_number: {organization_id: org.id}}))
+			expect(page).to have_current_path("http://www.example.com/")
+			expect(page).to have_text(ApplicationController::DENIED)
+		end
+
+		it "redirects if a generic user tries to access the new_fax_number page regardless of if the org fax_numbers_purchasable attribute is true or not" do
+			login_as(user)
+			visit(new_fax_number_path(params: {fax_number: {organization_id: org2.id}}))
+			expect(page).to have_current_path("http://www.example.com/")
+			expect(page).to have_text(ApplicationController::DENIED)
+
+			visit(new_fax_number_path(params: {fax_number: {organization_id: org.id}}))
+			expect(page).to have_current_path("http://www.example.com/")
+			expect(page).to have_text(ApplicationController::DENIED)
 		end
 	end
 end

@@ -23,7 +23,7 @@
 					  <% if is_admin? %>
 						  <div class="form-group col-lg-8">
 						  	<strong><%= f.label :logo_url, "Logo URL:" %></strong>
-						  	<%= f.text_field :logo_url, value: "#{current_logo}", class: "form-control" %>
+						  	<%= f.text_field :logo_url, autocomplete: "off", value: "#{current_logo}", class: "form-control" %>
 						  </div>
 						<% end %>
 

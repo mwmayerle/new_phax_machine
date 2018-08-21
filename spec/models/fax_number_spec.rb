@@ -102,6 +102,16 @@ RSpec.describe FaxNumber, type: :model do
   	end
   end
 
+  describe "#get_area_code_list and #format_area_codes" do
+  	it "returns all area codes from the API as a large formatted hash. " do
+  		area_codes = FaxNumber.get_area_code_list
+  		unmatched_places = area_codes.reject do |area_code_key, area_code_data| 
+  			FaxNumber::STATE_AND_PROVINCE_NAME_TO_ABBR.has_key?(area_code_data[:state])
+  		end
+  		expect(unmatched_places.length).to eq(0)
+  	end
+  end
+
   describe "#format_fax_number method" do
 		fake_number1 = {:phone_number => "+14442146849", :city=>"St. Louis", :state=>"Missouri", :last_billed_at=>"2018-07-09T11:37:51.000-05:00", :provisioned_at=>"2017-11-09T11:37:50.000-06:00", :cost=>200, :callback_url=>'www.helloworld.com', :id=>8}
 		fake_number2 = {:phone_number => "+14442146848", :city=>"Chicago", :state=>"Illinois", :last_billed_at=>"2018-07-09T11:37:51.000-05:00", :provisioned_at=>"2015-08-09T11:37:50.000-06:00", :cost=>200, :callback_url=>nil, :id=>5}

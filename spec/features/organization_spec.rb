@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.feature "Organization Pages", :type => :feature do
 	let! (:admin) { User.create!( email: 'fake@phaxio.com', user_permission_attributes: { permission: UserPermission::ADMIN }) }
-	let!(:org) { Organization.create!(label: "Phaxio Test Company", admin_id: admin.id) }
+	let!(:org) { Organization.create!(label: "Phaxio Test Company", admin_id: admin.id, fax_numbers_purchasable: true) }
 	let!(:org2) { Organization.create!(label: "Phaxio Test Company2", admin_id: admin.id) }
 	let! (:manager) do 
 		User.create!(email: 'manager@phaxio.com', user_permission_attributes: { permission: UserPermission::MANAGER }, organization_id: org.id, caller_id_number: '+17738675307')
@@ -41,14 +41,14 @@ RSpec.feature "Organization Pages", :type => :feature do
 			expect(page).to have_button("Log In")
 			expect(page).to have_field("user[email]")
 			expect(page).to have_field("user[password]")
-			expect(page.current_url).to eq("http://www.example.com/users/sign_in")
+			expect(page).to have_current_path("http://www.example.com/users/sign_in")
 			expect(page).to have_link('Log In', href: new_user_session_path)
 		end
 
 		it "allows the admin to access the organization index route" do
 			login_as(admin)
 			visit(organizations_path)
-			expect(page.current_url).to eq("http://www.example.com/organizations")
+			expect(page).to have_current_path("http://www.example.com/organizations")
 
 			# navbar links
 			expect(page).to have_link('Add New Organization') # This appears as a button
@@ -68,13 +68,13 @@ RSpec.feature "Organization Pages", :type => :feature do
 			visit(organizations_path)
 			click_on("Add New Organization")
 
-			expect(page.current_url).to eq("http://www.example.com/organizations/new")
+			expect(page).to have_current_path("http://www.example.com/organizations/new")
 			expect(page).to have_field("organization[label]")
 
 			fill_in('organization[label]', with: "Brand New Organization")
 			click_button("Submit")
 
-			expect(page.current_url).to eq('http://www.example.com/organizations')
+			expect(page).to have_current_path('http://www.example.com/organizations')
 			expect(page).to have_link("Brand New Organization")
 			expect(page).not_to have_button("Invite Manager")
 			expect(page).to have_text("You must link a fax number before you can invite a manager")
@@ -82,15 +82,38 @@ RSpec.feature "Organization Pages", :type => :feature do
 			expect(page).to have_text("Managed by: manager2@phaxio.com")
 		end
 
+		it "redirects admin to the new_org_form if it cannot persist the new organization object" do
+			login_as(admin)
+			visit(organizations_path)
+			click_on("Add New Organization")
+			fill_in('organization[label]', with: "*" * (Organization::ORGANIZATION_CHARACTER_LIMIT + 1))
+			click_button("Submit")
+
+			expect(page).to have_current_path(new_organization_path)
+			expect(page).to have_text("Label is too long (maximum is 48 characters)")
+		end
+
+		it "redirects admin to the new_org_form if it cannot persist changes to an existing organization object" do
+			login_as(admin)
+			visit(organizations_path)
+			click_on("Phaxio Test Company")
+			click_on("Manage Phaxio Test Company Fax Numbers / Details")
+			fill_in('organization[label]', with: "*" * (Organization::ORGANIZATION_CHARACTER_LIMIT + 1))
+			click_button("Submit")
+
+			expect(page).to have_current_path(edit_organization_path(org.id))
+			expect(page).to have_text("Label is too long (maximum is 48 characters)")
+		end
+
 		it "allows the admin to create a new organization with no linked fax numbers. Manager invitation should not be an option until a fax number has been added" do
 			login_as(admin)
 			visit(organizations_path)
 			click_on("Add New Organization")
-			expect(page.current_url).to eq("http://www.example.com/organizations/new")
+			expect(page).to have_current_path("http://www.example.com/organizations/new")
 			expect(page).to have_field("organization[label]")
 			fill_in('organization[label]', with: "Brand New Organization")
 			click_button("Submit")
-			expect(page.current_url).to eq('http://www.example.com/organizations')
+			expect(page).to have_current_path('http://www.example.com/organizations')
 			expect(page).to have_link("Brand New Organization")
 			expect(page).not_to have_button("Invite Manager")
 		end
@@ -100,7 +123,7 @@ RSpec.feature "Organization Pages", :type => :feature do
 			visit(organizations_path)
 			click_on("Add New Organization")
 
-			expect(page.current_url).to eq("http://www.example.com/organizations/new")
+			expect(page).to have_current_path("http://www.example.com/organizations/new")
 			expect(page).to have_field("organization[label]")
 			expect(page).to have_field("fax_numbers[to_add][#{fax_number3.id}]")
 
@@ -108,7 +131,7 @@ RSpec.feature "Organization Pages", :type => :feature do
 			fill_in('organization[label]', with: "Organization With Fax Number")
 			click_button("Submit")
 
-			expect(page.current_url).to eq('http://www.example.com/organizations')
+			expect(page).to have_current_path('http://www.example.com/organizations')
 			expect(page).to have_link("Organization With Fax Number")
 			expect(page).to have_field("user[email]")
 			expect(page).to have_select(
@@ -132,23 +155,43 @@ RSpec.feature "Organization Pages", :type => :feature do
 	end
 
 	describe "organization index when not logged in as an admin" do
-		it "redirects to root if a non-admin user tries to access the fax_numbers_path (index)" do
+		it "redirects to root if a non-admin user tries to access the organizations_path (index)" do
 			login_as(user1)
 			visit(organizations_path)
-			expect(page.current_url).to eq("http://www.example.com/")
+			expect(page).to have_current_path("http://www.example.com/")
 			expect(page).to have_text(ApplicationController::DENIED)
 		end
 
 		it "redirects to root if a non-admin and non-manager user tries to access the organizations_path (index)" do
 			login_as(manager)
 			visit(organizations_path)
-			expect(page.current_url).to eq("http://www.example.com/")
+			expect(page).to have_current_path("http://www.example.com/")
 			expect(page).to have_text(ApplicationController::DENIED)
 		end
 
 		it "redirects to sign_in if nobody is logged in" do
 			visit(organizations_path)
-			expect(page.current_url).to eq("http://www.example.com/users/sign_in")
+			expect(page).to have_current_path("http://www.example.com/users/sign_in")
+			expect(page).to have_text(ApplicationController::DENIED)
+		end
+
+		it "redirects a generic user to root if they try to access the edit page" do
+			login_as(user1)
+			visit(organization_path(org))
+			expect(page).to have_current_path("http://www.example.com/")
+			expect(page).to have_text(ApplicationController::DENIED)
+		end
+
+		it "redirects a manager assigned to a different organization to root if they try to access the edit page" do
+			login_as(manager)
+			visit(organization_path(org2))
+			expect(page).to have_current_path("http://www.example.com/")
+			expect(page).to have_text(ApplicationController::DENIED)
+		end
+
+		it "redirects to login if no user is signed in" do
+			visit(organization_path(org2))
+			expect(page).to have_current_path("http://www.example.com/users/sign_in")
 			expect(page).to have_text(ApplicationController::DENIED)
 		end
 	end
@@ -160,6 +203,9 @@ RSpec.feature "Organization Pages", :type => :feature do
 				visit(organization_path(org))
 
 				expect(page).to have_link("Manage #{org.label} Fax Numbers / Details")
+				expect(page).to have_link("#{org.label} Users")
+				expect(page).to have_button("Provision Fax Number")
+
 				expect(page).to have_link("#{FaxNumber.format_pretty_fax_number(fax_number1.fax_number)}")
 				expect(page).to have_link("#{FaxNumber.format_pretty_fax_number(fax_number2.fax_number)}")
 				expect(page).to have_link("Link / Unlink Users")
@@ -190,16 +236,54 @@ RSpec.feature "Organization Pages", :type => :feature do
 			end
 		end
 
-		it "manager level show page functions" do
+		it "manager level organization show page functions" do
 			login_as(manager)
 			visit(organization_path(org))
+			expect(page).to have_link("#{org.label} Users")
+			expect(page).to have_button("Provision Fax Number")
 			expect(page).not_to have_link("Manage #{org.label} Fax Numbers / Details")
 		end
 
-		it "user level show page should deny and redirect to root" do
+		it "manager following Provision Fax Numbers link" do
+			login_as(manager)
+			visit(organization_path(org))
+			click_button("Provision Fax Number")
+			expect(page.current_path).to include(new_fax_number_path)
+			expect(page).to have_field("fax_number[state]")
+			expect(page).to have_field("fax_number[area_code]")
+			expect(page).to have_button("Purchase Number")
+		end
+
+			it "admin following Provision Fax Numbers link" do
+			login_as(admin)
+			visit(organization_path(org))
+			click_button("Provision Fax Number")
+			expect(page.current_path).to include(new_fax_number_path)
+			expect(page).to have_field("fax_number[state]")
+			expect(page).to have_field("fax_number[area_code]")
+			expect(page).to have_button("Purchase Number")
+		end
+
+		it "user level organization show page should deny and redirect to root" do
 			login_as(user1)
 			visit(organization_path(org))
-			expect(page.current_url).to eq("http://www.example.com/")
+			expect(page).to have_current_path("http://www.example.com/")
+			expect(page).to have_text(ApplicationController::DENIED)
+		end 
+	end
+
+	describe "creating a new organization" do
+		it "redirects to root if a user attempts to access the new organization form" do
+			login_as(user1)
+			visit(new_organization_path)
+			expect(page).to have_current_path("http://www.example.com/")
+			expect(page).to have_text(ApplicationController::DENIED)
+		end
+
+		it "redirects to root if a user attempts to access the new organization form" do
+			login_as(manager)
+			visit(new_organization_path)
+			expect(page).to have_current_path("http://www.example.com/")
 			expect(page).to have_text(ApplicationController::DENIED)
 		end
 	end
