@@ -81,7 +81,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
       # Admin-only site logo
       if is_admin? && account_update_params[:logo_url] != session[:logo_url]
 	      logo = LogoLink.first
-	  		if logo.update_attributes(logo_url: account_update_params[:logo_url])
+	  		if logo && logo.update_attributes(logo_url: account_update_params[:logo_url])
 		  		flash[:notice] << " Logo successfully updated"
 					session[:logo_url] = account_update_params[:logo_url]
 				else

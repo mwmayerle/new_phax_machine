@@ -1,5 +1,7 @@
 require "rails_helper"
 
+#WRITE A TEST FOR WHAT TO DO IF NO LOGO LINK EXISTS, FIND_OR_CREATE_BY SHOULD FIX IT
+
 RSpec.feature "User Pages", :type => :feature do
 	let! (:admin) { User.create!( email: 'fake@phaxio.com', user_permission_attributes: { permission: UserPermission::ADMIN }) }
 	let!(:org) { Organization.create!(label: "Phaxio Test Company", admin_id: admin.id) }
