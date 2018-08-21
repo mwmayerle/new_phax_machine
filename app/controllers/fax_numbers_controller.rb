@@ -95,12 +95,12 @@ class FaxNumbersController < ApplicationController
 		end
 
 		def verify_can_purchase_numbers
+			return if is_admin?
 			@organization = Organization.find(manager_fax_number_params[:organization_id])
 			if is_manager? && !@organization.fax_numbers_purchasable
 				flash[:alert] = DENIED
 				redirect_to root_path
 			else #
-				return if is_admin?
 				if !authorized?(@organization.manager, :id)
 					flash[:alert] = DENIED
 					redirect_to root_path
