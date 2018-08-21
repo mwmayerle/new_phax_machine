@@ -78,6 +78,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
         set_flash_message :notice, flash_key
       end
 
+      # LINES 81 TO 98 FAIL WHEN NO LOGOLINK OBJECT EXISTS. FIX IT
       # Admin-only site logo
       if is_admin? && account_update_params[:logo_url] != session[:logo_url]
 	      logo = LogoLink.first
@@ -92,7 +93,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 					end
 			  end
 				# Sends user back to edit page if the image update fails
-	    	if logo.errors.full_messages.present?
+	    	if logo.errors.full_messages.present? #
 	    		render(:edit) and return
 	    	end
     	end
