@@ -15,9 +15,9 @@ class ApplicationController < ActionController::Base
 	    	:permission
 	    ])
 	    if is_admin?
-	    	devise_parameter_sanitizer.permit(:account_update, keys: [:logo_url])
+	    	devise_parameter_sanitizer.permit(:account_update, keys: [:password, :password_confirmation, :current_password, :logo_url])
 	    else
-	    	devise_parameter_sanitizer.sanitize(:account_update)
+	    	devise_parameter_sanitizer.permit(:account_update, keys: [:password, :password_confirmation, :current_password])
 	    end
 	  end
 end

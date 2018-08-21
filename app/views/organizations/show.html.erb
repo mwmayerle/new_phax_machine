@@ -5,7 +5,7 @@
 		</div>
 		<div style="padding-right:20px" class="btn-group">
 			<% if @organization.fax_numbers_purchasable %>
-				<%= link_to "Provision Fax Number", new_fax_number_path(:fax_number => {:organization_id => @organization.id}), class: "btn btn-warning btn-lg pull-right btn-inline", id: "buy-number-link-btn" %>
+				<%= button_to "Provision Fax Number", new_fax_number_path(:fax_number => {:organization_id => @organization.id}), class: "btn btn-warning btn-lg pull-right btn-inline", id: "buy-number-link-btn", method: :get, params: {fax_number: {organization_id: @organization.id}} %>
 			<% end %>
 			<%= link_to "#{@organization.label} Users", users_path(organization_id: @organization.id), class: "btn btn-primary btn-lg btn-inline pull-right", style: "margin-right:25px;" %>
 			<% if is_admin? %>

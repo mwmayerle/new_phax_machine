@@ -29,7 +29,7 @@ class OrganizationsController < ApplicationController
 			
 		else
 			flash[:alert] = @organization.errors.full_messages.pop
-			render :new
+			redirect_to(new_organization_path) and return # this is needed instead of render to load up the associated fax numbers
 		end
 	end
 
@@ -79,7 +79,8 @@ class OrganizationsController < ApplicationController
 			redirect_to organization_path(@organization)
 		else
 			flash[:alert] = @organization.errors.full_messages.pop
-			render :edit
+			# this redirect and return is needed instead of render to load up the associated fax numbers
+			redirect_to(edit_organization_path(@organization.id)) and return
 		end
 	end
 

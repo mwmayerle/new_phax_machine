@@ -6,6 +6,7 @@ class UsersController < ApplicationController
 	before_action :verify_is_manager_or_admin, except: [:org_index]
 	before_action :set_user, only: [:edit, :update]
 	before_action :set_organization, only: [:index]
+	before_action :verify_authorized, only: [:edit, :update]
 	
 	# Get list of organizations for the Admin, after an org is selected, it goes to the Index route in this controller
 	def org_index
@@ -40,7 +41,7 @@ class UsersController < ApplicationController
 				end
 			end
 			flash[:notice] = "User updated successfully!"
-			redirect_to(organization_path(@user.organization))
+			redirect_to(users_path(organization_id: @user.organization_id)) and return
 		else
 			flash[:alert] = @user.errors.full_messages.pop
 			render :edit
@@ -74,5 +75,13 @@ class UsersController < ApplicationController
 
 		def adjust_manager(organization_id, id)
 			Organization.where(id: user.organization_id).update_attributes(manager_id: nil)
+		end
+
+		def verify_authorized
+			return if is_admin?
+			if !authorized?(@user.manager, :id)
+				flash[:alert] = DENIED
+				redirect_to root_path
+			end
 		end
 end

@@ -4,6 +4,7 @@ class FaxNumbersController < ApplicationController
 	before_action :verify_is_admin, only: [:index]
 	before_action :set_fax_number, only: [:edit, :update]
 	before_action :verify_authorized, except: [:create, :new]
+	before_action :verify_can_purchase_numbers, only: [:new, :create]
 
 	# Table of all fax numbers in your account
 	def index
@@ -17,12 +18,11 @@ class FaxNumbersController < ApplicationController
 		verify_is_manager_or_admin
 		@area_codes = FaxNumber.get_area_code_list
 		@states = FaxNumber.create_states_for_numbers(@area_codes)
-		@organization = Organization.find(manager_fax_number_params[:organization_id]) if is_manager?
 	end
 
 	 # Post request for purchasing the new number
 	def create
-		api_response = FaxNumber.provision(provision_number_params[:area_code])
+		# api_response = FaxNumber.provision(provision_number_params[:area_code])
 		if api_response.phone_number
 			FaxNumber.create!(fax_number: api_response.phone_number, has_webhook_url: false)
 			flash[:notice] = "Number Provisioned Successfully"
@@ -94,6 +94,20 @@ class FaxNumbersController < ApplicationController
 
 		def remove_user_associations(param_input, fax_number_object)
 			param_input.keys.each { |user_object_id| UserFaxNumber.where( { user_id: user_object_id } ).destroy_all }
+		end
+
+		def verify_can_purchase_numbers
+			@organization = Organization.find(manager_fax_number_params[:organization_id])
+			if is_manager? && !@organization.fax_numbers_purchasable
+				flash[:alert] = DENIED
+				redirect_to root_path
+			else #
+				return if is_admin?
+				if !authorized?(@organization.manager, :id)
+					flash[:alert] = DENIED
+					redirect_to root_path
+				end
+			end
 		end
 
 		def verify_authorized

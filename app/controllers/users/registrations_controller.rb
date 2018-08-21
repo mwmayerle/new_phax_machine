@@ -77,19 +77,23 @@ class Users::RegistrationsController < Devise::RegistrationsController
         flash_key = update_needs_confirmation?(resource, prev_unconfirmed_email) ? :update_needs_confirmation : :updated
         set_flash_message :notice, flash_key
       end
-      bypass_sign_in resource, scope: resource_name
 
       # Admin-only site logo
-      logo = LogoLink.first
-  		if logo.update_attributes(logo_url: account_update_params[:logo_url])
-	  		flash[:notice] << " Logo successfully updated"
-			else
-				flash[:notice] << " However, #{logo.errors.full_messages.pop}. Please try again."
-		  end
-			session[:logo_url] = account_update_params[:logo_url]
-			
-			# Sends user back to edit page if the image update fails
-      logo.errors.full_messages.present? ? (render :edit) : (respond_with resource, location: after_update_path_for(resource))
+      if is_admin? && account_update_params[:logo_url] != session[:logo_url]
+	      logo = LogoLink.first
+	  		if logo.update_attributes(logo_url: account_update_params[:logo_url])
+		  		flash[:notice] << " Logo successfully updated"
+					session[:logo_url] = account_update_params[:logo_url]
+				else
+					flash[:notice] << " However, #{logo.errors.full_messages.pop} Please try again."
+			  end
+				# Sends user back to edit page if the image update fails
+	    	if logo.errors.full_messages.present?
+	    		render(:edit) and return
+	    	end
+    	end
+      bypass_sign_in(resource, scope: resource_name)
+      respond_with(resource, location: after_update_path_for(resource))
     else
       clean_up_passwords resource
       set_minimum_password_length
@@ -137,4 +141,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
 	  		redirect_to(root_path)
 	  	end
 	  end
+
+    def after_update_path_for(resource)
+      root_path
+    end
 end

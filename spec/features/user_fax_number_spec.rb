@@ -36,28 +36,6 @@ RSpec.feature "User Fax Number Pages", :type => :feature do
 		user2.fax_numbers << fax_number1
 	end
 
-	describe "a manager assigned to a different organization or a user cannot edit user_fax_numbers" do
-		it "redirects a generic user to root if they try to access the edit page" do
-			login_as(user1)
-			visit(organization_path(org))
-			expect(page.current_url).to eq("http://www.example.com/")
-			expect(page).to have_text(ApplicationController::DENIED)
-		end
-
-		it "redirects a manager assigned to a different organiation to root if they try to access the edit page" do
-			login_as(manager)
-			visit(organization_path(org2))
-			expect(page.current_url).to eq("http://www.example.com/")
-			expect(page).to have_text(ApplicationController::DENIED)
-		end
-
-		it "redirects to login if no user is signed in" do
-			visit(organization_path(org2))
-			expect(page.current_url).to eq("http://www.example.com/users/sign_in")
-			expect(page).to have_text(ApplicationController::DENIED)
-		end
-	end
-
 	describe "admin swapping organization phone numbers and editing its name" do
 		it "allows the admin to add/remove fax numbers and edit the organization name" do
 			login_as(admin)
@@ -65,7 +43,7 @@ RSpec.feature "User Fax Number Pages", :type => :feature do
 			expect(page).to have_selector("h1", text: "Phaxio Test Company")
 			click_link("Manage Phaxio Test Company Fax Numbers / Details")
 			
-			expect(page.current_url).to eq("http://www.example.com/organizations/#{org.id}/edit")
+			expect(page).to have_current_path("http://www.example.com/organizations/#{org.id}/edit")
 			expect(page).to have_field("organization[label]")
 			
 			expect(page).to have_table("unlinked-numbers")
@@ -85,7 +63,7 @@ RSpec.feature "User Fax Number Pages", :type => :feature do
 			fill_in("organization[label]", with: "An Edited Label")
 			click_button("Submit")
 
-			expect(page.current_url).to eq("http://www.example.com/organizations/#{org.id}")
+			expect(page).to have_current_path("http://www.example.com/organizations/#{org.id}")
 			expect(page).to have_selector("h1", text: "An Edited Label")
 
 			expect(page).to have_link("#{FaxNumber.format_pretty_fax_number(fax_number2.fax_number)}")
@@ -139,7 +117,7 @@ RSpec.feature "User Fax Number Pages", :type => :feature do
 			end
 			click_button("Submit")
 
-			expect(page.current_url).to eq("http://www.example.com/organizations/#{org.id}")
+			expect(page).to have_current_path("http://www.example.com/organizations/#{org.id}")
 			expect(page).to have_table("#{fax_number2.id}-users")
 			within_table("#{fax_number2.id}-users") do
 				expect(page).not_to have_text("#{user1.email}") # <-- Previously linked user
@@ -147,7 +125,7 @@ RSpec.feature "User Fax Number Pages", :type => :feature do
 			end
 
 			click_link("#{FaxNumber.format_pretty_fax_number(fax_number2.fax_number)}")
-			expect(page.current_url).to eq("http://www.example.com/fax_numbers/#{fax_number2.id}/edit")
+			expect(page).to have_current_path("http://www.example.com/fax_numbers/#{fax_number2.id}/edit")
 			#Edit fax_number functions are tested in fax_number_spec, not repeating them here
 		end
 
@@ -178,7 +156,7 @@ RSpec.feature "User Fax Number Pages", :type => :feature do
 			end
 			click_button("Submit")
 
-			expect(page.current_url).to eq("http://www.example.com/organizations/#{org.id}")
+			expect(page).to have_current_path("http://www.example.com/organizations/#{org.id}")
 			expect(page).to have_table("#{fax_number2.id}-users")
 			within_table("#{fax_number2.id}-users") do
 				expect(page).not_to have_text("#{user1.email}") # <-- Previously linked user
@@ -186,8 +164,22 @@ RSpec.feature "User Fax Number Pages", :type => :feature do
 			end
 
 			click_link("#{FaxNumber.format_pretty_fax_number(fax_number2.fax_number)}")
-			expect(page.current_url).to eq("http://www.example.com/fax_numbers/#{fax_number2.id}/edit")
+			expect(page).to have_current_path("http://www.example.com/fax_numbers/#{fax_number2.id}/edit")
 			#Edit fax_number functions are tested in fax_number_spec, not repeating them here
+		end
+
+		it "redirects the manager if they try to access a user_fax_number they are not in charge of" do
+			login_as(manager2)
+			visit(edit_user_fax_number_path(fax_number1))
+			expect(page).to have_current_path("http://www.example.com/")
+			expect(page).to have_text(ApplicationController::DENIED)
+		end
+
+		it "redirects a user if they try to access an organization they are not in charge of" do
+			login_as(manager)
+			visit(organization_path(org2))
+			expect(page).to have_current_path("http://www.example.com/")
+			expect(page).to have_text(ApplicationController::DENIED)
 		end
 	end
 end
