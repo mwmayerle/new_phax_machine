@@ -60,7 +60,11 @@ class Users::RegistrationsController < Devise::RegistrationsController
 	    end
 	  end
 		if resource
-    	resource.permission == UserPermission::USER ? redirect_to(organization_path(resource.organization)) : redirect_to(organizations_path)
+    	if resource.permission == UserPermission::USER
+    		redirect_to(users_path(organization_id: resource.organization_id))
+    	else
+    		redirect_to(organizations_path)
+    	end
     else
     	redirect_to(organization_path(sign_up_params[:organization_id]))
     end
