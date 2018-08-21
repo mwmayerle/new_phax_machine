@@ -85,7 +85,11 @@ class Users::RegistrationsController < Devise::RegistrationsController
 		  		flash[:notice] << " Logo successfully updated"
 					session[:logo_url] = account_update_params[:logo_url]
 				else
-					flash[:notice] << " However, #{logo.errors.full_messages.pop} Please try again."
+					if logo
+						flash[:notice] << " However, #{logo.errors.full_messages.pop} Please try again."
+					else
+						LogoLink.create(account_update_params[:logo_url])
+					end
 			  end
 				# Sends user back to edit page if the image update fails
 	    	if logo.errors.full_messages.present?
