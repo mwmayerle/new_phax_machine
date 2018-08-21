@@ -22,7 +22,7 @@ class FaxNumbersController < ApplicationController
 
 	 # Post request for purchasing the new number
 	def create
-		# api_response = FaxNumber.provision(provision_number_params[:area_code])
+		api_response = FaxNumber.provision(provision_number_params[:area_code])
 		if api_response.phone_number
 			FaxNumber.create!(fax_number: api_response.phone_number, has_webhook_url: false)
 			flash[:notice] = "Number Provisioned Successfully"
