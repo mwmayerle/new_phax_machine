@@ -17,6 +17,7 @@ class User < ApplicationRecord
 	has_one :user_permission, -> { with_deleted }, dependent: :destroy
 	has_many :user_fax_numbers, dependent: :destroy
 	has_many :fax_numbers, through: :user_fax_numbers
+	has_many :users, through: :organization
 
 	before_validation :generate_fax_tag, :generate_temporary_password, on: :create
 

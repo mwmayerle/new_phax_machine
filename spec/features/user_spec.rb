@@ -1,7 +1,5 @@
 require "rails_helper"
 
-#WRITE A TEST FOR WHAT TO DO IF NO LOGO LINK EXISTS, FIND_OR_CREATE_BY SHOULD FIX IT
-
 RSpec.feature "User Pages", :type => :feature do
 	let! (:admin) { User.create!( email: 'fake@phaxio.com', user_permission_attributes: { permission: UserPermission::ADMIN }) }
 	let!(:org) { Organization.create!(label: "Phaxio Test Company", admin_id: admin.id) }
@@ -32,6 +30,8 @@ RSpec.feature "User Pages", :type => :feature do
 		org.reload.fax_numbers << fax_number2
 		org.reload.users << user1
 		org.reload.users << user2
+		org.reload.users << user3
+		org2.reload.fax_numbers << fax_number3
 		user1.reload.fax_numbers << fax_number1
 		user1.reload.fax_numbers << fax_number2
 		user2.reload.fax_numbers << fax_number1
@@ -83,9 +83,6 @@ RSpec.feature "User Pages", :type => :feature do
 		end
 	end
 
-let!(:user1) do 
-		User.create!(email: 'matt@phaxio.com', user_permission_attributes: { permission: UserPermission::USER }, caller_id_number: '+17738675309', organization_id: org.id)
-	end
 	describe "editing a user" do
 		it "an admin can edit a user's email, caller_id_number, and permission simultaneously" do
 			org.update_attributes(manager_id: nil)
@@ -133,4 +130,73 @@ let!(:user1) do
 		end
 	end
 
+	describe "creating a new user" do
+		it "When invited from the organization index, the new manager has the selected fax number as their caller_id_number" do
+			login_as(admin)
+			manager.really_destroy!
+			manager2.really_destroy!
+			org2.really_destroy!
+			visit(organizations_path)
+			select("(773) 867-5308", from: "user[caller_id_number]")
+			fill_in("user[email]", with: "waluigi@aol.com")
+			click_button("Invite Manager")
+			expect(page).to have_current_path(organizations_path)
+			expect(page).to have_text("waluigi@aol.com has been invited.")
+			new_user = User.last
+			expect(new_user.caller_id_number).to eq("+17738675308")
+			expect(new_user.email).to eq("waluigi@aol.com")
+		end
+
+		it "When invited from the organization index, a previously soft-deleted manager will be reinstated" do
+			login_as(admin)
+			manager.destroy
+			visit(organizations_path)
+			select("(773) 867-5308", from: "user[caller_id_number]")
+			fill_in("user[email]", with: "#{manager.email}")
+			click_button("Invite Manager")
+			expect(page).to have_current_path(organizations_path)
+			expect(page).to have_text("Access has been reinstated for #{manager.email}")
+		end
+
+		it "When invited from the organization index, a previously soft-deleted user who was not previously a manager will be reinstated as the manager" do
+			login_as(admin)
+			visit(edit_user_path(user1.id)) #used to manage org2
+			click_on("Revoke Access")
+			visit(edit_user_path(manager.id)) #used to manage org
+			click_on("Revoke Access")
+			visit(organizations_path)
+			select("(773) 867-5308", from: "user[caller_id_number]", match: :first)
+			fill_in("user[email]", with: "#{user1.email}", match: :first)
+			click_button("Invite Manager")
+			expect(page).to have_current_path(organizations_path)
+			expect(page).to have_text("Access has been reinstated for #{user1.email}")
+			expect(org.reload.manager.id).to eq(User.find_by!(email: "#{user1.email}").id)
+		end
+
+		it "When a manager that used to organize Group A is soft deleted and then invited to manage Group B, the reinstated manager will be in charge of Group B. All associations from the old group will be wiped out." do
+			login_as(admin)
+			user3.update_attributes(organization_id: org2.id)
+			org2.users << user3
+			visit(edit_user_path(manager.id)) #used to manage org
+			click_on("Revoke Access")
+			visit(edit_user_path(manager2.id)) #used to manage org2
+			click_on("Revoke Access")
+			visit(organizations_path)
+			select("(773) 867-5308", from: "user[caller_id_number]", match: :first)
+			fill_in("user[email]", with: "#{manager2.email}", match: :first)
+			click_button("Invite Manager", match: :first)
+			expect(page).to have_current_path(organizations_path)
+			expect(page).to have_text("Access has been reinstated for #{manager2.email}")
+			expect(org.reload.manager.id).to eq(User.find_by!(email: "#{manager2.email}").id)
+			visit(organizations_path)
+			select("(773) 867-5309", from: "user[caller_id_number]", match: :first)
+			fill_in("user[email]", with: "#{manager.email}", match: :first)
+			click_button("Invite Manager")
+			expect(page).to have_current_path(organizations_path)
+			expect(page).to have_text("Access has been reinstated for #{manager.email}")
+			expect(org2.reload.manager.id).to eq(User.find_by!(email: "#{manager.email}").id)
+			expect(manager.reload.users).to eq(org2.reload.users) #org2 generic users
+			expect(manager2.reload.users).to eq(org.reload.users) #org generic users
+		end
+	end
 end

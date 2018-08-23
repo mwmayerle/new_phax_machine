@@ -82,9 +82,9 @@ RSpec.feature "User Profile", :type => :feature do
 			fill_in("user[password]", with: user1.password)# tomtomtom
 			fill_in("user[password_confirmation]", with: user1.password)
 			fill_in("user[current_password]", with: admin.password) # faxisawesome
-			fill_in("user[logo_url]", with: "www.google.com")
+			fill_in("user[logo_url]", with: "https://usatftw.files.wordpress.com/2017/01/yourface.png?w=1000")
 			click_button("Update")
-			expect(LogoLink.first.logo_url).to eq("www.google.com")
+			expect(LogoLink.first.logo_url).to eq("https://usatftw.files.wordpress.com/2017/01/yourface.png?w=1000")
 			expect(page).to have_current_path(fax_numbers_path)
 			expect(page).to have_text("Your account has been updated successfully. Logo successfully updated")
 		end
@@ -111,7 +111,7 @@ RSpec.feature "User Profile", :type => :feature do
 			click_button("Update")
 			expect(LogoLink.first.logo_url).to eq("https://usatftw.files.wordpress.com/2017/01/yourface.png?w=1000")
 			expect(page).to have_current_path(user_registration_path)
-			expect(page).to have_text("Your account has been updated successfully. However, the logo URL is too long. Please try again.")
+			expect(page).to have_text("Your account has been updated successfully. However, the logo URL must link to an image. Please try again.")
 		end
 
 		it "Manager can successfully edit their profile with proper credentials" do
@@ -132,6 +132,21 @@ RSpec.feature "User Profile", :type => :feature do
 			fill_in("user[current_password]", with: user1.password) # tomtomtom
 			click_button("Update")
 			expect(page).to have_text("Your account has been updated successfully.")
+		end
+	end
+
+	describe "editing your profile when no LogoLink object exists" do
+		it "should create a new LogoLink object" do
+			logo = nil
+			LogoLink.destroy_all
+			login_as(admin)
+			visit(edit_user_registration_path)
+			fill_in("user[password]", with: manager.password)
+			fill_in("user[password_confirmation]", with: manager.password)
+			fill_in("user[current_password]", with: admin.password)
+			fill_in("user[logo_url]", with: "http://pigment.github.io/fake-logos/logos/large/color/fast-banana.png")
+			click_button("Update")
+			expect(page).to have_text("Your account has been updated successfully. Logo successfully created.")
 		end
 	end
 end

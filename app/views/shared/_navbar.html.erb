@@ -3,7 +3,7 @@
 		<% if current_logo == "" || current_logo.nil? %>
 				<%= image_tag 'phaxio.png', style: "background-color:fafafa"%>
 		<% else %>
-			<img src="<%= sanitize(current_logo) %>", class="logo", alt="&nbsp;&nbsp;Invalid Logo Url">
+			<img src="<%= sanitize(current_logo) %>" class="logo" alt="&nbsp;&nbsp;Invalid Logo Url">
 		<% end %>
   </div>
   <div id="transition-zone"></div>
