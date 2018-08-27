@@ -128,6 +128,19 @@ RSpec.feature "User Pages", :type => :feature do
 			expect(page).to have_current_path("http://www.example.com/")
 			expect(page).to have_text(ApplicationController::DENIED)
 		end
+
+		it "returns an error message a manager or admin provides erroneous input" do
+			login_as(manager)
+			visit(edit_user_path(user1.id))
+			fill_in("user[email]", with: "A" * (User::USER_CHARACTER_LIMIT + 1))
+			select("(773) 867-5307", from: "user[caller_id_number]")
+			click_button("Submit Changes")
+
+			expect(page).to have_text("Email is too long (maximum is 48 characters)")
+			expect(page.current_url).to include("/users/#{user1.id}")
+			expect(user1.reload.email).to eq('matt@phaxio.com') # original unchanged email
+			expect(user1.reload.caller_id_number).to eq('+17738675309') # original caller_id_number
+		end
 	end
 
 	describe "creating a new user" do
@@ -177,10 +190,12 @@ RSpec.feature "User Pages", :type => :feature do
 			login_as(admin)
 			user3.update_attributes(organization_id: org2.id)
 			org2.users << user3
+
 			visit(edit_user_path(manager.id)) #used to manage org
 			click_on("Revoke Access")
 			visit(edit_user_path(manager2.id)) #used to manage org2
 			click_on("Revoke Access")
+
 			visit(organizations_path)
 			select("(773) 867-5308", from: "user[caller_id_number]", match: :first)
 			fill_in("user[email]", with: "#{manager2.email}", match: :first)
@@ -188,6 +203,7 @@ RSpec.feature "User Pages", :type => :feature do
 			expect(page).to have_current_path(organizations_path)
 			expect(page).to have_text("Access has been reinstated for #{manager2.email}")
 			expect(org.reload.manager.id).to eq(User.find_by!(email: "#{manager2.email}").id)
+
 			visit(organizations_path)
 			select("(773) 867-5309", from: "user[caller_id_number]", match: :first)
 			fill_in("user[email]", with: "#{manager.email}", match: :first)
@@ -197,6 +213,54 @@ RSpec.feature "User Pages", :type => :feature do
 			expect(org2.reload.manager.id).to eq(User.find_by!(email: "#{manager.email}").id)
 			expect(manager.reload.users).to eq(org2.reload.users) #org2 generic users
 			expect(manager2.reload.users).to eq(org.reload.users) #org generic users
+		end
+
+		it "returns an error message to the org index and does not create the user if invalid inputs are used" do
+			login_as(admin)
+			visit(edit_user_path(manager.id)) #used to manage org
+			click_on("Revoke Access")
+			prev_count = User.all.count
+			visit(organizations_path)
+			select("(773) 867-5308", from: "user[caller_id_number]", match: :first)
+			fill_in("user[email]", with: "A" * (User::USER_CHARACTER_LIMIT + 1), match: :first)
+			click_button("Invite Manager")
+			expect(page).to have_text("Email is too long (maximum is 48 characters)")
+			expect(User.all.count).to eq(prev_count)
+		end
+	end
+
+	describe "creating a new user from the users page" do
+		it "invites a previously soft-deleted user from the user index page" do
+			login_as(manager)
+			visit(edit_user_path(user1.id)) #used to manage org
+			click_on("Revoke Access")
+			visit(users_path)
+			fill_in("user[email]", with: "#{user1.email}")
+			select("(773) 867-5308", from: "user[caller_id_number]", match: :first)
+			click_on("Invite New User")
+			expect(page).to have_text("Access has been reinstated for #{user1.email}")
+			expect(page).to have_current_path(users_path)
+		end
+	end
+
+	describe "creating a new user from the users page" do
+		it "allows a manager to invite a user from the user page of an organization" do
+			login_as(manager)
+			visit(users_path)
+			fill_in("user[email]", with: "mr.saturn@aol.com")
+			select("(773) 867-5308", from: "user[caller_id_number]", match: :first)
+			click_on("Invite New User")
+			expect(page).to have_text("mr.saturn@aol.com has been invited.")
+		end
+
+		it "allows an admin to invite a user from the user page of an organization" do
+			login_as(admin)
+			visit(org_users_path)
+			click_link("Phaxio Test Company")
+			fill_in("user[email]", with: "mr.saturn@aol.com")
+			select("(773) 867-5308", from: "user[caller_id_number]", match: :first)
+			click_on("Invite New User")
+			expect(page).to have_text("mr.saturn@aol.com has been invited.")
 		end
 	end
 end

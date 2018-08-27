@@ -1,5 +1,4 @@
 var response = JSON.parse('<%= @sorted_faxes.to_json.html_safe %>');
-
 if (response) {
 	$("#load-icon").hide();
 	buildTableRows(response);

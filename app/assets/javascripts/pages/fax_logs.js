@@ -34,7 +34,6 @@ phaxMachine.pages['fax-logs'] = {
 				$orgSelect.empty();
 				restoreSelectTag(organizationOptions, $orgSelect);
 				restoreSelectTag(faxNumberOptions, $faxSelect);
-
 			} else {
 			 	$faxSelect.append(`<option class="all-linked" name="fax_log[fax_number]" value="all-linked">All Linked Numbers</option>`);
 				createSelectTagMultipleConditionals(faxNumberOptions, $faxSelect, [organizationClass, 'all-fax']);
@@ -62,7 +61,6 @@ phaxMachine.pages['fax-logs'] = {
 			} else if (faxNumberClass === 'all-fax') {
 				$($orgSelect).empty();
 				restoreSelectTag(organizationOptions, $orgSelect);
-
 			} else if (organizationClass === 'all-org' || faxNumberClass !== organizationClass) {
 				$($orgSelect).empty();
 				createSelectTagMultipleConditionals(organizationOptions, $orgSelect, [faxNumberClass, 'all-org']);
@@ -109,12 +107,12 @@ function buildTableRows(faxData) {
 		let heading = `<tr>
 			<td class="text-center">
 					${ (faxData[faxDatum].direction === "Sent") ? sentIcon : receivedIcon }
-			</td>
-			<td class="text-center">${faxDatum}</td>`; //remove this line to kill IDs
-			// //it will concatenate the rest of the string on later to close the <tr>
+			</td>`;
+			//<td class="text-center">${faxDatum}</td>`; //remove this line to kill IDs
+			//it will concatenate the rest of the string on later to close the <tr>
 
-		if ($('#fax-log-table th').length === 8) { heading = heading.concat('', `<td class="text-center">${faxData[faxDatum].organization}</td>`); }
 		// Admin has 8 <th>, Manager has 7 <th>, User has only 6. These if blocks add/remove data for these permissions
+		if ($('#fax-log-table th').length === 8) { heading = heading.concat('', `<td class="text-center">${faxData[faxDatum].organization}</td>`); }
 		if ($('#fax-log-table th').length > 6) { heading = heading.concat('', `<td class="text-center">${faxData[faxDatum].sent_by}</td>`); }
 
 		heading = heading.concat('', `
@@ -133,7 +131,7 @@ function buildTableRows(faxData) {
 function changeStatusColor() {
 	$.each($('.status'), function() { // $(this) is the entire <td> tag within the $.each()
 		switch($(this).text()) {
-			case 'Success':
+			case 'Success': // These statuses are capitalized unlike the normal API response b/c Ruby's 'titleize() is used'
 				$(this).prepend(`
 					<span style='color:limegreen'>&nbsp;<i style='font-size:10px' class="fa fa-fw fa-circle"></i>&nbsp;</span>
 				`);

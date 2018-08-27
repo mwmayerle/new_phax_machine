@@ -64,7 +64,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   	if resource && resource.permission == UserPermission::USER
   		redirect_to(users_path(organization_id: resource.organization_id))
   	else
-  		redirect_to(organizations_path)
+  		is_admin? ? (redirect_to(organizations_path)) : redirect_to(users_path)
   	end
   end
 
