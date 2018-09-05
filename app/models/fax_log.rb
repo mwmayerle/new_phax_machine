@@ -31,7 +31,11 @@ class FaxLog < ApplicationRecord
 				fax_data.push(initial_data.raw_data)
 
 			else
-				options[:per_page] = 20 / fax_numbers.keys.length if options[:per_page].nil?
+				begin
+					options[:per_page] = 20 / fax_numbers.keys.length if options[:per_page].nil?
+				rescue
+					options[:per_page] = 20 # <-- if a user has no fax numbers this prevents a division by zero error
+				end
 				# First search for faxes via organization fax tag or user's fax tag and insert these faxes. If I try to include the desired
 				# fax number(s) in this API call as well, it will only return received faxes b/c those will have the tags on them.
 				tag_data = Phaxio::Fax.list(
@@ -168,11 +172,13 @@ class FaxLog < ApplicationRecord
 		end
 
 		def add_start_time(input_time)
-			input_time.to_s == "" ? 7.days.ago.to_datetime.utc.rfc3339 : format_date(input_time).to_datetime.utc.rfc3339
+			# https://stackoverflow.com/questions/5905861/how-do-i-add-two-weeks-to-time-now
+			# DateTime.now - 7 is subtracting a week
+			input_time.to_s == "" ? (DateTime.now - 7).rfc3339 : input_time.to_time.to_datetime.rfc3339
 		end
 
 		def add_end_time(input_time)
-			input_time.to_s == "" ? DateTime.now.utc.rfc3339 : format_date(input_time).to_datetime.utc.rfc3339
+			input_time.to_s == "" ? Time.now.to_datetime.rfc3339 : input_time.to_time.to_datetime.rfc3339
 		end
 		
 		def set_status_in_options(filtered_params, options)
@@ -198,14 +204,6 @@ class FaxLog < ApplicationRecord
 
 		def set_tag_in_options_user(filtered_params, organization, options, current_user)
 			options[:tag] = { :sender_email_fax_tag => current_user.fax_tag }
-		end
-
-		# Converts "08-01-2018" to "01-08-2018" for 'to_datetime' conversion
-		def format_date(input_time)
-			original_year = input_time[6..-1]
-			original_month = input_time[0..2]
-			original_day = input_time[3..5]
-			original_day.concat(original_month).concat(original_year)
 		end
 
 		def fax_object_is_younger?(fax_object_timestamp, comparison_obj_timestamp)

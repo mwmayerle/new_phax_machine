@@ -43,6 +43,7 @@ gem 'dotenv-rails'
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
 gem 'bootstrap'
+gem 'flatpickr'
 
 # Telephony/faxing goodies
 gem 'phaxio', github: 'phaxio/phaxio-ruby'

@@ -99,6 +99,7 @@ GEM
     faraday (0.15.2)
       multipart-post (>= 1.2, < 3)
     ffi (1.9.25)
+    flatpickr (3.0.7.0)
     globalid (0.4.1)
       activesupport (>= 4.2.0)
     httparty (0.16.2)
@@ -268,6 +269,7 @@ DEPENDENCIES
   chromedriver-helper
   devise
   dotenv-rails
+  flatpickr
   httparty
   jbuilder (~> 2.5)
   jquery-rails

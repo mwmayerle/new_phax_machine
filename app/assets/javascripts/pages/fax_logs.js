@@ -13,13 +13,14 @@ phaxMachine.pages['fax-logs'] = {
 			$("#load-icon").show();
 		});
 
-		$('.datepicker-inline').datepicker({
-	    dateFormat: 'mm-dd-yy',
-	    endDate: '+0d',
-	    autoclose: true,
-	    maxDate: (0),
-	  }),
-		$('#end-date-field').val(getTodaysFormattedDate());
+	 $('.datepicker-inline').flatpickr({
+    	enableTime: true,
+    	dateFormat: 'Y-m-d h:iK',
+    	altInput: true,
+    	altFormat: 'm-d-Y h:i K',
+	    maxDate: new Date(),
+	    autoclose: true
+		});
 
 		$("#org-select").change((event) => {
 			event.stopPropagation();
@@ -86,17 +87,17 @@ phaxMachine.pages['fax-logs'] = {
 	}
 };
 
-function getTodaysFormattedDate () {
-	let today = new Date();
-	let dd = today.getDate();
-	let mm = today.getMonth() + 1; // January is 0
-	let yyyy = today.getFullYear();
+// function getTodaysFormattedDate () {
+// 	let today = new Date();
+// 	let dd = today.getDate();
+// 	let mm = today.getMonth() + 1; // January is 0
+// 	let yyyy = today.getFullYear();
 
-	if (dd<10) { dd = `0${dd}` }
-	if (mm<10) { mm = `0${mm}` } 
+// 	if (dd<10) { dd = `0${dd}` }
+// 	if (mm<10) { mm = `0${mm}` } 
 
-	return `${mm}-${dd}-${yyyy}`;
-};
+// 	return `${mm}-${dd}-${yyyy}`;
+// };
 
 function buildTableRows(faxData) {
 	let sentIcon = `<i style="color:green" class="fa fa-fw fa-arrow-circle-right" aria-hidden="true"></i>`;
@@ -108,8 +109,6 @@ function buildTableRows(faxData) {
 			<td class="text-center">
 					${ (faxData[faxDatum].direction === "Sent") ? sentIcon : receivedIcon }
 			</td>`;
-			//<td class="text-center">${faxDatum}</td>`; //remove this line to kill IDs
-			//it will concatenate the rest of the string on later to close the <tr>
 
 		// Admin has 8 <th>, Manager has 7 <th>, User has only 6. These if blocks add/remove data for these permissions
 		if ($('#fax-log-table th').length === 8) { heading = heading.concat('', `<td class="text-center">${faxData[faxDatum].organization}</td>`); }
