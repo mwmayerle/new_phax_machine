@@ -5,7 +5,7 @@ class FaxLogsController < ApplicationController
 	def index
 		if is_admin?
 			options = FaxLog.build_options(current_user, filtering_params, @organizations)
-			initial_fax_data = FaxLog.get_faxes(current_user, options)
+			initial_fax_data = FaxLog.get_faxes(current_user, options,)
 			FaxLog.add_all_attribute_to_hashes( [@fax_numbers, @organizations] )
 			@sorted_faxes = FaxLog.format_faxes(current_user, initial_fax_data, @organizations, @fax_numbers, @users)
 		else
@@ -99,9 +99,15 @@ class FaxLogsController < ApplicationController
 				fax_num_from_db.each { |fax_number_obj| FaxLog.create_fax_nums_hash(@fax_numbers, fax_number_obj) }
 
 			else # generic user
-				@fax_numbers[current_user.caller_id_number] = { 'label' => current_user.organization.label }
-				@fax_numbers[current_user.caller_id_number]['org_created_at'] = current_user.organization.created_at
-				@fax_numbers[current_user.caller_id_number]['org_id'] = current_user.organization.id
+				user_fax_num_objects = UserFaxNumber.includes(:fax_number).where(user_id: current_user.id)
+				user_fax_nums = user_fax_num_objects.map { |user_fax_num| user_fax_num.fax_number }
+
+				user_fax_nums.each do |user_fax_num|
+					@fax_numbers[user_fax_num.fax_number] = { 'label' => current_user.organization.label }
+					@fax_numbers[user_fax_num.fax_number]['org_created_at'] = current_user.organization.created_at
+					@fax_numbers[user_fax_num.fax_number]['org_id'] = current_user.organization.id
+				end
+				@fax_numbers
 			end
 		end
 

@@ -19,7 +19,7 @@ class FaxLog < ApplicationRecord
 			options
 		end
 
-		def get_faxes(current_user, options, users, fax_numbers = nil, fax_data = [])
+		def get_faxes(current_user, options, users = nil, fax_numbers = nil, fax_data = [])
 			# options[:tag] will contain a specific desired organization or user. Managers will always have an organization
 			if options[:tag].nil? # Admin gets everything unless they specify and organization
 				initial_data = Phaxio::Fax.list({
