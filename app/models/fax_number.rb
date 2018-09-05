@@ -55,6 +55,7 @@ class FaxNumber < ApplicationRecord
 
 			def format_area_codes(area_codes_from_api, options, area_codes = {})
 				area_codes_from_api = area_codes_from_api.sort_by { |area_code| area_code['area_code'] }
+				
 				area_codes_from_api.each do |area_code_object|
 					area_codes[area_code_object['area_code'].to_s] = {
 						city: area_code_object['city'],

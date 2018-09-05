@@ -63,10 +63,11 @@
 									<td class="text-center"><%= FaxNumber.format_pretty_fax_number(user.caller_id_number) %></td>
 									<% if user.deleted_at.nil? %>
 										<td class="text-center" style="color:green;"><i class="fa fa-fw fa-check-circle" aria-hidden="true"></i></td>
+										<td class="text-center"><%= link_to "Edit", edit_user_path(user), class: "btn btn-sm btn-success" %></td>
 									<% else %>
 										<td class="text-center" style="color:crimson;"><i class="fa fa-fw fa-times-circle" aria-hidden="true"></i></td>
+										<td></td>
 									<% end %>
-									<td class="text-center"><%= link_to "Edit", edit_user_path(user), class: "btn btn-sm btn-success" %></td>
 								<tr>
 							<% end %>
 							</tbody>

@@ -22,7 +22,7 @@ class FaxNumbersController < ApplicationController
 
 	 # Post request for purchasing the new number
 	def create
-		# api_response = FaxNumber.provision(provision_number_params[:area_code])
+		api_response = FaxNumber.provision(provision_number_params[:area_code])
 		if api_response.phone_number
 			FaxNumber.create!(fax_number: api_response.phone_number, has_webhook_url: false)
 			flash[:notice] = "Number Provisioned Successfully"
@@ -62,9 +62,7 @@ class FaxNumbersController < ApplicationController
 			end
 
 			flash[:notice] = "Changes successfully saved."
-
-			# This ternary is for editing a fax number's label before the Organization object is created
-			@fax_number.organization ? redirect_to(organization_path(@fax_number.organization)) : redirect_to(fax_numbers_path)
+			is_admin? ? redirect_to(fax_numbers_path) : redirect_to(organization_path(@fax_number.organization))
 		else
 			flash[:alert] = @fax_number.errors.full_messages.pop
 			redirect_to(edit_fax_number_path(@fax_number))
@@ -97,12 +95,12 @@ class FaxNumbersController < ApplicationController
 		end
 
 		def verify_can_purchase_numbers
+			return if is_admin?
 			@organization = Organization.find(manager_fax_number_params[:organization_id])
 			if is_manager? && !@organization.fax_numbers_purchasable
 				flash[:alert] = DENIED
 				redirect_to root_path
 			else #
-				return if is_admin?
 				if !authorized?(@organization.manager, :id)
 					flash[:alert] = DENIED
 					redirect_to root_path

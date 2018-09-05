@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 class Users::RegistrationsController < Devise::RegistrationsController
 	include SessionsHelper
+
   # before_action :configure_sign_up_params, only: [:create]
   	before_action :verify_fax_numbers, only: [:create]
   	before_action :verify_permissions_create, only: [:create]
@@ -59,11 +60,12 @@ class Users::RegistrationsController < Devise::RegistrationsController
 	      set_minimum_password_length
 	    end
 	  end
-		if resource
-    	resource.permission == UserPermission::USER ? redirect_to(organization_path(resource.organization)) : redirect_to(organizations_path)
-    else
-    	redirect_to(organization_path(sign_up_params[:organization_id]))
-    end
+	  #a restored user won't be a Devise "resource"
+  	if resource && resource.permission == UserPermission::USER
+  		redirect_to(users_path(organization_id: resource.organization_id))
+  	else
+  		is_admin? ? (redirect_to(organizations_path)) : redirect_to(users_path)
+  	end
   end
 
   # PUT /resource
@@ -78,22 +80,17 @@ class Users::RegistrationsController < Devise::RegistrationsController
         set_flash_message :notice, flash_key
       end
 
-      # Admin-only site logo
-      if is_admin? && account_update_params[:logo_url] != session[:logo_url]
-	      logo = LogoLink.first
-	  		if logo && logo.update_attributes(logo_url: account_update_params[:logo_url])
-		  		flash[:notice] << " Logo successfully updated"
-					session[:logo_url] = account_update_params[:logo_url]
-				else
-					flash[:notice] << " However, #{logo.errors.full_messages.pop} Please try again."
-			  end
-				# Sends user back to edit page if the image update fails
-	    	if logo.errors.full_messages.present?
-	    		render(:edit) and return
-	    	end
-    	end
+      # if an admin is logged in, logo_link_url does not match what is stored in session, and the logo_link url is not "" / empty
+      # we create a blank logo variable for later if conditions above aren't met
+      logo = (is_admin? && account_update_params[:logo_url] != session[:logo_url]) ? update_logo_link : nil
       bypass_sign_in(resource, scope: resource_name)
-      respond_with(resource, location: after_update_path_for(resource))
+
+      # Sends user back to edit page if the image update fails
+    	if logo && logo.errors.full_messages.present?
+    		render('devise/registrations/edit') and return
+    	else
+      	respond_with(resource, location: after_update_path_for(resource))
+    	end
     else
       clean_up_passwords resource
       set_minimum_password_length
@@ -144,5 +141,21 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
     def after_update_path_for(resource)
       root_path
+    end
+
+    def update_logo_link
+    	logo = LogoLink.first
+  		if logo && logo.update_attributes(logo_url: account_update_params[:logo_url])
+	  		flash[:notice] << " Logo successfully updated"
+				session[:logo_url] = account_update_params[:logo_url]
+			else
+				if logo
+					flash[:notice] << " However, #{logo.errors.full_messages.pop} Please try again."
+				else
+					logo = LogoLink.create(logo_url: account_update_params[:logo_url])
+					flash[:notice] << " Logo successfully created."
+				end
+		  end
+		  logo
     end
 end
