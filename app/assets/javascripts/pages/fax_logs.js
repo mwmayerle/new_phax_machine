@@ -87,18 +87,6 @@ phaxMachine.pages['fax-logs'] = {
 	}
 };
 
-// function getTodaysFormattedDate () {
-// 	let today = new Date();
-// 	let dd = today.getDate();
-// 	let mm = today.getMonth() + 1; // January is 0
-// 	let yyyy = today.getFullYear();
-
-// 	if (dd<10) { dd = `0${dd}` }
-// 	if (mm<10) { mm = `0${mm}` } 
-
-// 	return `${mm}-${dd}-${yyyy}`;
-// };
-
 function buildTableRows(faxData) {
 	let sentIcon = `<i style="color:green" class="fa fa-fw fa-arrow-circle-right" aria-hidden="true"></i>`;
 	let receivedIcon = `<i style="color:darkblue" class="fa fa-fw fa-arrow-circle-left" aria-hidden="true"></i>`;

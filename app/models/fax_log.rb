@@ -10,9 +10,9 @@ class FaxLog < ApplicationRecord
 			options[:start_time] = add_start_time(filtered_params[:start_time])
 			options[:end_time] = add_end_time(filtered_params[:end_time])
 			options[:tag] = filtered_params[:tag] if !filtered_params[:tag].nil?
-			
+			options[:fax_number] = set_fax_number_in_options(filtered_params, options)
+
 			set_status_in_options(filtered_params, options) if filtered_params[:status]
-			set_fax_number_in_options(filtered_params, options) if filtered_params[:fax_number]
 			set_organization_in_options(filtered_params, organization, options) if filtered_params[:organization]
 			set_tag_in_options_manager(filtered_params, organization, options) if is_manager?(current_user)
 			set_tag_in_options_user(filtered_params, organization, options, current_user) if is_user?(current_user)
@@ -61,9 +61,8 @@ class FaxLog < ApplicationRecord
 						per_page: options[:per_page],
 						status: options[:status]
 					)
-
 					# Filter by fax number if a specific fax number exists and it isn't "all" or "all-linked"
-					if options[:fax_number].nil?
+					if options[:phone_number].nil?
 						filtered_data = current_data.raw_data
 					else
 						filtered_data = filter_faxes_by_fax_number(options, current_data.raw_data, fax_numbers)
@@ -186,7 +185,7 @@ class FaxLog < ApplicationRecord
 		end
 
 		def set_fax_number_in_options(filtered_params, options)
-			options[:fax_number] = Phonelib.parse(filtered_params[:fax_number]).e164
+			!!/all/.match(filtered_params[:fax_number]) ? filtered_params[:fax_number] : Phonelib.parse(filtered_params[:fax_number]).e164
 		end
 
 		def set_organization_in_options(filtered_params, organization, options)
