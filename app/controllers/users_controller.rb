@@ -14,7 +14,7 @@ class UsersController < ApplicationController
 	end
 
 	def index # with_deleted is a Paranoia gem method that includes soft-deleted users
-		@users = User.with_deleted.where(organization_id: @organization.id).order(:email)
+		@users = User.includes(:user_permission).with_deleted.where(organization_id: @organization.id).order(:email)
 	end
 
 	def edit

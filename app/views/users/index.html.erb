@@ -60,7 +60,7 @@
 									<td></td>
 									<% end %>
 									<td class="text-center"><%= user.email %></td>
-									<td class="text-center"><%= FaxNumber.format_pretty_fax_number(user.caller_id_number) %></td>
+									<td class="text-center"><%= FaxNumber.format_pretty_fax_number(user.caller_id_number) if user.caller_id_number %></td>
 									<% if user.deleted_at.nil? %>
 										<td class="text-center" style="color:green;"><i class="fa fa-fw fa-check-circle" aria-hidden="true"></i></td>
 										<td class="text-center"><%= link_to "Edit", edit_user_path(user), class: "btn btn-sm btn-success" %></td>

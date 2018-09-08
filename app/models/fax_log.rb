@@ -70,7 +70,8 @@ class FaxLog < ApplicationRecord
 					end
 
 					# Filter by user if a user-specific tag exists
-					p users
+					# NOTE 'users' when filtering by a single user will be a single object from the set_users method, despite
+					#   having a plural name. This is for code re-use. 
 					filtered_data = filter_faxes_by_user(options, filtered_data, users) if options[:tag].has_key?(:sender_email_fax_tag)
 					fax_data.push(filtered_data)
 				end
@@ -82,18 +83,21 @@ class FaxLog < ApplicationRecord
 			current_data.select { |fax_object| fax_numbers.include?(fax_object['from_number']) || fax_numbers.include?(fax_object['to_number']) }
 		end
 
-		def filter_faxes_by_user(options, filtered_data)
+		def filter_faxes_by_user(options, filtered_data, user)
 			filtered_data.select do |fax_object|
-				received_fax_is_from_user?(fax_object, options) || sent_fax_is_from_user?(fax_object, options)
+				# received_fax_is_from_user?(fax_object, options, user) && fax_object['direction'] == 'received' || sent_fax_is_from_user?(fax_object, options, user) && fax_object['direction'] == 'sent' 
+				sent_fax_is_from_user?(fax_object, options, user) && fax_object['direction'] == 'sent' || fax_object['direction'] == 'received'
 			end
 		end
 
-		def received_fax_is_from_user?(fax_object, options)
-			fax_object['direction'] == 'received' && (fax_object['from_number'] == User.find_by(fax_tag: options[:tag][:sender_email_fax_tag]).caller_id_number)
-		end
+		# def received_fax_is_from_user?(fax_object, options, user)
+		# 	# user argument is a hash that looks like {0 => {'caller_id_number' => '+12345678910', 'attribute' => 'etc'} }
+		# 	fax_object['from_number'] == user[0]['caller_id_number']
+		# end
 
-		def sent_fax_is_from_user?(fax_object, options)
-			fax_object['direction'] == 'sent' && (fax_object['caller_id'] == User.find_by(fax_tag: options[:tag][:sender_email_fax_tag]).caller_id_number)
+		def sent_fax_is_from_user?(fax_object, options, user)
+			# user argument is a hash that looks like {0 => {'caller_id_number' => '+12345678910', 'attribute' => 'etc'} }
+			fax_object['caller_id'] == user[0]['caller_id_number'] && options[:tag][:sender_email_fax_tag] == user[0]['fax_tag']
 		end
 
 		def format_faxes(current_user, initial_fax_data, organizations, fax_numbers, users = nil, fax_data = {})

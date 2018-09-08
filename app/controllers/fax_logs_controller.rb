@@ -99,8 +99,7 @@ class FaxLogsController < ApplicationController
 				fax_num_from_db.each { |fax_number_obj| FaxLog.create_fax_nums_hash(@fax_numbers, fax_number_obj) }
 
 			else # generic user
-				user_fax_num_objects = UserFaxNumber.includes(:fax_number).where(user_id: current_user.id)
-				user_fax_nums = user_fax_num_objects.map { |user_fax_num| user_fax_num.fax_number }
+				user_fax_nums = UserFaxNumber.includes(:fax_number).where(user_id: current_user.id).map { |user_fax_num| user_fax_num.fax_number }
 
 				user_fax_nums.each do |user_fax_num|
 					@fax_numbers[user_fax_num.fax_number] = { 'label' => current_user.organization.label }
@@ -122,7 +121,7 @@ class FaxLogsController < ApplicationController
 			else
 				# current_user is in an array for iterating/code reuse
 				if is_manager?
-					criteria_array = User.includes(:organization).where(organization_id: @organization.id).select { |user| user.user_permission }
+					criteria_array = User.includes([:organization, :user_permission]).where(organization_id: @organization.id).select { |user| user.user_permission }
 				else
 					criteria_array = [current_user]
 				end
