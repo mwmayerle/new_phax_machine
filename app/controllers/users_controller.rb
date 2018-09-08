@@ -62,7 +62,7 @@ class UsersController < ApplicationController
 		end
 
 		def set_user
-			@user ||= User.with_deleted.includes(:user_permission).find(params[:id])
+			@user ||= User.includes(:user_permission).with_deleted.includes(:user_permission).find(params[:id])
 		end
 
 		def user_params

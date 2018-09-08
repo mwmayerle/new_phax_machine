@@ -9,7 +9,7 @@ class OrganizationsController < ApplicationController
 		@user = User.new
 		@user.build_user_permission
 		FaxNumber.format_and_retrieve_fax_numbers_from_api if FaxNumber.first.nil?
-		@organizations = Organization.includes(:fax_numbers).order(label: :asc)
+		@organizations = Organization.includes([:fax_numbers, :manager]).order(label: :asc)
 	end
 
 	def new
@@ -94,7 +94,7 @@ class OrganizationsController < ApplicationController
 	private
 
 		def set_organization
-			@organization ||= Organization.includes(:fax_numbers).order("fax_numbers.fax_number").find(params[:id])
+			@organization ||= Organization.includes([:fax_numbers, :users]).order("fax_numbers.fax_number").find(params[:id])
 		end
 
 		def get_unallocated_numbers 
