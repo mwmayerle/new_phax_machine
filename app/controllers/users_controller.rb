@@ -73,10 +73,6 @@ class UsersController < ApplicationController
 			params.require(:user_permission).permit(:permission)
 		end
 
-		def adjust_manager(organization_id, id)
-			Organization.where(id: user.organization_id).update_attributes(manager_id: nil)
-		end
-
 		def verify_authorized
 			return if is_admin?
 			if !authorized?(@user.manager, :id)
@@ -84,4 +80,8 @@ class UsersController < ApplicationController
 				redirect_to root_path
 			end
 		end
+		
+		# def adjust_manager(organization_id, id)
+		# 	Organization.where(id: user.organization_id).update_attributes(manager_id: nil)
+		# end
 end

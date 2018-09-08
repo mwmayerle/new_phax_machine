@@ -2,6 +2,17 @@ require 'rails_helper'
 require 'date'
 require 'fake_api_response'
 
+#### Methods and arguments below in FakeApiResponse module included above ####
+
+# build_successful_sent_fax_objects(id, quantity, organization_object, recipient_number, fake_data = [])
+# build_failed_sent_fax_objects(id, quantity, caller_id_number, recipient_number, organization_object, user_object, fake_data = [])
+# build_successful_received_fax_objects(id, quantity, from_number, to_number, fake_data = [])
+# build_failed_received_fax_objects(id, quantity, from_number, to_number, organization_object, user_object, fake_data = [])
+
+# This module is used to mimic the result of the multiple "list_faxes" (FaxLog.get_faxes) API get requests that are combined and 
+#   then filtered, resulting in nested arrays of fax objects that are then pushed into a new single array and sorted by date in 
+#   the "sort_faxes" FaxLog method.
+
 RSpec.describe FaxLog, type: :model do
 	include FakeApiResponse
 
@@ -47,13 +58,150 @@ RSpec.describe FaxLog, type: :model do
 		org2.update_attributes(manager_id: manager2.id)
 	end # before(:each)
 
-	#### Methods and arguments below in FakeApiResponse module included above ####
-	# build_successful_sent_fax_objects(id, quantity, organization_object, recipient_number, fake_data = [])
-	# build_failed_sent_fax_objects(id, quantity, caller_id_number, recipient_number, organization_object, user_object, fake_data = [])
-	# build_successful_received_fax_objects(id, quantity, from_number, to_number, fake_data = [])
-	# build_failed_received_fax_objects(id, quantity, from_number, to_number, organization_object, user_object, fake_data = [])
 
-	it "prints hello world" do
-		p testing = build_failed_received_fax_objects(99, 1, "+12242136849", "+13332224444", org1, user1, fake_data = [])
+	describe "the #build_options method" do
+
+		describe "the #add_start_time method" do
+			it "#add_start_time sets the start_time in the options hash to an RFC3339 time based on user input" do
+				filtered_params = { :start_time => "2018-09-02 8:58PM" }
+				all_orgs = Organization.all
+				options = FaxLog.build_options(admin, filtered_params, all_orgs, @users)
+				expect(options[:start_time]).to eq("2018-09-02T20:58:00-05:00")
+
+				options = FaxLog.build_options(manager1, filtered_params, org1, @users)
+				expect(options[:start_time]).to eq("2018-09-02T20:58:00-05:00")
+
+				options = FaxLog.build_options(user1, filtered_params, org1, @users)
+				expect(options[:start_time]).to eq("2018-09-02T20:58:00-05:00")
+			end
+
+			it "#add_start_time defaults to 1 week ago if no start time is specified it is left blank (or it's the initial page load)" do
+				filtered_params = { :fax_log=>{} }
+				all_orgs = Organization.all
+				options = FaxLog.build_options(admin, filtered_params, all_orgs, @users)
+				expect(options[:start_time]).to eq((DateTime.now - 7).rfc3339)
+
+				options = FaxLog.build_options(manager1, filtered_params, org1, @users)
+				expect(options[:start_time]).to eq((DateTime.now - 7).rfc3339)
+
+				options = FaxLog.build_options(user1, filtered_params, org1, @users)
+				expect(options[:start_time]).to eq((DateTime.now - 7).rfc3339)
+			end
+		end
+
+		describe "the #add_end_time method" do
+			it "#add_end_time sets the end time in the options hash to an RFC3339 time based on user input" do
+				filtered_params = { :end_time => "2018-09-02 8:58PM" }
+				all_orgs = Organization.all
+				options = FaxLog.build_options(admin, filtered_params, all_orgs, @users)
+				expect(options[:end_time]).to eq("2018-09-02T20:58:00-05:00")
+
+				all_orgs = Organization.all
+				options = FaxLog.build_options(manager1, filtered_params, org1, @users)
+				expect(options[:end_time]).to eq("2018-09-02T20:58:00-05:00")
+
+				options = FaxLog.build_options(user1, filtered_params, org1, @users)
+				expect(options[:end_time]).to eq("2018-09-02T20:58:00-05:00")
+			end
+
+			it "#add_end_time defaults to the current time if no end time is specified it is left blank (or it's the initial page load)" do
+				filtered_params = { :fax_log=>{} }
+				all_orgs = Organization.all
+				options = FaxLog.build_options(admin, filtered_params, all_orgs, @users)
+				expect(options[:end_time]).to eq(Time.now.to_datetime.rfc3339)
+
+				options = FaxLog.build_options(manager1, filtered_params, org1, @users)
+				expect(options[:end_time]).to eq(Time.now.to_datetime.rfc3339)
+
+				options = FaxLog.build_options(user1, filtered_params, org1, @users)
+				expect(options[:end_time]).to eq(Time.now.to_datetime.rfc3339)
+			end
+		end
+
+		describe "the #set_fax_number_in_options method" do
+			it "sets the fax_number to 'all' or 'all-linked' if a fax number besides 'all' or 'all-linked' is provided" do
+				filtered_params = { :fax_number => "all" }
+				all_orgs = Organization.all
+				options = FaxLog.build_options(admin, filtered_params, all_orgs, @users)
+				expect(options[:fax_number]).to eq("all")
+
+				filtered_params = { :fax_number => "all-linked" }
+				options = FaxLog.build_options(manager1, filtered_params, org1, @users)
+				expect(options[:fax_number]).to eq("all-linked")
+			end
+
+			it "sets the fax_number to the specific desired fax_number if a fax_number is provided" do
+				filtered_params = { :fax_number => "+17738675301" }
+				all_orgs = Organization.all
+				options = FaxLog.build_options(admin, filtered_params, all_orgs, @users)
+				expect(options[:fax_number]).to eq("+17738675301")
+			end
+		end
+
+		describe "#set_status_in_options method" do
+			it "sets the status if the provided status is not 'all' " do
+				statuses = %w[inprogress success failure queued all]
+				statuses.each do |status|
+					filtered_params = { :status => status }
+					options = FaxLog.build_options(manager1, filtered_params, org1, @users)
+					status == 'all' ? (expect(options[:status]).to be_nil) : (expect(options[:status]).to eq(status))
+				end
+			end
+		end
+
+		describe "#set_organization_in_options " do
+			it "sets 'options[:tag] to the organization's fax tag if filtered_params[:organization] is not 'all'" do
+				filtered_params = { :organization => org1.fax_tag }
+				all_orgs = Organization.all
+				options = FaxLog.build_options(admin, filtered_params, all_orgs, @users)
+				expect(options[:tag]).to eq({ :sender_organization_fax_tag => org1.fax_tag })
+
+				filtered_params = { :organization => 'all' }
+				options = FaxLog.build_options(admin, filtered_params, all_orgs, @users)
+				expect(options[:tag]).to be_nil
+			end
+		end
+
+		describe "#set_tag_in_options_manager method when manager is logged in, it sets options[:tag] to a desired user's fax_tag" do
+			it "sets 'options[:tag]' to the desired user if filtered_params[:user] is not 'all', 'all-linked', or nil. Logged in as manager" do
+				@users = {} # this imitates "set_users", which is needed to create '@users' used in the method
+				org1.users.each_with_index { |user_obj, index| FaxLog.create_users_hash(@users, user_obj, index) }
+
+				filtered_params = { :user => user1.email }
+				options = FaxLog.build_options(manager1, filtered_params, org1, @users)
+				expect(options[:tag]).to eq({ :sender_email_fax_tag => user1.fax_tag })
+
+				filtered_params = { :user => nil }
+				options = FaxLog.build_options(manager1, filtered_params, org1, @users)
+				expect(options[:tag]).to eq({ :sender_organization_fax_tag => org1.fax_tag })
+
+				filtered_params = { :user => 'all-linked' }
+				options = FaxLog.build_options(manager1, filtered_params, org1, @users)
+				expect(options[:tag]).to eq({ :sender_organization_fax_tag => org1.fax_tag })
+
+				filtered_params = { :user => 'all' }
+				options = FaxLog.build_options(manager1, filtered_params, org1, @users)
+				expect(options[:tag]).to eq({ :sender_organization_fax_tag => org1.fax_tag })
+			end
+		end
+
+		describe "#set_tag_in_options_user method" do
+			it "#set_tag_in_options_user sets the 'options[:tag]' to the current_user if a generic user is logged in" do
+				@users = {} # again this imitates "set_users"
+				[user1].each_with_index { |user_obj, index| FaxLog.create_users_hash(@users, user_obj, index) }
+
+				filtered_params = { :user => user1.email }
+				options = FaxLog.build_options(user1, filtered_params, org1, @users)
+				expect(options[:tag]).to eq({ :sender_email_fax_tag => user1.fax_tag })
+			end
+		end
+
+		describe "#format_faxes method" do
+			it "" do
+
+
+			end
+		end
 	end
 end
+
