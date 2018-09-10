@@ -2,6 +2,7 @@ class FaxLogsController < ApplicationController
 	include SessionsHelper
 	before_action :set_phaxio_creds, :set_organization_or_organizations, :set_fax_numbers, :set_users
 
+	# it would be good to Jquery the default dates on page load into the calendar
 	def index
 		if is_admin?
 			options = FaxLog.build_options(current_user, filtering_params, @organizations, @users)

@@ -2,7 +2,7 @@ module FakeApiResponse
 
 	def build_successful_sent_fax_objects(id, quantity, caller_id_number, recipient_number, organization_object, user_object, fake_data = [])
 		quantity.times do
-			obj = {'id' => id, 'direction' => 'sent', 'num_pages' => 1, 'status' => 'success', 'is_test' => false, 'created_at' => (DateTime.now + 7).to_s, 'cost' => 7, 'caller_id' => caller_id_number, 'tags' => { "sender_email_fax_tag" => user_object.fax_tag, "sender_organization_fax_tag" => organization_object.fax_tag }, 'recipients' => [{'phone_number' => recipient_number, 'status' => 'success', 'retry_count' => 0, 'completed_at' => (DateTime.now + 8).to_s, 'bitrate' => 9600, 'resolution' => 8040, 'error_type' => nil, 'error_id' => nil, 'error_message' => nil}], 'to_number' => nil, 'error_type' => nil, 'error_id' => nil, 'error_message' => nil}
+			obj = {'id' => id, 'direction' => 'sent', 'num_pages' => 1, 'status' => 'success', 'is_test' => false, 'created_at' => (DateTime.now + 7), 'cost' => 7, 'caller_id' => caller_id_number, 'tags' => { "sender_email_fax_tag" => user_object.fax_tag, "sender_organization_fax_tag" => organization_object.fax_tag }, 'recipients' => [{'phone_number' => recipient_number, 'status' => 'success', 'retry_count' => 0, 'completed_at' => (DateTime.now + 8), 'bitrate' => 9600, 'resolution' => 8040, 'error_type' => nil, 'error_id' => nil, 'error_message' => nil}], 'to_number' => nil, 'error_type' => nil, 'error_id' => nil, 'error_message' => nil}
 			fake_data.push(obj)
 			id += 1
 		end

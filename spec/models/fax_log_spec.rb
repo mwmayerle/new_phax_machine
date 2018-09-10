@@ -2,17 +2,6 @@ require 'rails_helper'
 require 'date'
 require 'fake_api_response'
 
-#### Methods and arguments below in FakeApiResponse module included above ####
-
-# build_successful_sent_fax_objects(id, quantity, organization_object, recipient_number, fake_data = [])
-# build_failed_sent_fax_objects(id, quantity, caller_id_number, recipient_number, organization_object, user_object, fake_data = [])
-# build_successful_received_fax_objects(id, quantity, from_number, to_number, fake_data = [])
-# build_failed_received_fax_objects(id, quantity, from_number, to_number, organization_object, user_object, fake_data = [])
-
-# This module is used to mimic the result of the multiple "list_faxes" (FaxLog.get_faxes) API get requests that are combined and 
-#   then filtered, resulting in nested arrays of fax objects that are then pushed into a new single array and sorted by date in 
-#   the "sort_faxes" FaxLog method.
-
 RSpec.describe FaxLog, type: :model do
 	include FakeApiResponse
 
@@ -33,7 +22,6 @@ RSpec.describe FaxLog, type: :model do
 	let! (:manager2) do 
 		User.create!(email: 'org_two_manager@aol.com', user_permission_attributes: { permission: UserPermission::MANAGER }, organization_id: org2.id, caller_id_number: fax_number4.fax_number)
 	end
-
 	let!(:user1) do 
 		User.create!(email: 'org_one_user1@aol.com', user_permission_attributes: { permission: UserPermission::USER }, caller_id_number: fax_number1.fax_number, organization_id: org1.id)
 	end
@@ -43,8 +31,7 @@ RSpec.describe FaxLog, type: :model do
 	let!(:user3) do 
 		User.create!(email: 'org_one_user3@aol.com', user_permission_attributes: { permission: UserPermission::USER }, caller_id_number: fax_number3.fax_number, organization_id: org1.id)
 	end
-
-	let!(:fake_data) { [] }
+	let!(:initial_fake_data) { [] }
 	let!(:raw_fake_data) { [] }
 
 	before(:each) do
@@ -60,7 +47,6 @@ RSpec.describe FaxLog, type: :model do
 
 
 	describe "the #build_options method" do
-
 		describe "the #add_start_time method" do
 			it "#add_start_time sets the start_time in the options hash to an RFC3339 time based on user input" do
 				filtered_params = { :start_time => "2018-09-02 8:58PM" }
@@ -195,11 +181,52 @@ RSpec.describe FaxLog, type: :model do
 				expect(options[:tag]).to eq({ :sender_email_fax_tag => user1.fax_tag })
 			end
 		end
+	end
+#### Methods and arguments below in FakeApiResponse module included above ####
 
-		describe "#format_faxes method" do
-			it "" do
+# build_successful_sent_fax_objects(id, quantity, caller_id_number, recipient_number, organization_object, user_object, fake_data = [])
+# build_failed_sent_fax_objects(id, quantity, caller_id_number, recipient_number, organization_object, user_object, fake_data = [])
+# build_successful_received_fax_objects(id, quantity, from_number, to_number, fake_data = [])
+# build_failed_received_fax_objects(id, quantity, from_number, to_number, organization_object, user_object, fake_data = [])
+
+# This module is used to mimic the result of the multiple "list_faxes" (FaxLog.get_faxes) API get requests that are combined and 
+#   then filtered, resulting in nested arrays of fax objects that are then pushed into a new single array and sorted by date in 
+#   the "sort_faxes" FaxLog method.
 
 
+# 'fake_data' variable is a previously defined empty array
+	describe "#format_faxes method" do
+		# org1 has 3 fax numbers
+		it "returns only faxes sent/received by a specific organization when requested (manager requesting their own organization's faxes)" do
+			statuses = %w[inprogress success failure queued all]
+
+			# mimic set_organization controller method
+			@organization = org1
+			# mimic set_fax_numbers controller method
+			@fax_numbers = {}
+			org1.fax_numbers.each { |fax_number_obj| FaxLog.create_fax_nums_hash(@fax_numbers, fax_number_obj) }
+			# mimic set_users controller method
+			@users = {}
+			criteria_array = org1.users.select { |user| user.user_permission }
+			criteria_array.each_with_index { |user_obj, index| FaxLog.create_users_hash(@users, user_obj, index) }
+
+			# 10 successful faxes sent from org1 using each fax_number, (sum of 30)
+			initial_fake_data << build_successful_sent_fax_objects(111111, 10, manager1.caller_id_number, org1.fax_numbers.first.fax_number, org1, manager1)
+			initial_fake_data << build_successful_sent_fax_objects(111121, 10, manager1.caller_id_number, org1.fax_numbers.second.fax_number, org1, manager1)
+			initial_fake_data << build_successful_sent_fax_objects(111131, 10, manager1.caller_id_number, org1.fax_numbers.third.fax_number, org1, manager1)
+
+			# 10 successful faxes received by each number within org1 from '+12223334444' (sum 30)
+
+			# 2 failed faxes from org1 using each number
+			initial_fake_data << build_failed_sent_fax_objects(111143, 2,  manager1.caller_id_number, org1.fax_numbers.first.fax_number, org1, manager1)
+			initial_fake_data << build_failed_sent_fax_objects(111145, 2,  manager1.caller_id_number, org1.fax_numbers.second.fax_number, org1, manager1)
+			initial_fake_data << build_failed_sent_fax_objects(111147, 2,  manager1.caller_id_number, org1.fax_numbers.third.fax_number, org1, manager1)
+
+			formatted_faxes = FaxLog.format_faxes(manager1, initial_fake_data, @organization, @fax_numbers, @users)
+			expect(formatted_faxes.class).to eq(Hash)
+			formatted_faxes.each do |fax_id_key, fax_obj_info_value|
+				expect(fax_obj_info_value['status']).to eq("Failure").or eq("Success")
+				expect(fax_obj_info_value['direction']).to eq("Sent").or eq("Received")
 			end
 		end
 	end
