@@ -45,7 +45,6 @@ RSpec.describe FaxLog, type: :model do
 		org2.update_attributes(manager_id: manager2.id)
 	end # before(:each)
 
-
 	describe "the #build_options method" do
 		describe "the #add_start_time method" do
 			it "#add_start_time sets the start_time in the options hash to an RFC3339 time based on user input" do
@@ -193,13 +192,9 @@ RSpec.describe FaxLog, type: :model do
 #   then filtered, resulting in nested arrays of fax objects that are then pushed into a new single array and sorted by date in 
 #   the "sort_faxes" FaxLog method.
 
-
 # 'fake_data' variable is a previously defined empty array
-	describe "#format_faxes method" do
-		# org1 has 3 fax numbers
-		it "returns only faxes sent/received by a specific organization when requested (manager requesting their own organization's faxes)" do
-			statuses = %w[inprogress success failure queued all]
-
+	describe "#format_faxes method as a manager" do
+		before(:each) do
 			# mimic set_organization controller method
 			@organization = org1
 			# mimic set_fax_numbers controller method
@@ -209,26 +204,103 @@ RSpec.describe FaxLog, type: :model do
 			@users = {}
 			criteria_array = org1.users.select { |user| user.user_permission }
 			criteria_array.each_with_index { |user_obj, index| FaxLog.create_users_hash(@users, user_obj, index) }
+		end
+
+		# org1 has 3 fax numbers
+		it "returns only faxes sent/received by a specific organization when requested (manager requesting their own organization's faxes)" do
+			statuses = %w[inprogress success failure queued all]
 
 			# 10 successful faxes sent from org1 using each fax_number, (sum of 30)
-			initial_fake_data << build_successful_sent_fax_objects(111111, 10, manager1.caller_id_number, org1.fax_numbers.first.fax_number, org1, manager1)
-			initial_fake_data << build_successful_sent_fax_objects(111121, 10, manager1.caller_id_number, org1.fax_numbers.second.fax_number, org1, manager1)
-			initial_fake_data << build_successful_sent_fax_objects(111131, 10, manager1.caller_id_number, org1.fax_numbers.third.fax_number, org1, manager1)
-
-			# 10 successful faxes received by each number within org1 from '+12223334444' (sum 30)
+			initial_fake_data << build_successful_sent_fax_objects(111111, 4, manager1.caller_id_number, org1.fax_numbers.first.fax_number, org1, manager1)
+			initial_fake_data << build_successful_sent_fax_objects(111121, 4, manager1.caller_id_number, org1.fax_numbers.second.fax_number, org1, manager1)
+			initial_fake_data << build_successful_sent_fax_objects(111131, 4, manager1.caller_id_number, org1.fax_numbers.third.fax_number, org1, manager1)
 
 			# 2 failed faxes from org1 using each number
 			initial_fake_data << build_failed_sent_fax_objects(111143, 2,  manager1.caller_id_number, org1.fax_numbers.first.fax_number, org1, manager1)
 			initial_fake_data << build_failed_sent_fax_objects(111145, 2,  manager1.caller_id_number, org1.fax_numbers.second.fax_number, org1, manager1)
 			initial_fake_data << build_failed_sent_fax_objects(111147, 2,  manager1.caller_id_number, org1.fax_numbers.third.fax_number, org1, manager1)
 
+			# 10 successful faxes received by each number within org1 from '+12223334444' (sum 30)
+			initial_fake_data << build_successful_received_fax_objects(111151, 4, '+12223334444', org1.fax_numbers.first.fax_number)
+			initial_fake_data << build_successful_received_fax_objects(111161, 4, '+12223334444', org1.fax_numbers.second.fax_number)
+			initial_fake_data << build_successful_received_fax_objects(111171, 4, '+12223334444', org1.fax_numbers.third.fax_number)
+
+			# 2 failed received faxes to each number in org1 sent from '+12223334444'
+			initial_fake_data << build_failed_received_fax_objects(111183, 2, '+12223334444', org1.fax_numbers.first.fax_number)
+			initial_fake_data << build_failed_received_fax_objects(111185, 2, '+12223334444', org1.fax_numbers.second.fax_number)
+			initial_fake_data << build_failed_received_fax_objects(111187, 2, '+12223334444', org1.fax_numbers.third.fax_number)
+
 			formatted_faxes = FaxLog.format_faxes(manager1, initial_fake_data, @organization, @fax_numbers, @users)
+
 			expect(formatted_faxes.class).to eq(Hash)
+			expect(formatted_faxes.keys.length).to eq(36)
+
 			formatted_faxes.each do |fax_id_key, fax_obj_info_value|
 				expect(fax_obj_info_value['status']).to eq("Failure").or eq("Success")
 				expect(fax_obj_info_value['direction']).to eq("Sent").or eq("Received")
 			end
 		end
+
+		it "the 'recipients' portion is set to 'multiple' if there is more than 1 recipient" do
+			initial_fake_data << build_successful_sent_fax_objects(111111, 1, manager1.caller_id_number, org1.fax_numbers.first.fax_number, org1, manager1)
+			# force the data to have multiple recipients
+			initial_fake_data[0][0]['recipients'] << {"phone_number"=>"+17738679999", "status"=>"success", "retry_count"=>0, "completed_at"=>(DateTime.now + 8), "bitrate"=>9600, "resolution"=>8040, "error_type"=>nil, "error_id"=>nil, "error_message"=>nil}
+			formatted_faxes = FaxLog.format_faxes(manager1, initial_fake_data, @organization, @fax_numbers, @users)
+			expect(formatted_faxes[111111]['to_number']).to eq("Multiple")
+		end
+	end
+
+	describe "format_faxes and associated methods when an admin is logged in" do
+		before(:each) do
+			@organizations = {}
+			Organization.all.each { |organization_obj| FaxLog.create_orgs_hash(@organizations, organization_obj) }
+			@fax_numbers = {}
+			numbers_from_db = FaxNumber.where.not(organization_id: nil)
+			numbers_from_db.each { |fax_number_obj| FaxLog.create_fax_nums_hash(@fax_numbers, fax_number_obj) }
+			@users = {}
+			criteria_array = User.includes([:organization, :user_permission]).all.select { |user| user.user_permission && user.organization }
+			criteria_array.each_with_index { |user_obj, index| FaxLog.create_users_hash_admin(@users, user_obj, index) }
+		end
+
+		it "an organization label is not used if a fax pre-dates the creation of the organization" do
+			initial_fake_data << build_successful_sent_fax_objects(111111, 2, manager1.caller_id_number, org1.fax_numbers.first.fax_number, org1, manager1)
+			initial_fake_data << build_successful_sent_fax_objects(111113, 1, manager1.caller_id_number, org1.fax_numbers.first.fax_number, org1, manager1)
+
+			# set date to pre-date the organization for first and last fake fax object
+			initial_fake_data[0][0]['created_at'] = (org1.created_at - 7)
+			initial_fake_data[1][0]['created_at'] = (org1.created_at - 7) # remember it's an array of arrays prior to the format_faxes method
+			formatted_faxes = FaxLog.format_faxes(admin, initial_fake_data, @organizations, @fax_numbers, @users)
+			expect(formatted_faxes[111111]['organization']).to be_nil
+			expect(formatted_faxes[111113]['organization']).to be_nil
+			expect(formatted_faxes[111112]['organization']).to eq('Org One')
+		end
+
+		it "filters only data for a specific fax number when asked" do
+			# +17738675301 is manager1's caller_id_number
+			@fax_numbers.each { |fax_num_key, fax_num_value| @fax_numbers.delete(fax_num_key) if fax_num_key != "+17738675301"}
+			tag_data = []
+
+			tag_data << build_successful_sent_fax_objects(111111, 1, manager2.caller_id_number, org2.fax_numbers.first.fax_number, org2, manager2)
+			tag_data << build_successful_sent_fax_objects(111112, 1, manager1.caller_id_number, org1.fax_numbers.first.fax_number, org1, manager1)
+			tag_data.flatten!
+
+			results = FaxLog.fax_obj_recipient_data_in_fax_numbers?(tag_data[0], @fax_numbers)	
+			expect(results).to be(false)
+			results = FaxLog.fax_obj_recipient_data_in_fax_numbers?(tag_data[1], @fax_numbers)
+			expect(results).to be(true)
+
+			results = FaxLog.sent_caller_id_in_fax_numbers?(tag_data[0], @fax_numbers)
+			expect(results).to be(false)
+			results = FaxLog.sent_caller_id_in_fax_numbers?(tag_data[1], @fax_numbers)
+			expect(results).to be(true)
+
+			results = FaxLog.filter_for_desired_fax_number_data(tag_data, @fax_numbers)
+			expect(results.length).to be(1)
+			expect(results.pop["id"]).to eq(111112)
+		end
+
+		it "filters only data for a specific user when asked" do
+			
+		end
 	end
 end
-

@@ -55,7 +55,7 @@ RSpec.describe FakeApiResponse, type: :model do
 	end
 
 	it "#build_failed_received_fax_objects imitates what the Phaxio gem returns" do
-		result = build_failed_received_fax_objects(82410268, 1, '+19895551999', '+15315557999', org1, manager1).pop
+		result = build_failed_received_fax_objects(82410268, 1, '+19895551999', '+15315557999').pop
 		expect(result['id']).to eq(82410268)
 		expect(result['direction']).to eq("received")
 		expect(result["num_pages"]).to eq(0)

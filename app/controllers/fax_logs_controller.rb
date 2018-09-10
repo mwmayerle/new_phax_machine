@@ -6,7 +6,7 @@ class FaxLogsController < ApplicationController
 	def index
 		if is_admin?
 			options = FaxLog.build_options(current_user, filtering_params, @organizations, @users)
-			initial_fax_data = FaxLog.get_faxes(current_user, options,)
+			initial_fax_data = FaxLog.get_faxes(current_user, options)
 			FaxLog.add_all_attribute_to_hashes( [@fax_numbers, @organizations] )
 			@sorted_faxes = FaxLog.format_faxes(current_user, initial_fax_data, @organizations, @fax_numbers, @users)
 		else

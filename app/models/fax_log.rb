@@ -46,10 +46,7 @@ class FaxLog < ApplicationRecord
 					per_page: options[:per_page],
 					status: options[:status]
 				)
-
-				new_data = tag_data.raw_data.select do |fax_object|
-					fax_obj_recipient_data_in_fax_numbers?(fax_object, fax_numbers) || sent_caller_id_in_fax_numbers?(fax_object, fax_numbers)
-				end
+				new_data = filter_for_desired_fax_number_data(tag_data.raw_data, fax_numbers)
 				fax_data.push(new_data)
 
 				# Then search for faxes using each fax_number associated with the Organization
@@ -77,6 +74,12 @@ class FaxLog < ApplicationRecord
 				end
 			end
 			fax_data
+		end
+
+		def filter_for_desired_fax_number_data(tag_data, fax_numbers)
+			tag_data.select do |fax_object|
+				fax_obj_recipient_data_in_fax_numbers?(fax_object, fax_numbers) || sent_caller_id_in_fax_numbers?(fax_object, fax_numbers)
+			end
 		end
 
 		def filter_faxes_by_fax_number(options, current_data, fax_numbers)
@@ -122,14 +125,14 @@ class FaxLog < ApplicationRecord
 				# end
 				###############################################################################
 					
-					if is_admin?(current_user) # Checks to make sure that the fax object existed after the organization was created
+					# if is_admin?(current_user) # Checks to make sure that the fax object existed after the organization was created
 						if fax_numbers[fax_object['to_number']] && fax_object_is_younger?(fax_object['created_at'], fax_numbers[fax_object['to_number']]['org_created_at'])
 					# NOTE 'label' on the line below is the organization the fax number is associated with. See 'created_fax_nums_hash' method
 							fax_data[fax_object['id']]['organization'] = fax_numbers[fax_object['to_number']]['label']
 						else
 							fax_data[fax_object['id']]['organization'] = "N/A"
 						end
-					end
+					# end
 
 					#### ADD soft-deleted orgs in place of N/A
 
@@ -181,7 +184,7 @@ class FaxLog < ApplicationRecord
 			fax_object['direction'] == 'sent' && fax_numbers.keys.include?(fax_object['caller_id'])
 		end
 
-		################# build_options methods ################# 
+################# build_options methods ################# 
 
 		def add_start_time(input_time)
 			# https://stackoverflow.com/questions/5905861/how-do-i-add-two-weeks-to-time-now
@@ -220,15 +223,7 @@ class FaxLog < ApplicationRecord
 			options[:tag] = { :sender_email_fax_tag => current_user.fax_tag }
 		end
 
-		#########################
-
-		def fax_object_is_younger?(fax_object_timestamp, comparison_obj_timestamp)
-			Time.at(fax_object_timestamp.to_time) > Time.at(comparison_obj_timestamp.to_time)
-		end
-
-		def format_initial_fax_data_time(time)
-			time.to_time.strftime("%I:%M:%S%P - %m/%d/%y")
-		end
+############################### format_faxes methods ###################################
 
 		def sort_faxes(initial_fax_data, all_faxes = [])
 			# The initial_fax_data arg is an array of arrays at this line, so we sort it prior to making a hash
@@ -239,6 +234,16 @@ class FaxLog < ApplicationRecord
 			end
 			all_faxes.sort_by { |fax| fax['created_at'] }.reverse!
 		end
+
+		def fax_object_is_younger?(fax_object_timestamp, comparison_obj_timestamp)
+			Time.at(fax_object_timestamp.to_time) > Time.at(comparison_obj_timestamp.to_time)
+		end
+
+		def format_initial_fax_data_time(time)
+			time.to_time.strftime("%I:%M:%S%P - %m/%d/%y")
+		end
+
+################# setting data prior to get_faxes and format_faxes ################# 
 
 		def create_orgs_hash(organizations_hash, organization_object)
 			organizations_hash[organization_object.fax_tag] = {'label' => organization_object.label }
@@ -271,6 +276,8 @@ class FaxLog < ApplicationRecord
 		def add_all_attribute_to_hashes(hashes) # hashes is an array [@fax_numbers, @users]
 			hashes.each { |hash_obj| hash_obj['all'] = { 'label' => 'all' } }
 		end
+
+################## Permission Methods #######################################
 
 		def is_user?(current_user)
 			current_user.user_permission.permission == UserPermission::USER

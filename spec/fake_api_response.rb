@@ -27,7 +27,7 @@ module FakeApiResponse
 		fake_data
 	end
 
-	def build_failed_received_fax_objects(id, quantity, from_number, to_number, organization_object, user_object, fake_data = [])
+	def build_failed_received_fax_objects(id, quantity, from_number, to_number, fake_data = [])
 		quantity.times do
 			obj = {'id' => id, 'direction' => 'received', 'num_pages' => 0, 'status' => 'failure', 'is_test' => false, 'created_at' => (DateTime.now + 7), 'cost' => 0, 'caller_id' => nil, 'from_number' => from_number, 'completed_at' => (DateTime.now + 8), 'tags' => {}, "recipients"=>nil, "to_number"=>to_number, "error_id"=>132, "error_type"=>"faxError", "error_message"=>"No fax tone detected"}
 			fake_data.push(obj)
