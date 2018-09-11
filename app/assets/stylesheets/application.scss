@@ -6,8 +6,15 @@ $warning: #7EA16B;
 @import 'bootstrap';
 @import 'navbar';
 @import 'faxes';
-@import 'jquery-ui/datepicker';
 @import 'flatpickr';
+
+.page-item.active .page-link {
+	background-color: #2C4251;
+}
+
+.page-item .page-link {
+	color: #2C4251;
+}
 
 #fax-number-table-title {
 	margin-bottom: 5px;

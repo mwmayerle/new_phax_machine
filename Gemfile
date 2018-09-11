@@ -41,7 +41,6 @@ gem 'dotenv-rails'
 
 # Prettying up
 gem 'jquery-rails'
-gem 'jquery-ui-rails'
 gem 'bootstrap'
 gem 'flatpickr'
 
