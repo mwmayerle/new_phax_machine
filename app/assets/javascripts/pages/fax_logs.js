@@ -5,6 +5,7 @@ phaxMachine.pages['fax-logs'] = {
 		organizationOptions = $("#org-select option"),
 		userOptions = $("#user-select option"),
 		faxNumberOptions = $("#fax-select option"),
+		currentPageNumber = 1;
 
 		$("#load-icon").hide();
 
@@ -122,7 +123,7 @@ function buildTableRows(faxData, pageNumberDisplay) {
 function changeStatusColor() {
 	$.each($('.status'), function() { // $(this) is the entire <td> tag within the $.each()
 		switch($(this).text()) {
-			case 'Success': // These statuses are capitalized unlike the normal API response b/c Ruby's 'titleize() is used'
+			case 'Success': // These statuses are capitalized unlike the normal API response b/c Ruby's 'titleize() is used in FaxLog model'
 				$(this).prepend(`
 					<span style='color:limegreen'>&nbsp;<i style='font-size:10px' class="fa fa-fw fa-circle"></i>&nbsp;</span>
 				`);
@@ -168,13 +169,27 @@ function createSelectTagMultipleConditionals(originalTagData, tagBeingRestored, 
 function paginateFaxes(apiResponse) {
 	let pageNumber = 0;
 	let counter = 1;
+	let $pageNumberList = $("#pagination-ul");
+	if (currentPageNumber === 1) {
+		$pageNumberList.append(`<li class="page-item disabled"><a class="page-link" href="#"><<</a></li>`);
+	} else {
+		$pageNumberList.append(`<li class="page-item"><a class="page-link" href="#"><<</a></li>`);
+	}
+
 	Object.keys(apiResponse).forEach((key, counter) => {
 		if (counter % 20 === 0) { 
 			pageNumber += 1;
-			$("#pagination-ul").append(`
-				<li class="page-item page${pageNumber}"><a class="page-link" href="#">${pageNumber}</a></li>
-			`)
+			if (pageNumber === currentPageNumber) {
+				$pageNumberList.append(`<li class="page-item active"><a class="page-link" href="#">${pageNumber}</a></li>`);
+			} else {
+				$pageNumberList.append(`<li class="page-item"><a class="page-link" href="#">${pageNumber}</a></li>`);
+			}
 		}
 		apiResponse[key]['page'] = pageNumber;
-	})
+	});
+	if (pageNumber === currentPageNumber) {
+		$pageNumberList.append(`<li class="page-item disabled"><a class="page-link" href="#">>></a></li>`);
+	} else {
+		$pageNumberList.append(`<li class="page-item"><a class="page-link" href="#">>></a></li>`);
+	}
 };
