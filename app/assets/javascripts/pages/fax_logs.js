@@ -10,6 +10,7 @@ phaxMachine.pages['fax-logs'] = {
 
 		$("#filter-button").on('click', function(event) {
 			$("tbody").empty();
+			$("#pagination-ul").empty();
 			$("#load-icon").show();
 		});
 
@@ -41,6 +42,7 @@ phaxMachine.pages['fax-logs'] = {
 			 	$("#fax-select option").first().prop('selected', 'selected');
 			}
 		});
+
 
 		$("#fax-select").change((event) => {
 			event.stopPropagation();
@@ -87,30 +89,32 @@ phaxMachine.pages['fax-logs'] = {
 	}
 };
 
-function buildTableRows(faxData) {
+function buildTableRows(faxData, pageNumberDisplay) {
 	let sentIcon = `<i style="color:green" class="fa fa-fw fa-arrow-circle-right" aria-hidden="true"></i>`;
 	let receivedIcon = `<i style="color:darkblue" class="fa fa-fw fa-arrow-circle-left" aria-hidden="true"></i>`;
 
 	Object.keys(faxData).forEach((faxDatum) => {
-		if (faxData[faxDatum].sent_by === undefined) { faxData[faxDatum].sent_by = ""; };
-		let heading = `<tr>
-			<td class="text-center">
-					${ (faxData[faxDatum].direction === "Sent") ? sentIcon : receivedIcon }
-			</td>`;
+		if (faxData[faxDatum]['page'] === pageNumberDisplay) {
+			if (faxData[faxDatum].sent_by === undefined) { faxData[faxDatum].sent_by = ""; };
+			let heading = `<tr>
+				<td class="text-center">
+						${ (faxData[faxDatum].direction === "Sent") ? sentIcon : receivedIcon }
+				</td>`;
 
-		// Admin has 8 <th>, Manager has 7 <th>, User has only 6. These if blocks add/remove data for these permissions
-		if ($('#fax-log-table th').length === 8) { heading = heading.concat('', `<td class="text-center">${faxData[faxDatum].organization}</td>`); }
-		if ($('#fax-log-table th').length > 6) { heading = heading.concat('', `<td class="text-center">${faxData[faxDatum].sent_by}</td>`); }
+			// Admin has 8 <th>, Manager has 7 <th>, User has only 6. These if blocks add/remove data for these permissions
+			if ($('#fax-log-table th').length === 8) { heading = heading.concat('', `<td class="text-center">${faxData[faxDatum].organization}</td>`); }
+			if ($('#fax-log-table th').length > 6) { heading = heading.concat('', `<td class="text-center">${faxData[faxDatum].sent_by}</td>`); }
 
-		heading = heading.concat('', `
-			<td class="text-center">${faxData[faxDatum].from_number}</td>
-			<td class="text-center">${faxData[faxDatum].to_number}</td>
-			<td class="status">${faxData[faxDatum].status}</td>
-			<td class="text-center">${faxData[faxDatum].created_at}</td>
-			<td class="text-center"><i class="fa fa-fw fa-download" aria-hidden="true"></i></td>
-		</tr>
-		`);
-		$("tbody").prepend(heading);
+			heading = heading.concat('', `
+				<td class="text-center">${faxData[faxDatum].from_number}</td>
+				<td class="text-center">${faxData[faxDatum].to_number}</td>
+				<td class="status">${faxData[faxDatum].status}</td>
+				<td class="text-center">${faxData[faxDatum].created_at}</td>
+				<td class="text-center"><i class="fa fa-fw fa-download" aria-hidden="true"></i></td>
+			</tr>
+			`);
+			$("tbody").prepend(heading);
+		}
 	});
 	changeStatusColor();
 };
@@ -159,4 +163,18 @@ function createSelectTagMultipleConditionals(originalTagData, tagBeingRestored, 
 			if ($(this).hasClass(addIfClass)) { tagBeingRestored.append($(this)); }
 		});
 	});
+};
+
+function paginateFaxes(apiResponse) {
+	let pageNumber = 0;
+	let counter = 1;
+	Object.keys(apiResponse).forEach((key, counter) => {
+		if (counter % 20 === 0) { 
+			pageNumber += 1;
+			$("#pagination-ul").append(`
+				<li class="page-item page${pageNumber}"><a class="page-link" href="#">${pageNumber}</a></li>
+			`)
+		}
+		apiResponse[key]['page'] = pageNumber;
+	})
 };

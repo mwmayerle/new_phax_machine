@@ -248,6 +248,21 @@ RSpec.describe FaxLog, type: :model do
 			formatted_faxes = FaxLog.format_faxes(manager1, initial_fake_data, @organization, @fax_numbers, @users)
 			expect(formatted_faxes[111111]['to_number']).to eq("Multiple")
 		end
+
+		it "filters only data for a specific user when asked" do
+			filtered_params = { :user => user3.email }
+			@users = {0=>{"email"=>"org_one_user3@aol.com", "caller_id_number"=>user3.caller_id_number, "user_created_at"=> (DateTime.now + 7), "fax_tag"=>user3.fax_tag}}
+
+			tag_data = []
+			tag_data << build_successful_sent_fax_objects(111111, 1, fax_number3.fax_number, org2.fax_numbers.first.fax_number, org1, manager1)
+			tag_data << build_successful_sent_fax_objects(111112, 1, manager1.caller_id_number, org1.fax_numbers.first.fax_number, org1, manager1)
+			tag_data.flatten!
+
+			options = FaxLog.build_options(manager1, filtered_params, @organization, @users)
+			filtered_data = FaxLog.filter_faxes_by_user(options, tag_data, @users)
+			expect(filtered_data.length).to eq(1)
+			expect(filtered_data[0]["id"]).to eq(111111)
+		end
 	end
 
 	describe "format_faxes and associated methods when an admin is logged in" do
@@ -297,10 +312,6 @@ RSpec.describe FaxLog, type: :model do
 			results = FaxLog.filter_for_desired_fax_number_data(tag_data, @fax_numbers)
 			expect(results.length).to be(1)
 			expect(results.pop["id"]).to eq(111112)
-		end
-
-		it "filters only data for a specific user when asked" do
-			
 		end
 	end
 end

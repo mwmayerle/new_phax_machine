@@ -15,6 +15,9 @@ RSpec.feature "Fax Number Pages", :type => :feature do
 	let!(:user) do 
 		User.create(email: 'matt@phaxio.com', user_permission_attributes: { permission: UserPermission::USER }, caller_id_number: '17738675309', organization_id: org.id)
 	end
+	let!(:user2) do 
+		User.create!(email: 'not_fully_registered@phaxio.com', caller_id_number: '+17738675366', organization_id: org.id)
+	end
 	let!(:fax_number) { FaxNumber.create!(fax_number: '17738675309', organization_id: org.id) }
 
 	before(:each) do 

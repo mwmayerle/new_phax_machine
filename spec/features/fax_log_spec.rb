@@ -19,6 +19,9 @@ RSpec.feature "Fax Logs", :type => :feature do
 	let!(:user3) do 
 		User.create!(email: 'matt3@phaxio.com', user_permission_attributes: { permission: UserPermission::USER }, caller_id_number: '+17738675309', organization_id: org.id)
 	end
+	let!(:user4) do 
+		User.create!(email: 'not_fully_registered@phaxio.com', caller_id_number: '+17738675366', organization_id: org.id)
+	end
 	let!(:fax_number1) { FaxNumber.create!(fax_number: '+17738675307', organization_id: org.id) }
 	let!(:fax_number2) { FaxNumber.create!(fax_number: '+17738675308', organization_id: org.id, label: "OG Label", manager_label: "Manager-Set Label") }
 	let!(:fax_number3) { FaxNumber.create!(fax_number: '+17738675309', organization_id: org2.id) }
@@ -29,6 +32,7 @@ RSpec.feature "Fax Logs", :type => :feature do
 		org2.update_attributes(manager_id: manager2.id)
 		org.users << user1
 		org.users << user2
+		org.users << user4
 		user1.fax_numbers << fax_number1
 		user1.fax_numbers << fax_number2
 		user2.fax_numbers << fax_number1
@@ -62,8 +66,7 @@ RSpec.feature "Fax Logs", :type => :feature do
 		it "when logged in as a manager" do
 			manager_fax_numbers = FaxNumber.where(organization_id: manager.organization.id)
 			fax_nums_array = manager_fax_numbers.map { |fax_num| FaxNumber.format_pretty_fax_number(fax_num.fax_number) }.push("All")
-			users_array = User.where(organization_id: manager.organization.id).map { |user| user.email }.push("All")
-
+			users_array = User.where(organization_id: manager.organization.id).select { |user| user.user_permission }.map { |user| user.email }.push("All")
 			login_as(manager)
 			visit(fax_logs_path)
 			expect(page).not_to have_select("fax_log[organization]") # admin only

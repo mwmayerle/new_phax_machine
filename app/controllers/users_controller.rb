@@ -62,7 +62,7 @@ class UsersController < ApplicationController
 		end
 
 		def set_user
-			@user ||= User.includes(:user_permission).with_deleted.includes(:user_permission).find(params[:id])
+			@user ||= User.includes(:user_permission).with_deleted.find(params[:id])
 		end
 
 		def user_params
@@ -80,8 +80,4 @@ class UsersController < ApplicationController
 				redirect_to root_path
 			end
 		end
-		
-		# def adjust_manager(organization_id, id)
-		# 	Organization.where(id: user.organization_id).update_attributes(manager_id: nil)
-		# end
 end

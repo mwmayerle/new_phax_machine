@@ -1,5 +1,20 @@
-var response = JSON.parse('<%= @sorted_faxes.to_json.html_safe %>');
-if (response) {
+var apiResponse = JSON.parse('<%= @sorted_faxes.to_json.html_safe %>');
+var pageNumberDisplay = 1;
+if (apiResponse) {
 	$("#load-icon").hide();
-	buildTableRows(response);
+	paginateFaxes(apiResponse);
+	buildTableRows(apiResponse, pageNumberDisplay);
+	pageNumberClick();
+	console.log(apiResponse)
 }
+
+function pageNumberClick() {
+	$("#pagination-ul").on('click', $(".page-item"), (event) => {
+		console.log('clicked!')
+		$("tbody").empty();
+		$("#pagination-ul").empty();
+		buildTableRows(apiResponse, parseInt($(event.target).text()));
+		paginateFaxes(apiResponse);
+	});
+}
+
