@@ -1,3 +1,7 @@
+/////////////////////////////////////////////////////////////////////////////////
+//  SEE CREATE.JS.ERB IN THE FAX_LOGS VIEW FOLDER FOR ADDITIONAL JS FUNCTIONS  //
+/////////////////////////////////////////////////////////////////////////////////
+
 phaxMachine.pages['fax-logs'] = {
 
 	render: function() {
@@ -6,8 +10,10 @@ phaxMachine.pages['fax-logs'] = {
 		userOptions = $("#user-select option"),
 		faxNumberOptions = $("#fax-select option"),
 		currentPageNumber = 1;
-		backButtonText = '<<';
-		forwardButtonText = '>>';
+		backButtonText = '<';
+		forwardButtonText = '>';
+		endButtonText = '>>';
+		beginningButtonText = '<<';
 
 		$("#load-icon").hide();
 
@@ -172,7 +178,9 @@ function paginateFaxes(apiResponse) {
 	let pageNumber = 0;
 	let counter = 1;
 	let $pageNumberList = $("#pagination-ul");
-	addBackArrow($pageNumberList, currentPageNumber);
+	
+	addPreviousSymbol($pageNumberList, currentPageNumber, beginningButtonText);
+	addPreviousSymbol($pageNumberList, currentPageNumber, backButtonText);
 
 	Object.keys(apiResponse).forEach((key, counter) => {
 		if (counter % 20 === 0) { 
@@ -181,29 +189,30 @@ function paginateFaxes(apiResponse) {
 		}
 		apiResponse[key]['page'] = pageNumber;
 	});
-	addForwardArrow($pageNumberList, pageNumber, currentPageNumber);
-};
-
-function addBackArrow($pageNumberList, currentPageNumber) {
-	if (currentPageNumber === 1) {
-		$pageNumberList.append(`<li class="page-item disabled"><a class="page-link" href="#">${backButtonText}</a></li>`);
-	} else {
-		$pageNumberList.append(`<li class="page-item"><a class="page-link" href="#">${backButtonText}</a></li>`);
-	}
-};
-
-function addForwardArrow($pageNumberList, pageNumber, currentPageNumber) {
-	if (pageNumber === currentPageNumber) {
-		$pageNumberList.append(`<li class="page-item disabled"><a class="page-link" href="#">${forwardButtonText}</a></li>`);
-	} else {
-		$pageNumberList.append(`<li class="page-item"><a class="page-link" href="#">${forwardButtonText}</a></li>`);
-	}
+	addNextSymbol($pageNumberList, pageNumber, currentPageNumber, forwardButtonText);
+	addNextSymbol($pageNumberList, pageNumber, currentPageNumber, endButtonText);
 };
 
 function addPageNumber($pageNumberList, pageNumber, currentPageNumber) {
 	if (pageNumber === currentPageNumber) {
-		$pageNumberList.append(`<li class="page-item active"><a class="page-link" href="#">${pageNumber}</a></li>`);
+		$pageNumberList.append(`<li id="${pageNumber}" class="page-item active"><a class="page-link" href="#">${pageNumber}</a></li>`);
 	} else {
-		$pageNumberList.append(`<li class="page-item"><a class="page-link" href="#">${pageNumber}</a></li>`);
+		$pageNumberList.append(`<li id="${pageNumber}" class="page-item"><a class="page-link" href="#">${pageNumber}</a></li>`);
+	}
+};
+
+function addPreviousSymbol($pageNumberList, currentPageNumber, symbolToAdd) {
+	if (currentPageNumber === 1) {
+		$pageNumberList.append(`<li class="page-item disabled"><a class="page-link" href="#">${symbolToAdd}</a></li>`);
+	} else {
+		$pageNumberList.append(`<li class="page-item"><a class="page-link" href="#">${symbolToAdd}</a></li>`);
+	}
+};
+
+function addNextSymbol($pageNumberList, pageNumber, currentPageNumber, symbolToAdd) {
+	if (pageNumber === currentPageNumber) {
+		$pageNumberList.append(`<li class="page-item disabled"><a class="page-link" href="#">${symbolToAdd}</a></li>`);
+	} else {
+		$pageNumberList.append(`<li class="page-item"><a class="page-link" href="#">${symbolToAdd}</a></li>`);
 	}
 };
