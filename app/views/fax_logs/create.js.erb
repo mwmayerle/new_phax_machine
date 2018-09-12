@@ -1,6 +1,8 @@
 var apiResponse = JSON.parse('<%= @sorted_faxes.to_json.html_safe %>');
 var pageNumberDisplay = 1;
+
 if (apiResponse) {
+	currentPageNumber = 1;
 	$("#load-icon").hide();
 	paginateFaxes(apiResponse);
 	buildTableRows(apiResponse, pageNumberDisplay);
@@ -10,30 +12,32 @@ if (apiResponse) {
 function pageNumberClick() {
 	$("#pagination-ul").on('click', $(".page-item"), (event) => {
 		if ($(event.target).hasClass('page-link')) {
-			let $eventTargetText = $(event.target).text();
-
-			switch($eventTargetText) {
-				case backButtonText:
-					currentPageNumber -= 1;
-					break;
-				case forwardButtonText:
-					currentPageNumber += 1;
-					break;
-				case beginningButtonText:
-					currentPageNumber = 1;
-					break;
-				case endButtonText:
-					currentPageNumber = parseInt($("#pagination-ul li").prev().prev().last().attr('id'));
-					break;
-				default:
-					currentPageNumber = parseInt($eventTargetText);
-					break;
-			}
-
+			currentPageNumber = setCurrentPageNumber($(event.target).text(), currentPageNumber);
 			$("tbody").empty();
 			$("#pagination-ul").empty();
 			buildTableRows(apiResponse, currentPageNumber);
 			paginateFaxes(apiResponse);
 		}
 	});
-}
+};
+
+function setCurrentPageNumber(eventTargetText, currentPageNumber) {
+		switch(eventTargetText) {
+		case backButtonText:
+			currentPageNumber -= 1;
+			break;
+		case forwardButtonText:
+			currentPageNumber += 1;
+			break;
+		case beginningButtonText:
+			currentPageNumber = 1;
+			break;
+		case endButtonText:
+			currentPageNumber = parseInt($("#pagination-ul li").prev().prev().last().attr('id'));
+			break;
+		default:
+			currentPageNumber = parseInt(eventTargetText);
+			break;
+	}
+	return currentPageNumber;
+};

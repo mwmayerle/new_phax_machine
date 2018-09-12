@@ -4,13 +4,12 @@ class FaxLogsController < ApplicationController
 
 	# it would be good to Jquery the default dates on page load into the calendar
 	def index
+		options = FaxLog.build_options(current_user, filtering_params, @organizations, @users)
 		if is_admin?
-			options = FaxLog.build_options(current_user, filtering_params, @organizations, @users)
 			initial_fax_data = FaxLog.get_faxes(current_user, options)
 			FaxLog.add_all_attribute_to_hashes( [@fax_numbers, @organizations] )
 			@sorted_faxes = FaxLog.format_faxes(current_user, initial_fax_data, @organizations, @fax_numbers, @users)
 		else
-			options = FaxLog.build_options(current_user, filtering_params, @organization, @users)
 			options[:tag] = is_manager? ? { sender_organization_fax_tag: @organization.fax_tag } : { sender_email_fax_tag: current_user.fax_tag }
 			initial_fax_data = FaxLog.get_faxes(current_user, options, @users, @fax_numbers)
 			FaxLog.add_all_attribute_to_hashes( [@users, @fax_numbers] )
@@ -20,7 +19,7 @@ class FaxLogsController < ApplicationController
 
 	# create method in this controller is for user-designated filtering
 	def create
-		options = FaxLog.build_options(current_user, filtering_params, @organization, @users)
+		options = FaxLog.build_options(current_user, filtering_params, @organizations, @users)
 		options[:per_page] = 1000
 		initial_fax_data = FaxLog.get_faxes(current_user, options, @users, @fax_numbers)
 
@@ -65,9 +64,9 @@ class FaxLogsController < ApplicationController
 				end
 			elsif is_manager?
 				# Eager load associated users if manager, otherwise don't if a generic user is looking 
-				@organization = Organization.includes(:users).find(current_user.organization_id)
+				@organizations = Organization.includes(:users).find(current_user.organization_id)
 			else
-				@organization = Organization.find(current_user.organization_id)
+				@organizations = Organization.find(current_user.organization_id)
 			end
 		end
 

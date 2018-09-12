@@ -52,7 +52,6 @@ phaxMachine.pages['fax-logs'] = {
 			}
 		});
 
-
 		$("#fax-select").change((event) => {
 			event.stopPropagation();
 
@@ -104,17 +103,19 @@ function buildTableRows(faxData, pageNumberDisplay) {
 
 	Object.keys(faxData).forEach((faxDatum) => {
 		if (faxData[faxDatum]['page'] === pageNumberDisplay) {
+
+			if (faxData[faxDatum].organization === undefined) { faxData[faxDatum].organization = "N/A"; };
 			if (faxData[faxDatum].sent_by === undefined) { faxData[faxDatum].sent_by = ""; };
-			let heading = `<tr>
-				<td class="text-center">
-						${ (faxData[faxDatum].direction === "Sent") ? sentIcon : receivedIcon }
-				</td>`;
+			if (faxData[faxDatum].from_number === undefined) { faxData[faxDatum].from_number = "Released Number"; };
+			if (faxData[faxDatum].to_number === undefined) { faxData[faxDatum].to_number = "Released Number"; };
 
-			// Admin has 8 <th>, Manager has 7 <th>, User has only 6. These if blocks add/remove data for these permissions
-			if ($('#fax-log-table th').length === 8) { heading = heading.concat('', `<td class="text-center">${faxData[faxDatum].organization}</td>`); }
-			if ($('#fax-log-table th').length > 6) { heading = heading.concat('', `<td class="text-center">${faxData[faxDatum].sent_by}</td>`); }
+			let head = `<tr>
+				<td class="text-center"> ${ (faxData[faxDatum].direction === "Sent") ? sentIcon : receivedIcon } </td>`;
+			// Admin has 8 <th>, Manager has 7 <th>, User has only 6. These if blocks add/remove data for these permission levels
+				if ($('#fax-log-table th').length === 8) { head = head.concat('', `<td class="text-center">${faxData[faxDatum].organization}</td>`); }
+				if ($('#fax-log-table th').length > 6) { head = head.concat('', `<td class="text-center">${faxData[faxDatum].sent_by}</td>`); }
 
-			heading = heading.concat('', `
+			head = head.concat('', `
 				<td class="text-center">${faxData[faxDatum].from_number}</td>
 				<td class="text-center">${faxData[faxDatum].to_number}</td>
 				<td class="status">${faxData[faxDatum].status}</td>
@@ -122,7 +123,7 @@ function buildTableRows(faxData, pageNumberDisplay) {
 				<td class="text-center"><i class="fa fa-fw fa-download" aria-hidden="true"></i></td>
 			</tr>
 			`);
-			$("tbody").prepend(heading);
+			$("tbody").prepend(head);
 		}
 	});
 	changeStatusColor();
@@ -178,17 +179,18 @@ function paginateFaxes(apiResponse) {
 	let pageNumber = 0;
 	let counter = 1;
 	let $pageNumberList = $("#pagination-ul");
-	
+
 	addPreviousSymbol($pageNumberList, currentPageNumber, beginningButtonText);
 	addPreviousSymbol($pageNumberList, currentPageNumber, backButtonText);
 
 	Object.keys(apiResponse).forEach((key, counter) => {
 		if (counter % 20 === 0) { 
 			pageNumber += 1;
-			addPageNumber($pageNumberList, pageNumber, currentPageNumber)
+			addPageNumber($pageNumberList, pageNumber, currentPageNumber);
 		}
 		apiResponse[key]['page'] = pageNumber;
 	});
+
 	addNextSymbol($pageNumberList, pageNumber, currentPageNumber, forwardButtonText);
 	addNextSymbol($pageNumberList, pageNumber, currentPageNumber, endButtonText);
 };
