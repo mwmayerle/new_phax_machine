@@ -1,5 +1,43 @@
-var response = JSON.parse('<%= @sorted_faxes.to_json.html_safe %>');
-if (response) {
+var apiResponse = JSON.parse('<%= @sorted_faxes.to_json.html_safe %>');
+var pageNumberDisplay = 1;
+
+if (apiResponse) {
+	currentPageNumber = 1;
 	$("#load-icon").hide();
-	buildTableRows(response);
+	paginateFaxes(apiResponse);
+	buildTableRows(apiResponse, pageNumberDisplay);
+	pageNumberClick();
 }
+
+function pageNumberClick() {
+	$("#pagination-ul").on('click', $(".page-item"), (event) => {
+		if ($(event.target).hasClass('page-link')) {
+			currentPageNumber = setCurrentPageNumber($(event.target).text(), currentPageNumber);
+			$("tbody").empty();
+			$("#pagination-ul").empty();
+			buildTableRows(apiResponse, currentPageNumber);
+			paginateFaxes(apiResponse);
+		}
+	});
+};
+
+function setCurrentPageNumber(eventTargetText, currentPageNumber) {
+		switch(eventTargetText) {
+		case backButtonText:
+			currentPageNumber -= 1;
+			break;
+		case forwardButtonText:
+			currentPageNumber += 1;
+			break;
+		case beginningButtonText:
+			currentPageNumber = 1;
+			break;
+		case endButtonText:
+			currentPageNumber = parseInt($("#pagination-ul li").prev().prev().last().attr('id'));
+			break;
+		default:
+			currentPageNumber = parseInt(eventTargetText);
+			break;
+	}
+	return currentPageNumber;
+};

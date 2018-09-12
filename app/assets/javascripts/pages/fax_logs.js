@@ -1,3 +1,7 @@
+/////////////////////////////////////////////////////////////////////////////////
+//  SEE CREATE.JS.ERB IN THE FAX_LOGS VIEW FOLDER FOR ADDITIONAL JS FUNCTIONS  //
+/////////////////////////////////////////////////////////////////////////////////
+
 phaxMachine.pages['fax-logs'] = {
 
 	render: function() {
@@ -5,21 +9,28 @@ phaxMachine.pages['fax-logs'] = {
 		organizationOptions = $("#org-select option"),
 		userOptions = $("#user-select option"),
 		faxNumberOptions = $("#fax-select option"),
+		currentPageNumber = 1;
+		backButtonText = '<';
+		forwardButtonText = '>';
+		endButtonText = '>>';
+		beginningButtonText = '<<';
 
 		$("#load-icon").hide();
 
 		$("#filter-button").on('click', function(event) {
 			$("tbody").empty();
+			$("#pagination-ul").empty();
 			$("#load-icon").show();
 		});
 
-		$('.datepicker-inline').datepicker({
-	    dateFormat: 'mm-dd-yy',
-	    endDate: '+0d',
-	    autoclose: true,
-	    maxDate: (0),
-	  }),
-		$('#end-date-field').val(getTodaysFormattedDate());
+	 $('.datepicker-inline').flatpickr({
+    	enableTime: true,
+    	dateFormat: 'Y-m-d h:iK',
+    	altInput: true,
+    	altFormat: 'm-d-Y h:i K',
+	    maxDate: new Date(),
+	    autoclose: true
+		});
 
 		$("#org-select").change((event) => {
 			event.stopPropagation();
@@ -86,44 +97,34 @@ phaxMachine.pages['fax-logs'] = {
 	}
 };
 
-function getTodaysFormattedDate () {
-	let today = new Date();
-	let dd = today.getDate();
-	let mm = today.getMonth() + 1; // January is 0
-	let yyyy = today.getFullYear();
-
-	if (dd<10) { dd = `0${dd}` }
-	if (mm<10) { mm = `0${mm}` } 
-
-	return `${mm}-${dd}-${yyyy}`;
-};
-
-function buildTableRows(faxData) {
+function buildTableRows(faxData, pageNumberDisplay) {
 	let sentIcon = `<i style="color:green" class="fa fa-fw fa-arrow-circle-right" aria-hidden="true"></i>`;
 	let receivedIcon = `<i style="color:darkblue" class="fa fa-fw fa-arrow-circle-left" aria-hidden="true"></i>`;
 
 	Object.keys(faxData).forEach((faxDatum) => {
-		if (faxData[faxDatum].sent_by === undefined) { faxData[faxDatum].sent_by = ""; };
-		let heading = `<tr>
-			<td class="text-center">
-					${ (faxData[faxDatum].direction === "Sent") ? sentIcon : receivedIcon }
-			</td>`;
-			//<td class="text-center">${faxDatum}</td>`; //remove this line to kill IDs
-			//it will concatenate the rest of the string on later to close the <tr>
+		if (faxData[faxDatum]['page'] === pageNumberDisplay) {
 
-		// Admin has 8 <th>, Manager has 7 <th>, User has only 6. These if blocks add/remove data for these permissions
-		if ($('#fax-log-table th').length === 8) { heading = heading.concat('', `<td class="text-center">${faxData[faxDatum].organization}</td>`); }
-		if ($('#fax-log-table th').length > 6) { heading = heading.concat('', `<td class="text-center">${faxData[faxDatum].sent_by}</td>`); }
+			if (faxData[faxDatum].organization === undefined) { faxData[faxDatum].organization = "N/A"; };
+			if (faxData[faxDatum].sent_by === undefined) { faxData[faxDatum].sent_by = ""; };
+			if (faxData[faxDatum].from_number === undefined) { faxData[faxDatum].from_number = "Released Number"; };
+			if (faxData[faxDatum].to_number === undefined) { faxData[faxDatum].to_number = "Released Number"; };
 
-		heading = heading.concat('', `
-			<td class="text-center">${faxData[faxDatum].from_number}</td>
-			<td class="text-center">${faxData[faxDatum].to_number}</td>
-			<td class="status">${faxData[faxDatum].status}</td>
-			<td class="text-center">${faxData[faxDatum].created_at}</td>
-			<td class="text-center"><i class="fa fa-fw fa-download" aria-hidden="true"></i></td>
-		</tr>
-		`);
-		$("tbody").prepend(heading);
+			let head = `<tr>
+				<td class="text-center"> ${ (faxData[faxDatum].direction === "Sent") ? sentIcon : receivedIcon } </td>`;
+			// Admin has 8 <th>, Manager has 7 <th>, User has only 6. These if blocks add/remove data for these permission levels
+				if ($('#fax-log-table th').length === 8) { head = head.concat('', `<td class="text-center">${faxData[faxDatum].organization}</td>`); }
+				if ($('#fax-log-table th').length > 6) { head = head.concat('', `<td class="text-center">${faxData[faxDatum].sent_by}</td>`); }
+
+			head = head.concat('', `
+				<td class="text-center">${faxData[faxDatum].from_number}</td>
+				<td class="text-center">${faxData[faxDatum].to_number}</td>
+				<td class="status">${faxData[faxDatum].status}</td>
+				<td class="text-center">${faxData[faxDatum].created_at}</td>
+				<td class="text-center"><i class="fa fa-fw fa-download" aria-hidden="true"></i></td>
+			</tr>
+			`);
+			$("tbody").prepend(head);
+		}
 	});
 	changeStatusColor();
 };
@@ -131,7 +132,7 @@ function buildTableRows(faxData) {
 function changeStatusColor() {
 	$.each($('.status'), function() { // $(this) is the entire <td> tag within the $.each()
 		switch($(this).text()) {
-			case 'Success': // These statuses are capitalized unlike the normal API response b/c Ruby's 'titleize() is used'
+			case 'Success': // These statuses are capitalized unlike the normal API response b/c Ruby's 'titleize() is used in FaxLog model'
 				$(this).prepend(`
 					<span style='color:limegreen'>&nbsp;<i style='font-size:10px' class="fa fa-fw fa-circle"></i>&nbsp;</span>
 				`);
@@ -172,4 +173,48 @@ function createSelectTagMultipleConditionals(originalTagData, tagBeingRestored, 
 			if ($(this).hasClass(addIfClass)) { tagBeingRestored.append($(this)); }
 		});
 	});
+};
+
+function paginateFaxes(apiResponse) {
+	let pageNumber = 0;
+	let counter = 1;
+	let $pageNumberList = $("#pagination-ul");
+
+	addPreviousSymbol($pageNumberList, currentPageNumber, beginningButtonText);
+	addPreviousSymbol($pageNumberList, currentPageNumber, backButtonText);
+
+	Object.keys(apiResponse).forEach((key, counter) => {
+		if (counter % 20 === 0) { 
+			pageNumber += 1;
+			addPageNumber($pageNumberList, pageNumber, currentPageNumber);
+		}
+		apiResponse[key]['page'] = pageNumber;
+	});
+
+	addNextSymbol($pageNumberList, pageNumber, currentPageNumber, forwardButtonText);
+	addNextSymbol($pageNumberList, pageNumber, currentPageNumber, endButtonText);
+};
+
+function addPageNumber($pageNumberList, pageNumber, currentPageNumber) {
+	if (pageNumber === currentPageNumber) {
+		$pageNumberList.append(`<li id="${pageNumber}" class="page-item active"><a class="page-link" href="#">${pageNumber}</a></li>`);
+	} else {
+		$pageNumberList.append(`<li id="${pageNumber}" class="page-item"><a class="page-link" href="#">${pageNumber}</a></li>`);
+	}
+};
+
+function addPreviousSymbol($pageNumberList, currentPageNumber, symbolToAdd) {
+	if (currentPageNumber === 1) {
+		$pageNumberList.append(`<li class="page-item disabled"><a class="page-link" href="#">${symbolToAdd}</a></li>`);
+	} else {
+		$pageNumberList.append(`<li class="page-item"><a class="page-link" href="#">${symbolToAdd}</a></li>`);
+	}
+};
+
+function addNextSymbol($pageNumberList, pageNumber, currentPageNumber, symbolToAdd) {
+	if (pageNumber === currentPageNumber) {
+		$pageNumberList.append(`<li class="page-item disabled"><a class="page-link" href="#">${symbolToAdd}</a></li>`);
+	} else {
+		$pageNumberList.append(`<li class="page-item"><a class="page-link" href="#">${symbolToAdd}</a></li>`);
+	}
 };

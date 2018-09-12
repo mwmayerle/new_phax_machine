@@ -105,6 +105,27 @@ RSpec.feature "User Pages", :type => :feature do
 			expect(user1.user_permission.permission).to eq(UserPermission::MANAGER)
 		end
 
+		it "when an admin demotes a manager to user while editing, the organization's manager_id is reset to nil" do
+			login_as(admin)
+			visit(edit_user_path(manager.id))
+			expect(page).to have_current_path(edit_user_path(manager.id))
+			expect(page).to have_field("user[email]")
+			expect(page).to have_select("user[caller_id_number]", options: ["(773) 867-5308 - Manager-Set Label", "(773) 867-5307"])
+			expect(page).to have_select("user_permission[permission]", options: [UserPermission::MANAGER.titleize, UserPermission::USER.titleize])
+			fill_in("user[email]", with: "editedemail@phaxio.com")
+			select("(773) 867-5307", from: "user[caller_id_number]")
+			select(UserPermission::USER.titleize, from: "user_permission[permission]")
+			click_button("Submit Changes")
+			org.reload
+			manager.reload
+			expect(page).to have_text("User updated successfully")
+			expect(page.current_url).to include("/users")
+			expect(org.manager_id).to be_nil
+			expect(manager.caller_id_number).to eq('+17738675307')
+			expect(manager.email).to eq('editedemail@phaxio.com')
+			expect(manager.user_permission.permission).to eq(UserPermission::USER)
+		end
+
 		it "a manager can edit a user's caller_id_number and email. The permission field will not be visible" do
 			login_as(manager)
 			visit(edit_user_path(user1.id))
@@ -125,6 +146,20 @@ RSpec.feature "User Pages", :type => :feature do
 		it "a manager cannot access a user's edit page that is outside of their organization" do
 			login_as(manager2)
 			visit(edit_user_path(user1.id))
+			expect(page).to have_current_path("http://www.example.com/")
+			expect(page).to have_text(ApplicationController::DENIED)
+		end
+
+		it "a user cannot access a user's edit page that is outside of their organization" do
+			login_as(user1)
+			visit(edit_user_path(manager2.id))
+			expect(page).to have_current_path("http://www.example.com/")
+			expect(page).to have_text(ApplicationController::DENIED)
+		end
+
+		it "a user cannot access another user's edit page" do
+			login_as(user1)
+			visit(edit_user_path(user3.id))
 			expect(page).to have_current_path("http://www.example.com/")
 			expect(page).to have_text(ApplicationController::DENIED)
 		end
@@ -261,6 +296,21 @@ RSpec.feature "User Pages", :type => :feature do
 			select("(773) 867-5308", from: "user[caller_id_number]", match: :first)
 			click_on("Invite New User")
 			expect(page).to have_text("mr.saturn@aol.com has been invited.")
+		end
+
+		it "a manager (or admin) cannot invite a user with a caller_id_number that isn't in their organization or a bogus fax number" do
+			login_as(manager)
+			visit(users_path)
+
+			# deleting a fax number after loading the page so that the manager will attempt to invite someone with a bogus number
+			org.fax_numbers.first.delete
+			org.reload
+
+			fill_in("user[email]", with: "mr.saturn1@aol.com")
+			select("(773) 867-5307", from: "user[caller_id_number]", match: :first)
+			click_on("Invite New User")
+			expect(page).to have_current_path("http://www.example.com/")
+			expect(page).to have_text(ApplicationController::DENIED)
 		end
 	end
 end

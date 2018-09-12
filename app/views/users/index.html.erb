@@ -18,7 +18,7 @@
 										</div>
 										<div class="form-group col-lg-4">
 											<strong><%= f.label :caller_id_number, "Caller ID Number:", class: "pull-left" %></strong>
-											<select class="form-control form-inline" name="user[caller_id_number]">
+											<select id="caller-id-select" class="form-control form-inline" name="user[caller_id_number]">
 												<% @organization.fax_numbers.each do |organization_fax_number| %>
 													<option name="user[caller_id_number]" value="<%= organization_fax_number.fax_number %>" selected="selected">
 														<%= FaxNumber.format_pretty_fax_number(organization_fax_number.fax_number) %>
@@ -60,7 +60,7 @@
 									<td></td>
 									<% end %>
 									<td class="text-center"><%= user.email %></td>
-									<td class="text-center"><%= FaxNumber.format_pretty_fax_number(user.caller_id_number) %></td>
+									<td class="text-center"><%= FaxNumber.format_pretty_fax_number(user.caller_id_number) if user.caller_id_number %></td>
 									<% if user.deleted_at.nil? %>
 										<td class="text-center" style="color:green;"><i class="fa fa-fw fa-check-circle" aria-hidden="true"></i></td>
 										<td class="text-center"><%= link_to "Edit", edit_user_path(user), class: "btn btn-sm btn-success" %></td>

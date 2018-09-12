@@ -1,11 +1,12 @@
 //= require jquery3
-//= require jquery-ui/widgets/datepicker
+
 //= require popper
 //= require bootstrap
 
 //= require rails-ujs
 //= require activestorage
 //= require bootstrap-sprockets
+//= require flatpickr
 
 //= require ./_setup
 //= require_tree ./pages

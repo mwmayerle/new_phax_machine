@@ -82,6 +82,8 @@ class FaxNumber < ApplicationRecord
 
 			# Creates a new hash with desired data from data received from the Phaxio API
 			def format_fax_numbers(fax_numbers_from_api, phaxio_numbers = {})
+				all_current_db_fax_numbers = FaxNumber.includes(:organization).all
+
 				fax_numbers_from_api.each do |api_fax_number|
 					phaxio_numbers[api_fax_number[:phone_number]] = {}
 					phaxio_numbers[api_fax_number[:phone_number]][:city] = api_fax_number[:city]
@@ -90,17 +92,17 @@ class FaxNumber < ApplicationRecord
 					phaxio_numbers[api_fax_number[:phone_number]][:cost] = format_cost(api_fax_number[:cost])
 					phaxio_numbers[api_fax_number[:phone_number]][:callback_url] = !!api_fax_number[:callback_url]
 
-					db_number = self.find_by(fax_number: api_fax_number[:phone_number], has_webhook_url: !!api_fax_number[:callback_url])
+					db_number = all_current_db_fax_numbers.select { |db_number| db_number.fax_number == api_fax_number[:phone_number] }
 
-					if db_number.nil?
-						db_number = self.find_by(fax_number: api_fax_number[:phone_number])
-						if db_number
+					if db_number != []
+						db_number = db_number.pop
+						if db_number.has_webhook_url != !!api_fax_number[:callback_url]
 							db_number.update_attributes(has_webhook_url: !!api_fax_number[:callback_url])
-						else
-							db_number = FaxNumber.create!(fax_number: api_fax_number[:phone_number], has_webhook_url: !!api_fax_number[:callback_url])
 						end
+					else
+						db_number = FaxNumber.create!(fax_number: api_fax_number[:phone_number], has_webhook_url: !!api_fax_number[:callback_url])
 					end
-
+					
 					phaxio_numbers[api_fax_number[:phone_number]][:id] = db_number.id
 
 					# Add associated Organization data to hash

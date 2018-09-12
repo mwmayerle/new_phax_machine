@@ -133,7 +133,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 	  		existing_numbers = FaxNumber.where(fax_number: sign_up_params[:caller_id_number], organization_id: current_user.organization.id)
 	  	end
 	  	# Ensures users don't try to create users with caller_id_numbers that are not associated with their organization
-	  	if existing_numbers.nil?
+	  	if existing_numbers == []
 	  		flash[:alert] = ApplicationController::DENIED
 	  		redirect_to(root_path)
 	  	end

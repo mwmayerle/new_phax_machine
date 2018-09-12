@@ -2,14 +2,14 @@ class FaxLogsController < ApplicationController
 	include SessionsHelper
 	before_action :set_phaxio_creds, :set_organization_or_organizations, :set_fax_numbers, :set_users
 
+	# it would be good to Jquery the default dates on page load into the calendar
 	def index
+		options = FaxLog.build_options(current_user, filtering_params, @organizations, @users)
 		if is_admin?
-			options = FaxLog.build_options(current_user, filtering_params, @organizations)
-			initial_fax_data = FaxLog.get_faxes(current_user, options,)
+			initial_fax_data = FaxLog.get_faxes(current_user, options)
 			FaxLog.add_all_attribute_to_hashes( [@fax_numbers, @organizations] )
 			@sorted_faxes = FaxLog.format_faxes(current_user, initial_fax_data, @organizations, @fax_numbers, @users)
 		else
-			options = FaxLog.build_options(current_user, filtering_params, @organization)
 			options[:tag] = is_manager? ? { sender_organization_fax_tag: @organization.fax_tag } : { sender_email_fax_tag: current_user.fax_tag }
 			initial_fax_data = FaxLog.get_faxes(current_user, options, @users, @fax_numbers)
 			FaxLog.add_all_attribute_to_hashes( [@users, @fax_numbers] )
@@ -19,7 +19,7 @@ class FaxLogsController < ApplicationController
 
 	# create method in this controller is for user-designated filtering
 	def create
-		options = FaxLog.build_options(current_user, filtering_params, @organization)
+		options = FaxLog.build_options(current_user, filtering_params, @organizations, @users)
 		options[:per_page] = 1000
 		initial_fax_data = FaxLog.get_faxes(current_user, options, @users, @fax_numbers)
 
@@ -64,9 +64,9 @@ class FaxLogsController < ApplicationController
 				end
 			elsif is_manager?
 				# Eager load associated users if manager, otherwise don't if a generic user is looking 
-				@organization = Organization.includes(:users).find(current_user.organization_id)
+				@organizations = Organization.includes(:users).find(current_user.organization_id)
 			else
-				@organization = Organization.find(current_user.organization_id)
+				@organizations = Organization.find(current_user.organization_id)
 			end
 		end
 
@@ -76,13 +76,13 @@ class FaxLogsController < ApplicationController
 			if is_admin?
 				# Get every fax number in the database
 				if filtering_params[:fax_number] == "all" || filtering_params[:fax_number].nil?
-					fax_num_from_db = FaxNumber.where.not(organization_id: nil)
+					fax_num_from_db = FaxNumber.includes(:organization).where.not(organization_id: nil)
 				# Get every fax number linked to a specified organization
 				elsif filtering_params[:fax_number] == "all-linked"
-					fax_num_from_db = FaxNumber.where(organization_id: @organizations[filtering_params[:organization]]['org_id'])
+					fax_num_from_db = FaxNumber.includes(:organization).where(organization_id: @organizations[filtering_params[:organization]]['org_id'])
 				# Get a specific fax number
 				else
-					fax_num_from_db = FaxNumber.where(fax_number: filtering_params[:fax_number])
+					fax_num_from_db = FaxNumber.includes(:organization).where(fax_number: filtering_params[:fax_number])
 				end
 
 				fax_num_from_db.each { |fax_number_obj| FaxLog.create_fax_nums_hash(@fax_numbers, fax_number_obj) }
@@ -90,17 +90,16 @@ class FaxLogsController < ApplicationController
 			elsif is_manager?
 				# Isolate Fax Numbers w/the found organization's ID
 				if filtering_params[:fax_number] == "all" || filtering_params[:fax_number].nil?
-					fax_num_from_db = FaxNumber.where({ organization_id: @organization.id })
+					fax_num_from_db = FaxNumber.includes(:organization).where({ organization_id: @organization.id })
 				# Isolate a specific fax number
 				else
-					fax_num_from_db = FaxNumber.where(fax_number: filtering_params[:fax_number])
+					fax_num_from_db = FaxNumber.includes(:organization).where(fax_number: filtering_params[:fax_number])
 				end
 
 				fax_num_from_db.each { |fax_number_obj| FaxLog.create_fax_nums_hash(@fax_numbers, fax_number_obj) }
 
 			else # generic user
-				user_fax_num_objects = UserFaxNumber.includes(:fax_number).where(user_id: current_user.id)
-				user_fax_nums = user_fax_num_objects.map { |user_fax_num| user_fax_num.fax_number }
+				user_fax_nums = UserFaxNumber.includes(:fax_number).where(user_id: current_user.id).map { |user_fax_num| user_fax_num.fax_number }
 
 				user_fax_nums.each do |user_fax_num|
 					@fax_numbers[user_fax_num.fax_number] = { 'label' => current_user.organization.label }
@@ -111,13 +110,21 @@ class FaxLogsController < ApplicationController
 			end
 		end
 
-		# Get users in an Organization is viewer is Manager, otherwise just use the current user.
+		# Get users in an Organization if viewer is Manager, otherwise just use the current user.
+		# UserPermission objects are used in some way in this method because a user without an associated permission object
+		#  (invited but hasn't set their password) will fail 'is_manager?', 'is_admin?', etc.
 		def set_users
 			@users = {}
 			if is_admin?
-				User.all.each_with_index { |user_obj, index| FaxLog.create_users_hash(@users, user_obj, index) if user_obj.id != 1 }
+				criteria_array = User.includes([:organization, :user_permission]).all.select { |user| user.user_permission && user.organization }
+				criteria_array.each_with_index { |user_obj, index| FaxLog.create_users_hash_admin(@users, user_obj, index) }
 			else
-				criteria_array = is_manager? ? @organization.users : [current_user] # current_user is in an array for iterating/code reuse
+				# current_user is in an array for iterating/code reuse
+				if is_manager?
+					criteria_array = User.includes([:organization, :user_permission]).where(organization_id: @organization.id).select { |user| user.user_permission }
+				else
+					criteria_array = [current_user]
+				end
 				criteria_array.each_with_index { |user_obj, index| FaxLog.create_users_hash(@users, user_obj, index) }
 			end
 		end
