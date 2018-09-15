@@ -45,6 +45,10 @@ class Fax < ApplicationRecord
 	  	errors.max_by { |error_code, amount| amount["frequency"] }.shift
 		end
 
+		def download_file(id)
+	    file = Phaxio::Fax.file(id)
+		end
+
 		def set_phaxio_creds
 			Phaxio.api_key = ENV.fetch('PHAXIO_API_KEY')
 			Phaxio.api_secret = ENV.fetch('PHAXIO_API_SECRET')

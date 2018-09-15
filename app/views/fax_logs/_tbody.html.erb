@@ -1,5 +1,5 @@
 <% sorted_faxes.each do |fax_id_key, fax_data| %>
-	<tr>
+	<tr id="<%= fax_id_key %>">
 		<% if fax_data['direction'] == "Sent" %>
 			<td class="text-center">
 				<i style="color:green" class="fa fa-fw fa-arrow-circle-right" aria-hidden="true"></i>

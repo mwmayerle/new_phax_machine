@@ -31,6 +31,10 @@ class FaxesController < ApplicationController
 		redirect_to new_fax_path
 	end
 
+	def download
+		response = Fax.download_file(fax_params[:id])
+	end
+
 	private
 		def fax_params
 			params.require(:fax).permit(:id, :to, { files: [:file1, :file2, :file3, :file4, :file5, :file6, :file7, :file8, :file9, :file10] })

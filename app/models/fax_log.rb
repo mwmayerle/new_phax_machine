@@ -277,7 +277,7 @@ class FaxLog < ApplicationRecord
 			hashes.each { |hash_obj| hash_obj['all'] = { 'label' => 'all' } }
 		end
 
-################## Permission Methods #######################################
+######################## Permission Methods #################################
 
 		def is_user?(current_user)
 			current_user.user_permission.permission == UserPermission::USER
