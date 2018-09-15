@@ -236,7 +236,7 @@ function addPreviousSymbol($pageNumberList, currentPageNumber, symbolToAdd) {
 		$pageNumberList.append(`<li class="page-item"><a class="page-link" href="#">${symbolToAdd}</a></li>`);
 	}
 };
-
+// pageNumber is highestPageNumber in split pagination
 function addNextSymbol($pageNumberList, pageNumber, currentPageNumber, symbolToAdd) {
 	if (pageNumber === currentPageNumber) {
 		$pageNumberList.append(`<li class="page-item disabled"><a class="page-link" href="#">${symbolToAdd}</a></li>`);
@@ -273,8 +273,8 @@ function splitPagination(pageNumber, currentPageNumber, highestPageNumber) {
 	$pageNumberList.append(`<li class="page-item-dots force-down-dots">&nbsp&nbsp&nbsp&nbsp...&nbsp&nbsp&nbsp&nbsp</li>`);
 	pageNumbersRight.forEach((element) => { addPageNumber($pageNumberList, parseInt($(element).attr('id')), currentPageNumber); });
 
-	addNextSymbol($pageNumberList, pageNumber, currentPageNumber, forwardButtonText);
-	addNextSymbol($pageNumberList, pageNumber, currentPageNumber, endButtonText);
+	addNextSymbol($pageNumberList, highestPageNumber, currentPageNumber, forwardButtonText);
+	addNextSymbol($pageNumberList, highestPageNumber, currentPageNumber, endButtonText);
 };
 
 function constructPaginationMiddle(pageNumbersMiddle, pageNumberArray, currentPageNumber, highestPageNumber) {
