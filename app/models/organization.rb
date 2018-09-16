@@ -4,7 +4,7 @@ class Organization < ApplicationRecord
 	include FaxTags
 	# include HTTParty
 	
-	ORGANIZATION_CHARACTER_LIMIT = 48
+	ORGANIZATION_CHARACTER_LIMIT = 42
 
 	attr_readonly :fax_tag, :admin_id
 
