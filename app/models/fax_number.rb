@@ -29,6 +29,7 @@ class FaxNumber < ApplicationRecord
 		class << self
 			# Converts '+12223334444' to '(222) 333-4444'
 			def format_pretty_fax_number(fax_number)
+				return if fax_number.nil? # <-- for edhe case when a User object's caller_id_number attribute is nil
 				fax_number.slice(2, fax_number.length).insert(0,"(").insert(4,") ").insert(9, "-") if fax_number[0] != "("
 			end
 
@@ -67,9 +68,7 @@ class FaxNumber < ApplicationRecord
 			end
 
 			def create_states_for_numbers(area_codes, states = [])
-				area_codes.each do |area_code_key, area_code_data|
-					states.push(area_code_data[:state]) if !states.include?(area_code_data[:state])
-				end
+				area_codes.each { |area_code_key, area_code_data| states.push(area_code_data[:state]) if !states.include?(area_code_data[:state]) }
 				states.sort!
 			end
 

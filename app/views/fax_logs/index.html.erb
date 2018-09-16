@@ -12,13 +12,12 @@
 			<h1>Fax Logs - <%= current_user.email %></h1>
 	<% end %>
 
-	<div class="filtering-form">
-		<%= form_with(url: fax_logs_path, class: "form-inline") do |f| %>
+	<div id="filtering-form">
+		<%= form_with(url: fax_logs_path, class:"form" ) do |f| %>
 			<div class="row">
-
-				<div class="form-group col-md-2">
-					<%= f.label "Status:", class: "control-label" %>
-					<select id="status" class="form-control form-inline" name="fax_log[status]">
+				<div class="form-group col">
+					<%= f.label :status, "Fax Status:", class: "control-label" %>
+					<select id="status" class="form-control"  name="fax_log[status]">
 						<option id="all" name="fax_log[status]" value="all" selected>All</option>
 						<option id="success" name="fax_log[status]" value="success">Success</option>
 						<option id="failure" name="fax_log[status]" value="failure">Failure</option>
@@ -28,9 +27,9 @@
 				</div>
 
 				<% if is_admin? %>
-					<div class="form-group col-md-2">
+					<div class="form-group col">
 						<%= f.label :organization, "Organization:", class: 'control-label' %>
-						<select id="org-select" class="form-control form-inline" name="fax_log[organization]">
+						<select id="org-select" class="form-control"  name="fax_log[organization]">
 							<% @organizations.each do |organization_fax_tag, organization_data| %>
 								<% if organization_fax_tag == 'all' %>
 									<option id="all-org" class="all-org" name="fax_log[organization]" value="all" selected="selected">All</option>
@@ -42,9 +41,9 @@
 					</div>
 				<% end %>
 
-				<div class="form-group col-md-2">
+				<div class="form-group col">
 					<%= f.label :fax_number, "Fax Number:", class: 'control-label' %>
-					<select id="fax-select" class="form-control form-inline" name="fax_log[fax_number]">
+					<select id="fax-select" class="form-control"  name="fax_log[fax_number]">
 						<% @fax_numbers.each do |fax_number_key, fax_number_data| %>
 							<% if fax_number_key == 'all' %>
 								<option id="all-fax" class="all-fax" name="fax_log[fax_number]" value="all" selected="selected">
@@ -60,9 +59,9 @@
 				</div>
 
 				<% if is_manager? && !is_admin? %>
-					<div class="form-group col-md-2">
+					<div class="form-group col">
 						<%= f.label :user, "User:", class: 'control-label' %>
-						<select id="user-select" class="form-control form-inline" name="fax_log[user]">
+						<select id="user-select" class="form-control"  name="fax_log[user]">
 							<% @users.each do |user_key, user_data| %>
 								<% if user_key == 'all' %>
 									<option id="all-user" class="all-user" name="fax_log[user]" value="all" selected="selected">
@@ -78,17 +77,17 @@
 					</div>
 				<% end %>
 
-				<div class="form-group col-md-2">
+				<div class="form-group col">
 					<%= f.label :start_time, 'Start Date:', class: 'control-label' %>
 					<%= f.text_field :start_time, data:{ provide: 'datepicker' }, class: ' datepicker-inline form-control', name: "fax_log[start_time]" %>
 				</div>
 
-				<div class="form-group col-md-2">
+				<div class="form-group col">
 					<%= f.label :end_time, 'End Date:', class: 'control-label' %>
 					<%= f.text_field :end_time, data:{ provide: 'datepicker' }, class: 'datepicker-inline form-control', id: "end-date-field", name: "fax_log[end_time]" %>
 				</div>
 
-				<div class="form-group col-md-1">
+				<div class="form-group col">
 					<button type="submit" id="filter-button" value="Filter" class="btn btn-success force-down-button">
 						<i class="fa fa-fw fa-search" aria-hidden="true"></i>&nbsp;&nbsp;Filter
 					</button>
@@ -134,10 +133,12 @@
 			<span class="sr-only">Loading...</span>
 		</div>
 	</div>
+
 	<div id="page-counter">
 		<nav aria-label="api-response-results">
-		  <ul id="pagination-ul" class="pagination justify-content-center">
+		  <ul id="pagination-ul" class="pagination justify-content-center align-items-center fixed-bottom">
 		  </ul>
 		</nav>
 	</div>
 </body>
+

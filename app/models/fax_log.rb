@@ -20,7 +20,7 @@ class FaxLog < ApplicationRecord
 			options
 		end
 
-		def get_faxes(current_user, options, users = nil, fax_numbers = nil, fax_data = [])
+		def get_faxes(current_user, options, users = nil, fax_numbers = nil, organizations = nil, fax_data = [])
 			# options[:tag] will contain a specific desired organization or user. Managers will always have an organization
 			if options[:tag].nil? # Admin gets everything unless they specify and organization
 				initial_data = Phaxio::Fax.list({
@@ -37,6 +37,7 @@ class FaxLog < ApplicationRecord
 				rescue
 					options[:per_page] = 20 # <-- if a user has no fax numbers this prevents a division by zero error
 				end
+				
 				# First search for faxes via organization fax tag or user's fax tag and insert these faxes. If I try to include the desired
 				# fax number(s) in this API call as well, it will only return received faxes b/c those will have the tags on them.
 				tag_data = Phaxio::Fax.list(
@@ -46,7 +47,12 @@ class FaxLog < ApplicationRecord
 					per_page: options[:per_page],
 					status: options[:status]
 				)
-				new_data = filter_for_desired_fax_number_data(tag_data.raw_data, fax_numbers)
+
+				if !!organizations[options[:tag][:sender_organization_fax_tag]]
+					new_data = tag_data.raw_data
+				else
+					new_data = filter_for_desired_fax_number_data(tag_data.raw_data, fax_numbers)
+				end
 				fax_data.push(new_data)
 
 				# Then search for faxes using each fax_number associated with the Organization
@@ -129,6 +135,8 @@ class FaxLog < ApplicationRecord
 						if fax_numbers[fax_object['to_number']] && fax_object_is_younger?(fax_object['created_at'], fax_numbers[fax_object['to_number']]['org_created_at'])
 					# NOTE 'label' on the line below is the organization the fax number is associated with. See 'created_fax_nums_hash' method
 							fax_data[fax_object['id']]['organization'] = fax_numbers[fax_object['to_number']]['label']
+						elsif fax_numbers[fax_object['from_number']] && fax_object_is_younger?(fax_object['created_at'], fax_numbers[fax_object['from_number']]['org_created_at'])
+							fax_data[fax_object['id']]['organization'] = fax_numbers[fax_object['from_number']]['label']
 						else
 							fax_data[fax_object['id']]['organization'] = "N/A"
 						end
@@ -214,7 +222,7 @@ class FaxLog < ApplicationRecord
 				options[:tag] = { :sender_organization_fax_tag => organization.fax_tag }
 			else
 				users.each do |index_key, user_obj_hash|
-					options[:tag] = { :sender_email_fax_tag => user_obj_hash['fax_tag'] } if filtered_params[:user] == user_obj_hash['email']
+					options[:tag] = { :sender_email_fax_tag => user_obj_hash['fax_tag'] } if user_obj_hash['org_id'] == organization.id
 				end
 			end
 		end
@@ -249,6 +257,7 @@ class FaxLog < ApplicationRecord
 			organizations_hash[organization_object.fax_tag] = {'label' => organization_object.label }
 			organizations_hash[organization_object.fax_tag]['org_created_at'] = organization_object.created_at
 			organizations_hash[organization_object.fax_tag]['org_id'] = organization_object.id
+			organizations_hash[organization_object.fax_tag]['soft_deleted'] = !!organization_object.deleted_at
 		end
 
 		def create_fax_nums_hash(fax_numbers_hash, fax_number_object)
@@ -262,22 +271,14 @@ class FaxLog < ApplicationRecord
 			users_hash[index]['caller_id_number'] = user_obj.caller_id_number
 			users_hash[index]['user_created_at'] = user_obj.created_at
 			users_hash[index]['fax_tag'] = user_obj.fax_tag
-		end
-		# create_users_hash_admin is here because it's better to query the database for the permission object once
-		#  instead of once for each fax object, which could number in the 1000's
-		def create_users_hash_admin(users_hash, user_obj, index)
-			users_hash[index] = { 'email' => user_obj.email }
-			users_hash[index]['caller_id_number'] = user_obj.caller_id_number
-			users_hash[index]['user_created_at'] = user_obj.created_at
-			users_hash[index]['fax_tag'] = user_obj.fax_tag
-			users_hash[index]['org_id'] = user_obj.organization.id
+			users_hash[index]['org_id'] = user_obj.organization_id
 		end
 
 		def add_all_attribute_to_hashes(hashes) # hashes is an array [@fax_numbers, @users]
 			hashes.each { |hash_obj| hash_obj['all'] = { 'label' => 'all' } }
 		end
 
-################## Permission Methods #######################################
+######################## Permission Methods #################################
 
 		def is_user?(current_user)
 			current_user.user_permission.permission == UserPermission::USER

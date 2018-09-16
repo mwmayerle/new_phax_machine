@@ -1,5 +1,5 @@
 <% sorted_faxes.each do |fax_id_key, fax_data| %>
-	<tr>
+	<tr id="<%= fax_id_key %>">
 		<% if fax_data['direction'] == "Sent" %>
 			<td class="text-center">
 				<i style="color:green" class="fa fa-fw fa-arrow-circle-right" aria-hidden="true"></i>
@@ -9,7 +9,6 @@
 				<i style="color:darkblue" class="fa fa-fw fa-arrow-circle-left" aria-hidden="true"></i>
 			</td>
 		<% end %>
-		<!-- <td class="text-center"><%= fax_id_key %></td> -->
 		<% if is_admin? %>
 			<td class="text-center"><%= fax_data['organization'] %></td>
 			<td class="text-center"><%= fax_data['sent_by'] %></td>

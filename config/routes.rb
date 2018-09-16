@@ -30,5 +30,6 @@ Rails.application.routes.draw do
   post "/fax_sent", to: "mailgun_faxes#fax_sent"
   post "/mailgun", to: "mailgun_faxes#mailgun"
 
+  post "/download", to: "faxes#download"
   # put "/organizations/edit_logo/:id", to: "organizations#update_logo"
 end

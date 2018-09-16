@@ -8,6 +8,20 @@ $warning: #7EA16B;
 @import 'faxes';
 @import 'flatpickr';
 
+.filtering-form {
+	padding: 5px;
+	height: 50px;
+}
+
+.fixed-bottom {
+	margin-left: 212px;
+	margin-bottom: 40px;
+}
+
+.page-link {
+	width: 46px;
+}
+
 .page-item.active .page-link {
 	background-color: #2C4251;
 }
@@ -109,6 +123,11 @@ a[data-toggle="collapse"] {
 
 .force-down-checkbox { //I'm not proud a second time...
 	margin-top: 40px;
+}
+
+.force-down-dots { //I'm not proud yet again...
+	margin-top: 5px;
+	letter-spacing: 2px;
 }
 
 .card-header {
