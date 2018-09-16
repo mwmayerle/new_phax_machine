@@ -1,4 +1,5 @@
 class Organization < ApplicationRecord
+	# -> { with_deleted } links the soft-deleted association. See Paranoia gem docs.
 	acts_as_paranoid
 	
 	include FaxTags
@@ -11,7 +12,7 @@ class Organization < ApplicationRecord
 	belongs_to :admin
 	belongs_to :manager, optional: true, dependent: :destroy
 	has_many :fax_numbers
-	has_many :users, dependent: :destroy
+	has_many :users, -> { with_deleted }, dependent: :destroy
 	has_many :user_fax_numbers, through: :users
 
 	validates :label, uniqueness: true, length: { maximum: ORGANIZATION_CHARACTER_LIMIT }, presence: true

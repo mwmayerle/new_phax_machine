@@ -90,7 +90,7 @@ RSpec.feature "Organization Pages", :type => :feature do
 			click_button("Submit")
 
 			expect(page).to have_current_path(new_organization_path)
-			expect(page).to have_text("Label is too long (maximum is 48 characters)")
+			expect(page).to have_text("Label is too long (maximum is #{Organization::ORGANIZATION_CHARACTER_LIMIT} characters)")
 		end
 
 		it "redirects admin to the new_org_form if it cannot persist changes to an existing organization object" do
@@ -102,7 +102,7 @@ RSpec.feature "Organization Pages", :type => :feature do
 			click_button("Submit")
 
 			expect(page).to have_current_path(edit_organization_path(org.id))
-			expect(page).to have_text("Label is too long (maximum is 48 characters)")
+			expect(page).to have_text("Label is too long (maximum is #{Organization::ORGANIZATION_CHARACTER_LIMIT} characters)")
 		end
 
 		it "allows the admin to create a new organization with no linked fax numbers. Manager invitation should not be an option until a fax number has been added" do
