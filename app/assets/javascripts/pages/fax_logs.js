@@ -1,6 +1,10 @@
 /////////////////////////////////////////////////////////////////////////////////
 //  SEE CREATE.JS.ERB IN THE FAX_LOGS VIEW FOLDER FOR ADDITIONAL JS FUNCTIONS  //
 /////////////////////////////////////////////////////////////////////////////////
+const	backButtonText = '<';
+const	forwardButtonText = '>';
+const	endButtonText = '>>';
+const	beginningButtonText = '<<';
 
 phaxMachine.pages['fax-logs'] = {
 
@@ -10,10 +14,6 @@ phaxMachine.pages['fax-logs'] = {
 		userOptions = $("#user-select option"),
 		faxNumberOptions = $("#fax-select option"),
 		currentPageNumber = 1;
-		backButtonText = '<';
-		forwardButtonText = '>';
-		endButtonText = '>>';
-		beginningButtonText = '<<';
 
 		$("#load-icon").hide();
 
@@ -194,6 +194,10 @@ function createSelectTagMultipleConditionals(originalTagData, tagBeingRestored, 
 	});
 };
 
+//////////////////////////////////////////////
+////  functions below are for pagination  ////
+//////////////////////////////////////////////
+
 function paginateFaxes(apiResponse) {
 	let pageNumber = 0;
 	let counter = 1;
@@ -204,10 +208,10 @@ function paginateFaxes(apiResponse) {
 
 	let highestPageNumber = addPageNumbersToResponse($pageNumberList, pageNumber, currentPageNumber);
 
-	addNextSymbol($pageNumberList, pageNumber, currentPageNumber, forwardButtonText);
-	addNextSymbol($pageNumberList, pageNumber, currentPageNumber, endButtonText);
+	addNextSymbol($pageNumberList, highestPageNumber, currentPageNumber, forwardButtonText);
+	addNextSymbol($pageNumberList, highestPageNumber, currentPageNumber, endButtonText);
 
-	if (highestPageNumber > 18) { splitPagination(pageNumber, currentPageNumber, highestPageNumber); }
+	if (highestPageNumber > 18) { splitPagination(currentPageNumber, highestPageNumber); }
 };
 
 function addPageNumbersToResponse($pageNumberList, pageNumber, currentPageNumber) {
@@ -236,27 +240,26 @@ function addPreviousSymbol($pageNumberList, currentPageNumber, symbolToAdd) {
 		$pageNumberList.append(`<li class="page-item"><a class="page-link" href="#">${symbolToAdd}</a></li>`);
 	}
 };
+
 // pageNumber is highestPageNumber in split pagination
-function addNextSymbol($pageNumberList, pageNumber, currentPageNumber, symbolToAdd) {
-	if (pageNumber === currentPageNumber) {
+function addNextSymbol($pageNumberList, highestPageNumber, currentPageNumber, symbolToAdd) {
+	if (highestPageNumber === currentPageNumber) {
 		$pageNumberList.append(`<li class="page-item disabled"><a class="page-link" href="#">${symbolToAdd}</a></li>`);
 	} else {
 		$pageNumberList.append(`<li class="page-item"><a class="page-link" href="#">${symbolToAdd}</a></li>`);
 	}
 };
 
-function splitPagination(pageNumber, currentPageNumber, highestPageNumber) {
+function splitPagination(currentPageNumber, highestPageNumber) {
 	let $pageNumberList = $("#pagination-ul");
 	let pageNumberArray = $.makeArray($("#pagination-ul li")).slice(2, ($pageNumberList.length - 3));//Remove '<<' and "<" from ends
 	let pageNumbersLeft = [];
 	let pageNumbersMiddle = [];
 	let pageNumbersRight = [];
 
-	let i = 0;
-	while (i < 3) {
+	for (let i = 0; i < 3; i++) {
 		pageNumbersLeft.push(pageNumberArray[i]);
 		pageNumbersRight.push(pageNumberArray[(highestPageNumber - 1) - i]);
-		i++;
 	};
 
 	pageNumbersMiddle = constructPaginationMiddle(pageNumbersMiddle, pageNumberArray, currentPageNumber, highestPageNumber)
@@ -279,26 +282,32 @@ function splitPagination(pageNumber, currentPageNumber, highestPageNumber) {
 
 function constructPaginationMiddle(pageNumbersMiddle, pageNumberArray, currentPageNumber, highestPageNumber) {
 	let arrayMiddle = 0;
-	if (currentPageNumber > 3 && currentPageNumber <= highestPageNumber - 3) {
-		arrayMiddle = currentPageNumber - 1
+	if (currentPageNumber >= 8) {
+		arrayMiddle = (currentPageNumber <= highestPageNumber - 7) ? currentPageNumber - 1 : highestPageNumber - 7
+	} else if (currentPageNumber >= 4 && currentPageNumber <= 7 ) { 
+		arrayMiddle = 6; // prevents pagination from looking like: << < 1 2 3 ... 1 2 3 [4] 5 6 7 ... 11 12 13 > >>
 	} else {
 		arrayMiddle = (pageNumberArray.length % 2 === 0) ? (pageNumberArray.length / 2) - 1 : Math.floor(pageNumberArray.length / 2)
 	}
 	pageNumbersMiddle.push(pageNumberArray[arrayMiddle])
 
-	let j = 1;
-	while (j < 4) {
+	for (let j = 1; j < 4; j++) {
 		pageNumbersMiddle.push(pageNumberArray[arrayMiddle + j]);
 		pageNumbersMiddle.push(pageNumberArray[arrayMiddle - j]);
-		j++;
 	};
+
 	return pageNumbersMiddle.sort((a,b) => { return $(a).attr('id') - $(b).attr('id'); });
 };
+
+//////////////////////////////
+//// on-click downloading ////
+//////////////////////////////
 
 function addFileIconClick() {
 	$("tr").on('click', $(".fa-download"), (event) => {
 		console.log($(event.target))
-		console.log($(event.target).closest("tr"))
-		console.log($(event.target).closest("tr").attr("id"))
+		if ($(event.target).hasClass("fa-download")) {
+			console.log($(event.target).closest("tr").attr("id"))
+		}
 	});
 };

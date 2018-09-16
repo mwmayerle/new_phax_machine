@@ -10,10 +10,10 @@ class FaxLogsController < ApplicationController
 			FaxLog.add_all_attribute_to_hashes( [@fax_numbers, @organizations] )
 			@sorted_faxes = FaxLog.format_faxes(current_user, initial_fax_data, @organizations, @fax_numbers, @users)
 		else
-			options[:tag] = is_manager? ? { sender_organization_fax_tag: @organization.fax_tag } : { sender_email_fax_tag: current_user.fax_tag }
+			options[:tag] = is_manager? ? { sender_organization_fax_tag: @organizations.fax_tag } : { sender_email_fax_tag: current_user.fax_tag }
 			initial_fax_data = FaxLog.get_faxes(current_user, options, @users, @fax_numbers)
 			FaxLog.add_all_attribute_to_hashes( [@users, @fax_numbers] )
-			@sorted_faxes = FaxLog.format_faxes(current_user, initial_fax_data, @fax_numbers, @organization, @users)
+			@sorted_faxes = FaxLog.format_faxes(current_user, initial_fax_data, @fax_numbers, @organizations, @users)
 		end
 	end
 
@@ -28,7 +28,7 @@ class FaxLogsController < ApplicationController
 			@sorted_faxes = FaxLog.format_faxes(current_user, initial_fax_data, @organizations, @fax_numbers, @users)
 		else
 			FaxLog.add_all_attribute_to_hashes( [@users, @fax_numbers] )
-			@sorted_faxes = FaxLog.format_faxes(current_user, initial_fax_data, @organization, @fax_numbers, @users)
+			@sorted_faxes = FaxLog.format_faxes(current_user, initial_fax_data, @organizations, @fax_numbers, @users)
 		end
 
 		respond_to do |format|
@@ -90,7 +90,7 @@ class FaxLogsController < ApplicationController
 			elsif is_manager?
 				# Isolate Fax Numbers w/the found organization's ID
 				if filtering_params[:fax_number] == "all" || filtering_params[:fax_number].nil?
-					fax_num_from_db = FaxNumber.includes(:organization).where({ organization_id: @organization.id })
+					fax_num_from_db = FaxNumber.includes(:organization).where({ organization_id: @organizations.id })
 				# Isolate a specific fax number
 				else
 					fax_num_from_db = FaxNumber.includes(:organization).where(fax_number: filtering_params[:fax_number])
@@ -121,7 +121,7 @@ class FaxLogsController < ApplicationController
 			else
 				# current_user is in an array for iterating/code reuse
 				if is_manager?
-					criteria_array = User.includes([:organization, :user_permission]).where(organization_id: @organization.id).select { |user| user.user_permission }
+					criteria_array = User.includes([:organization, :user_permission]).where(organization_id: @organizations.id).select { |user| user.user_permission }
 				else
 					criteria_array = [current_user]
 				end

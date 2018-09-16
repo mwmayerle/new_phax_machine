@@ -24,7 +24,7 @@ module SessionsHelper
 
 	def current_logo
 		@current_logo = session[:logo_url]
-		@current_logo ||= LogoLink.first.logo_url #if LogoLink.first
+		@current_logo ||= LogoLink.first.logo_url if LogoLink.first
 	end
 
 	def verify_is_manager_or_admin
