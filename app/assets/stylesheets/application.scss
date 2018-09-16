@@ -8,6 +8,10 @@ $warning: #7EA16B;
 @import 'faxes';
 @import 'flatpickr';
 
+.page-link {
+	width: 46px;
+}
+
 .page-item.active .page-link {
 	background-color: #2C4251;
 }

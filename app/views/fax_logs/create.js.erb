@@ -10,7 +10,7 @@ if (apiResponse) {
 }
 
 function pageNumberClick() {
-	$("#pagination-ul").on('click', $(".page-item"), (event) => {
+	$("#pagination-ul").off().on('click', $(".page-item"), (event) => {
 		if ($(event.target).hasClass('page-link')) {
 			currentPageNumber = setCurrentPageNumber($(event.target).text(), currentPageNumber);
 			$("tbody").empty();

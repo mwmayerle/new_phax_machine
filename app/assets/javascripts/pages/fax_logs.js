@@ -94,7 +94,7 @@ phaxMachine.pages['fax-logs'] = {
 			}
 		});
 		//This "tr" click function is the same as addFileIconClick(), but it's here for the initial page load
-		$("tr").on('click', $(".fa-download"), (event) => {
+		$("tr").off().on('click', $(".fa-download"), (event) => {
 			event.preventDefault();
 			faxID = {
 				'fax': {
@@ -223,30 +223,30 @@ function addPageNumbersToResponse($pageNumberList, pageNumber, currentPageNumber
 		apiResponse[key]['page'] = pageNumber;
 	});
 	return pageNumber;
-}
+};
 
 function addPageNumber($pageNumberList, pageNumber, currentPageNumber) {
 	if (pageNumber === currentPageNumber) {
-		$pageNumberList.append(`<li id="${pageNumber}" class="page-item active"><a class="page-link" href="#">${pageNumber}</a></li>`);
+		$pageNumberList.append(`<li id="${pageNumber}" class="page-item active"><a class="page-link text-center" href="#">${pageNumber}</a></li>`);
 	} else {
-		$pageNumberList.append(`<li id="${pageNumber}" class="page-item"><a class="page-link" href="#">${pageNumber}</a></li>`);
+		$pageNumberList.append(`<li id="${pageNumber}" class="page-item"><a class="page-link text-center" href="#">${pageNumber}</a></li>`);
 	}
 };
 
 function addPreviousSymbol($pageNumberList, currentPageNumber, symbolToAdd) {
 	if (currentPageNumber === 1) {
-		$pageNumberList.append(`<li class="page-item disabled"><a class="page-link" href="#">${symbolToAdd}</a></li>`);
+		$pageNumberList.append(`<li class="page-item disabled"><a class="page-link text-center" href="#">${symbolToAdd}</a></li>`);
 	} else {
-		$pageNumberList.append(`<li class="page-item"><a class="page-link" href="#">${symbolToAdd}</a></li>`);
+		$pageNumberList.append(`<li class="page-item"><a class="page-link text-center" href="#">${symbolToAdd}</a></li>`);
 	}
 };
 
 // pageNumber is highestPageNumber in split pagination
 function addNextSymbol($pageNumberList, highestPageNumber, currentPageNumber, symbolToAdd) {
 	if (highestPageNumber === currentPageNumber) {
-		$pageNumberList.append(`<li class="page-item disabled"><a class="page-link" href="#">${symbolToAdd}</a></li>`);
+		$pageNumberList.append(`<li class="page-item disabled"><a class="page-link text-center" href="#">${symbolToAdd}</a></li>`);
 	} else {
-		$pageNumberList.append(`<li class="page-item"><a class="page-link" href="#">${symbolToAdd}</a></li>`);
+		$pageNumberList.append(`<li class="page-item"><a class="page-link text-center" href="#">${symbolToAdd}</a></li>`);
 	}
 };
 
@@ -282,6 +282,7 @@ function splitPagination(currentPageNumber, highestPageNumber) {
 
 function constructPaginationMiddle(pageNumbersMiddle, pageNumberArray, currentPageNumber, highestPageNumber) {
 	let arrayMiddle = 0;
+
 	if (currentPageNumber >= 8) {
 		arrayMiddle = (currentPageNumber <= highestPageNumber - 7) ? currentPageNumber - 1 : highestPageNumber - 7
 	} else if (currentPageNumber >= 4 && currentPageNumber <= 7 ) { 
@@ -289,6 +290,7 @@ function constructPaginationMiddle(pageNumbersMiddle, pageNumberArray, currentPa
 	} else {
 		arrayMiddle = (pageNumberArray.length % 2 === 0) ? (pageNumberArray.length / 2) - 1 : Math.floor(pageNumberArray.length / 2)
 	}
+
 	pageNumbersMiddle.push(pageNumberArray[arrayMiddle])
 
 	for (let j = 1; j < 4; j++) {
