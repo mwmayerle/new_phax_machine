@@ -84,7 +84,6 @@ class FaxLogsController < ApplicationController
 				else
 					fax_num_from_db = FaxNumber.includes(:organization).where(fax_number: filtering_params[:fax_number])
 				end
-				p fax_num_from_db
 				fax_num_from_db.each { |fax_number_obj| FaxLog.create_fax_nums_hash(@fax_numbers, fax_number_obj) }
 			# manager or user is making the request
 			elsif is_manager?

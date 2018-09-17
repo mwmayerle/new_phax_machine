@@ -1,4 +1,4 @@
-var apiResponse = JSON.parse("<%= @sorted_faxes.to_json.html_safe %>");
+var apiResponse = JSON.parse('<%= @sorted_faxes.to_json.html_safe %>');
 var pageNumberDisplay = 1;
 
 $("#load-icon").hide();
@@ -9,7 +9,7 @@ if (Object.keys(apiResponse).length === 0) {
 	paginateFaxes(apiResponse);
 	buildTableRows(apiResponse, pageNumberDisplay);
 	pageNumberClick();
-};
+}
 
 function pageNumberClick() {
 	$("#pagination-ul").off().on('click', $(".page-item"), (event) => {
@@ -21,7 +21,7 @@ function pageNumberClick() {
 			paginateFaxes(apiResponse);
 		}
 	});
-};
+}
 
 function setCurrentPageNumber(eventTargetText, currentPageNumber) {
 		switch(eventTargetText) {
