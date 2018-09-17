@@ -110,7 +110,6 @@ phaxMachine.pages['fax-logs'] = {
 				data: JSON.stringify(faxID),
 				contentType: 'application/json',
 			});
-
 		});
 		changeStatusColor();
 	}
