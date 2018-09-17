@@ -33,7 +33,7 @@ class FaxLogsController < ApplicationController
 		respond_to do |format|
 			format.html
 			format.js
-			format.json { render :json => @sorted_faxes.to_json }
+			format.json { render :json => @sorted_faxes }
 		end
 	end
 
