@@ -98,7 +98,7 @@ class OrganizationsController < ApplicationController
 		end
 
 		def get_unallocated_numbers 
-			@unallocated_fax_numbers = FaxNumber.where(organization_id: nil)
+			@unallocated_fax_numbers = FaxNumber.where(organization_id: nil).order(:fax_number)
 		end
 
 		# def logo_params

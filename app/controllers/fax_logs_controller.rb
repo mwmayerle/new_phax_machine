@@ -84,7 +84,7 @@ class FaxLogsController < ApplicationController
 				else
 					fax_num_from_db = FaxNumber.includes(:organization).where(fax_number: filtering_params[:fax_number])
 				end
-
+				p fax_num_from_db
 				fax_num_from_db.each { |fax_number_obj| FaxLog.create_fax_nums_hash(@fax_numbers, fax_number_obj) }
 			# manager or user is making the request
 			elsif is_manager?
@@ -100,8 +100,8 @@ class FaxLogsController < ApplicationController
 
 			else # generic user
 				user_fax_nums = UserFaxNumber.includes(:fax_number).where(user_id: current_user.id)
-				user_fax_nums.map! { |user_fax_num| user_fax_num.fax_number.fax_number }
-				user_fax_nums.push(current_user.caller_id_number) if !user_fax_nums.include?(current_user.caller_id_number)
+				user_fax_nums = user_fax_nums.map { |user_fax_num| user_fax_num.fax_number.fax_number }
+
 				user_fax_nums.each do |user_fax_num|
 					@fax_numbers[user_fax_num] = { 'label' => current_user.organization.label }
 					@fax_numbers[user_fax_num]['org_created_at'] = current_user.organization.created_at

@@ -151,7 +151,6 @@ RSpec.describe FaxLog, type: :model do
 			it "sets 'options[:tag]' to the desired user if filtered_params[:user] is not 'all', 'all-linked', or nil. Logged in as manager" do
 				@users = {} # this imitates "set_users", which is needed to create '@users' used in the method
 				org1.users.each_with_index { |user_obj, index| FaxLog.create_users_hash(@users, user_obj, index) }
-
 				filtered_params = { :user => user1.email }
 				options = FaxLog.build_options(manager1, filtered_params, org1, @users)
 				expect(options[:tag]).to eq({ :sender_email_fax_tag => user1.fax_tag })
@@ -251,7 +250,7 @@ RSpec.describe FaxLog, type: :model do
 
 		it "filters only data for a specific user when asked" do
 			filtered_params = { :user => user3.email }
-			@users = {0=>{"email"=>"org_one_user3@aol.com", "caller_id_number"=>user3.caller_id_number, "user_created_at"=> (DateTime.now + 7), "fax_tag"=>user3.fax_tag}}
+			@users = {0=>{"email"=>user3.email, "caller_id_number"=>user3.caller_id_number, "user_created_at"=> (DateTime.now + 7), "org_id"=>user3.organization_id, "fax_tag"=>user3.fax_tag}, 1=>{"email"=>user2.email, "caller_id_number"=>user2.caller_id_number, "user_created_at"=> (DateTime.now + 7), "org_id"=> user2.organization_id, "fax_tag"=>user2.fax_tag}}
 
 			tag_data = []
 			tag_data << build_successful_sent_fax_objects(111111, 1, fax_number3.fax_number, org2.fax_numbers.first.fax_number, org1, manager1)
@@ -274,7 +273,7 @@ RSpec.describe FaxLog, type: :model do
 			numbers_from_db.each { |fax_number_obj| FaxLog.create_fax_nums_hash(@fax_numbers, fax_number_obj) }
 			@users = {}
 			criteria_array = User.includes([:organization, :user_permission]).all.select { |user| user.user_permission && user.organization }
-			criteria_array.each_with_index { |user_obj, index| FaxLog.create_users_hash_admin(@users, user_obj, index) }
+			criteria_array.each_with_index { |user_obj, index| FaxLog.create_users_hash(@users, user_obj, index) }
 		end
 
 		it "an organization label is not used if a fax pre-dates the creation of the organization" do

@@ -7,16 +7,14 @@ class FaxLog < ApplicationRecord
 	class << self
 		# Build the options object that will be used later
 		def build_options(current_user, filtered_params, organization, users, options = {})
-			options[:start_time] = add_start_time(filtered_params[:start_time])
-			options[:end_time] = add_end_time(filtered_params[:end_time])
-			options[:tag] = filtered_params[:tag] if !filtered_params[:tag].nil?
-			options[:fax_number] = set_fax_number_in_options(filtered_params, options)
-
-			set_status_in_options(filtered_params, options) if filtered_params[:status]
-			set_organization_in_options(filtered_params, organization, options) if filtered_params[:organization]
-
 			set_tag_in_options_manager(filtered_params, organization, options, users) if is_manager?(current_user)
 			set_tag_in_options_user(filtered_params, organization, options, current_user) if is_user?(current_user)
+			options[:tag] = filtered_params[:tag] if !filtered_params[:tag].nil?
+			options[:fax_number] = set_fax_number_in_options(filtered_params, options)
+			set_status_in_options(filtered_params, options) if filtered_params[:status]
+			set_organization_in_options(filtered_params, organization, options) if filtered_params[:organization]
+			options[:start_time] = add_start_time(filtered_params[:start_time])
+			options[:end_time] = add_end_time(filtered_params[:end_time])
 			options
 		end
 
@@ -70,6 +68,14 @@ class FaxLog < ApplicationRecord
 						filtered_data = current_data.raw_data
 					else
 						filtered_data = filter_faxes_by_fax_number(options, current_data.raw_data, fax_numbers)
+
+						if [options[:tag][:sender_organization_fax_tag]]
+							if is_admin?(current_user)
+								filtered_data = filter_faxes_by_organization_admin(options, filtered_data, organizations[options[:tag][:sender_organization_fax_tag]])
+							else
+								filtered_data = filter_faxes_by_organization(options, filtered_data, organizations)
+							end
+						end
 					end
 
 					# Filter by user if a user-specific tag exists
@@ -83,13 +89,21 @@ class FaxLog < ApplicationRecord
 		end
 
 		def filter_for_desired_fax_number_data(tag_data, fax_numbers)
-			tag_data.select do |fax_object|
+			results = tag_data.select do |fax_object|
 				fax_obj_recipient_data_in_fax_numbers?(fax_object, fax_numbers) || sent_caller_id_in_fax_numbers?(fax_object, fax_numbers)
 			end
 		end
 
 		def filter_faxes_by_fax_number(options, current_data, fax_numbers)
 			current_data.select { |fax_object| fax_numbers.include?(fax_object['from_number']) || fax_numbers.include?(fax_object['to_number']) }
+		end
+
+		def filter_faxes_by_organization_admin(options, filtered_data, organizations)
+			filtered_data.select { |fax_object| fax_object_is_younger?(fax_object['created_at'], organizations['org_created_at']) }
+		end
+
+		def filter_faxes_by_organization(options, filtered_data, organizations)
+			filtered_data.select { |fax_object| fax_object_is_younger?(fax_object['created_at'], organizations.created_at) }
 		end
 
 		def filter_faxes_by_user(options, filtered_data, user)
@@ -172,9 +186,6 @@ class FaxLog < ApplicationRecord
 							fax_data[fax_object['id']]['sent_by'] = user_obj_data['email']
 						end
 					end
-
-					#ADD soft-deleted users portion
-
 				end #the if/else for fax direction
 
 				fax_data[fax_object['id']]['created_at'] = format_initial_fax_data_time(fax_object['created_at'])
@@ -222,7 +233,9 @@ class FaxLog < ApplicationRecord
 				options[:tag] = { :sender_organization_fax_tag => organization.fax_tag }
 			else
 				users.each do |index_key, user_obj_hash|
-					options[:tag] = { :sender_email_fax_tag => user_obj_hash['fax_tag'] } if user_obj_hash['org_id'] == organization.id
+					if user_obj_hash['org_id'] == organization.id && user_obj_hash['email'] == filtered_params[:user]
+						options[:tag] = { :sender_email_fax_tag => user_obj_hash['fax_tag'] }
+					end
 				end
 			end
 		end

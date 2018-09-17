@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 class Users::RegistrationsController < Devise::RegistrationsController
 	include SessionsHelper
+	include FaxTags
 
   # before_action :configure_sign_up_params, only: [:create]
   	before_action :verify_fax_numbers, only: [:create]
@@ -17,7 +18,9 @@ class Users::RegistrationsController < Devise::RegistrationsController
   		possible_user.restore(:recursive => true)
 
   		if possible_user.organization_id != sign_up_params[:organization_id]
-  			possible_user.update_attributes(organization_id: sign_up_params[:organization_id])
+  			# If a user is reinstated in a different organization, their fax_tag is changed so that the logs don't dig up
+  			#  previous faxes from when the user was in a different organization.
+  			possible_user.update_attributes(organization_id: sign_up_params[:organization_id], fax_tag: possible_user.generate_fax_tag)
   		end
 
   		if possible_user.caller_id_number != sign_up_params[:caller_id_number]

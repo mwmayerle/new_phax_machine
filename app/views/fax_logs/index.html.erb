@@ -127,6 +127,13 @@
 			<%= render partial: 'tbody', locals: { sorted_faxes: @sorted_faxes }, layout: false %>
 		</tbody>
 	</table>
+
+	<div id="no-initial-results">
+		<% if @sorted_faxes == {} %>
+			<p class="text-center">No results matched your criteria. Please try again.</p>
+		<% end %>
+	</div>
+
 	<div id="load-icon" class="row">
 		<div class="col text-center">
 			<i style="padding: none; width: 48px;" class="fa fa-spinner fa-spin fa-3x fa-fw">&nbsp;&nbsp;</i><h3>Loading Data...</h3>

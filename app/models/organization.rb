@@ -18,12 +18,18 @@ class Organization < ApplicationRecord
 	validates :label, uniqueness: true, length: { maximum: ORGANIZATION_CHARACTER_LIMIT }, presence: true
 	validates :fax_tag, uniqueness: true, length: { maximum: FAX_TAG_LIMIT }, presence: true
 
-	before_validation :generate_fax_tag, on: :create
+	before_validation :ensure_organization_name_not_previously_used, :generate_fax_tag, on: :create
 	before_destroy :remove_fax_number_associations
 
 	private
 		def remove_fax_number_associations
 			self.fax_numbers.each { |fax_number| fax_number.update_attributes(organization_id: nil) } if self.fax_numbers.present?
+		end
+
+		def ensure_organization_name_not_previously_used
+			if Organization.with_deleted.map { |org| org.label.downcase }.include?(self.label.downcase)
+				errors.add(:base, "That name was previously used by another organization. Please use a different name and try again.")
+			end
 		end
 
 		class << self

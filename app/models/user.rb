@@ -10,7 +10,7 @@ class User < ApplicationRecord
 
   attr_accessor :permission, :logo_url
 
-	belongs_to :organization, optional: true
+	belongs_to :organization, -> { with_deleted }, optional: true
 
 	has_one :admin, through: :organization
 	has_one :manager, through: :organization
