@@ -18,6 +18,7 @@ phaxMachine.pages['fax-logs'] = {
 		$("#load-icon").hide();
 
 		$("#filter-button").on('click', function(event) {
+			$("#no-initial-results").hide();
 			$("tbody").empty();
 			$("#pagination-ul").empty();
 			$("#load-icon").show();
