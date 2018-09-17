@@ -29,7 +29,7 @@ class FaxLogsController < ApplicationController
 			FaxLog.add_all_attribute_to_hashes( [@users, @fax_numbers] )
 			@sorted_faxes = FaxLog.format_faxes(current_user, initial_fax_data, @organizations, @fax_numbers, @users)
 		end
-
+		
 		respond_to do |format|
 			format.html
 			format.js
