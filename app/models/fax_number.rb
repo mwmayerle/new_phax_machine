@@ -127,6 +127,9 @@ class FaxNumber < ApplicationRecord
 						User.where(caller_id_number: deleted_number.fax_number).each do |user| 
 							user.update_attributes(caller_id_number: nil)
 						end
+						UserFaxNumber.where(fax_number_id: deleted_number.id).each do |user_fax_number|
+							user_fax_number.destroy
+						end
 					end
 					# Delete the removed number from the fax number hash used to populate the data table
 					phaxio_numbers.each { |deleted_number| phaxio_numbers.delete(deleted_number) }
