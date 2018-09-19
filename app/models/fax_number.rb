@@ -13,7 +13,7 @@ class FaxNumber < ApplicationRecord
 
 	belongs_to :organization, optional: true
 	has_one :manager, through: :organization
-	has_many :user_fax_numbers
+	has_many :user_fax_numbers, dependent: :destroy
 	has_many :users, through: :user_fax_numbers
 
 	validates :fax_number, presence: true, length: { maximum: FAX_NUMBER_DIGIT_LIMIT }, phone: {possible: true}, uniqueness: true
@@ -84,22 +84,22 @@ class FaxNumber < ApplicationRecord
 				all_current_db_fax_numbers = FaxNumber.includes(:organization).all
 
 				fax_numbers_from_api.each do |api_fax_number|
-					phaxio_numbers[api_fax_number[:phone_number]] = {}
-					phaxio_numbers[api_fax_number[:phone_number]][:city] = api_fax_number[:city]
-					phaxio_numbers[api_fax_number[:phone_number]][:state] = api_fax_number[:state]
-					phaxio_numbers[api_fax_number[:phone_number]][:provisioned_at] = format_time(api_fax_number[:provisioned_at])
-					phaxio_numbers[api_fax_number[:phone_number]][:cost] = format_cost(api_fax_number[:cost])
-					phaxio_numbers[api_fax_number[:phone_number]][:callback_url] = !!api_fax_number[:callback_url]
+					phaxio_numbers[api_fax_number[:phone_number]] = {
+						:city => api_fax_number[:city],
+						:state => api_fax_number[:state],
+						:provisioned_at => format_time(api_fax_number[:provisioned_at]),
+						:cost => format_cost(api_fax_number[:cost]),
+						:callback_url => !!api_fax_number[:callback_url]
+					}
 
-					db_number = all_current_db_fax_numbers.select { |db_number| db_number.fax_number == api_fax_number[:phone_number] }
+					db_number = all_current_db_fax_numbers.find { |db_number| db_number.fax_number == api_fax_number[:phone_number] }
 
-					if db_number != []
-						db_number = db_number.pop
+					if db_number.nil?
+						db_number = FaxNumber.create!(fax_number: api_fax_number[:phone_number], has_webhook_url: !!api_fax_number[:callback_url])
+					else
 						if db_number.has_webhook_url != !!api_fax_number[:callback_url]
 							db_number.update_attributes(has_webhook_url: !!api_fax_number[:callback_url])
 						end
-					else
-						db_number = FaxNumber.create!(fax_number: api_fax_number[:phone_number], has_webhook_url: !!api_fax_number[:callback_url])
 					end
 					
 					phaxio_numbers[api_fax_number[:phone_number]][:id] = db_number.id

@@ -241,7 +241,6 @@ function addPreviousSymbol($pageNumberList, currentPageNumber, symbolToAdd) {
 	}
 };
 
-// pageNumber is highestPageNumber in split pagination
 function addNextSymbol($pageNumberList, highestPageNumber, currentPageNumber, symbolToAdd) {
 	if (highestPageNumber === currentPageNumber) {
 		$pageNumberList.append(`<li class="page-item disabled"><a class="page-link text-center" href="#">${symbolToAdd}</a></li>`);
