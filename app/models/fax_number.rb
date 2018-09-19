@@ -120,7 +120,15 @@ class FaxNumber < ApplicationRecord
 			# Removes released numbers from the database and deletes them from the hash created for the table in the index view
 			def remove_released_fax_numbers(phaxio_numbers)
 				if phaxio_numbers.keys.count != self.count
+					# Delete from database
 					deleted_numbers = self.where.not({fax_number: phaxio_numbers.keys}).destroy_all
+					# If a user has a deleted number as a caller_id_number, reset user's caller_id_number to nil
+					deleted_numbers.each do |deleted_number|
+						User.where(caller_id_number: deleted_number.fax_number).each do |user| 
+							user.update_attributes(caller_id_number: nil)
+						end
+					end
+					# Delete the removed number from the fax number hash used to populate the data table
 					phaxio_numbers.each { |deleted_number| phaxio_numbers.delete(deleted_number) }
 				end
 			end

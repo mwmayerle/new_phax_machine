@@ -34,7 +34,7 @@
 								<% if organization_fax_tag == 'all' %>
 									<option id="all-org" class="all-org" name="fax_log[organization]" value="all" selected="selected">All</option>
 								<% else %>
-									<option id="<%= organization_data['label'] %>" class="<%= organization_data['org_id'] %>" name="fax_log[organization]" value="<%= organization_fax_tag %>"><%= organization_data['label'] %></option>
+									<option id="<%= organization_data[:label] %>" class="<%= organization_data[:org_id] %>" name="fax_log[organization]" value="<%= organization_fax_tag %>"><%= organization_data[:label] %></option>
 								<% end %>
 							<% end %>
 						</select>
@@ -50,7 +50,7 @@
 									All
 								</option>
 							<% else %>
-								<option id="<%= fax_number_key %>" class="<%= fax_number_data['org_id'] %>" name="fax_log[fax_number]" value="<%= fax_number_key %>">
+								<option id="<%= fax_number_key %>" class="<%= fax_number_data[:org_id] %>" name="fax_log[fax_number]" value="<%= fax_number_key %>">
 									<%= FaxNumber.format_pretty_fax_number(fax_number_key) %>
 								</option>
 							<% end %>
@@ -68,8 +68,8 @@
 										All
 									</option>
 								<% else %>
-									<option id="<%= user_data['email'] %>" class="<%= user_data['org_id'] %>" name="fax_log[user]" value="<%= user_data['email'] %>">
-										<%= user_data['email'] %>
+									<option id="<%= user_data[:email] %>" class="<%= user_data[:org_id] %>" name="fax_log[user]" value="<%= user_data[:email] %>">
+										<%= user_data[:email] %>
 									</option>
 								<% end %>
 							<% end %>
@@ -126,13 +126,12 @@
 		<tbody id="table-body-start">
 			<%= render partial: 'tbody', locals: { sorted_faxes: @sorted_faxes }, layout: false %>
 		</tbody>
+		<div id="no-initial-results">
+			<% if @sorted_faxes == {} %>
+				<p class="text-center">No results matched your criteria. Please try again.</p>
+			<% end %>
+		</div>
 	</table>
-
-	<div id="no-initial-results">
-		<% if @sorted_faxes == {} %>
-			<p class="text-center">No results matched your criteria. Please try again.</p>
-		<% end %>
-	</div>
 
 	<div id="load-icon" class="row">
 		<div class="col text-center">
