@@ -35,10 +35,6 @@
     "DOMAIN_URL": {
     	"description": "The domain this application will be deployed to. If you're not using a custom domain this will be 'https://YOURAPPNAMEHERE.herokuapp.com'.",
     	"required": true
-    },
-    "LOGO_URL": {
-    	"description": "A link to your corporate logo. This can be edited by the Admin later.",
-    	"required": false
     }
   },
   "repository": "https://github.com/mwmayerle/new_phax_machine",
