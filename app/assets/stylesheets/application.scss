@@ -216,3 +216,22 @@ td {
 .indent-me {
 	margin-left: 20px;
 }
+
+.user-list-text {
+	padding: 10px;
+	font-size: 22px;
+}
+
+.user-list-box {
+	transition: all 0.3s;
+	background: #eeeeee;
+	margin: 14px;
+	border-radius: 7px;
+}
+
+.user-list-box-active {
+	transition: all 0.3s;
+	background: #e0e0e0;
+	margin: 14px;
+	border-radius: 7px;
+}

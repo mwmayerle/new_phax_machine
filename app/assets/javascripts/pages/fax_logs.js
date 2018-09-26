@@ -113,17 +113,22 @@ function buildTableRows(faxData, pageNumberDisplay) {
 			// Admin has 8 <th>, Manager has 7 <th>, User has only 6. These if blocks add/remove data for these permission levels
 				if ($('#fax-log-table th').length === 8) { head = head.concat('', `<td class="text-center">${faxData[faxDatum].organization}</td>`); }
 				if ($('#fax-log-table th').length > 6) { head = head.concat('', `<td class="text-center">${faxData[faxDatum].sent_by}</td>`); }
-
+				console.log(faxData[faxDatum].status)
 			head = head.concat('', `
 				<td class="text-center">${faxData[faxDatum].from_number}</td>
 				<td class="text-center">${faxData[faxDatum].to_number}</td>
 				<td class="status">${faxData[faxDatum].status}</td>
 				<td class="text-center">${faxData[faxDatum].created_at}</td>
-				<td class="text-center">
-					<a href="/download/${faxDatum}"
-						<i class="fa fa-fw fa-download" aria-hidden="true"></i>
-					</a>
-				</td>
+				<td class="text-center">`
+				);
+				if (faxData[faxDatum].status === "Success" || faxData[faxDatum].status === "Failure" || faxData[faxDatum].status === "Partial Success") {
+					head = head.concat('', `
+						<a href="/download/${faxDatum}"
+							<i class="fa fa-fw fa-download" aria-hidden="true"></i>
+						</a>`
+						);
+				}
+				head = head.concat(`</td>
 			</tr>
 			`);
 			$("tbody").prepend(head);
