@@ -1,9 +1,7 @@
 class Organization < ApplicationRecord
 	# -> { with_deleted } links the soft-deleted association. See Paranoia gem docs.
 	acts_as_paranoid
-	
 	include FaxTags
-	# include HTTParty
 	
 	ORGANIZATION_CHARACTER_LIMIT = 42
 

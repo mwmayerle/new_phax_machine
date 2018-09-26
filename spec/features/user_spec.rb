@@ -26,32 +26,36 @@ RSpec.feature "User Pages", :type => :feature do
 	before(:each) do 
 		org.update_attributes(manager_id: manager.id)
 		org2.update_attributes(manager_id: manager2.id)
-		org.reload.fax_numbers << fax_number1
-		org.reload.fax_numbers << fax_number2
-		org.reload.users << user1
-		org.reload.users << user2
-		org.reload.users << user3
-		org2.reload.fax_numbers << fax_number3
-		user1.reload.fax_numbers << fax_number1
-		user1.reload.fax_numbers << fax_number2
-		user2.reload.fax_numbers << fax_number1
+		org.fax_numbers << fax_number1
+		org.fax_numbers << fax_number2
+		org.fax_numbers << fax_number3
+		org.users << user1
+		org.users << user2
+		org.users << user3
+		org2.fax_numbers << fax_number3
+		user1.fax_numbers << fax_number1
+		user1.fax_numbers << fax_number2
+		user2.fax_numbers << fax_number1
+		user3.fax_numbers << fax_number3
+		org.reload
+		org2.reload
+		user1.reload
+		user2.reload
 	end
 
 	describe "editing an organization's users as an admin" do
 		it "allows the admin and only the admin to access the 'org-index' page" do
 			login_as(admin)
-			visit(root_path)
+			visit(organizations_path)
 			click_link('Users')
 			expect(page).to have_current_path('http://www.example.com/org-users')
 			expect(page).to have_link('Phaxio Test Company', href: users_path(organization_id: org.id))
 			expect(page).to have_link('Phaxio Test Company2', href: users_path(organization_id: org2.id))
-
 			click_link("#{org.label}", href: "/users?organization_id=#{org.id}")
 			expect(page).to have_current_path("/users?organization_id=#{org.id}")
 			expect(page).to have_field("user[email]")
 			expect(page).to have_field("user[caller_id_number]")
 			expect(page).to have_text("Indicates the user is #{org.label}'s manager")
-
 			expect(page).to have_table("user-table")
 			within_table("user-table") do
 				expect(page).to have_text("Email Address")

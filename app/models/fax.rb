@@ -5,19 +5,23 @@ class Fax < ApplicationRecord
 		end
 
 		def create_fax(options)
-		  begin
-		    sent_fax_response = Phaxio::Fax.create(
-		      to: options[:to],
-		      file: options[:files],
-		      caller_id: options[:caller_id],
-		      tag: {
-		        sender_organization_fax_tag: options[:tag][:sender_organization_fax_tag], 
-		        sender_email_fax_tag: options[:tag][:sender_email_fax_tag]
-		      }
-		    )
-		  rescue => error
-		  	sent_fax_response = error.message
-		  end
+			if options[:caller_id].nil?
+				sent_fax_response = "Your caller ID number is not set."
+			else
+			  begin
+			    sent_fax_response = Phaxio::Fax.create(
+			      to: options[:to],
+			      file: options[:files],
+			      caller_id: options[:caller_id],
+			      tag: {
+			        sender_organization_fax_tag: options[:tag][:sender_organization_fax_tag], 
+			        sender_email_fax_tag: options[:tag][:sender_email_fax_tag]
+			      }
+			    )
+			  rescue => error
+			  	sent_fax_response = error
+			  end
+			end
 		  sent_fax_response
 		end
 
@@ -46,7 +50,11 @@ class Fax < ApplicationRecord
 		end
 
 		def download_file(id)
-	    file = Phaxio::Fax.file(id)
+			begin
+				api_response = Phaxio::Fax.file(id)
+			rescue Phaxio::Error::PhaxioError => error
+				api_response = error.message
+			end
 		end
 
 		def set_phaxio_creds

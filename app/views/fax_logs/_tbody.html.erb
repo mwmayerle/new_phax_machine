@@ -1,6 +1,6 @@
 <% sorted_faxes.each do |fax_id_key, fax_data| %>
 	<tr id="<%= fax_id_key %>">
-		<% if fax_data['direction'] == "Sent" %>
+		<% if fax_data[:direction] == "Sent" %>
 			<td class="text-center">
 				<i style="color:green" class="fa fa-fw fa-arrow-circle-right" aria-hidden="true"></i>
 			</td>
@@ -10,15 +10,15 @@
 			</td>
 		<% end %>
 		<% if is_admin? %>
-			<td class="text-center"><%= fax_data['organization'] %></td>
-			<td class="text-center"><%= fax_data['sent_by'] %></td>
+			<td class="text-center"><%= fax_data[:organization] %></td>
+			<td class="text-center"><%= fax_data[:sent_by] %></td>
 		<% elsif is_manager? %>
-			<td class="text-center"><%= fax_data['sent_by'] %></td>
+			<td class="text-center"><%= fax_data[:sent_by] %></td>
 		<% end %>
-		<td class="text-center"><%= fax_data['from_number'] %></td>
-		<td class="text-center"><%= fax_data['to_number'] %></td>
-		<td class="status"><%= fax_data['status'] %></td>
-		<td class="text-center"><%= fax_data['created_at'] %></td>
+		<td class="text-center"><%= fax_data[:from_number] %></td>
+		<td class="text-center"><%= fax_data[:to_number] %></td>
+		<td class="status"><%= fax_data[:status] %></td>
+		<td class="text-center"><%= fax_data[:created_at] %></td>
 		<td class="text-center"><i class="fa fa-fw fa-download" aria-hidden="true"></i></td>
 	</tr>
 <% end %>

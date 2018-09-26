@@ -50,6 +50,4 @@ phaxMachine.pages['send-fax'] = {
 	}
 };
 
-function adjustAttachedFileCount() {
-	$("#attached-file-counter").text(`Attached Files: ${$("tr").length}`);
-};
+function adjustAttachedFileCount() { $("#attached-file-counter").text(`Attached Files: ${$("tr").length}`); };
