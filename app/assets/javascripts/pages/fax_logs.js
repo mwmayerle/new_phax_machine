@@ -92,6 +92,7 @@ phaxMachine.pages['fax-logs'] = {
 			}
 		});
 		changeStatusColor();
+		downloadCursorChange();
 	}
 };
 
@@ -118,7 +119,11 @@ function buildTableRows(faxData, pageNumberDisplay) {
 				<td class="text-center">${faxData[faxDatum].to_number}</td>
 				<td class="status">${faxData[faxDatum].status}</td>
 				<td class="text-center">${faxData[faxDatum].created_at}</td>
-				<td class="text-center"><i class="fa fa-fw fa-download" aria-hidden="true"></i></td>
+				<td class="text-center">
+					<a href="/download/${faxDatum}"
+						<i class="fa fa-fw fa-download" aria-hidden="true"></i>
+					</a>
+				</td>
 			</tr>
 			`);
 			$("tbody").prepend(head);
@@ -126,7 +131,6 @@ function buildTableRows(faxData, pageNumberDisplay) {
 	});
 	changeStatusColor();
 	downloadCursorChange();
-	addFileIconClick();
 };
 
 function changeStatusColor() {
@@ -284,22 +288,6 @@ function constructPaginationMiddle(pageNumbersMiddle, pageNumberArray, currentPa
 //////////////////////////////
 //// on-click downloading ////
 //////////////////////////////
-
-function addFileIconClick() { // Error message is sent back as json if no file is found
-	$("tr").off().on('click', $(".fa-download"), (event) => {
-		event.preventDefault();
-		if ($(event.target).hasClass("fa-download")) {
-			let response = `/download/${$(event.target).closest("tr").attr("id")}`;
-			console.log(response)
-			console.log(window.location.href)
-			if (response) { 
-				window.location.href = response;
-			} else {
-				createAlert('danger', "File not found.")
-			}
-		}
-	});
-};
 
 function downloadCursorChange() {
 	$(".fa-download").hover((event) => { $(event.target).css("cursor", "pointer"); });

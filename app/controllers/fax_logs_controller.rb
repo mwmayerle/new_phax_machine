@@ -37,9 +37,47 @@ class FaxLogsController < ApplicationController
 		end
 	end
 
+	def download
+		options = FaxLog.build_options(current_user, filtering_params, @organizations, @users, @fax_numbers)
+		info = Fax.get_fax_information(download_fax_params)
+		if is_admin?
+			can_download = true
+		elsif is_manager?
+			if info.direction == 'received'
+				fax_nums = current_user.organization.user_fax_numbers.map {|user_fax_num| user_fax_num.fax_number.fax_number }.uniq
+				can_download = fax_nums.include?(info.to_number) || fax_nums.include?(info.from_number)
+			else
+				can_download = current_user.organization.fax_tag == info.tags[:sender_organization_fax_tag]
+			end
+		else #generic user
+			if info.direction == 'received'
+				fax_nums = current_user.user_fax_numbers.map { |user_fax_num| user_fax_num.fax_number.fax_number }.uniq
+				can_download = fax_nums.include?(info.to_number) || fax_nums.include?(info.from_number)
+			else
+				can_download = current_user.fax_tag == info.tags[:sender_email_fax_tag]
+			end
+		end
+
+		if can_download
+			api_response = Fax.download_file(download_fax_params)
+			if api_response.is_a?(String)
+	   		flash[:alert] = api_response
+	   		redirect_to(fax_logs_path)
+	   	else
+	   		send_file(api_response.path, filename: "Fax-#{params[:fax_id]}.pdf", type: :pdf, disposition: "attachment")
+	   	end
+		else
+			render :body => nil, :status => :unauthorized
+		end
+	end
+
 	private
 		def set_phaxio_creds
 			Fax.set_phaxio_creds
+		end
+
+		def download_fax_params
+			params.require(:fax_id)
 		end
 
 		def filtering_params
@@ -108,7 +146,7 @@ class FaxLogsController < ApplicationController
 				else
 					FaxLog.create_fax_nums_hash(@fax_numbers, FaxNumber.includes(:organization)
 						.find_by(fax_number: filtering_params[:fax_number]))
-					
+
 				end
 			end
 		end

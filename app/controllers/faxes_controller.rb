@@ -24,17 +24,10 @@ class FaxesController < ApplicationController
 		if sent_fax_response.is_a?(Phaxio::Error::PhaxioError)
 			flash[:alert] = "Error: ".concat(sent_fax_response.to_s)
 		else
-			api_response = Fax.get_fax_information(sent_fax_response)
+			api_response = Fax.get_fax_information(sent_fax_response.id)
 			api_response.status == 'queued' ? flash[:notice] = 'Fax queued for sending' : flash[:alert] = api_respons.eerror_message
 		end
 		redirect_to new_fax_path
-	end
-
-	def download
-		api_response = Fax.download_file(params[:fax_id])
-		if !api_response.is_a?(String)
-   		send_file(api_response.path, filename: "Fax-#{params[:fax_id]}.pdf", type: :pdf, disposition: "attachment")
-   	end
 	end
 
 	private
