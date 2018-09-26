@@ -20,9 +20,11 @@
 		<td class="status"><%= fax_data[:status] %></td>
 		<td class="text-center"><%= fax_data[:created_at] %></td>
 		<td class="text-center">
-			<a href="/download/<%= fax_id_key %>">
-				<i class="fa fa-fw fa-download" aria-hidden="true"></i>
-			</a>
+			<% if fax_data[:status] == "Success" || fax_data[:status] == "Failure" || fax_data[:status] == "Partial Success" %>
+				<a href="/download/<%= fax_id_key %>">
+					<i class="fa fa-fw fa-download" aria-hidden="true"></i>
+				</a>
+			<% end %>
 		</td>
 	</tr>
 <% end %>
