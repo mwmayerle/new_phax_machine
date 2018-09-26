@@ -21,23 +21,25 @@ class FaxesController < ApplicationController
 			},
 		}
 		sent_fax_response = Fax.create_fax(options)
-		# in Fax.create_fax I rescue Phaxio::Error-type errors and convert them into a string to catch garbage input
-		if sent_fax_response.class == String
-			flash[:alert] = sent_fax_response
+		if sent_fax_response.is_a?(Phaxio::Error::PhaxioError)
+			flash[:alert] = "Error: ".concat(sent_fax_response.to_s)
 		else
 			api_response = Fax.get_fax_information(sent_fax_response)
-			api_response.status == 'queued' ? flash[:notice] = 'Fax queued for sending' : flash[:alert] = api_response.error_message
+			api_response.status == 'queued' ? flash[:notice] = 'Fax queued for sending' : flash[:alert] = api_respons.eerror_message
 		end
 		redirect_to new_fax_path
 	end
 
 	def download
-		response = Fax.download_file(fax_params[:id])
+		api_response = Fax.download_file(params[:fax_id])
+		if !api_response.is_a?(String)
+   		send_file(api_response.path, filename: "Fax-#{params[:fax_id]}.pdf", type: :pdf, disposition: "attachment")
+   	end
 	end
 
 	private
 		def fax_params
-			params.require(:fax).permit(:id, :to, { files: [:file1, :file2, :file3, :file4, :file5, :file6, :file7, :file8, :file9, :file10] })
+			params.require(:fax).permit(:id, :fax_id, :to, { files: [:file1, :file2, :file3, :file4, :file5, :file6, :file7, :file8, :file9, :file10] })
 		end
 
 		def verify_user_signed_in

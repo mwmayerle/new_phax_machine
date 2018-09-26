@@ -17,7 +17,7 @@ class FaxNumber < ApplicationRecord
 	has_many :users, through: :user_fax_numbers
 
 	validates :fax_number, presence: true, length: { maximum: FAX_NUMBER_DIGIT_LIMIT }, phone: {possible: true}, uniqueness: true
-	validates :label, length: { maximum: FAX_NUMBER_CHARACTER_LIMIT }
+	validates :label, :manager_label, length: { maximum: FAX_NUMBER_CHARACTER_LIMIT }
 	
 	before_validation :fax_number, :format_fax_number
 
@@ -29,7 +29,7 @@ class FaxNumber < ApplicationRecord
 		class << self
 			# Converts '+12223334444' to '(222) 333-4444'
 			def format_pretty_fax_number(fax_number)
-				return if fax_number.nil? # <-- for edhe case when a User object's caller_id_number attribute is nil
+				return if fax_number.nil? # <-- for edge case when a User object's caller_id_number attribute is nil
 				fax_number.slice(2, fax_number.length).insert(0,"(").insert(4,") ").insert(9, "-") if fax_number[0] != "("
 			end
 
@@ -44,12 +44,12 @@ class FaxNumber < ApplicationRecord
 
 			def provision(area_code)
 				Fax.set_phaxio_creds
-				Phaxio::PhoneNumber.create({:area_code => area_code, :country_code => 1})
+				Phaxio::PhoneNumber.create({ :area_code => area_code, :country_code => 1 })
 			end
 
 			def get_area_code_list(options = {})
 				Fax.set_phaxio_creds
-				options.merge!({country_code: 1, per_page: 1000 })
+				options.merge!({ country_code: 1, per_page: 1000 })
 				area_codes_from_api = Phaxio::Public::AreaCode.list(options)
 				format_area_codes(area_codes_from_api.raw_data, options)
 			end

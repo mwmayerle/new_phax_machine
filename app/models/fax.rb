@@ -19,7 +19,7 @@ class Fax < ApplicationRecord
 			      }
 			    )
 			  rescue => error
-			  	sent_fax_response = error.message
+			  	sent_fax_response = error
 			  end
 			end
 		  sent_fax_response
@@ -50,7 +50,11 @@ class Fax < ApplicationRecord
 		end
 
 		def download_file(id)
-	    file = Phaxio::Fax.file(id)
+			begin
+				api_response = Phaxio::Fax.file(id)
+			rescue Phaxio::Error::PhaxioError => error
+				api_response = error.message
+			end
 		end
 
 		def set_phaxio_creds

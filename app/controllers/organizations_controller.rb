@@ -50,21 +50,6 @@ class OrganizationsController < ApplicationController
 
 	def edit
 	end
-	# DON'T FORGET LOGO_PARAMS METHOD BELOW
-	# def update_logo
-	# 	if is_manager? || current_user.manager == @organization.manager
-	# 		if @organization && @organization.update_attributes(logo: logo_params[:logo])
-	# 			flash[:notice] = "Logo successfully updated!"
-	# 			redirect_to(organization_path(@organization))
-	# 		else
-	# 			flash[:alert] = @organization.errors.full_messages.pop
-	# 			render(:edit_logo)
-	# 		end
-	# 	else
-	# 		flash[:alert] = ApplicationController::DENIED
-	# 		redirect_to root_path
-	# 	end
-	# end
 
 	def update
 		params[:organization][:fax_numbers_purchasable] = false if params[:organization][:fax_numbers_purchasable].nil?
@@ -100,11 +85,7 @@ class OrganizationsController < ApplicationController
 		def get_unallocated_numbers 
 			@unallocated_fax_numbers = FaxNumber.where(organization_id: nil).order(:fax_number)
 		end
-
-		# def logo_params
-		# 	params.require(:organization).permit(:logo)
-		# end
-
+		
 		def organization_params
 			params.require(:organization).permit(:id, :manager_id, :label, :admin_id, :fax_numbers_purchasable)
 		end

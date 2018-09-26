@@ -9,6 +9,7 @@ if (Object.keys(apiResponse).length === 0) {
 	paginateFaxes(apiResponse);
 	buildTableRows(apiResponse, pageNumberDisplay);
 	pageNumberClick();
+	downloadCursorChange();
 }
 
 function pageNumberClick() {
@@ -21,7 +22,7 @@ function pageNumberClick() {
 			paginateFaxes(apiResponse);
 		}
 	});
-}
+};
 
 function setCurrentPageNumber(eventTargetText, currentPageNumber) {
 		switch(eventTargetText) {

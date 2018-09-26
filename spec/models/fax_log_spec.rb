@@ -43,33 +43,39 @@ RSpec.describe FaxLog, type: :model do
 
 		org1.update_attributes(manager_id: manager1.id)
 		org2.update_attributes(manager_id: manager2.id)
+		@users = {}
+		org1.users.each_with_index { |user_obj, index| FaxLog.create_users_hash(@users, user_obj, index) }
+		org2.users.each_with_index { |user_obj, index| FaxLog.create_users_hash(@users, user_obj, index) }
 	end # before(:each)
 
 	describe "the #build_options method" do
 		describe "the #add_start_time method" do
 			it "#add_start_time sets the start_time in the options hash to an RFC3339 time based on user input" do
-				filtered_params = { :start_time => "2018-09-02 8:58PM" }
+				filtered_params = { :start_time => "2018-08-01 12:00PM" }
 				all_orgs = Organization.all
-				options = FaxLog.build_options(admin, filtered_params, all_orgs, @users)
-				expect(options[:start_time]).to eq("2018-09-02T20:58:00-05:00")
+				FaxLog.create_orgs_hash(org_hash = {}, org1)
 
-				options = FaxLog.build_options(manager1, filtered_params, org1, @users)
-				expect(options[:start_time]).to eq("2018-09-02T20:58:00-05:00")
+				options = FaxLog.build_options(admin, filtered_params, org_hash, @users, @fax_numbers)
+				expect(options[:start_time]).to eq(("2018-08-01 12:00PM".to_time).rfc3339)
 
-				options = FaxLog.build_options(user1, filtered_params, org1, @users)
-				expect(options[:start_time]).to eq("2018-09-02T20:58:00-05:00")
+				options = FaxLog.build_options(manager1, filtered_params, org_hash, @users, @fax_numbers)
+				expect(options[:start_time]).to eq(("2018-08-01 12:00PM".to_time).rfc3339)
+
+				options = FaxLog.build_options(user1, filtered_params, org_hash, @users, @fax_numbers)
+				expect(options[:start_time]).to eq(("2018-08-01 12:00PM".to_time).rfc3339)
 			end
 
 			it "#add_start_time defaults to 1 week ago if no start time is specified it is left blank (or it's the initial page load)" do
-				filtered_params = { :fax_log=>{} }
+				filtered_params = { :fax_log => {} }
 				all_orgs = Organization.all
-				options = FaxLog.build_options(admin, filtered_params, all_orgs, @users)
+				FaxLog.create_orgs_hash(org_hash = {}, org1)
+
+				options = FaxLog.build_options(admin, filtered_params, org_hash, @users, @fax_numbers)
 				expect(options[:start_time]).to eq((DateTime.now - 7).rfc3339)
 
-				options = FaxLog.build_options(manager1, filtered_params, org1, @users)
+				options = FaxLog.build_options(manager1, filtered_params, org_hash, @users, @fax_numbers)
 				expect(options[:start_time]).to eq((DateTime.now - 7).rfc3339)
-
-				options = FaxLog.build_options(user1, filtered_params, org1, @users)
+				options = FaxLog.build_options(user1, filtered_params, org_hash, @users, @fax_numbers)
 				expect(options[:start_time]).to eq((DateTime.now - 7).rfc3339)
 			end
 		end
@@ -78,27 +84,31 @@ RSpec.describe FaxLog, type: :model do
 			it "#add_end_time sets the end time in the options hash to an RFC3339 time based on user input" do
 				filtered_params = { :end_time => "2018-09-02 8:58PM" }
 				all_orgs = Organization.all
-				options = FaxLog.build_options(admin, filtered_params, all_orgs, @users)
+				FaxLog.create_orgs_hash(org_hash = {}, org1)
+
+				options = FaxLog.build_options(admin, filtered_params, all_orgs, @users, @fax_numbers)
 				expect(options[:end_time]).to eq("2018-09-02T20:58:00-05:00")
 
 				all_orgs = Organization.all
-				options = FaxLog.build_options(manager1, filtered_params, org1, @users)
+				options = FaxLog.build_options(manager1, filtered_params, org_hash, @users, @fax_numbers)
 				expect(options[:end_time]).to eq("2018-09-02T20:58:00-05:00")
 
-				options = FaxLog.build_options(user1, filtered_params, org1, @users)
+				options = FaxLog.build_options(user1, filtered_params, org_hash, @users, @fax_numbers)
 				expect(options[:end_time]).to eq("2018-09-02T20:58:00-05:00")
 			end
 
 			it "#add_end_time defaults to the current time if no end time is specified it is left blank (or it's the initial page load)" do
 				filtered_params = { :fax_log=>{} }
 				all_orgs = Organization.all
-				options = FaxLog.build_options(admin, filtered_params, all_orgs, @users)
+				FaxLog.create_orgs_hash(org_hash = {}, org1)
+
+				options = FaxLog.build_options(admin, filtered_params, all_orgs, @users, @fax_numbers)
 				expect(options[:end_time]).to eq(Time.now.to_datetime.rfc3339)
 
-				options = FaxLog.build_options(manager1, filtered_params, org1, @users)
+				options = FaxLog.build_options(manager1, filtered_params, org_hash, @users, @fax_numbers)
 				expect(options[:end_time]).to eq(Time.now.to_datetime.rfc3339)
 
-				options = FaxLog.build_options(user1, filtered_params, org1, @users)
+				options = FaxLog.build_options(user1, filtered_params, org_hash, @users, @fax_numbers)
 				expect(options[:end_time]).to eq(Time.now.to_datetime.rfc3339)
 			end
 		end
@@ -107,28 +117,31 @@ RSpec.describe FaxLog, type: :model do
 			it "sets the fax_number to 'all' or 'all-linked' if a fax number besides 'all' or 'all-linked' is provided" do
 				filtered_params = { :fax_number => "all" }
 				all_orgs = Organization.all
-				options = FaxLog.build_options(admin, filtered_params, all_orgs, @users)
+				FaxLog.create_orgs_hash(org_hash = {}, org1)
+
+				options = FaxLog.build_options(admin, filtered_params, all_orgs, @users, @fax_numbers)
 				expect(options[:fax_number]).to eq("all")
 
 				filtered_params = { :fax_number => "all-linked" }
-				options = FaxLog.build_options(manager1, filtered_params, org1, @users)
+				options = FaxLog.build_options(manager1, filtered_params, org_hash, @users, @fax_numbers)
 				expect(options[:fax_number]).to eq("all-linked")
 			end
 
 			it "sets the fax_number to the specific desired fax_number if a fax_number is provided" do
 				filtered_params = { :fax_number => "+17738675301" }
 				all_orgs = Organization.all
-				options = FaxLog.build_options(admin, filtered_params, all_orgs, @users)
+				options = FaxLog.build_options(admin, filtered_params, all_orgs, @users, @fax_numbers)
 				expect(options[:fax_number]).to eq("+17738675301")
 			end
 		end
 
 		describe "#set_status_in_options method" do
 			it "sets the status if the provided status is not 'all' " do
+				FaxLog.create_orgs_hash(org_hash = {}, org1)
 				statuses = %w[inprogress success failure queued all]
 				statuses.each do |status|
 					filtered_params = { :status => status }
-					options = FaxLog.build_options(manager1, filtered_params, org1, @users)
+					options = FaxLog.build_options(manager1, filtered_params, org_hash, @users, @fax_numbers)
 					status == 'all' ? (expect(options[:status]).to be_nil) : (expect(options[:status]).to eq(status))
 				end
 			end
@@ -138,11 +151,11 @@ RSpec.describe FaxLog, type: :model do
 			it "sets 'options[:tag] to the organization's fax tag if filtered_params[:organization] is not 'all'" do
 				filtered_params = { :organization => org1.fax_tag }
 				all_orgs = Organization.all
-				options = FaxLog.build_options(admin, filtered_params, all_orgs, @users)
+				options = FaxLog.build_options(admin, filtered_params, all_orgs, @users, @fax_numbers)
 				expect(options[:tag]).to eq({ :sender_organization_fax_tag => org1.fax_tag })
 
 				filtered_params = { :organization => 'all' }
-				options = FaxLog.build_options(admin, filtered_params, all_orgs, @users)
+				options = FaxLog.build_options(admin, filtered_params, all_orgs, @users, @fax_numbers)
 				expect(options[:tag]).to be_nil
 			end
 		end
@@ -150,32 +163,34 @@ RSpec.describe FaxLog, type: :model do
 		describe "#set_tag_in_options_manager method when manager is logged in, it sets options[:tag] to a desired user's fax_tag" do
 			it "sets 'options[:tag]' to the desired user if filtered_params[:user] is not 'all', 'all-linked', or nil. Logged in as manager" do
 				@users = {} # this imitates "set_users", which is needed to create '@users' used in the method
+				FaxLog.create_orgs_hash(org_hash = {}, org1)
 				org1.users.each_with_index { |user_obj, index| FaxLog.create_users_hash(@users, user_obj, index) }
 				filtered_params = { :user => user1.email }
-				options = FaxLog.build_options(manager1, filtered_params, org1, @users)
+				options = FaxLog.build_options(manager1, filtered_params, org_hash, @users, @fax_numbers)
 				expect(options[:tag]).to eq({ :sender_email_fax_tag => user1.fax_tag })
 
 				filtered_params = { :user => nil }
-				options = FaxLog.build_options(manager1, filtered_params, org1, @users)
+				options = FaxLog.build_options(manager1, filtered_params, org_hash, @users, @fax_numbers)
 				expect(options[:tag]).to eq({ :sender_organization_fax_tag => org1.fax_tag })
 
 				filtered_params = { :user => 'all-linked' }
-				options = FaxLog.build_options(manager1, filtered_params, org1, @users)
+				options = FaxLog.build_options(manager1, filtered_params, org_hash, @users, @fax_numbers)
 				expect(options[:tag]).to eq({ :sender_organization_fax_tag => org1.fax_tag })
 
 				filtered_params = { :user => 'all' }
-				options = FaxLog.build_options(manager1, filtered_params, org1, @users)
+				options = FaxLog.build_options(manager1, filtered_params, org_hash, @users, @fax_numbers)
 				expect(options[:tag]).to eq({ :sender_organization_fax_tag => org1.fax_tag })
 			end
 		end
 
 		describe "#set_tag_in_options_user method" do
 			it "#set_tag_in_options_user sets the 'options[:tag]' to the current_user if a generic user is logged in" do
+				FaxLog.create_orgs_hash(org_hash = {}, org1)
 				@users = {} # again this imitates "set_users"
 				[user1].each_with_index { |user_obj, index| FaxLog.create_users_hash(@users, user_obj, index) }
 
 				filtered_params = { :user => user1.email }
-				options = FaxLog.build_options(user1, filtered_params, org1, @users)
+				options = FaxLog.build_options(user1, filtered_params, org_hash, @users, @fax_numbers)
 				expect(options[:tag]).to eq({ :sender_email_fax_tag => user1.fax_tag })
 			end
 		end
@@ -208,7 +223,7 @@ RSpec.describe FaxLog, type: :model do
 		# org1 has 3 fax numbers
 		it "returns only faxes sent/received by a specific organization when requested (manager requesting their own organization's faxes)" do
 			statuses = %w[inprogress success failure queued all]
-
+			# FaxLog.create_orgs_hash(@organization = {}, org1)
 			# 10 successful faxes sent from org1 using each fax_number, (sum of 30)
 			initial_fake_data << build_successful_sent_fax_objects(111111, 4, manager1.caller_id_number, org1.fax_numbers.first.fax_number, org1, manager1)
 			initial_fake_data << build_successful_sent_fax_objects(111121, 4, manager1.caller_id_number, org1.fax_numbers.second.fax_number, org1, manager1)
@@ -235,32 +250,42 @@ RSpec.describe FaxLog, type: :model do
 			expect(formatted_faxes.keys.length).to eq(36)
 
 			formatted_faxes.each do |fax_id_key, fax_obj_info_value|
-				expect(fax_obj_info_value['status']).to eq("Failure").or eq("Success")
-				expect(fax_obj_info_value['direction']).to eq("Sent").or eq("Received")
+				expect(fax_obj_info_value[:status]).to eq("Failure").or eq("Success")
+				expect(fax_obj_info_value[:direction]).to eq("Sent").or eq("Received")
 			end
 		end
 
 		it "the 'recipients' portion is set to 'multiple' if there is more than 1 recipient" do
 			initial_fake_data << build_successful_sent_fax_objects(111111, 1, manager1.caller_id_number, org1.fax_numbers.first.fax_number, org1, manager1)
 			# force the data to have multiple recipients
-			initial_fake_data[0][0]['recipients'] << {"phone_number"=>"+17738679999", "status"=>"success", "retry_count"=>0, "completed_at"=>(DateTime.now + 8), "bitrate"=>9600, "resolution"=>8040, "error_type"=>nil, "error_id"=>nil, "error_message"=>nil}
+			initial_fake_data[0][0][:recipients] << {phone_number: "+17738679999", status: "success", retry_count: 0, completed_at: (DateTime.now + 8), bitrate: 9600, resolution: 8040, error_type: nil, error_id: nil, error_message: nil}
 			formatted_faxes = FaxLog.format_faxes(manager1, initial_fake_data, @organization, @fax_numbers, @users)
-			expect(formatted_faxes[111111]['to_number']).to eq("Multiple")
+			expect(formatted_faxes[111111][:to_number]).to eq("Multiple")
 		end
 
-		it "filters only data for a specific user when asked" do
-			filtered_params = { :user => user3.email }
-			@users = {0=>{"email"=>user3.email, "caller_id_number"=>user3.caller_id_number, "user_created_at"=> (DateTime.now + 7), "org_id"=>user3.organization_id, "fax_tag"=>user3.fax_tag}, 1=>{"email"=>user2.email, "caller_id_number"=>user2.caller_id_number, "user_created_at"=> (DateTime.now + 7), "org_id"=> user2.organization_id, "fax_tag"=>user2.fax_tag}}
-
+		it "filters only data for a specific user when asked " do
+			filtered_params = { :user => user3.email, :fax_number => 'all' }
+			FaxLog.create_orgs_hash(org_hash = {}, org1)
+			@users = {0=>{email: user3.email, caller_id_number: user3.caller_id_number, user_created_at: (DateTime.now + 7), org_id: user3.organization_id, fax_tag: user3.fax_tag}}
 			tag_data = []
-			tag_data << build_successful_sent_fax_objects(111111, 1, fax_number3.fax_number, org2.fax_numbers.first.fax_number, org1, manager1)
-			tag_data << build_successful_sent_fax_objects(111112, 1, manager1.caller_id_number, org1.fax_numbers.first.fax_number, org1, manager1)
+			tag_data << build_successful_sent_fax_objects(111111, 2, fax_number3.fax_number, org2.fax_numbers.first.fax_number, org1, user3)
+			tag_data << build_successful_sent_fax_objects(111113, 4, manager1.caller_id_number, org1.fax_numbers.first.fax_number, org1, manager1)
+			tag_data << build_successful_received_fax_objects(111151, 3, manager1.caller_id_number, user3.caller_id_number)
 			tag_data.flatten!
 
-			options = FaxLog.build_options(manager1, filtered_params, @organization, @users)
-			filtered_data = FaxLog.filter_faxes_by_user(options, tag_data, @users)
-			expect(filtered_data.length).to eq(1)
-			expect(filtered_data[0]["id"]).to eq(111111)
+			options = FaxLog.build_options(manager1, filtered_params, org_hash, @users, @fax_numbers)
+			# The code for user_key below is included before the filtered_by_sent and filtered_by_received methods would be called,
+			#   it is why I have @user[0]
+			# user_key = users.select { |user_key, user_data| user_data[:fax_tag] == options[:tag][:sender_email_fax_tag] }.keys.pop
+			filtered_data_sent = FaxLog.filter_faxes_by_user_sent(options, tag_data, @users[0])
+			filtered_data_received = FaxLog.filter_faxes_by_user_received(options, tag_data, @users[0])
+			expect(filtered_data_sent.length).to eq(2)
+			expect(filtered_data_sent[0][:id]).to eq(111111)
+			expect(filtered_data_sent[1][:id]).to eq(111112)
+			expect(filtered_data_received.length).to eq(3)
+			expect(filtered_data_received[0][:id]).to eq(111151)
+			expect(filtered_data_received[1][:id]).to eq(111152)
+			expect(filtered_data_received[2][:id]).to eq(111153)
 		end
 	end
 
@@ -281,12 +306,12 @@ RSpec.describe FaxLog, type: :model do
 			initial_fake_data << build_successful_sent_fax_objects(111113, 1, manager1.caller_id_number, org1.fax_numbers.first.fax_number, org1, manager1)
 
 			# set date to pre-date the organization for first and last fake fax object
-			initial_fake_data[0][0]['created_at'] = (org1.created_at - 7)
-			initial_fake_data[1][0]['created_at'] = (org1.created_at - 7) # remember it's an array of arrays prior to the format_faxes method
+			initial_fake_data[0][0][:created_at] = (org1.created_at - 7)
+			initial_fake_data[1][0][:created_at] = (org1.created_at - 7) # remember it's an array of arrays prior to the format_faxes method
 			formatted_faxes = FaxLog.format_faxes(admin, initial_fake_data, @organizations, @fax_numbers, @users)
-			expect(formatted_faxes[111111]['organization']).to be_nil
-			expect(formatted_faxes[111113]['organization']).to be_nil
-			expect(formatted_faxes[111112]['organization']).to eq('Org One')
+			expect(formatted_faxes[111111][:organization]).to be_nil
+			expect(formatted_faxes[111113][:organization]).to be_nil
+			expect(formatted_faxes[111112][:organization]).to eq('Org One')
 		end
 
 		it "filters only data for a specific fax number when asked" do
@@ -310,7 +335,7 @@ RSpec.describe FaxLog, type: :model do
 
 			results = FaxLog.filter_for_desired_fax_number_data(tag_data, @fax_numbers)
 			expect(results.length).to be(1)
-			expect(results.pop["id"]).to eq(111112)
+			expect(results.pop[:id]).to eq(111112)
 		end
 	end
 end

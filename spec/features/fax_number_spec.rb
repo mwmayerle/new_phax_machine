@@ -1,7 +1,6 @@
 require "rails_helper"
 
 #TODO: SWITCH A FAX NUMBER TO A DIFFERENT ORGANIZATION
-
 RSpec.feature "Fax Number Pages", :type => :feature do
 	let! (:admin) { User.create!( email: 'fake@phaxio.com', user_permission_attributes: { permission: UserPermission::ADMIN }) }
 	let!(:org) { Organization.create(label: "Phaxio Test Company", admin_id: admin.id, fax_numbers_purchasable: true) }
@@ -18,7 +17,7 @@ RSpec.feature "Fax Number Pages", :type => :feature do
 	let!(:user2) do 
 		User.create!(email: 'not_fully_registered@phaxio.com', caller_id_number: '+17738675366', organization_id: org.id)
 	end
-	let!(:fax_number) { FaxNumber.create!(fax_number: '17738675309', organization_id: org.id) }
+	let!(:fax_number) { FaxNumber.create!(fax_number: '17738675309', organization_id: org.id, manager_label: "Manager label here", label: "Admin label here") }
 
 	before(:each) do 
 		org.update_attributes(manager_id: manager.id)
@@ -26,7 +25,7 @@ RSpec.feature "Fax Number Pages", :type => :feature do
 		org.fax_numbers << fax_number
 	end
 
-	describe "the fax number index and edit page when logged in as an admin" do
+	describe "the fax number index and edit page" do
 		it "redirects to the user_sign_in page if no user is logged in" do
 			visit(fax_numbers_path)
 			expect(page).to have_button("Log In")
@@ -36,6 +35,7 @@ RSpec.feature "Fax Number Pages", :type => :feature do
 			expect(page).to have_link('Log In', href: new_user_session_path)
 			expect(page).to have_text(ApplicationController::DENIED)
 		end
+
 
 		it "displays the page when an admin is logged in" do
 			login_as(admin)
@@ -80,6 +80,35 @@ RSpec.feature "Fax Number Pages", :type => :feature do
 			click_on('Save Changes')
 			within('#fax-number-table') { click_on('Edit', match: :first) }
 			expect(find_field('fax_number[label]').value).to eq('New Label!')
+		end
+
+		it "removes the fax_number from its original organization if it is shifted to a new one" do
+			login_as(admin)
+			visit(edit_fax_number_path(fax_number))
+			select("Phaxio Test Company2", from: 'fax_number[organization_id]')
+			click_on("Save Changes")
+			expect(page).to have_current_path(fax_numbers_path)
+			expect(page).to have_text('Changes successfully saved.')
+		end
+
+		it "displays an error if a fax number fails to update properly when logged in as admin" do
+			login_as(admin)
+			visit(edit_fax_number_path(fax_number))
+			expect(page).to have_current_path("/fax_numbers/#{fax_number.id}/edit")
+			fill_in("fax_number[label]", with: 'A' * (FaxNumber::FAX_NUMBER_CHARACTER_LIMIT + 1))
+			click_on("Save Changes")
+			expect(page).to have_current_path("/fax_numbers/#{fax_number.id}/edit")
+			expect(page).to have_text('Label is too long (maximum is 36 characters)')
+		end
+
+		it "displays an error if a fax number fails to update properly when logged in as a manager" do
+			login_as(manager)
+			visit(edit_fax_number_path(fax_number))
+			expect(page).to have_current_path("/fax_numbers/#{fax_number.id}/edit")
+			fill_in("fax_number[manager_label]", with: 'A' * (FaxNumber::FAX_NUMBER_CHARACTER_LIMIT + 1))
+			click_on("Save Changes")
+			expect(page).to have_current_path("/fax_numbers/#{fax_number.id}/edit")
+			expect(page).to have_text('Manager label is too long (maximum is 36 characters)')
 		end
 	end
 

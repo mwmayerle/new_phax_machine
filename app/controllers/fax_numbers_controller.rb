@@ -8,7 +8,7 @@ class FaxNumbersController < ApplicationController
 
 	# Table of all fax numbers in your account
 	def index
-		@area_codes = FaxNumber.get_area_code_list
+		@area_codes = FaxNumber.get_area_code_list(list_area_code_params)
 		@states = FaxNumber.create_states_for_numbers(@area_codes)
 		@fax_numbers = FaxNumber.format_and_retrieve_fax_numbers_from_api
 	end
@@ -47,15 +47,14 @@ class FaxNumbersController < ApplicationController
 		@organizations = Organization.order(label: :asc) if is_admin?
 	end
 
-	def update #LOOK AT THIS TO ENSURE IT'S STILL OKAY
+	def update
 		param_filter_type = is_admin? ? admin_fax_number_params : manager_fax_number_params
-		
 		original_organization = @fax_number.organization
 
 		if @fax_number.update_attributes(param_filter_type)
 			# this if block spoofs the "user[:to_remove]" portion of params by creating and passing in a similar hash
 			if original_organization && original_organization != @fax_number.organization
-				@fax_number.update_attributes(manager_label: nil, organization_id: nil) # <--untested added org_id here 08/15/18
+				@fax_number.update_attributes(manager_label: nil)
 				original_organization_user_ids = {}
 				original_organization.users.each { |user| original_organization_user_ids[user.id] = 'on' }
 				remove_user_associations(original_organization_user_ids, @fax_number)
@@ -87,11 +86,11 @@ class FaxNumbersController < ApplicationController
 		end
 
 		def list_area_code_params
-			params.require(:fax_number).permit(:area_code, :toll_free, :state)
+			params.permit(:area_code, :toll_free, :state)
 		end
 
 		def remove_user_associations(param_input, fax_number_object)
-			param_input.keys.each { |user_object_id| UserFaxNumber.where( { user_id: user_object_id } ).destroy_all }
+			destroyed_associations = param_input.keys.each { |user_object_id| UserFaxNumber.where( { user_id: user_object_id } ).destroy_all }
 		end
 
 		def verify_can_purchase_numbers

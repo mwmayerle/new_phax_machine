@@ -1,6 +1,3 @@
-/////////////////////////////////////////////////////////////////////////////////
-//  SEE CREATE.JS.ERB IN THE FAX_LOGS VIEW FOLDER FOR ADDITIONAL JS FUNCTIONS  //
-/////////////////////////////////////////////////////////////////////////////////
 const	backButtonText = '<';
 const	forwardButtonText = '>';
 const	endButtonText = '>>';
@@ -94,23 +91,6 @@ phaxMachine.pages['fax-logs'] = {
 				restoreSelectTag(userOptions, $userSelect);
 			}
 		});
-		//This "tr" click function is the same as addFileIconClick(), but it's here for the initial page load
-		$("tr").off().on('click', $(".fa-download"), (event) => {
-			event.preventDefault();
-			faxID = {
-				'fax': {
-					'id': ''
-				}
-			}
-			faxID['fax']['id'] = parseInt($(event.target).closest("tr").attr("id"));
-
-			$.ajax({
-				type: "POST",
-				url: "/download",
-				data: JSON.stringify(faxID),
-				contentType: 'application/json',
-			});
-		});
 		changeStatusColor();
 	}
 };
@@ -145,6 +125,7 @@ function buildTableRows(faxData, pageNumberDisplay) {
 		}
 	});
 	changeStatusColor();
+	downloadCursorChange();
 	addFileIconClick();
 };
 
@@ -304,11 +285,22 @@ function constructPaginationMiddle(pageNumbersMiddle, pageNumberArray, currentPa
 //// on-click downloading ////
 //////////////////////////////
 
-function addFileIconClick() {
-	$("tr").on('click', $(".fa-download"), (event) => {
-		console.log($(event.target))
+function addFileIconClick() { // Error message is sent back as json if no file is found
+	$("tr").off().on('click', $(".fa-download"), (event) => {
+		event.preventDefault();
 		if ($(event.target).hasClass("fa-download")) {
-			console.log($(event.target).closest("tr").attr("id"))
+			let response = `/download/${$(event.target).closest("tr").attr("id")}`;
+			console.log(response)
+			console.log(window.location.href)
+			if (response) { 
+				window.location.href = response;
+			} else {
+				createAlert('danger', "File not found.")
+			}
 		}
 	});
+};
+
+function downloadCursorChange() {
+	$(".fa-download").hover((event) => { $(event.target).css("cursor", "pointer"); });
 };
