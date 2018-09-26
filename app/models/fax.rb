@@ -1,7 +1,7 @@
 class Fax < ApplicationRecord
 	class << self
-		def get_fax_information(sent_fax_object)
-			Phaxio::Fax.get(sent_fax_object.id)
+		def get_fax_information(sent_fax_id)
+			Phaxio::Fax.get(sent_fax_id)
 		end
 
 		def create_fax(options)

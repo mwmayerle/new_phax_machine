@@ -20,7 +20,7 @@ Rails.application.routes.draw do
   resources :users, only: [:index, :edit, :update, :org_index]
 	resources :organizations
   resources :fax_numbers, only: [:index, :edit, :update, :new, :create]
-  resources :fax_logs, only: [:index, :create]
+  resources :fax_logs, only: [:index, :create, :download]
 
   root to: "faxes#new"
 
@@ -30,6 +30,6 @@ Rails.application.routes.draw do
   post "/fax_sent", to: "mailgun_faxes#fax_sent"
   post "/mailgun", to: "mailgun_faxes#mailgun"
 
-  get "/download/:fax_id", to: "faxes#download"
+  get "/download/:fax_id", to: "fax_logs#download"
   # put "/organizations/edit_logo/:id", to: "organizations#update_logo"
 end
