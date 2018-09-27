@@ -30,7 +30,9 @@ class FaxNumber < ApplicationRecord
 			# Converts '+12223334444' to '(222) 333-4444'
 			def format_pretty_fax_number(fax_number)
 				return if fax_number.nil? # <-- for edge case when a User object's caller_id_number attribute is nil
-				fax_number.slice(2, fax_number.length).insert(0,"(").insert(4,") ").insert(9, "-") if fax_number[0] != "("
+				last_four = fax_number[-4..-1]
+				fax_number.slice(2, 3).insert(0,"(").insert(4,") ").concat("555-").concat(last_four) if fax_number[0] != "(" ##THIS IS FOR README
+				# fax_number.slice(2, fax_number.length).insert(0,"(").insert(4,") ").insert(9, "-") if fax_number[0] != "("
 			end
 
 			# Converts '210' to '$2.10'
