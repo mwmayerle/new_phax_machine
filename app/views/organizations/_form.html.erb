@@ -42,8 +42,20 @@
 						<div class="underline"></div>
 
 						<div class="row">
+							<div class="col">
+	        			<p>
+	        				<span style="color:crimson">
+	        					<i class="fa fa-fw fa-close" aria-hidden="true"></i>
+	        				</span>
+	        				<i>indicates this number has a primary callback_url </i>
+	        			</p>
+	        		</div>
+	        		<div class="col-lg-7"></div>
+	        	</div>
+
+						<div class="row">
 							<% if unallocated_fax_numbers.present? %>
-								<div class="col-lg-5">
+								<div class="col-lg-6">
 									<div class="form-group">
 										<% if organization.label %>
 											<strong><p>Add fax numbers to <%= organization.label %>:</p></strong>
@@ -53,6 +65,7 @@
 										<table id="unlinked-numbers" class="table table-hover table-sm table-striped table-bordered">
 											<thead class="thead-dark">
 												<tr>
+													<th></th>
 													<th class="text-center">Fax Number</th>
 													<th class="text-center">Label</th>
 												</tr>
@@ -60,6 +73,13 @@
 											<tbody>
 												<% unallocated_fax_numbers.each do |fax_number| %>
 													<tr>
+														<% if fax_number.has_webhook_url %>
+															<td>
+																<span style="color:crimson"><i class="fa fa-fw fa-close" aria-hidden="true"></i></span>
+															</td>
+														<% else %>
+															<td></td>
+														<% end %>
 														<td class="text-center">
 															<label class="custom-control custom-checkbox push-down-text">
 																<input class="custom-control-input" type="checkbox" name="fax_numbers[to_add][<%= fax_number.id %>]" value="">
@@ -88,7 +108,7 @@
 							<% end %>
 
 							<% if organization.fax_numbers.present? %>
-								<div class="col-lg-5">
+								<div class="col-lg-6">
 									<div class="form-group">
 										<strong><p>Remove fax numbers from <%= organization.label %>:</p></strong>
 											<table id="linked-numbers" class="table table-hover table-sm table-striped table-bordered">
@@ -101,6 +121,13 @@
 												<tbody>
 													<% organization.fax_numbers.each do |organization_fax_number| %>
 														<tr>
+															<% if fax_number.has_webhook_url %>
+																<td>
+																	<span style="color:crimson"><i class="fa fa-fw fa-close" aria-hidden="true"></i></span>
+																</td>
+															<% else %>
+																<td></td>
+															<% end %>
 															<td class="text-center">
 																<label class="custom-control custom-checkbox push-down-text">
 																	<input class="custom-control-input" type="checkbox" name="fax_numbers[to_remove][<%= organization_fax_number.id %>]" value="">

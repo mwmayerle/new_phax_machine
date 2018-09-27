@@ -93,8 +93,9 @@ the button above, you'll need to follow these instructions:
 ## User Guide/Walkthrough
 After initial setup is complete, an email will be sent to the address in the "ADMIN_EMAIL" field inviting the admin to set their password and finish setting up their account. The admin will then be redirected to the fax numbers page. 
 
+### Admin Functions
 #### Fax Numbers Page
-The Fax Numbers page displays a table of all fax numbers in the admin's account, the organization the fax number is linked to, an optional label, the date the fax number was provisioned, the location of the fax number, and whether or not the fax number has a 'callback_url' assigned to it. Fax numbers with an assigned callback_url will not work with Phax Machine. To manage callback_url's assigned to your fax numbers, head over to your [phone numbers page](https://console.phaxio.com/phone_numbers) in your Phaxio account. Fax numbers with an assigned callback_url will be at the bottom of the fax numbers table.
+The Fax Numbers page displays a table of all fax numbers in the admin's account, the organization the fax number is linked to, an optional label, the date the fax number was provisioned, the location of the fax number, and whether or not the fax number has a 'callback_url' assigned to it. Fax numbers with an assigned callback_url will not work with Phax Machine. To manage callback_url's assigned to your fax numbers, head over to your [phone numbers page](https://console.phaxio.com/phone_numbers) in your Phaxio account, and then reload the Fax Numbers page when you're done editing your changes. Fax numbers with an assigned callback_url will be at the bottom of the fax numbers table. In the example below, several lines have already been labeled.
 
 ![FaxNumberPage](https://raw.githubusercontent.com/mwmayerle/new_phax_machine/master/app/assets/images/faxnumberpage.png)
 
@@ -103,3 +104,12 @@ The Fax Numbers page also allows the Admin to provision a new fax number. The Ar
 If the Admin desires, they may add a label to any fax number that can only be viewed by the Admin by clicking one of the edit buttons on the right of the table. The Admin can also move the fax number into a different organization by selecting it from the dropdown menu (this will remove all users linked to the number in its previous organization), or remove the fax number from its organization.
 
 ![EditFaxNumberPage](https://raw.githubusercontent.com/mwmayerle/new_phax_machine/master/app/assets/images/editfaxnumberpage.png)
+
+#### Organizations Page
+Organizations are groups of users and fax numbers set by the Admin. To create an organization, head to the Organizations Page ("Organizations" on the navbar) and click the "Add New Organization" button in the top right corner of the screen.
+
+This page displays all fax numbers that are not assigned to a organization in the "Add fax numbers" table. Please note that fax numbers with a red X next to them already have a primary callback_url will not have fax-to-email capabilities.
+
+![EditFaxNumberPage](https://raw.githubusercontent.com/mwmayerle/new_phax_machine/master/app/assets/images/editfaxnumberpage.png)
+
+When creating an organization, the Admin checks the box of fax numbers they would like to assign to the organization, gives the irganization a name (this name will be seen by the organization's manager), and decides if the Manager of the organization will be allowed to purchase additional fax numbers. In this example we're creating the "Great Plains LLC" organization, adding all of the fax numbers that are already labeled, and allowing fax numbers to be purchased by the organization.
