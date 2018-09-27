@@ -4,7 +4,17 @@
 
 # PhaxMachine
 
-## Quick Setup
+## Introduction
+PhaxMachine is a lightweight, customizable application that makes it easy for service providers to quickly provide and manage permission-based email-to-fax and fax-to-email services to their customers. The application allows an admin to create an organization, invite a manager to manage the organization (optional), assign fax numbers to that organization, and link users to each fax number.
+
+The application utilizes the [Phaxio API](https://www.phaxio.com/) for fax capabilities, the [Mailgun API](https://www.mailgun.com/) for emailing, and [Devise](https://github.com/plataformatec/devise) for user authentication.
+
+## Table of Contents
+[Introduction](##Introduction)  
+[Setup](##Setup)  
+[User_Guide](##User_Guide)
+
+## Setup
 
 ### 1. Deploy PhaxMachine
 
@@ -23,6 +33,11 @@ Skip to section 2 below.
 2. Clone this repository: `git clone https://github.com/phaxio/new_phax_machine.git && cd new_phax_machine`
 3. Create the app on Heroku: `heroku create`
 4. Set the required environment variables:
+	 - `heroku config:set ADMIN_EMAIL=Email address for the administrator`
+	 - `heroku config:set DOMAIN_URL=The domain this application will be deployed to. If you're not using a custom domain this will be 'https://YOURAPPNAMEHERE.herokuapp.com'.`
+	 - `heroku config:set FROM_EMAIL=The 'from' address attached to outgoing emails sent from the application.`
+	 - `heroku config:set SMTP_PASSWORD=Mailgun's SMTP password for outgoing email.`
+	 - `heroku config:set SMTP_USER=Mailgun's SMTP username for outgoing email.`
    - `heroku config:set PHAXIO_API_KEY=your_api_key`
    - `heroku config:set PHAXIO_API_SECRET=your_api_secret`
    - `heroku config:set PHAXIO_CALLBACK_TOKEN=your_callback_token`
@@ -74,3 +89,6 @@ the button above, you'll need to follow these instructions:
 1. Clone this repository: `git clone https://github.com/phaxio/phax_machine.git`
 2. Add the heroku repository as well: `git remote add heroku https://git.heroku.com/HEROKU-APP-NAME.git` (Substituting `HEROKU-APP-NAME` with the name of your Heroku app)
 3. Push the latest changes to Heroku: `git push heroku master`
+
+## User_Guide
+After initial setup is complete, an email will be sent to 
