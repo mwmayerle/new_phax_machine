@@ -10,9 +10,9 @@ PhaxMachine is a lightweight, customizable application that makes it easy for se
 The application utilizes the [Phaxio API](https://www.phaxio.com/) for fax capabilities, the [Mailgun API](https://www.mailgun.com/) for emailing, and [Devise](https://github.com/plataformatec/devise) for user authentication.
 
 ## Table of Contents
-[Introduction](##Introduction)  
-[Setup](##Setup)  
-[User_Guide](##User_Guide)
+[Introduction](#Introduction)  
+[Setup](#Setup)  
+[User_Guide](#User_Guide)
 
 ## Setup
 
