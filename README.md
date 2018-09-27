@@ -12,7 +12,7 @@ The application utilizes the [Phaxio API](https://www.phaxio.com/) for fax capab
 ## Table of Contents
 [Introduction](#Introduction)  
 [Setup](#Setup)  
-[User_Guide](#User_Guide)
+[User_Guide](#User Guide)
 
 ## Setup
 
@@ -90,5 +90,16 @@ the button above, you'll need to follow these instructions:
 2. Add the heroku repository as well: `git remote add heroku https://git.heroku.com/HEROKU-APP-NAME.git` (Substituting `HEROKU-APP-NAME` with the name of your Heroku app)
 3. Push the latest changes to Heroku: `git push heroku master`
 
-## User_Guide
-After initial setup is complete, an email will be sent to 
+## User Guide/Walkthrough
+After initial setup is complete, an email will be sent to the address in the "ADMIN_EMAIL" field inviting the admin to set their password and finish setting up their account. The admin will then be redirected to the fax numbers page. 
+
+#### Fax Numbers Page
+The Fax Numbers page displays a table of all fax numbers in the admin's account, the organization the fax number is linked to, an optional label, the date the fax number was provisioned, the location of the fax number, and whether or not the fax number has a 'callback_url' assigned to it. Fax numbers with an assigned callback_url will not work with Phax Machine. To manage callback_url's assigned to your fax numbers, head over to your [phone numbers page](https://console.phaxio.com/phone_numbers) in your Phaxio account. Fax numbers with an assigned callback_url will be at the bottom of the fax numbers table.
+
+![FaxNumberPage](https://raw.githubusercontent.com/mwmayerle/new_phax_machine/master/app/assets/images/faxnumberpage.png)
+
+The Fax Numbers page also allows the Admin to provision a new fax number. The Area Code dropdown menu dynamically changes based on the selected State/Province in the menu to the left. Toll-Free numbers are listed as "Non-Geographic" in State/Provinces.
+
+If the Admin desires, they may add a label to any fax number that can only be viewed by the Admin by clicking one of the edit buttons on the right of the table. The Admin can also move the fax number into a different organization by selecting it from the dropdown menu (this will remove all users linked to the number in its previous organization), or remove the fax number from its organization.
+
+![EditFaxNumberPage](https://raw.githubusercontent.com/mwmayerle/new_phax_machine/master/app/assets/images/editfaxnumberpage.png)
