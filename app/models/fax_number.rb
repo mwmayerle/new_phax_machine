@@ -147,7 +147,7 @@ class FaxNumber < ApplicationRecord
 			end
 
 			def get_unassigned_organization_users(fax_number)
-				fax_number.organization.users.select { |organization_user| !organization_user.fax_numbers.include?(fax_number) }
+				fax_number.organization.users.select { |org_user| !org_user.fax_numbers.include?(fax_number) && org_user.deleted_at.nil? }
 			end
 		end
 end
