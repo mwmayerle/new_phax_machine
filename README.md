@@ -5,9 +5,9 @@
 # PhaxMachine
 
 ## Introduction
-PhaxMachine is a lightweight, customizable application that makes it easy for service providers to quickly provide and manage permission-based email-to-fax and fax-to-email services to their customers. The application allows an admin to create an organization, invite a manager to manage the organization (optional), assign fax numbers to that organization, and link users to each fax number.
+PhaxMachine is a lightweight, customizable application that makes it easy for service providers to quickly provide and manage permission-based email-to-fax and fax-to-email services to their customers. Users are linked by an admin or a manager into groups that are emailed whenever a fax is sent or received on the fax number they're linked to. The application allows an admin to create an organization, invite a manager to manage the organization (optional), assign fax numbers to that organization, and link users to each fax number.
 
-The application utilizes the [Phaxio API](https://www.phaxio.com/) for fax capabilities, the [Mailgun API](https://www.mailgun.com/) for emailing, and [Devise](https://github.com/plataformatec/devise) for user authentication.
+The application utilizes the [Phaxio API](https://www.phaxio.com/) for faxing, the [Mailgun API](https://www.mailgun.com/) for emailing, and [Devise](https://github.com/plataformatec/devise) for user authentication.
 
 ## Table of Contents
 [Introduction](#Introduction)  
@@ -112,9 +112,9 @@ This page displays all fax numbers that are not assigned to a organization in th
 
 ![NewOrganization](https://raw.githubusercontent.com/mwmayerle/new_phax_machine/master/app/assets/images/neworganization.png)
 
-When creating an organization, the Admin checks the box of fax numbers they would like to assign to the organization, gives the irganization a name (this name will be seen by the organization's manager), and decides if the Manager of the organization will be allowed to purchase additional fax numbers. In this example we're creating the "Great Plains LLC" organization, adding all of the fax numbers that are already labeled, and allowing fax numbers to be purchased by the organization.
+When creating an organization, the Admin checks the box of fax numbers they would like to assign to the organization, gives the irganization a name (this name will be seen by the organization's manager), and decides if the Manager of the organization will be allowed to purchase additional fax numbers. In this example we're creating the "Great Plains LLC" organization, adding all of the fax numbers that are already labeled, and allowing fax numbers to be purchased by the organization. 
 
-Once an organization has been created, it will appear in the organization page. Each organization's fax numbers and manager (if it has one) are shown. If an organization does not have a manager, a field will be present for inviting a manager, with an additional dropdown menu of fax numbers to set as the manager's caller ID number. In this example we'll invite "bob.loblaw@greatplainsllc.com" to manage Great Plains LLC.
+Once an organization has been created, it will appear in the organization page. Each organization's fax numbers and manager (if it has one) are shown. If an organization does not have a manager, a field will be present for inviting a manager, with an additional dropdown menu of fax numbers to set as the manager's caller ID number. In this example we'll invite bob.loblaw@greatplainsllc.com to manage Great Plains LLC.
 
 ![OrganizationIndex](https://raw.githubusercontent.com/mwmayerle/new_phax_machine/master/app/assets/images/organizationindex.png)
 
@@ -127,3 +127,12 @@ In this case we'll simultaneously remove the two fax numbers with a callback_url
 ![OrganzationShow](https://raw.githubusercontent.com/mwmayerle/new_phax_machine/master/app/assets/images/organizationedit.png)
 
 ### Manager Functions
+Managers are invited by the admin via email to manage an organization. Managers (and the admin if they want to) link users to fax numbers and assign caller ID numbers. If the admin allows it, a manager can also provision additional fax numbers to the organization they control. Managers should first invite users and then link them to fax numbers.
+
+####Users
+Managers may invite users to Phax Machine and revoke user access in their Users portal. When a manager invites a user, they input a valid email address and select one of the fax numbers within their organization from the dropdown menu. Managers may also edit an existing user's email address or caller ID number at a later time.
+
+####Dashboard
+The dashboard provides the manager with a summary of all fax numbers and their linked users. Managers can add a label to their fax numbers by clicking on the fax number and link/unlink users to a fax numbers by clicking on the "Link/Unlink Users" button under each fax number. A table of all users currently linked to a fax number is shown next to each fax number.
+
+![UsersShow](https://raw.githubusercontent.com/mwmayerle/new_phax_machine/master/app/assets/images/userspage.png)

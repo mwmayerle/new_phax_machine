@@ -20,7 +20,7 @@ class UserFaxNumbersController < ApplicationController
 
 	private 
 		def set_fax_number
-			@fax_number ||= FaxNumber.find(params[:id])
+			@fax_number ||= FaxNumber.includes(:users, :user_fax_numbers).find(params[:id])
 		end
 
 		def user_association_params
@@ -28,11 +28,11 @@ class UserFaxNumbersController < ApplicationController
 		end
 
 		def add_user_associations(param_input, fax_number_object)
-			param_input.keys.each { |user_object_id| fax_number_object.users << User.find(user_object_id.to_i) }
+			param_input.keys.each { |user_obj_id| fax_number_object.users << User.find(user_obj_id.to_i) }
 		end
 
 		def remove_user_associations(param_input, fax_number_object)
-			param_input.keys.each { |user_object_id| UserFaxNumber.where( { user_id: user_object_id, fax_number_id: @fax_number.id } ).destroy_all }
+			param_input.keys.each { |user_obj_id| UserFaxNumber.where( { user_id: user_obj_id, fax_number_id: @fax_number.id } ).destroy_all }
 		end
 
 		def verify_authorized

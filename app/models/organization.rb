@@ -32,7 +32,7 @@ class Organization < ApplicationRecord
 
 		class << self
 			def get_unassigned_users(organization)
-				organization.users.select { |organization_user| organization_user.user_fax_numbers.empty? }
+				organization.users.select { |org_user| org_user.user_fax_numbers.empty? && org_user.deleted_at.nil? }
 			end
 		end
 end
