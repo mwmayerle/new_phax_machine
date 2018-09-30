@@ -5,15 +5,19 @@ class FaxLogsController < ApplicationController
 	# this method is for the initial page load 
 	def index
 		options = FaxLog.build_options(current_user, filtering_params, @organizations, @users, @fax_numbers)
+		options[:per_page] = 20
+
 		if is_admin?
 			initial_fax_data = FaxLog.get_faxes(current_user, options, filtering_params)
 			FaxLog.add_all_attribute_to_hashes( [@fax_numbers, @organizations] )
-			@sorted_faxes = FaxLog.format_faxes(current_user, initial_fax_data, @organizations, @fax_numbers, @users)
+			all_faxes = FaxLog.sort_faxes(initial_fax_data)
+			@sorted_faxes = FaxLog.format_faxes(current_user, all_faxes.take(20), @organizations, @fax_numbers, @users)
 		else
 			options[:tag] = is_manager? ? { sender_organization_fax_tag: @organizations.keys[0] } : { sender_email_fax_tag: current_user.fax_tag }
 			initial_fax_data = FaxLog.get_faxes(current_user, options, filtering_params, @users, @fax_numbers, @organizations)
 			FaxLog.add_all_attribute_to_hashes( [@users, @fax_numbers] )
-			@sorted_faxes = FaxLog.format_faxes(current_user, initial_fax_data, @fax_numbers, @organizations, @users)
+			all_faxes = FaxLog.sort_faxes(initial_fax_data)
+			@sorted_faxes = FaxLog.format_faxes(current_user, all_faxes.take(20), @fax_numbers, @organizations, @users)
 		end
 	end
 
@@ -24,10 +28,12 @@ class FaxLogsController < ApplicationController
 		initial_fax_data = FaxLog.get_faxes(current_user, options, filtering_params, @users, @fax_numbers, @organizations)
 		if is_admin?
 			FaxLog.add_all_attribute_to_hashes( [@fax_numbers, @organizations] )
-			@sorted_faxes = FaxLog.format_faxes(current_user, initial_fax_data, @organizations, @fax_numbers, @users)
+			all_faxes = FaxLog.sort_faxes(initial_fax_data)
+			@sorted_faxes = FaxLog.format_faxes(current_user, all_faxes, @organizations, @fax_numbers, @users)
 		else
+			all_faxes = FaxLog.sort_faxes(initial_fax_data)
 			FaxLog.add_all_attribute_to_hashes( [@users, @fax_numbers] )
-			@sorted_faxes = FaxLog.format_faxes(current_user, initial_fax_data, @organizations, @fax_numbers, @users)
+			@sorted_faxes = FaxLog.format_faxes(current_user, all_faxes, @organizations, @fax_numbers, @users)
 		end
 		
 		respond_to do |format|
@@ -93,9 +99,9 @@ class FaxLogsController < ApplicationController
 			@organizations = {}
 			if is_admin?
 				if is_all_or_is_nil?(filtering_params[:organization])
-					organization_objects = Organization.all
+					organization_objects = Organization.all.with_deleted
 				else
-					organization_objects = Organization.where(fax_tag: filtering_params[:organization])
+					organization_objects = Organization.with_deleted.where(fax_tag: filtering_params[:organization])
 				end
 			# AR's .find() is used b/c is stops on the first result, and then added to an array for code-reuse
 			elsif is_manager?	# Eager load associated users if manager, otherwise don't if a generic user is looking 
@@ -158,15 +164,16 @@ class FaxLogsController < ApplicationController
 		def set_users
 			@users = {}
 			if is_admin?
-				criteria_array = User.includes([:organization, :user_permission]).all.select do |user|
+				criteria_array = User.includes([:organization, :user_permission]).all.with_deleted.select do |user|
 					user.user_permission && user.organization_id
 				end
 			else
 				# current_user is in an array for iterating/code reuse
 				if is_manager?
 					criteria_array = User.includes([:organization, :user_permission])
+						.with_deleted
 						.where(organization_id: current_user.organization_id)
-						criteria_array = criteria_array.select { |user| user.user_permission }
+						.select { |user| user.user_permission }
 				else
 					criteria_array = [current_user]
 				end

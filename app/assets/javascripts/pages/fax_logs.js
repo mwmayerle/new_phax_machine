@@ -103,8 +103,11 @@ function buildTableRows(faxData, pageNumberDisplay) {
 	Object.keys(faxData).forEach((faxDatum) => {
 		if (faxData[faxDatum]['page'] === pageNumberDisplay) {
 
-			if (faxData[faxDatum].organization === undefined) { faxData[faxDatum].organization = "N/A"; };
+			if (faxData[faxDatum].organization === undefined) { faxData[faxDatum].organization = ""; };
 			if (faxData[faxDatum].sent_by === undefined) { faxData[faxDatum].sent_by = ""; };
+
+			if (faxData[faxDatum].from_number === null) { faxData[faxDatum].from_number = "Restricted"; };
+
 			if (faxData[faxDatum].from_number === undefined) { faxData[faxDatum].from_number = "Released Number"; };
 			if (faxData[faxDatum].to_number === undefined) { faxData[faxDatum].to_number = "Released Number"; };
 
@@ -113,7 +116,6 @@ function buildTableRows(faxData, pageNumberDisplay) {
 			// Admin has 8 <th>, Manager has 7 <th>, User has only 6. These if blocks add/remove data for these permission levels
 				if ($('#fax-log-table th').length === 8) { head = head.concat('', `<td class="text-center">${faxData[faxDatum].organization}</td>`); }
 				if ($('#fax-log-table th').length > 6) { head = head.concat('', `<td class="text-center">${faxData[faxDatum].sent_by}</td>`); }
-				console.log(faxData[faxDatum].status)
 			head = head.concat('', `
 				<td class="text-center">${faxData[faxDatum].from_number}</td>
 				<td class="text-center">${faxData[faxDatum].to_number}</td>

@@ -25,7 +25,7 @@ class OrganizationsController < ApplicationController
 			end
 
 			flash[:notice] = "Organization created successfully."
-			redirect_to organizations_path
+			redirect_to(organizations_path)
 			
 		else
 			flash[:alert] = @organization.errors.full_messages.pop
@@ -44,7 +44,7 @@ class OrganizationsController < ApplicationController
 			@unassigned_users = Organization.get_unassigned_users(@organization)
 		else
 			flash[:alert] = DENIED
-			redirect_to root_path
+			redirect_to(root_path)
 		end
 	end
 

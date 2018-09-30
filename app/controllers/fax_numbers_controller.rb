@@ -90,7 +90,9 @@ class FaxNumbersController < ApplicationController
 		end
 
 		def remove_user_associations(param_input, fax_number_object)
-			destroyed_associations = param_input.keys.each { |user_object_id| UserFaxNumber.where( { user_id: user_object_id } ).destroy_all }
+			destroyed_associations = param_input.keys.each do |user_object_id| 
+				UserFaxNumber.where( { user_id: user_object_id, fax_number_id: @fax_number.id} ).destroy_all
+			end
 		end
 
 		def verify_can_purchase_numbers
