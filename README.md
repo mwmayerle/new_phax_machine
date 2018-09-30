@@ -99,40 +99,40 @@ The Fax Numbers page displays a table of all fax numbers in the admin's account,
 
 ![FaxNumberPage](https://raw.githubusercontent.com/mwmayerle/new_phax_machine/master/app/assets/images/faxnumberpage.png)
 
-The Fax Numbers page also allows the Admin to provision a new fax number. The Area Code dropdown menu dynamically changes based on the selected State/Province in the menu to the left. Toll-Free numbers are listed as "Non-Geographic" in State/Provinces.
+The top of the Fax Numbers page also allows the Admin to provision a new fax number. The Area Code dropdown menu dynamically changes based on the selected State/Province in the menu to the left. Toll-Free numbers are listed as "Non-Geographic" in State/Province.
 
 If the Admin desires, they may add a label to any fax number that can only be viewed by the Admin by clicking one of the edit buttons on the right of the table. The Admin can also move the fax number into a different organization by selecting it from the dropdown menu (this will remove all users linked to the number in its previous organization), or remove the fax number from its organization.
 
 ![EditFaxNumberPage](https://raw.githubusercontent.com/mwmayerle/new_phax_machine/master/app/assets/images/editfaxnumberpage.png)
 
 #### Managing Organizations
-Organizations are groups of users and fax numbers set by the Admin. To create an organization, head to the Organizations Page ("Organizations" on the navbar) and click the "Add New Organization" button in the top right corner of the screen.
+Organizations are groups of users and fax numbers set by the Admin. To create an organization, navigate to the Organizations Page ("Organizations" on the navbar) and click the "Add New Organization" button in the top right corner of the screen.
 
 This page displays all fax numbers that are not assigned to a organization in the "Add fax numbers" table. Please note that fax numbers with a red X next to them already have a primary callback_url will not have fax-to-email capabilities.
 
 ![NewOrganization](https://raw.githubusercontent.com/mwmayerle/new_phax_machine/master/app/assets/images/neworganization.png)
 
-When creating an organization, the Admin checks the box of fax numbers they would like to assign to the organization, gives the irganization a name (this name will be seen by the organization's manager), and decides if the Manager of the organization will be allowed to purchase additional fax numbers. In this example we're creating the "Great Plains LLC" organization, adding all of the fax numbers that are already labeled, and allowing fax numbers to be purchased by the organization. 
+When creating an organization, the Admin checks the box of fax numbers they would like to assign to the organization, gives the organization a name (this name will be seen by the organization's manager), and decides if the Manager of the organization will be allowed to purchase additional fax numbers. In this example we're creating the "Great Plains LLC" organization, adding all of the fax numbers that are already labeled, and allowing fax numbers to be purchased by the organization. 
 
 Once an organization has been created, it will appear in the organization page. Each organization's fax numbers and manager (if it has one) are shown. If an organization does not have a manager, a field will be present for inviting a manager, with an additional dropdown menu of fax numbers to set as the manager's caller ID number. In this example we'll invite bob.loblaw@greatplainsllc.com to manage Great Plains LLC.
 
 ![OrganizationIndex](https://raw.githubusercontent.com/mwmayerle/new_phax_machine/master/app/assets/images/organizationindex.png)
 
-If an admin would like to edit an organization, they can click on the organization's name, which takes them to a page displaying information about the organization, such as all of the users linked to a particular fax number. To edit the organization, click on the "Manage Great Plains LLC Fax Numbers/Details" in the upper right corner.
+If an admin would like to edit an organization, they can click on the organization's name, which takes them to a page displaying all of the users linked to a particular fax number. Users may be linked to multiple fax numbers or just one, depending on the use case. When a fax number receives a fax, every person linked to that number will be emailed. To edit the organization, click on the "Manage Great Plains LLC Fax Numbers/Details" in the upper right corner.
 
 ![OrganzationShow](https://raw.githubusercontent.com/mwmayerle/new_phax_machine/master/app/assets/images/organizationshow.png)
 
-In this case we'll simultaneously remove the two fax numbers with a callback_url and add the 971 number.
+In this case we'll simultaneously remove the two fax numbers that have a different callback_url and add the 971 number to this organization.
 
-![OrganzationShow](https://raw.githubusercontent.com/mwmayerle/new_phax_machine/master/app/assets/images/organizationedit.png)
+![OrganizationEdit](https://raw.githubusercontent.com/mwmayerle/new_phax_machine/master/app/assets/images/organizationedit.png)
 
 ### Manager Functions
-Managers are invited by the admin via email to manage an organization. Managers (and the admin if they want to) link users to fax numbers and assign caller ID numbers. If the admin allows it, a manager can also provision additional fax numbers to the organization they control. Managers should first invite users and then link them to fax numbers.
+Managers are invited by the Admin via email to manage an organization. Each organization may only have one manager. Managers (and the admin if they want to) link users to fax numbers and assign them caller ID numbers. If the admin allows it, a manager can also provision additional fax numbers to the organization they control. Managers should first invite users and then link them to fax numbers. Users who are not linked to a fax number by the manager will be able to log in, however they will be unable to send or receive faxes by email nor will they be able to send a fax using the fax portal.
 
-####Users
-Managers may invite users to Phax Machine and revoke user access in their Users portal. When a manager invites a user, they input a valid email address and select one of the fax numbers within their organization from the dropdown menu. Managers may also edit an existing user's email address or caller ID number at a later time.
+#### Users
+Managers may invite users to Phax Machine and revoke user access in their Users portal. When a manager invites a user, they select one of the fax numbers within their organization from the dropdown menu. Managers may also edit an existing user's email address or caller ID number at a later time.
 
-####Dashboard
-The dashboard provides the manager with a summary of all fax numbers and their linked users. Managers can add a label to their fax numbers by clicking on the fax number and link/unlink users to a fax numbers by clicking on the "Link/Unlink Users" button under each fax number. A table of all users currently linked to a fax number is shown next to each fax number.
+#### Dashboard
+The dashboard provides the manager with a summary of all fax numbers and their linked users. Managers link/unlink users to a fax numbers by clicking on the "Link/Unlink Users" button under each fax number. A table of all users currently linked to a fax number is shown next to each fax number. Managers may also add a label to their fax numbers by clicking on the fax number and entering a label.
 
-![UsersShow](https://raw.githubusercontent.com/mwmayerle/new_phax_machine/master/app/assets/images/userspage.png)
+![UserShow](https://raw.githubusercontent.com/mwmayerle/new_phax_machine/master/app/assets/images/userspage.png)

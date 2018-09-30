@@ -10,22 +10,27 @@ class FaxesController < ApplicationController
 
 	# POST for sending a fax via the internal view
 	def create(attached_files = [])
-		fax_params[:files].each { |file_in_params| attached_files << file_in_params[1].tempfile } # No .map() for ActionCont. params
-		options = {
-			to: fax_params[:to],
-			files: attached_files,
-			caller_id: current_user.caller_id_number,
-			tag: {
-				sender_organization_fax_tag: current_user.organization.fax_tag, 
-				sender_email_fax_tag: current_user.fax_tag,
-			},
-		}
-		sent_fax_response = Fax.create_fax(options)
-		if sent_fax_response.is_a?(Phaxio::Error::PhaxioError)
-			flash[:alert] = "Error: ".concat(sent_fax_response.to_s)
+		if current_user.fax_numbers.present?
+			fax_params[:files].each { |file_in_params| attached_files << file_in_params[1].tempfile } # No .map() for ActionCont. params
+			options = {
+				to: fax_params[:to],
+				files: attached_files,
+				caller_id: current_user.caller_id_number,
+				tag: {
+					sender_organization_fax_tag: current_user.organization.fax_tag, 
+					sender_email_fax_tag: current_user.fax_tag,
+				},
+			}
+			sent_fax_response = Fax.create_fax(options)
+			if sent_fax_response.is_a?(Phaxio::Error::PhaxioError)
+				flash[:alert] = "Error: ".concat(sent_fax_response.to_s)
+			else
+				api_response = Fax.get_fax_information(sent_fax_response.id)
+				api_response.status == 'queued' ? flash[:notice] = 'Fax queued for sending' : flash[:alert] = api_respons.eerror_message
+			end
+
 		else
-			api_response = Fax.get_fax_information(sent_fax_response.id)
-			api_response.status == 'queued' ? flash[:notice] = 'Fax queued for sending' : flash[:alert] = api_respons.eerror_message
+			flash[:notice] = "Faxing not allowed. You are not currently linked to any fax numbers. Contact Phax Machine's manager."
 		end
 		redirect_to new_fax_path
 	end
