@@ -90,7 +90,9 @@ the button above, you'll need to follow these instructions:
 2. Add the heroku repository as well: `git remote add heroku https://git.heroku.com/HEROKU-APP-NAME.git` (Substituting `HEROKU-APP-NAME` with the name of your Heroku app)
 3. Push the latest changes to Heroku: `git push heroku master`
 
-## User Guide/Walkthrough
+
+
+# User Guide/Walkthrough
 After initial setup is complete, an email will be sent to the address in the "ADMIN_EMAIL" field inviting the admin to set their password and finish setting up their account. The admin will then be redirected to the fax numbers page. 
 
 ### Admin Functions
@@ -126,7 +128,7 @@ In this case we'll simultaneously remove the two fax numbers that have a differe
 
 ![OrganizationEdit](https://raw.githubusercontent.com/mwmayerle/new_phax_machine/master/app/assets/images/organizationedit.png)
 
-####Changing the Logo
+#### Changing the Logo
 The Admin may change the site logo (Voyant in all examples) by clicking "Edit Profile" in the navigation menu on the left. To change the logo, simply link to the location of the desired logo, and Phax Machine will add and resize the logo. Logos must be an image, and look best when a transparent background is used. Your current password is required to edit the logo.
 
 ### Manager Functions
@@ -179,10 +181,10 @@ When the page loads, the first 20 faxes within the past week are loaded. Admins 
 Managers may only search for faxes within their organization. Managers may search by fax number, user, or a combination of both. Please note that when viewing received faxes in fax logs, if a fax number has multiple users linked to it, it will only show up once in the fax logs, not once for each user linked to the number.
 
 For example the following users are linked to the fax number with an 847 area code:
-- harvey.birdman@sebben&sebben.com
+- harvey.birdman@sebbenandsebben.com
 - bob.loblaw@greatplainsllc.com
 
-The 847 number received a fax on September 30th, 2018. The received fax shows up only once in the fax logs. If the manager searches individually by each of the three users shown above, it will show up once for each user.
+The 847 number received a fax on September 30th, 2018 (fax at the top of the logs). The received fax shows up only once in the fax logs. If the manager searches individually by each of the two users shown above, it will show up once for each user.
 
 #### As a User
 Users may only search for their own faxes by indivual fax number or all of the fax numbers they're linked to. If a user is unlinked from a fax number, they will be unable to search for that previous fax number.
