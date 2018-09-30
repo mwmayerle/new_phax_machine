@@ -58,12 +58,11 @@ class MailgunFaxesController < ApplicationController
     end
 
     p "MAILGUN".concat("+" * 70)
-		puts email_addresses.fax_numbers.present?
+		puts user.fax_numbers.present?
 		p "+" * 70
 
-    if user.fax_numbers.present?
-	 		sent_fax_object = Fax.create_fax_from_email(sender, params['recipient'], files, user)
-	 	end
+    
+	 	sent_fax_object = Fax.create_fax_from_email(sender, params['recipient'], files, user) if user.fax_numbers.present?
 
  		if sent_fax_object.class != String && user.fax_numbers.present?
 			api_response = Fax.get_fax_information(sent_fax_object.id)
