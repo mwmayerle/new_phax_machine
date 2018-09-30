@@ -127,12 +127,12 @@ In this case we'll simultaneously remove the two fax numbers that have a differe
 ![OrganizationEdit](https://raw.githubusercontent.com/mwmayerle/new_phax_machine/master/app/assets/images/organizationedit.png)
 
 ### Manager Functions
-Managers are invited by the Admin via email to manage an organization. Each organization may only have one manager. Managers (and the admin if they want to) link users to fax numbers and assign them caller ID numbers. If the admin allows it, a manager can also provision additional fax numbers to the organization they control. Managers should first invite users and then link them to fax numbers. Users who are not linked to a fax number by the manager will be able to log in and send a fax with the fax portal, however they will not be notified when a fax is received.
+Managers are invited by the Admin via email to manage an organization. Each organization may only have one manager. Managers (and the admin if they want to) link users to fax numbers and assign them caller ID numbers. If the admin allows it, a manager can also provision additional fax numbers to the organization they control. Managers should first invite users and then link them to fax numbers. Users who are not linked to a fax number by the manager will be able to log in, however they will be unable to send or receive faxes by email nor will they be able to send a fax using the fax portal.
 
 #### Users
-Managers may invite users to Phax Machine and revoke user access in their Users portal. When a manager invites a user, they input a valid email address and select one of the fax numbers within their organization from the dropdown menu. Managers may also edit an existing user's email address or caller ID number at a later time.
+Managers may invite users to Phax Machine and revoke user access in their Users portal. When a manager invites a user, they select one of the fax numbers within their organization from the dropdown menu. Managers may also edit an existing user's email address or caller ID number at a later time.
 
 #### Dashboard
-The dashboard provides the manager with a summary of all fax numbers and their linked users. Managers can add a label to their fax numbers by clicking on the fax number and link/unlink users to a fax numbers by clicking on the "Link/Unlink Users" button under each fax number. A table of all users currently linked to a fax number is shown next to each fax number.
+The dashboard provides the manager with a summary of all fax numbers and their linked users. Managers link/unlink users to a fax numbers by clicking on the "Link/Unlink Users" button under each fax number. A table of all users currently linked to a fax number is shown next to each fax number. Managers may also add a label to their fax numbers by clicking on the fax number and entering a label.
 
 ![UserShow](https://raw.githubusercontent.com/mwmayerle/new_phax_machine/master/app/assets/images/userspage.png)
