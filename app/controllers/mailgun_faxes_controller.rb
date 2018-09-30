@@ -9,7 +9,9 @@ class MailgunFaxesController < ApplicationController
     email_addresses = UserFaxNumber.where(fax_number_id: fax_number.id).all.map do |fax_num_email_obj|
     	fax_num_email_obj.user.email
     end
-
+    p "RECEIVED".concat("+" * 70)
+		puts email_addresses.fax_numbers.present?
+		p "+" * 70
     if email_addresses.present? # requires the User to be linked to a fax number
 	    fax_from = @fax['from_number']
 	  	fax_file_name = params['file'].original_filename
@@ -23,7 +25,9 @@ class MailgunFaxesController < ApplicationController
 	def fax_sent
 		@fax = JSON.parse(params['fax'])
 		email_addresses = User.includes(:fax_numbers).find_by(fax_tag: @fax['tags']['sender_email_fax_tag']).email
-
+		p "SENT".concat("+" * 70)
+		puts email_addresses.fax_numbers.present?
+		p "+" * 70
 		if email_addresses.fax_numbers.present? # requires the User to be linked to a fax number
 	    if @fax["status"] == "success"
 	    	email_subject = "Your fax was sent successfully"
@@ -53,9 +57,15 @@ class MailgunFaxesController < ApplicationController
       i += 1
     end
 
- 		sent_fax_object = Fax.create_fax_from_email(sender, params['recipient'], files, user)
+    p "MAILGUN".concat("+" * 70)
+		puts email_addresses.fax_numbers.present?
+		p "+" * 70
 
- 		if sent_fax_object.class != String
+    if user.fax_numbers.present?
+	 		sent_fax_object = Fax.create_fax_from_email(sender, params['recipient'], files, user)
+	 	end
+
+ 		if sent_fax_object.class != String && user.fax_numbers.present?
 			api_response = Fax.get_fax_information(sent_fax_object.id)
 		else
 			MailgunMailer.failed_email_to_fax_email(sender, sent_fax_object).deliver_now

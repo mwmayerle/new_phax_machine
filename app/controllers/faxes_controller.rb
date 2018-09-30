@@ -28,9 +28,9 @@ class FaxesController < ApplicationController
 				api_response = Fax.get_fax_information(sent_fax_response.id)
 				api_response.status == 'queued' ? flash[:notice] = 'Fax queued for sending' : flash[:alert] = api_respons.eerror_message
 			end
-			
+
 		else
-			flash[:notice] = "Faxing not allowed. You are not currently linked to any fax numbers."
+			flash[:notice] = "Faxing not allowed. You are not currently linked to any fax numbers. Contact Phax Machine's manager."
 		end
 		redirect_to new_fax_path
 	end
