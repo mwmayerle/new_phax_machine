@@ -39,7 +39,7 @@ class MailgunFaxesController < ApplicationController
 
 	def mailgun(files = [])
     sender = Mail::AddressList.new(params['from']).addresses.first.address
-    user = User.find_by(email: sender)
+    user = User.includes(:fax_numbers).find_by(email: sender)
 
     # Currently fails if user is not in the DB
     attachment_count = params['attachment-count'].to_i

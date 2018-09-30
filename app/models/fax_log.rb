@@ -37,7 +37,7 @@ class FaxLog < ApplicationRecord
 				rescue
 					options[:per_page] = 20 # <-- if a user has no fax numbers this prevents a division by zero error
 				end
-				
+
 				# First search for faxes via organization fax tag or user's fax tag and insert these faxes. If I try to include the desired
 				# fax number(s) in this API call as well, it will only return received faxes b/c those will have the tags on them.
 				tag_data = Phaxio::Fax.list(
@@ -51,26 +51,25 @@ class FaxLog < ApplicationRecord
 				if options[:tag].has_key?(:sender_organization_fax_tag) && !!/all/.match(filtered_params[:fax_number])
 					new_data = tag_data.raw_data
 				else
-					new_data = filter_for_desired_fax_number_data(tag_data.raw_data, fax_numbers)
+					new_data = filter_for_desired_fax_number(tag_data.raw_data, fax_numbers)
 				end
 				fax_data.push(new_data)
 
 				# Then search for faxes using each fax_number associated with the Organization
 				fax_numbers.keys.each do |fax_number|
-					options[:phone_number] = fax_number
+					options[:fax_number] = fax_number
 					current_data = Phaxio::Fax.list(
 						created_before: options[:end_time],
 						created_after: options[:start_time],
-						phone_number: options[:phone_number],
+						phone_number: options[:fax_number],
 						per_page: options[:per_page],
 						status: options[:status]
 					)
 					# Filter by fax number if a specific fax number exists and it isn't "all" or "all-linked"
-					if options[:phone_number].nil?
+					if options[:fax_number].nil?
 						filtered_data = current_data.raw_data
 					else
 						filtered_data = filter_faxes_by_fax_number(options, current_data.raw_data, fax_numbers)
-
 						if options[:tag][:sender_organization_fax_tag]
 							filtered_data = filter_faxes_by_org(options, filtered_data, organizations[options[:tag][:sender_organization_fax_tag]])
 						end
@@ -81,8 +80,12 @@ class FaxLog < ApplicationRecord
 					#   having a plural name. This is for code re-use. 
 					if options[:tag][:sender_email_fax_tag]
 						user_key = users.select { |user_key, user_data| user_data[:fax_tag] == options[:tag][:sender_email_fax_tag] }.keys.pop
+						user_fax_numbers = UserFaxNumber.where(user_id: users[user_key][:user_id])
+							.map { |user_fax_number| user_fax_number.fax_number }
+							.map { |fax_number| fax_number.fax_number }
+
 						filtered_sent_data = filter_faxes_by_user_sent(options, filtered_data, users[user_key])
-						filtered_received_data = filter_faxes_by_user_received(options, filtered_data, users[user_key])
+						filtered_received_data = filter_faxes_by_user_received(options, filtered_data, users[user_key], user_fax_numbers)
 						filtered_data = filtered_received_data + filtered_sent_data
 					end
 					fax_data.push(filtered_data)
@@ -91,16 +94,37 @@ class FaxLog < ApplicationRecord
 			fax_data
 		end
 
-		def filter_for_desired_fax_number_data(tag_data, fax_numbers)
-			tag_data.select do |fax_object|
-				fax_obj_recipient_data_in_fax_numbers?(fax_object, fax_numbers) || sent_caller_id_in_fax_numbers?(fax_object, fax_numbers)
-			end
+		def filter_for_desired_fax_number(tag_data, fax_numbers)
+			recipient_numbers = tag_data.select { |fax_object| fax_obj_recipient_data_in_fax_numbers?(fax_object, fax_numbers) }
+			sent_numbers = tag_data.select { |fax_object| sent_caller_id_in_fax_numbers?(fax_object, fax_numbers) }
+			recipient_numbers + sent_numbers
 		end
 
 		def filter_faxes_by_fax_number(options, current_data, fax_numbers)
-			current_data.select do |fax_object|
-				fax_numbers.keys.include?(fax_object[:from_number]) || fax_numbers.keys.include?(fax_object[:to_number]) || fax_numbers.keys.include?(fax_object[:caller_id])
+			sent_faxes = current_data.select { |fax_object| fax_object[:direction] == 'sent' }
+			received_faxes = current_data.select { |fax_object| fax_object[:direction] == 'received' }
+
+			if sent_faxes.empty?
+				caller_id_data = []
+				recipients_data = []
+			else
+				caller_id_data = sent_faxes.select { |fax_object| fax_numbers.keys.include?(fax_object[:caller_id]) }
+				recipients_data = sent_faxes.select do |fax_object|
+					fax_object[:recipients].select do |recip| 
+						fax_numbers.keys.include?(recip[:phone_number])
+					end
+				end
 			end
+
+			if received_faxes.empty?
+				from_number_data = []
+				to_number_data = []
+			else
+				from_number_data = received_faxes.select { |fax_object| fax_numbers.keys.include?(fax_object[:from_number]) }
+				to_number_data = received_faxes.select { |fax_object| fax_numbers.keys.include?(fax_object[:to_number]) }
+			end
+
+			new_data = from_number_data + to_number_data + caller_id_data + recipients_data
 		end
 
 		def filter_faxes_by_org(options, filtered_data, organizations)
@@ -111,8 +135,8 @@ class FaxLog < ApplicationRecord
 			filtered_data.select { |fax_object| sent_fax_is_from_user?(fax_object, options, user) }
 		end
 
-		def filter_faxes_by_user_received(options, filtered_data, user)
-		  filtered_data.select { |fax_object| received_fax_was_sent_by_user?(fax_object, options, user) }
+		def filter_faxes_by_user_received(options, filtered_data, user, user_fax_numbers)
+		  filtered_data.select { |fax_object| received_fax_was_sent_by_user?(fax_object, options, user, user_fax_numbers) }
 		end
 
 		def sent_fax_is_from_user?(fax_object, options, user)
@@ -121,14 +145,12 @@ class FaxLog < ApplicationRecord
 			fax_object[:caller_id] == user[:caller_id_number] && fax_object[:tags][:sender_email_fax_tag] == user[:fax_tag]
 		end
 
-		def received_fax_was_sent_by_user?(fax_object, options, user)
-			return false if fax_object[:direction] == 'sent'
-			fax_object[:to_number] == user[:caller_id_number] && options[:tag][:sender_email_fax_tag] == user[:fax_tag]
+		def received_fax_was_sent_by_user?(fax_object, options, user, user_fax_numbers)
+			return false if fax_object[:direction] == 'sent' 
+			user_fax_numbers.include?(fax_object[:to_number])
 		end
 
-		def format_faxes(current_user, initial_fax_data, organizations, fax_numbers, users = nil, fax_data = {})
-			all_faxes = sort_faxes(initial_fax_data)
-
+		def format_faxes(current_user, all_faxes, organizations, fax_numbers, users = nil, fax_data = {})
 			all_faxes.each do |fax_object|
 				fax_data[fax_object[:id]] = {
 					:status => fax_object[:status].titleize,
@@ -143,7 +165,7 @@ class FaxLog < ApplicationRecord
 					elsif fax_numbers[fax_object[:from_number]] && fax_object_is_younger?(fax_object[:created_at], fax_numbers[fax_object[:from_number]][:org_created_at])
 						fax_data[fax_object[:id]][:organization] = fax_numbers[fax_object[:from_number]][:label]
 					else
-						fax_data[fax_object[:id]][:organization] = "N/A"
+						fax_data[fax_object[:id]][:organization] = ""
 					end
 
 					fax_data[fax_object[:id]][:to_number] = FaxNumber.format_pretty_fax_number(fax_object[:to_number])
@@ -186,7 +208,6 @@ class FaxLog < ApplicationRecord
 			fax_object[:recipients].select { |recipient| fax_numbers.keys.include?(recipient[:phone_number]) }.any?
 		end
 
-		# Iterate through fax objects and 
 		def sent_caller_id_in_fax_numbers?(fax_object, fax_numbers)
 			fax_object[:direction] == 'sent' && fax_numbers.keys.include?(fax_object[:caller_id])
 		end
@@ -198,7 +219,6 @@ class FaxLog < ApplicationRecord
 		def add_start_time(current_user, filtered_params, organizations, users)
 			filtered_params[:start_time] = filtered_params[:start_time].to_s == "" ? (DateTime.now - 7) : filtered_params[:start_time].to_time
 			if is_manager?(current_user)
-
 				if !!/all/.match(filtered_params[:user]) && timestamp_is_older?(filtered_params[:start_time], current_user.organization.created_at)
 					filtered_params[:start_time] = current_user.organization.created_at 
 				else
@@ -288,7 +308,7 @@ class FaxLog < ApplicationRecord
 				:label => organization_object.label,
 				:org_created_at => organization_object.created_at,
 				:org_id => organization_object.id,
-				:soft_deleted => !!organization_object.deleted_at,
+				:soft_deleted => !!organization_object.deleted_at
 			}
 		end
 
@@ -307,6 +327,8 @@ class FaxLog < ApplicationRecord
 				:user_created_at => user_obj.created_at,
 				:fax_tag => user_obj.fax_tag,
 				:org_id => user_obj.organization_id,
+				:user_id => user_obj.id,
+				:soft_deleted => user_obj.deleted_at,
 			}
 		end
 
