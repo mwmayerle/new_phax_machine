@@ -12,7 +12,7 @@ The application utilizes the [Phaxio API](https://www.phaxio.com/) for faxing, t
 ## Table of Contents
 * [Introduction](#Introduction)
 * [Setup](#Setup)  
-* [User Guide](#User-Guide)  
+* [User Guide](#user-guide)  
 	* [Admin Functions](#Admin_Functions)  
 		* [Managing Fax Numbers](#Managing_Fax_Numbers)  
 		* [Managing Organizations](#Managing_Fax_Numbers)  
