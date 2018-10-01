@@ -1,20 +1,6 @@
 phaxMachine.pages['new-fax-number-fax-index'] = {
 
 	render: function() {
-		if ($("#clickable-dropdown").length > 0) {
-			$("#show-form").on('click', function(event) {
-				$(".purchase-number-form").slideToggle(300);
-				let icon = $('#clickable-dropdown').find(".fa");
-				if (icon.hasClass("fa-arrow-circle-down")) {
-					icon.removeClass('fa-arrow-circle-down');
-					icon.addClass('fa-arrow-circle-up');
-				} else {
-					icon.removeClass('fa-arrow-circle-up');
-					icon.addClass('fa-arrow-circle-down');
-				}
-			});
-		}
-
 		$("#purchase-button").on('click', $("#clickable-dropdown"), function(event) {
 			let result = confirm('Purchasing this number will charge $2.00 to your account. Are you sure you want to do that?');
 			if (result) {

@@ -2,13 +2,13 @@
 	<div class="container">
 		<div style="margin-top:10px">
 			<%= form_for :fax_number, url: '/fax_numbers', class: 'form-inline' do |f| %>
-			<% if organization %>
-				<div class="row purchase-number-form">
-				<%= f.hidden_field :organization_id, value: "#{organization.id}" %>
-			<% else %>
-				<div class="row purchase-number-form">
-				<div class="col-lg-1"></div>
-			<% end %>
+				<% if organization %>
+					<div class="row purchase-number-form">
+					<%= f.hidden_field :organization_id, value: "#{organization.id}" %>
+				<% else %>
+					<div class="row purchase-number-form">
+					<div class="col-lg-1"></div>
+				<% end %>
 					<div class="form-group col-lg-4">
 				 		<strong><%= f.label :state, "State/Province:" %></strong>
 						<select id="states" class="form-control form-inline" name="fax_number[state]">
