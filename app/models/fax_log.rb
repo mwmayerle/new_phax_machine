@@ -53,7 +53,7 @@ class FaxLog < ApplicationRecord
 				else
 					new_data = filter_for_desired_fax_number(tag_data.raw_data, fax_numbers)
 				end
-				fax_data.push(new_data)
+				fax_data.push(new_data) if !new_data.nil?
 
 				# Then search for faxes using each fax_number associated with the Organization
 				fax_numbers.keys.each do |fax_number|
@@ -65,29 +65,35 @@ class FaxLog < ApplicationRecord
 						per_page: options[:per_page],
 						status: options[:status]
 					)
-					# Filter by fax number if a specific fax number exists and it isn't "all" or "all-linked"
-					if options[:fax_number].nil?
-						filtered_data = current_data.raw_data
-					else
-						filtered_data = filter_faxes_by_fax_number(options, current_data.raw_data, fax_numbers)
-						if options[:tag][:sender_organization_fax_tag]
-							filtered_data = filter_faxes_by_org(options, filtered_data, organizations[options[:tag][:sender_organization_fax_tag]])
+
+					if current_data.total > 0 # <-- no result catch
+						# Filter by fax number if a specific fax number exists and it isn't "all" or "all-linked"
+						if options[:fax_number].nil?
+							filtered_data = current_data.raw_data
+						else
+							filtered_data = filter_faxes_by_fax_number(options, current_data.raw_data, fax_numbers)
+							if options[:tag][:sender_organization_fax_tag]
+								filtered_data = filter_faxes_by_org(options, filtered_data, organizations[options[:tag][:sender_organization_fax_tag]])
+							end
 						end
-					end
 
-					# Filter by user if a user-specific tag exists
-					# NOTE 'users' when filtering by a single user will be a single object from the set_users method, despite
-					#   having a plural name. This is for code re-use. 
-					if options[:tag][:sender_email_fax_tag]
-						user_key = users.select { |user_key, user_data| user_data[:fax_tag] == options[:tag][:sender_email_fax_tag] }.keys.pop
-						user_fax_numbers = UserFaxNumber.where(user_id: users[user_key][:user_id])
-							.map { |user_fax_number| user_fax_number.fax_number }
-							.map { |fax_number| fax_number.fax_number }
+						# Filter by user if a user-specific tag exists
+						# NOTE 'users' when filtering by a single user will be a single object from the set_users method, despite
+						#   having a plural name. This is for code re-use.
+						if options[:tag][:sender_email_fax_tag]
+							user_key = users.select { |user_key, user_data| user_data[:fax_tag] == options[:tag][:sender_email_fax_tag] }.keys.pop
+							user_fax_numbers = UserFaxNumber.where(user_id: users[user_key][:user_id])
+								.map { |user_fax_number| user_fax_number.fax_number }
+								.map { |fax_number| fax_number.fax_number }
 
-						filtered_sent_data = filter_faxes_by_user_sent(options, filtered_data, users[user_key])
-						filtered_received_data = filter_faxes_by_user_received(options, filtered_data, users[user_key], user_fax_numbers)
-						filtered_data = filtered_received_data + filtered_sent_data
-					end
+							filtered_sent_data = filter_faxes_by_user_sent(options, filtered_data, users[user_key])
+							filtered_received_data = filter_faxes_by_user_received(options, filtered_data, users[user_key], user_fax_numbers)
+							filtered_data = filtered_received_data + filtered_sent_data
+						end
+					else
+						filtered_data = current_data.raw_data
+					end #current_data.total 
+
 					fax_data.push(filtered_data)
 				end
 			end
@@ -98,7 +104,7 @@ class FaxLog < ApplicationRecord
 			recipient_numbers = tag_data.select { |fax_object| fax_obj_recipient_data_in_fax_numbers?(fax_object, fax_numbers) }
 			sent_numbers = tag_data.select { |fax_object| sent_caller_id_in_fax_numbers?(fax_object, fax_numbers) }
 			results = recipient_numbers + sent_numbers
-			results.uniq!
+			results.uniq! if results != [] # [].uniq! is nil
 		end
 
 		def filter_faxes_by_fax_number(options, current_data, fax_numbers)

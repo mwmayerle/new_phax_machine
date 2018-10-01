@@ -10,7 +10,7 @@ class FaxLogsController < ApplicationController
 		if is_admin?
 			initial_fax_data = FaxLog.get_faxes(current_user, options, filtering_params)
 			FaxLog.add_all_attribute_to_hashes( [@fax_numbers, @organizations] )
-			all_faxes = FaxLog.sort_faxes(initial_fax_data)
+			all_faxes = FaxLog.sort_faxes(initial_fax_data) if initial_fax_data != []
 			@sorted_faxes = FaxLog.format_faxes(current_user, all_faxes.take(20), @organizations, @fax_numbers, @users)
 		else
 			options[:tag] = is_manager? ? { sender_organization_fax_tag: @organizations.keys[0] } : { sender_email_fax_tag: current_user.fax_tag }
