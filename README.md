@@ -10,17 +10,17 @@ PhaxMachine is a lightweight, easily customizable faxing application that makes 
 The application utilizes the [Phaxio API](https://www.phaxio.com/) for faxing, the [Mailgun API](https://www.mailgun.com/) for emailing, and [Devise](https://github.com/plataformatec/devise) for user authentication. This application is built using Ruby v2.5.1 and Rails v5.2.1.
 
 ## Table of Contents
-* [Introduction](#Introduction)
-* [Setup](#Setup)  
+* [Introduction](#introduction)
+* [Setup](#setup)  
 * [User Guide](#user-guide)  
 	* [Admin Functions](#admin-functions)  
 		* [Managing Fax Numbers](#managing-fax-numbers)  
-		* [Managing Organizations](#managing-fax-numbers)  
+		* [Managing Organizations](#managing-organizations)  
 		* [Changing The Logo](#changing-the-logo)  
 	* [Manager Functions](#manager-functions)  
 		* [Users](#managing-users)  
 		* [Manager Dashboard](#manager-dashboard)  
-	* [General Use](##all-users)  
+	* [General Use](#all-users)  
 		* [Fax Portal](#fax-portal)  
 		* [Fax Logs](#fax-logs)  
 			* [Fax Log Limitations](#fax-log-limitations)  
