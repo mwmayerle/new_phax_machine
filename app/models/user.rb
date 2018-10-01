@@ -42,7 +42,6 @@ class User < ApplicationRecord
 		    user.reset_password_sent_at = Time.now.utc
 		    user.save(validate: false)
 		    @raw = raw
-
 		    if permission == UserPermission::MANAGER
 		    	PhaxMachineMailer.manager_welcome_invite(user, @raw).deliver_now
 		    elsif permission == UserPermission::USER

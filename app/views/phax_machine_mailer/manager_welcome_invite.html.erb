@@ -1,5 +1,10 @@
-]<p>Hello <%= @resource.email %>!</p>
+<link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
+<body style="font-family: 'Nunito', sans-serif;background: #fafafa;padding:20px">
+	<img src="<%= @logo_link %>" alt="Logo" width="200">
+	<div style="width: 100%;margin-top: 20px;margin-bottom: 20px;border-bottom: 1px solid darkgrey;"></div>
 
-<p>You've been invited to manage <%= @resource.organization.label %></p>
-<p>Click the link below to configure your account, invite employees, and start faxing.</p>
-<p><%= link_to "Set Up Account", users_password_set_new_user_password_url(@resource, reset_password_token: @token)%></p>
+	<p style="font-size: 1.1em;line-height: 1.7em;">Hello <%= @resource.email %>!</p>
+	<p style="font-size: 1.1em;line-height: 1.7em;">You've been invited to manage <%= @resource.organization.label %></p>
+	<p style="font-size: 1.1em;line-height: 1.7em;">Click the link below to set up your account and start faxing.</p>
+	<p style="font-size: 1.1em;line-height: 1.7em;"><%= link_to "Set Up Account", users_password_set_new_user_password_url(@resource, reset_password_token: @token)%></p>
+</body>

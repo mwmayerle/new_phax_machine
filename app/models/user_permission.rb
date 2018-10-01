@@ -15,6 +15,6 @@ class UserPermission < ApplicationRecord
 		end
 
 		def reject_multiple_admins
-			errors.add(:base, "Permission denied") if UserPermission.where(permission: ADMIN).present?
+			errors.add(:base, ApplicationController::DENIED) if UserPermission.where(permission: ADMIN).present?
 		end
 end

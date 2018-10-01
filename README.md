@@ -5,28 +5,29 @@
 # PhaxMachine
 
 ## Introduction
-PhaxMachine is a lightweight, customizable application that makes it easy for service providers to quickly provide and manage permission-based email-to-fax and fax-to-email services to their customers. Users are linked by an admin or a manager into groups that are emailed whenever a fax is sent or received on the fax number they're linked to. The application allows an admin to create an organization, invite a manager to manage the organization (optional), assign fax numbers to that organization, and link users to each fax number.
+PhaxMachine is a lightweight, easily customizable faxing application that makes it easy for service providers to quickly provide and manage permission-based email-to-fax and fax-to-email services to their customers. Users are linked to a fax number by an Admin or a Manager into groups that are emailed whenever a fax is sent or received on that number. The application allows an Admin to create an Organization, invite a Manager to manage the organization (optional), assign fax numbers to that organization, and link users to each fax number. Users are registered on an invite-only basis via email.
 
-The application utilizes the [Phaxio API](https://www.phaxio.com/) for faxing, the [Mailgun API](https://www.mailgun.com/) for emailing, and [Devise](https://github.com/plataformatec/devise) for user authentication.
+The application utilizes the [Phaxio API](https://www.phaxio.com/) for faxing, the [Mailgun API](https://www.mailgun.com/) for emailing, and [Devise](https://github.com/plataformatec/devise) for user authentication. This application is built using Ruby v2.5.1 and Rails v5.2.1.
 
 ## Table of Contents
-- [Introduction](##Introduction)  
-- [Setup](##Setup)  
-- [User Guide](#User_Guide/Walkthrough)  
+* [Introduction](##Introduction)
+* [Setup](##Setup)  
+* [User Guide](#User_Guide)  
 	* [Admin Functions](##Admin_Functions)  
-		+ [Managing Fax Numbers](###Managing_Fax_Numbers)  
-		+ [Managing Organizations](###Managing_Fax_Numbers)  
-		+ [Changing The Logo](###Changing_the_Logo)  
+		* [Managing Fax Numbers](###Managing_Fax_Numbers)  
+		* [Managing Organizations](###Managing_Fax_Numbers)  
+		* [Changing The Logo](###Changing_the_Logo)  
 	* [Manager Functions](##Manager_Functions)  
-		+ [Users](###Managing_Users)  
-		+ [Manager Dashboard](###Manager_Dashboard)  
-	* [All_Users](##All_Users)  
-		+ [Fax Portal](###Fax_Portal)  
-		+ [Fax Logs](###Fax_Logs)  
-			- [Fax Log Limitations](####Fax_Log_Limitations)  
-			- [Fax Logs as an Admin](####Fax_Logs_as_an_Admin)  
-			- [Fax Logs as a Manager](####Fax_Logs_as_a_Manager)  
-			- [Fax Logs as a User](####Fax_Logs_as_a_User)  
+		* [Users](###Managing_Users)  
+		* [Manager Dashboard](###Manager_Dashboard)  
+	* [General Use](##All_Users)  
+		* [Fax Portal](###Fax_Portal)  
+		* [Fax Logs](###Fax_Logs)  
+			* [Fax Log Limitations](####Fax_Log_Limitations)  
+			* [Fax Logs as an Admin](####Fax_Logs_as_an_Admin)  
+			* [Fax Logs as a Manager](####Fax_Logs_as_a_Manager)  
+			* [Fax Logs as a User](####Fax_Logs_as_a_User)  
+		* [Account Settings](###Account_Settings)
 
 ## Setup
 
@@ -104,10 +105,8 @@ the button above, you'll need to follow these instructions:
 2. Add the heroku repository as well: `git remote add heroku https://git.heroku.com/HEROKU-APP-NAME.git` (Substituting `HEROKU-APP-NAME` with the name of your Heroku app)
 3. Push the latest changes to Heroku: `git push heroku master`
 
-
-
-# User_Guide/Walkthrough
-After initial setup is complete, an email will be sent to the address in the "ADMIN_EMAIL" field inviting the admin to set their password and finish setting up their account. The admin will then be redirected to the fax numbers page. 
+# User_Guide
+After initial setup is complete, an email will be sent to the address in the "ADMIN_EMAIL" field inviting the admin to set their password and finish setting up their account. The admin will then be redirected to the fax numbers page.
 
 ## Admin_Functions
 ### Managing_Fax_Numbers
@@ -204,3 +203,8 @@ The 847 number received a fax on September 30th, 2018 (fax at the top of the log
 
 #### Fax_Logs_as_a_User
 Users may only search for their own faxes by indivual fax number or all of the fax numbers they're linked to. If a user is unlinked from a fax number, they will be unable to search for that previous fax number.
+
+###Account_Settings
+Any user may change their password by clicking on the "Profile" link in the navigation bar on the left of the screen. Password resets and forgotten logins are handled via email using Devise.
+
+###Email_Templates
