@@ -244,7 +244,8 @@ RSpec.describe FaxLog, type: :model do
 			initial_fake_data << build_failed_received_fax_objects(111185, 2, '+12223334444', org1.fax_numbers.second.fax_number)
 			initial_fake_data << build_failed_received_fax_objects(111187, 2, '+12223334444', org1.fax_numbers.third.fax_number)
 
-			formatted_faxes = FaxLog.format_faxes(manager1, initial_fake_data, @organization, @fax_numbers, @users)
+			all_faxes = FaxLog.sort_faxes(initial_fake_data)
+			formatted_faxes = FaxLog.format_faxes(manager1, all_faxes, @organization, @fax_numbers, @users)
 
 			expect(formatted_faxes.class).to eq(Hash)
 			expect(formatted_faxes.keys.length).to eq(36)
@@ -259,7 +260,8 @@ RSpec.describe FaxLog, type: :model do
 			initial_fake_data << build_successful_sent_fax_objects(111111, 1, manager1.caller_id_number, org1.fax_numbers.first.fax_number, org1, manager1)
 			# force the data to have multiple recipients
 			initial_fake_data[0][0][:recipients] << {phone_number: "+17738679999", status: "success", retry_count: 0, completed_at: (DateTime.now + 8), bitrate: 9600, resolution: 8040, error_type: nil, error_id: nil, error_message: nil}
-			formatted_faxes = FaxLog.format_faxes(manager1, initial_fake_data, @organization, @fax_numbers, @users)
+			all_faxes = FaxLog.sort_faxes(initial_fake_data)
+			formatted_faxes = FaxLog.format_faxes(manager1, all_faxes, @organization, @fax_numbers, @users)
 			expect(formatted_faxes[111111][:to_number]).to eq("Multiple")
 		end
 
@@ -277,8 +279,9 @@ RSpec.describe FaxLog, type: :model do
 			# The code for user_key below is included before the filtered_by_sent and filtered_by_received methods would be called,
 			#   it is why I have @user[0]
 			# user_key = users.select { |user_key, user_data| user_data[:fax_tag] == options[:tag][:sender_email_fax_tag] }.keys.pop
+			user_fax_numbers = ['+17738675303']
 			filtered_data_sent = FaxLog.filter_faxes_by_user_sent(options, tag_data, @users[0])
-			filtered_data_received = FaxLog.filter_faxes_by_user_received(options, tag_data, @users[0])
+			filtered_data_received = FaxLog.filter_faxes_by_user_received(options, tag_data, @users[0], user_fax_numbers)
 			expect(filtered_data_sent.length).to eq(2)
 			expect(filtered_data_sent[0][:id]).to eq(111111)
 			expect(filtered_data_sent[1][:id]).to eq(111112)
@@ -308,7 +311,8 @@ RSpec.describe FaxLog, type: :model do
 			# set date to pre-date the organization for first and last fake fax object
 			initial_fake_data[0][0][:created_at] = (org1.created_at - 7)
 			initial_fake_data[1][0][:created_at] = (org1.created_at - 7) # remember it's an array of arrays prior to the format_faxes method
-			formatted_faxes = FaxLog.format_faxes(admin, initial_fake_data, @organizations, @fax_numbers, @users)
+			all_faxes = FaxLog.sort_faxes(initial_fake_data)
+			formatted_faxes = FaxLog.format_faxes(admin, all_faxes, @organizations, @fax_numbers, @users)
 			expect(formatted_faxes[111111][:organization]).to be_nil
 			expect(formatted_faxes[111113][:organization]).to be_nil
 			expect(formatted_faxes[111112][:organization]).to eq('Org One')
@@ -333,7 +337,7 @@ RSpec.describe FaxLog, type: :model do
 			results = FaxLog.sent_caller_id_in_fax_numbers?(tag_data[1], @fax_numbers)
 			expect(results).to be(true)
 
-			results = FaxLog.filter_for_desired_fax_number_data(tag_data, @fax_numbers)
+			results = FaxLog.filter_for_desired_fax_number(tag_data, @fax_numbers)
 			expect(results.length).to be(1)
 			expect(results.pop[:id]).to eq(111112)
 		end

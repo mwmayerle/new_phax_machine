@@ -97,7 +97,8 @@ class FaxLog < ApplicationRecord
 		def filter_for_desired_fax_number(tag_data, fax_numbers)
 			recipient_numbers = tag_data.select { |fax_object| fax_obj_recipient_data_in_fax_numbers?(fax_object, fax_numbers) }
 			sent_numbers = tag_data.select { |fax_object| sent_caller_id_in_fax_numbers?(fax_object, fax_numbers) }
-			recipient_numbers + sent_numbers
+			results = recipient_numbers + sent_numbers
+			results.uniq!
 		end
 
 		def filter_faxes_by_fax_number(options, current_data, fax_numbers)
@@ -125,6 +126,7 @@ class FaxLog < ApplicationRecord
 			end
 
 			new_data = from_number_data + to_number_data + caller_id_data + recipients_data
+			new_data.uniq!
 		end
 
 		def filter_faxes_by_org(options, filtered_data, organizations)
