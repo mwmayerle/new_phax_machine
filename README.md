@@ -29,6 +29,7 @@ The application utilizes the [Phaxio API](https://www.phaxio.com/) for faxing, t
 			* [Fax Logs as a User](#fax-logs-as-a-user)  
 		* [Account Settings](#account-settings)
 <!-- [![Build Status](https://travis-ci.org/mwmayerle/new_phax_machine.svg?branch=master)](https://travis-ci.org/mwmayerle/new_phax_machine) -->
+## Setup
 
 ### 1. Deploy PhaxMachine
 
