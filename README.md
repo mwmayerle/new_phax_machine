@@ -10,9 +10,23 @@ PhaxMachine is a lightweight, customizable application that makes it easy for se
 The application utilizes the [Phaxio API](https://www.phaxio.com/) for faxing, the [Mailgun API](https://www.mailgun.com/) for emailing, and [Devise](https://github.com/plataformatec/devise) for user authentication.
 
 ## Table of Contents
-[Introduction](#Introduction)  
-[Setup](#Setup)  
-[User_Guide](#User Guide)
+- [Introduction](##Introduction)  
+- [Setup](##Setup)  
+- [User Guide](#User_Guide/Walkthrough)  
+	* [Admin Functions](##Admin_Functions)  
+		+ [Managing Fax Numbers](###Managing_Fax_Numbers)  
+		+ [Managing Organizations](###Managing_Fax_Numbers)  
+		+ [Changing The Logo](###Changing_the_Logo)  
+	* [Manager Functions](##Manager_Functions)  
+		+ [Users](###Managing_Users)  
+		+ [Manager Dashboard](###Manager_Dashboard)  
+	* [All_Users](##All_Users)  
+		+ [Fax Portal](###Fax_Portal)  
+		+ [Fax Logs](###Fax_Logs)  
+			- [Fax Log Limitations](####Fax_Log_Limitations)  
+			- [Fax Logs as an Admin](####Fax_Logs_as_an_Admin)  
+			- [Fax Logs as a Manager](####Fax_Logs_as_a_Manager)  
+			- [Fax Logs as a User](####Fax_Logs_as_a_User)  
 
 ## Setup
 
@@ -92,11 +106,11 @@ the button above, you'll need to follow these instructions:
 
 
 
-# User Guide/Walkthrough
+# User_Guide/Walkthrough
 After initial setup is complete, an email will be sent to the address in the "ADMIN_EMAIL" field inviting the admin to set their password and finish setting up their account. The admin will then be redirected to the fax numbers page. 
 
-### Admin Functions
-#### Managing Fax Numbers
+## Admin_Functions
+### Managing_Fax_Numbers
 The Fax Numbers page displays a table of all fax numbers in the admin's account, the organization the fax number is linked to, an optional label, the date the fax number was provisioned, the location of the fax number, and whether or not the fax number has a 'callback_url' assigned to it. Fax numbers with an assigned callback_url will not work with Phax Machine. To manage callback_url's assigned to your fax numbers, head over to your [phone numbers page](https://console.phaxio.com/phone_numbers) in your Phaxio account, and then reload the Fax Numbers page when you're done editing your changes. Fax numbers with an assigned callback_url will be at the bottom of the fax numbers table. In the example below, several lines have already been labeled.
 
 ![FaxNumberPage](https://raw.githubusercontent.com/mwmayerle/new_phax_machine/master/app/assets/images/faxnumberpage.png)
@@ -107,7 +121,7 @@ If the Admin desires, they may add a label to any fax number that can only be vi
 
 ![EditFaxNumberPage](https://raw.githubusercontent.com/mwmayerle/new_phax_machine/master/app/assets/images/editfaxnumberpage.png)
 
-#### Managing Organizations
+### Managing_Organizations
 Organizations are groups of users and fax numbers set by the Admin. To create an organization, navigate to the Organizations Page ("Organizations" on the navbar) and click the "Add New Organization" button in the top right corner of the screen.
 
 This page displays all fax numbers that are not assigned to a organization in the "Add fax numbers" table. Please note that fax numbers with a red X next to them already have a primary callback_url will not have fax-to-email capabilities.
@@ -128,13 +142,13 @@ In this case we'll simultaneously remove the two fax numbers that have a differe
 
 ![OrganizationEdit](https://raw.githubusercontent.com/mwmayerle/new_phax_machine/master/app/assets/images/organizationedit.png)
 
-#### Changing the Logo
+### Changing_the_Logo
 The Admin may change the site logo (Voyant in all examples) by clicking "Edit Profile" in the navigation menu on the left. To change the logo, simply link to the location of the desired logo, and Phax Machine will add and resize the logo. Logos must be an image, and look best when a transparent background is used. Your current password is required to edit the logo.
 
-### Manager Functions
+## Manager Functions
 Managers are invited by the Admin via email to manage an organization. Each organization may only have one manager. Managers (and the admin if they want to) link users to fax numbers and assign them caller ID numbers. If the admin allows it, a manager can also provision additional fax numbers to the organization they control. Managers should first invite users and then link them to fax numbers. Users who are not linked to a fax number by the manager will be able to log in, however they will be unable to send or receive faxes by email nor will they be able to send a fax using the fax portal.
 
-#### Users
+### Managing_Users
 Managers may invite users to Phax Machine and revoke user access in their Users portal. When a manager invites a user, they select one of the fax numbers within their organization from the dropdown menu. Managers may also edit an existing user's email address or caller ID number at a later time, or deactivate a user by by clicking the 'Edit' button in the user table.
 
 ![UserShow](https://raw.githubusercontent.com/mwmayerle/new_phax_machine/master/app/assets/images/userspage.png)
@@ -146,38 +160,40 @@ When a user's access is revoked, they're unlinked from fax numbers. This will re
 To reactivate a user, simply re-invite them with the same email address they used previously. A user whose access has been reinstated will not be notified they have been granted access. After reinstating access to a user, the manager will have to go back and link them to fax numbers once again.
 
 
-#### Dashboard
+### Manager_Dashboard
 The dashboard provides the manager with a summary of all fax numbers and their linked users. Managers link/unlink users to a fax numbers by clicking on the "Link/Unlink Users" button under each fax number. A table of all users currently linked to a fax number is shown next to each fax number. Managers may also add a label to their fax numbers by clicking on the fax number and entering a label. Below is the manager's view of Great Plains LLC.
 
 ![OrganzationShow](https://raw.githubusercontent.com/mwmayerle/new_phax_machine/master/app/assets/images/organizationshow.png)
 
 If the manager is not allowed to provision fax numbers, the button to do so will not be present.
 
-### Fax Portal
+##All_Users
+
+### Fax_Portal
 The fax portal allows users to send a fax from within Phax Machine. Simply enter the number you'd like to send a fax to in E.164 format (12225554444), and attach up to ten files. Files will be attached in the order they're uploaded. In the example below, 'firstfax.odt' will be the first file, 'secondfax.odt', the second file, and so on. Users may remove a file by clicking the trashcan icon. A maximum of 10 files per fax may be attached totalling 200 pages maximum. 
 
 ![FaxPortal](https://raw.githubusercontent.com/mwmayerle/new_phax_machine/master/app/assets/images/faxportal.png)
 
-### Fax Logs
+### Fax_Logs
 Fax Logs display different information depending on the user's permission level. All permission levels may filter faxes by status and within a time range. If the "Start Time" field is left empty, it defaults to one week ago. If the "End Time" field is left empty, it defaults to the moment in time the "Filter" button is clicked. Please note that both Start Time and end time calendars have a time that defaults to noon of the current day, which will need to be adjusted. All fax results regardless of permission level are limited to a maximum of 1000 results. Results are paginated with 20 results per page, starting at the beginning of the time range. For example if a user searches for November 1st to December 1st, page 1 will be the November 1st faxes. 
 
 Phax Machine will attempt to download the fax as a PDF file if the file exists (it was converted properly and the user has not disabled storage). If the file cannot be found, the user will be notified in message at the top of the page.
 
 When searching Fax Logs as a Manager, the 'Start Time' is automatically limited to when the organization was created. When searching as a user, the Start Time is automatically limited to when the user was invited. For example, if a user registered on March 11th, 2018 and tries to search for faxes from January of 2018, Phax Machine will automatically adjust the Start Time to March 11th, 2018.
 
-#### Limitations
+#### Fax_Log_Limitations
 Fax Logs can only sort data based on the current relationships between users and fax numbers. The faxes previously sent by a user with revoked access still be displayed in fax logs, however the faxes received by the user will not be labeled with that user's email. Revoking a user removes the link between the user and the fax number, and thus it cannot be reported on. 
 
 The same applies to deleted organizations, as an organization will delete its users and thus their relationships with the fax numbers. Deleted organizations will still appear in Fax Logs, however only the faxes sent by the organization.
 
 If a fax number is transferred from one organization to another, all linkages between its users and its previous organization are wiped out, thus it will have no fax logs.
 
-#### As an Admin
+### Fax_Logs_as_an_Admin
 When the page loads, the first 20 faxes within the past week are loaded. Admins may search for faxes over any time period, and may search by organization, an individual fax number, or a combination of the two. Clicking "All" in either the Fax Number or Organization dropdown menus will reset both menus to include everything. If they can be found, Phax Machine will display the user that sent a fax and the organization the fax was sent from or to. Unfortunately on the received end, it is not currently possible to narrow down exactly what user received a fax, as each fax number may have multiple users linked to it.
 
 ![AdminFaxLogs](https://raw.githubusercontent.com/mwmayerle/new_phax_machine/master/app/assets/images/adminfaxlogs.png)
 
-#### As a Manager
+#### Fax_Logs_as_a_Manager
 Managers may only search for faxes within their organization. Managers may search by fax number, user, or a combination of both. Please note that when viewing received faxes in fax logs, if a fax number has multiple users linked to it, it will only show up once in the fax logs, not once for each user linked to the number.
 
 For example the following users are linked to the fax number with an 847 area code:
@@ -186,5 +202,5 @@ For example the following users are linked to the fax number with an 847 area co
 
 The 847 number received a fax on September 30th, 2018 (fax at the top of the logs). The received fax shows up only once in the fax logs. If the manager searches individually by each of the two users shown above, it will show up once for each user.
 
-#### As a User
+#### Fax_Logs_as_a_User
 Users may only search for their own faxes by indivual fax number or all of the fax numbers they're linked to. If a user is unlinked from a fax number, they will be unable to search for that previous fax number.
