@@ -133,6 +133,8 @@ Once an organization has been created, it will appear in the organization page. 
 
 ![OrganizationIndex](https://raw.githubusercontent.com/mwmayerle/new_phax_machine/master/app/assets/images/organizationindex.png)
 
+The Admin may choose to delete an organization, which will remove all users within the organization and will unlink all fax numbers. All data associated with the organization will no longer be accessible.
+
 If an admin would like to edit an organization, they can click on the organization's name, which takes them to a page displaying all of the users linked to a particular fax number. Users may be linked to multiple fax numbers or just one, depending on the use case. When a fax number receives a fax, every person linked to that number will be emailed. To edit the organization, click on the "Manage Great Plains LLC Fax Numbers/Details" in the upper right corner.
 
 ![OrganzationShowAdmin](https://raw.githubusercontent.com/mwmayerle/new_phax_machine/master/app/assets/images/organizationshowadmin.png)
@@ -158,6 +160,7 @@ When a user's access is revoked, they're unlinked from fax numbers. This will re
 
 To reactivate a user, simply re-invite them with the same email address they used previously. A user whose access has been reinstated will not be notified they have been granted access. After reinstating access to a user, the manager will have to go back and link them to fax numbers once again.
 
+If the Manager is leaving an organization, they may either edit their email address to a different email and have the new user do a password reset (which will send a reset token to the new email address), or the Admin may demote the manager and designate a new user as the manager. Organizations do not require a manager, and for smaller organizations that have a very small number of users and limited fax numbers this may be the best approach.
 
 ### Manager Dashboard
 The dashboard provides the manager with a summary of all fax numbers and their linked users. Managers link/unlink users to a fax numbers by clicking on the "Link/Unlink Users" button under each fax number. A table of all users currently linked to a fax number is shown next to each fax number. Managers may also add a label to their fax numbers by clicking on the fax number and entering a label. Below is the manager's view of Great Plains LLC.

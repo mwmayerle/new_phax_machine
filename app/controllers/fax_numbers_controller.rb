@@ -33,7 +33,7 @@ class FaxNumbersController < ApplicationController
 				number.update_attributes(organization_id: provision_number_params[:organization_id])
 				redirect_to organization_path(provision_number_params[:organization_id])
 			else
-				redirect_to fax_numbers_path
+				redirect_to(fax_numbers_path)
 			end
 		else
 			flash[:alert] = "Something went wrong"
