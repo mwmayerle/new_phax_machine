@@ -72,7 +72,7 @@ class FaxLog < ApplicationRecord
 							filtered_data = current_data.raw_data
 						else
 							filtered_data = filter_faxes_by_fax_number(options, current_data.raw_data, fax_numbers)
-							if options[:tag][:sender_organization_fax_tag]
+							if options[:tag][:sender_organization_fax_tag] && filtered_data != nil
 								filtered_data = filter_faxes_by_org(options, filtered_data, organizations[options[:tag][:sender_organization_fax_tag]])
 							end
 						end
@@ -92,9 +92,8 @@ class FaxLog < ApplicationRecord
 						end
 					else
 						filtered_data = current_data.raw_data
-					end #current_data.total 
-
-					fax_data.push(filtered_data)
+					end #current_data.total
+					fax_data.push(filtered_data) if filtered_data != nil
 				end
 			end
 			fax_data

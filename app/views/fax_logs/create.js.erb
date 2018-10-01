@@ -3,7 +3,7 @@ var pageNumberDisplay = 1;
 
 $("#load-icon").hide();
 if (Object.keys(apiResponse).length === 0) {
-	$("#pagination-ul").append("<p>No results matched your criteria. Please try again.</p>");
+	$("#no-initial-results").append("<p class='text-center' style='font-size:1.2em'>No results matched your criteria. Please try again.</p>");
 } else {
 	currentPageNumber = 1;
 	paginateFaxes(apiResponse);
