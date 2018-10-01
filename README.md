@@ -108,7 +108,7 @@ the button above, you'll need to follow these instructions:
 After initial setup is complete, an email will be sent to the address in the "ADMIN_EMAIL" field inviting the admin to set their password and finish setting up their account. The admin will then be redirected to the fax numbers page.
 
 ## Admin Functions
-### Managing Fax_Numbers
+### Managing Fax Numbers
 The Fax Numbers page displays a table of all fax numbers in the admin's account, the organization the fax number is linked to, an optional label, the date the fax number was provisioned, the location of the fax number, and whether or not the fax number has a 'callback_url' assigned to it. Fax numbers with an assigned callback_url will not work with Phax Machine. To manage callback_url's assigned to your fax numbers, head over to your [phone numbers page](https://console.phaxio.com/phone_numbers) in your Phaxio account, and then reload the Fax Numbers page when you're done editing your changes. Fax numbers with an assigned callback_url will be at the bottom of the fax numbers table. In the example below, several lines have already been labeled.
 
 ![FaxNumberPage](https://raw.githubusercontent.com/mwmayerle/new_phax_machine/master/app/assets/images/faxnumberpage.png)
@@ -165,7 +165,7 @@ The dashboard provides the manager with a summary of all fax numbers and their l
 
 If the manager is not allowed to provision fax numbers, the button to do so will not be present.
 
-##All Users
+## All Users
 
 ### Fax Portal
 The fax portal allows users to send a fax from within Phax Machine. Simply enter the number you'd like to send a fax to in E.164 format (12225554444), and attach up to ten files. Files will be attached in the order they're uploaded. In the example below, 'firstfax.odt' will be the first file, 'secondfax.odt', the second file, and so on. Users may remove a file by clicking the trashcan icon. A maximum of 10 files per fax may be attached totalling 200 pages maximum. 
