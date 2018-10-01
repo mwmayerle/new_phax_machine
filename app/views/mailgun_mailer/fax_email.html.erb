@@ -1,39 +1,44 @@
-<% if @fax["direction"] == "received" %>
-  <h1>You've received a new fax!</h1>
-<% else %>
-	<% if @fax["status"] == "success" %>
-  	<h1>Your fax was sent successfully</h1>
-  <% else %>
-  	<h1>Your fax was not delivered because: <%= @fax["most_common_error"] %></h1>
-  <% end %>
-<% end %>
-<p><b>ID:</b> <%= @fax["id"] %></p>
-<p><b>Status:</b> <%= @fax["status"] %></p>
-<p><b>Number of Pages:</b> <%= @fax["num_pages"] %></p>
-<% if @fax["direction"] == "received" %>
-  <p><b>To:</b> <%= @fax["to_number"] %></p>
-<% end %>
+<link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
+<body style="font-family: 'Nunito', sans-serif;background: #fafafa;padding:20px">
+	<img src="<%= @logo_link %>" alt="Logo" width="200">
+	<div style="width: 100%;margin-top: 20px;margin-bottom: 20px;border-bottom: 1px solid darkgrey;"></div>
+	<% if @fax["direction"] == "received" %>
+	  <h1>You've received a new fax!</h1>
+	<% else %>
+		<% if @fax["status"] == "success" %>
+	  	<h1>Your fax was sent successfully</h1>
+	  <% else %>
+	  	<h1>Your fax was not delivered because: <%= @fax["most_common_error"] %></h1>
+	  <% end %>
+	<% end %>
+	<p><b>ID:</b> <%= @fax["id"] %></p>
+	<p><b>Status:</b> <%= @fax["status"] %></p>
+	<p><b>Number of Pages:</b> <%= @fax["num_pages"] %></p>
+	<% if @fax["direction"] == "received" %>
+	  <p><b>To:</b> <%= @fax["to_number"] %></p>
+	<% end %>
 
-<% if @fax["direction"] == "received" %>
-	<p><b>From:</b> <%= @fax["from_number"] %> </b></p>
-<% else  %>
-	<p><b>	<%= @fax["caller_id"] %></b></p>
-<% end %>
+	<% if @fax["direction"] == "received" %>
+		<p><b>From:</b> <%= @fax["from_number"] %> </b></p>
+	<% else  %>
+		<p><b>	<%= @fax["caller_id"] %></b></p>
+	<% end %>
 
-<% if @fax["status"] != "success" %>
-	<p><b>Most Common Error:</b> <%= @fax["most_common_error"] %></p>
-<% end %>
-<% if @fax["direction"] == "received" %>
-  <p>The document has been attached to this email.</p>
-<% else %>
-  <h2>Recipients</h2>
-  <% @fax["recipients"].each do |recipient| %>
-    <div class="recipient">
-      <p><b>Number:</b> <%= recipient["phone_number"] %></p>
-      <p><b>Status:</b> <%= recipient["status"] %></p>
-      <% if @fax["status"] != "success" %>
-				<p><b>Error Message:</b> <%= recipient["error_message"] %></p>
-			<% end %>
-    </div>
-  <% end %>
-<% end %>
+	<% if @fax["status"] != "success" %>
+		<p><b>Most Common Error:</b> <%= @fax["most_common_error"] %></p>
+	<% end %>
+	<% if @fax["direction"] == "received" %>
+	  <p>The document has been attached to this email.</p>
+	<% else %>
+	  <h2>Recipients</h2>
+	  <% @fax["recipients"].each do |recipient| %>
+	    <div class="recipient">
+	      <p><b>Number:</b> <%= recipient["phone_number"] %></p>
+	      <p><b>Status:</b> <%= recipient["status"] %></p>
+	      <% if @fax["status"] != "success" %>
+					<p><b>Error Message:</b> <%= recipient["error_message"] %></p>
+				<% end %>
+	    </div>
+	  <% end %>
+	<% end %>
+</body>
