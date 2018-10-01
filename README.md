@@ -9,6 +9,26 @@ PhaxMachine is a lightweight, easily customizable faxing application that makes 
 
 The application utilizes the [Phaxio API](https://www.phaxio.com/) for faxing, the [Mailgun API](https://www.mailgun.com/) for emailing, and [Devise](https://github.com/plataformatec/devise) for user authentication. This application is built using Ruby v2.5.1 and Rails v5.2.1.
 
+## Table of Contents
+* [Introduction](#introduction)
+* [Setup](#setup)  
+* [User Guide](#user-guide)  
+	* [Admin Functions](#admin-functions)  
+		* [Managing Fax Numbers](#managing-fax-numbers)  
+		* [Managing Organizations](#managing-organizations)  
+		* [Changing The Logo](#changing-the-logo)  
+	* [Manager Functions](#manager-functions)  
+		* [Users](#managing-users)  
+		* [Manager Dashboard](#manager-dashboard)  
+	* [General Use](#all-users)  
+		* [Fax Portal](#fax-portal)  
+		* [Fax Logs](#fax-logs)  
+			* [Fax Log Limitations](#fax-log-limitations)  
+			* [Fax Logs as an Admin](#fax-logs-as-an-admin)  
+			* [Fax Logs as a Manager](#fax-logs-as-a-manager)  
+			* [Fax Logs as a User](#fax-logs-as-a-user)  
+		* [Account Settings](#account-settings)
+<!-- [![Build Status](https://travis-ci.org/mwmayerle/new_phax_machine.svg?branch=master)](https://travis-ci.org/mwmayerle/new_phax_machine) -->
 ## Setup
 
 ### 1. Deploy PhaxMachine
@@ -89,7 +109,7 @@ the button above, you'll need to follow these instructions:
 After initial setup is complete, an email will be sent to the address in the "ADMIN_EMAIL" field inviting the admin to set their password and finish setting up their account. The admin will then be redirected to the fax numbers page.
 
 ## Admin Functions
-### Managing Fax_Numbers
+### Managing Fax Numbers
 The Fax Numbers page displays a table of all fax numbers in the admin's account, the organization the fax number is linked to, an optional label, the date the fax number was provisioned, the location of the fax number, and whether or not the fax number has a 'callback_url' assigned to it. Fax numbers with an assigned callback_url will not work with Phax Machine. To manage callback_url's assigned to your fax numbers, head over to your [phone numbers page](https://console.phaxio.com/phone_numbers) in your Phaxio account, and then reload the Fax Numbers page when you're done editing your changes. Fax numbers with an assigned callback_url will be at the bottom of the fax numbers table. In the example below, several lines have already been labeled.
 
 ![FaxNumberPage](https://raw.githubusercontent.com/mwmayerle/new_phax_machine/master/app/assets/images/faxnumberpage.png)
@@ -112,6 +132,8 @@ When creating an organization, the Admin checks the box of fax numbers they woul
 Once an organization has been created, it will appear in the organization page. Each organization's fax numbers and manager (if it has one) are shown. If an organization does not have a manager, a field will be present for inviting a manager, with an additional dropdown menu of fax numbers to set as the manager's caller ID number. In this example we'll invite bob.loblaw@greatplainsllc.com to manage Great Plains LLC.
 
 ![OrganizationIndex](https://raw.githubusercontent.com/mwmayerle/new_phax_machine/master/app/assets/images/organizationindex.png)
+
+The Admin may choose to delete an organization, which will remove all users within the organization and will unlink all fax numbers. All data associated with the organization will no longer be accessible.
 
 If an admin would like to edit an organization, they can click on the organization's name, which takes them to a page displaying all of the users linked to a particular fax number. Users may be linked to multiple fax numbers or just one, depending on the use case. When a fax number receives a fax, every person linked to that number will be emailed. To edit the organization, click on the "Manage Great Plains LLC Fax Numbers/Details" in the upper right corner.
 
@@ -138,6 +160,7 @@ When a user's access is revoked, they're unlinked from fax numbers. This will re
 
 To reactivate a user, simply re-invite them with the same email address they used previously. A user whose access has been reinstated will not be notified they have been granted access. After reinstating access to a user, the manager will have to go back and link them to fax numbers once again.
 
+If the Manager is leaving an organization, they may either edit their email address to a different email and have the new user do a password reset (which will send a reset token to the new email address), or the Admin may demote the manager and designate a new user as the manager. Organizations do not require a manager, and for smaller organizations that have a very small number of users and limited fax numbers this may be the best approach.
 
 ### Manager Dashboard
 The dashboard provides the manager with a summary of all fax numbers and their linked users. Managers link/unlink users to a fax numbers by clicking on the "Link/Unlink Users" button under each fax number. A table of all users currently linked to a fax number is shown next to each fax number. Managers may also add a label to their fax numbers by clicking on the fax number and entering a label. Below is the manager's view of Great Plains LLC.
@@ -146,7 +169,7 @@ The dashboard provides the manager with a summary of all fax numbers and their l
 
 If the manager is not allowed to provision fax numbers, the button to do so will not be present.
 
-##All Users
+## All Users
 
 ### Fax Portal
 The fax portal allows users to send a fax from within Phax Machine. Simply enter the number you'd like to send a fax to in E.164 format (12225554444), and attach up to ten files. Files will be attached in the order they're uploaded. In the example below, 'firstfax.odt' will be the first file, 'secondfax.odt', the second file, and so on. Users may remove a file by clicking the trashcan icon. A maximum of 10 files per fax may be attached totalling 200 pages maximum. 
@@ -184,5 +207,5 @@ The 847 number received a fax on September 30th, 2018 (fax at the top of the log
 #### Fax Logs as a User
 Users may only search for their own faxes by indivual fax number or all of the fax numbers they're linked to. If a user is unlinked from a fax number, they will be unable to search for that previous fax number.
 
-###Account Settings
+### Account Settings
 Any user may change their password by clicking on the "Profile" link in the navigation bar on the left of the screen. Password resets and forgotten logins are handled via email using Devise.
