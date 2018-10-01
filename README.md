@@ -206,5 +206,3 @@ Users may only search for their own faxes by indivual fax number or all of the f
 
 ###Account_Settings
 Any user may change their password by clicking on the "Profile" link in the navigation bar on the left of the screen. Password resets and forgotten logins are handled via email using Devise.
-
-###Email_Templates
