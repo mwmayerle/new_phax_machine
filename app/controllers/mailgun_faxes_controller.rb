@@ -24,7 +24,7 @@ class MailgunFaxesController < ApplicationController
 		@fax = JSON.parse(params['fax'])
 		email_addresses = User.includes(:fax_numbers).find_by(fax_tag: @fax['tags']['sender_email_fax_tag']).email
 
-		if email_addresses.fax_numbers.present? # requires the User to be linked to a fax number
+		if email_addresses.present? # requires the User to be linked to a fax number
 	    if @fax["status"] == "success"
 	    	email_subject = "Your fax was sent successfully"
 	    else
