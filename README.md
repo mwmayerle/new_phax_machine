@@ -1,11 +1,7 @@
-<!-- [![Build Status](https://travis-ci.org/mwmayerle/new_phax_machine.svg?branch=master)](https://travis-ci.org/mwmayerle/new_phax_machine) -->
-
-<!--------------------------------------------->
-
 # PhaxMachine
 
 ## Introduction
-PhaxMachine is a lightweight, easily customizable faxing application that makes it easy for service providers to quickly provide and manage permission-based email-to-fax and fax-to-email services to their customers. Users are linked to a fax number by an Admin or a Manager into groups that are emailed whenever a fax is sent or received on that number. The application allows an Admin to create an Organization, invite a Manager to manage the organization (optional), assign fax numbers to that organization, and link users to each fax number. Users are registered on an invite-only basis via email.
+PhaxMachine is a lightweight, easily customizable faxing application that makes it easy for service providers to quickly provide and manage permission-based email-to-fax and fax-to-email services to their customers. Users are linked to a fax number by an Admin or a Manager into groups that are emailed whenever a fax received on that number, or when the user sends a fax using that number confirming the success or failure of the fax. The application allows an Admin to create an Organization, invite a Manager to manage the organization (optional), assign fax numbers to that organization, and link users to each fax number. Users are registered on an invite-only basis via email.
 
 The application utilizes the [Phaxio API](https://www.phaxio.com/) for faxing, the [Mailgun API](https://www.mailgun.com/) for emailing, and [Devise](https://github.com/plataformatec/devise) for user authentication. This application is built using Ruby v2.5.1 and Rails v5.2.1.
 
@@ -28,7 +24,7 @@ The application utilizes the [Phaxio API](https://www.phaxio.com/) for faxing, t
 			* [Fax Logs as a Manager](#fax-logs-as-a-manager)  
 			* [Fax Logs as a User](#fax-logs-as-a-user)  
 		* [Account Settings](#account-settings)
-<!-- [![Build Status](https://travis-ci.org/mwmayerle/new_phax_machine.svg?branch=master)](https://travis-ci.org/mwmayerle/new_phax_machine) -->
+
 ## Setup
 
 ### 1. Deploy PhaxMachine

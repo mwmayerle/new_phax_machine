@@ -19,9 +19,9 @@
 	<% end %>
 
 	<% if @fax["direction"] == "received" %>
-		<p><b>From:</b> <%= @fax["from_number"] %> </b></p>
+		<p><b>From:</b> <%= @fax["from_number"] %></p>
 	<% else  %>
-		<p>Caller ID:<b> <%= @fax["caller_id"] %></b></p>
+		<p><b>Caller ID:</b> <%= @fax["caller_id"] %></p>
 	<% end %>
 
 	<% if @fax["status"] != "success" %>
