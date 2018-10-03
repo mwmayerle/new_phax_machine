@@ -103,7 +103,7 @@ class FaxLog < ApplicationRecord
 			recipient_numbers = tag_data.select { |fax_object| fax_obj_recipient_data_in_fax_numbers?(fax_object, fax_numbers) }
 			sent_numbers = tag_data.select { |fax_object| sent_caller_id_in_fax_numbers?(fax_object, fax_numbers) }
 			results = recipient_numbers + sent_numbers
-			results.uniq! if results != [] # [].uniq! is nil
+			results = results.uniq
 		end
 
 		def filter_faxes_by_fax_number(options, current_data, fax_numbers)
@@ -116,8 +116,8 @@ class FaxLog < ApplicationRecord
 			else
 				caller_id_data = sent_faxes.select { |fax_object| fax_numbers.keys.include?(fax_object[:caller_id]) }
 				recipients_data = sent_faxes.select do |fax_object|
-					fax_object[:recipients].select do |recip| 
-						fax_numbers.keys.include?(recip[:phone_number])
+					fax_object[:recipients].select do |recipient| 
+						fax_numbers.keys.include?(recipient[:phone_number])
 					end
 				end
 			end
@@ -131,7 +131,7 @@ class FaxLog < ApplicationRecord
 			end
 
 			new_data = from_number_data + to_number_data + caller_id_data + recipients_data
-			new_data.uniq!
+			new_data = new_data.uniq
 		end
 
 		def filter_faxes_by_org(options, filtered_data, organizations)
@@ -149,12 +149,12 @@ class FaxLog < ApplicationRecord
 		def sent_fax_is_from_user?(fax_object, options, user)
 			# user argument is a hash that looks like {0 => {'caller_id_number' => '+12345678910', 'attribute' => 'etc'} }
 			return false if fax_object[:direction] == 'received'
-			fax_object[:caller_id] == user[:caller_id_number] && fax_object[:tags][:sender_email_fax_tag] == user[:fax_tag]
+			fax_object[:caller_id] == user[:caller_id_number] && fax_object[:tags][:sender_email_fax_tag] == user[:fax_tag] && fax_object_is_younger?(fax_object[:created_at], user[:user_created_at])
 		end
 
 		def received_fax_was_sent_by_user?(fax_object, options, user, user_fax_numbers)
 			return false if fax_object[:direction] == 'sent' 
-			user_fax_numbers.include?(fax_object[:to_number])
+			user_fax_numbers.include?(fax_object[:to_number]) && fax_object_is_younger?(fax_object[:created_at], user[:user_created_at])
 		end
 
 		def format_faxes(current_user, all_faxes, organizations, fax_numbers, users = nil, fax_data = {})
@@ -233,7 +233,7 @@ class FaxLog < ApplicationRecord
 					#   {1=>{:email=>"org_one_user@aol.com", :caller_id_number=>"+15555834355", :user_created_at=>Wed, 19 Sep 2018 18:22:04 UTC +00:00, :fax_tag=>"sdfg2776-d2be-0000-a6fb-58a12345ea2c", :org_id=>1}}
 					#   This returns the key in the hash (e.g. [1])
 					user_key = users.select { |user_key, user_data| user_data[:email] == filtered_params[:user] }.keys.pop
-					if user_key && timestamp_is_older?(filtered_params[:start_time], users[user_key][:user_created_at])
+					if (user_key && timestamp_is_older?(filtered_params[:start_time], users[user_key][:user_created_at])) || (user_key && timestamp_is_older?(current_user.organization.created_at, users[user_key][:user_created_at]))
 						filtered_params[:start_time] = current_user.organization.created_at
 					end
 				end

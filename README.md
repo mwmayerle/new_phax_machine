@@ -181,9 +181,9 @@ Phax Machine will attempt to download the fax as a PDF file if the file exists (
 When searching Fax Logs as a Manager, the 'Start Time' is automatically limited to when the organization was created. When searching as a user, the Start Time is automatically limited to when the user was invited. For example, if a user registered on March 11th, 2018 and tries to search for faxes from January of 2018, Phax Machine will automatically adjust the Start Time to March 11th, 2018.
 
 #### Fax Log Limitations
-Fax Logs can only sort data based on the current relationships between users and fax numbers. The faxes previously sent by a user with revoked access still be displayed in fax logs, however the faxes received by the user will not be labeled with that user's email. Revoking a user removes the link between the user and the fax number, and thus it cannot be reported on. 
+**Fax Logs will only sort data based on the __current relationships__ between users and fax numbers.** The faxes previously sent by a user with revoked access still be displayed in fax logs, however the faxes received by the user will not be labeled with that user's email address. Revoking a user removes the link between the user and the fax number, and thus it cannot be reported on.
 
-The same applies to deleted organizations, as an organization will delete its users and thus their relationships with the fax numbers. Deleted organizations will still appear in Fax Logs, however only the faxes sent by the organization.
+The same applies to deleted organizations, as an organization will delete its users and thus their relationships with the fax numbers. Deleted organizations will still appear in the Admin's Fax Logs, however only the faxes sent by the organization will appear.
 
 If a fax number is transferred from one organization to another, all linkages between its users and its previous organization are wiped out, thus it will have no fax logs.
 

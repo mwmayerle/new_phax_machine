@@ -29,10 +29,4 @@ class Organization < ApplicationRecord
 				errors.add(:base, "That name was previously used by another organization. Please use a different name and try again.")
 			end
 		end
-
-		class << self
-			def get_unassigned_users(organization)
-				organization.users.select { |org_user| org_user.user_fax_numbers.empty? && org_user.deleted_at.nil? }
-			end
-		end
 end
