@@ -53,10 +53,10 @@ class MailgunFaxesController < ApplicationController
       i += 1
     end
 
-    if user.fax_numbers.present?
-	 		sent_fax_object = Fax.create_fax_from_email(sender, params['recipient'], files, user) if user.fax_numbers.present?
+    if user && user.fax_numbers.present?
+	 		sent_fax_object = Fax.create_fax_from_email(sender, params['recipient'], files, user)
 	 	else
-	 		sent_fax_object = "Faxing not allowed. You are not currently linked to any fax numbers. Contact Phax Machine's manager."
+	 		sent_fax_object = "You are not currently linked to the fax number you attempted to fax."
 	 	end
 
  		if sent_fax_object.class != String && user.fax_numbers.present?
