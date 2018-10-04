@@ -50,6 +50,8 @@ class FaxLog < ApplicationRecord
 
 				if options[:tag].has_key?(:sender_organization_fax_tag) && !!/all/.match(filtered_params[:fax_number])
 					new_data = tag_data.raw_data
+				elsif options[:tag].has_key?(:sender_email_fax_tag) && !!/all/.match(filtered_params[:fax_number])
+					new_data = tag_data.raw_data
 				else
 					new_data = filter_for_desired_fax_number(tag_data.raw_data, fax_numbers)
 				end
