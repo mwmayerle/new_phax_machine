@@ -33,6 +33,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   		if sign_up_params[:permission] == UserPermission::MANAGER
   			Organization.find(sign_up_params[:organization_id]).update_attributes(manager_id: possible_user.id)
   		end
+  		
   		flash[:notice] = "Access has been reinstated for #{possible_user.email}"
 
   	else
