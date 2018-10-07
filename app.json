@@ -13,15 +13,15 @@
       "required": true
     },
     "PHAXIO_CALLBACK_TOKEN": {
-    	"description": "Your Phaxio Callback token (found in Webhooks Settings)",
+    	"description": "Your Phaxio Callback token (found in your Phaxio Webhook settings)",
     	"required": true
     },
     "SMTP_USER": {
-      "description": "Mailgun's SMTP username for outgoing email (for failure alerts)",
+      "description": "Mailgun's SMTP username for emailing capabilities",
       "required": true
     },
     "SMTP_PASSWORD": {
-      "description": "Mailgun's SMTP password for outgoing email (for failure alerts)",
+      "description": "Mailgun's SMTP password for emailing capabilities",
       "required": true
     },
     "FROM_EMAIL": {

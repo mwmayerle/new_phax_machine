@@ -2,11 +2,9 @@ const	backButtonText = '<';
 const	forwardButtonText = '>';
 const	endButtonText = '>>';
 const	beginningButtonText = '<<';
-
 phaxMachine.pages['fax-logs'] = {
 
 	render: function() {
-
 		organizationOptions = $("#org-select option"),
 		userOptions = $("#user-select option"),
 		faxNumberOptions = $("#fax-select option"),

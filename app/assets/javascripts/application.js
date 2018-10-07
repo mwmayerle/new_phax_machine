@@ -10,6 +10,7 @@
 
 //= require ./_setup
 //= require_tree ./pages
+//= require_tree ./components
 
 var informationBoxMouseOver = function() {
 	$(".information-box").hover(function(event) {
