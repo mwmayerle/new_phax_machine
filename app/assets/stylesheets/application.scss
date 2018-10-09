@@ -8,6 +8,16 @@ $warning: #7EA16B;
 @import 'faxes';
 @import 'flatpickr';
 
+#file-table-odd p {
+	margin: 0;
+	padding: 0;
+}
+
+#file-table-even p {
+	margin: 0;
+	padding: 0;
+}
+
 .filtering-form {
 	padding: 5px;
 	height: 50px;

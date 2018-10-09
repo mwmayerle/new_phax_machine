@@ -65,8 +65,8 @@ class DragDropFileBox {
 		return closeButtonIDs;
 	};
 
-	addTrashCanOnClickEvent(foundButtonIDs) {
-		foundButtonIDs.forEach(buttonID => {
+	addTrashCanOnClickEvent(buttonIDs) {
+		buttonIDs.forEach(buttonID => {
 			let button = document.getElementById(`${buttonID}`);
 			button.addEventListener('click', this.removeUploadedFile.bind(this));
 		});
@@ -77,8 +77,8 @@ class DragDropFileBox {
 		let divToKill = document.getElementById(`faxFile${event.target.id}`);
 		divToKill.parentNode.removeChild(divToKill);
 		trToKill.parentNode.removeChild(trToKill);
-		this.closeButtonIDs = this.updateCloseButtonIDs();
 		this.sortUploadedFilesTables();
+		this.closeButtonIDs = this.updateCloseButtonIDs();
 		this.updateUploadedFilesMessage();
 	};
 
@@ -98,11 +98,8 @@ class DragDropFileBox {
 		prevDiv.style.display = "none";
 	};
 
-	createNewButtoninAttachedFilesRow() {
-		// Create the row we're inserting into
+	createRowElement(amountFiles) {
 		let newRow = '';
-		let amountFiles = document.getElementsByClassName('fa-trash-o').length;
-
 		if (amountFiles % 2 === 0) {
 			newRow = this.addedFilesTableOdd.insertRow(this.addedFilesTableOdd.length);
 			newRow.classList.add('table-row-odd');
@@ -110,16 +107,29 @@ class DragDropFileBox {
 			newRow = this.addedFilesTableEven.insertRow(this.addedFilesTableEven.length);
 			newRow.classList.add('table-row-even');
 		}
+		return newRow;
+	};
+
+	createAndAppendPTagElement(amountFiles, newRow) {
+		let pTag = document.createElement('p');
+		pTag.innerHTML = `${amountFiles + 1}.)`;
+		let pTagTD = newRow.insertCell(0);
+		pTagTD.appendChild(pTag);
+	};
+
+	createNewButtoninAttachedFilesRow() {
+		// Create the row we're inserting into
+		let amountFiles = document.getElementsByClassName('fa-trash-o').length;
+
+		let newRow = this.createRowElement(amountFiles);
 		newRow.id = `faxFile${this.fileCounter}tr`;
 
 		// Create the 1.), 2.), 3.), etc part before button
-		let pTag = document.createElement('p');
-		pTag.innerHTML = `${amountFiles + 1}.)&nbsp`;
-		let pTagTD = newRow.insertCell(0);
-		pTagTD.appendChild(pTag);
+		this.createAndAppendPTagElement(amountFiles, newRow);
 
 		// Create the red button in 'fileName.odt' format
 		let newTD = newRow.insertCell(1);
+
 		let newButton = document.createElement('button');
 		newButton.id = this.fileCounter;
 		newButton.innerHTML = `<i class="fa fa-trash-o" aria-hidden="false"></i>&nbsp;&nbsp;${event.target.files[0].name}`;
@@ -130,11 +140,47 @@ class DragDropFileBox {
 
 	sortUploadedFilesTables() {
 		// Wipe out both tables
-		let tableFiles = document.getElementsByClassName('close-button');
-		let sortedTableFiles = Array.from(tableFiles).sort((divIDa, divIDb) => divIDa.id > divIDb.id);
-		let tableRows = Array.from(document.getElementsByClassName('table-row-even')).concat(Array.from(document.getElementsByClassName('table-row-odd')));
-		tableRows.forEach(tableRow => tableRow.parentNode.removeChild(tableRow));
+		let tableButtons = document.getElementsByClassName('close-button');
+		tableButtons = Array.from(tableButtons);
+		let sortedTableButtons = tableButtons.sort((buttonA, buttonB) => parseInt(buttonA.id) - parseInt(buttonB.id));
 
-		// TODO: Rebuild them with shifted objects
-	}
+		let tableRowsEven = document.getElementsByClassName('table-row-even');
+		tableRowsEven = Array.from(tableRowsEven);
+		let tableRowsOdd = document.getElementsByClassName('table-row-odd');
+		tableRowsOdd = Array.from(tableRowsOdd);
+
+		let tableRows = tableRowsEven.concat(tableRowsOdd);
+		let sortedTableRows = tableRows.sort((rowA, rowB) => parseInt(rowA.children[1].children[0].id) - parseInt(rowB.children[1].children[0].id));
+
+		let originalFileData = []
+
+		sortedTableRows.forEach((tableRow, index) => {
+			let childTD = document.getElementById(`${tableRow.id}`).children[1];
+			originalFileData.push({
+				'index': `${index}`,
+				'originalID': childTD.firstChild.id,
+				'html': childTD.innerHTML
+			});
+			tableRow.parentNode.removeChild(tableRow)
+		});
+
+		// Rebuild them with shifted objects
+		sortedTableButtons.forEach((button, index) => {
+			let newRow = this.createRowElement(index);
+			newRow.id = `faxFile${originalFileData[index]['originalID']}tr`;
+			this.createAndAppendPTagElement(index, newRow);
+			let newTD = newRow.insertCell(1);
+			let newButton = this.createElementFromHTML(originalFileData[index]['html']);
+			newButton.id = originalFileData[index]['originalID'];
+			newTD.appendChild(newButton);
+		});
+		this.closeButtonIDs = this.updateCloseButtonIDs();
+		this.addTrashCanOnClickEvent(this.closeButtonIDs);
+	};
+
+	createElementFromHTML(htmlString) {
+	  let tempDiv = document.createElement('div');
+	  tempDiv.innerHTML = htmlString.trim();
+	  return tempDiv.firstChild; 
+	};
 }
