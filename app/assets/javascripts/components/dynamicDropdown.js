@@ -24,15 +24,11 @@ class PurchaseFaxNumberDropdown {
 	};
 
 	rebuildDropDownMenu() {
-		this.areaCodeSelectTag.options.length = 0; //Remove all options
-
+		this.areaCodeSelectTag.options.length = 0; // Remove all options
 		Object.keys(this.areaCodeOptionTagObject).forEach(areaCode => {
-			if (document.getElementById("states").value === 'all') { //Add options based on criteria
-				this.createOptionTag(this.areaCodeOptionTagObject, areaCode);
-			} else {
-				if (this.areaCodeOptionTagObject[areaCode]['state'] === document.getElementById("states").value) {
-					this.createOptionTag(this.areaCodeOptionTagObject, areaCode);
-				}
+			let selectTagValue = document.getElementById("states").value;
+			if (selectTagValue === 'all' || selectTagValue === this.areaCodeOptionTagObject[areaCode]['state']) {
+				this.createOptionTag(this.areaCodeOptionTagObject, areaCode); // Rebuild based on state criteria or 'all'
 			}
 		});
 	};
