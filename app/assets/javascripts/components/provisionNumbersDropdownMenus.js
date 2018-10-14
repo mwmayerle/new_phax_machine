@@ -1,6 +1,6 @@
 phaxMachine.components['purchaseFaxNumberDropdown'] = {
 	render: function() {
-		let dropDownMenu = new PurchaseFaxNumberDropdown();
+		const dropDownMenu = new PurchaseFaxNumberDropdown();
 	}
 };
 
@@ -24,7 +24,7 @@ class PurchaseFaxNumberDropdown {
 	};
 
 	rebuildDropDownMenu() {
-		this.areaCodeSelectTag.options.length = 0; // Remove all options
+		this.areaCodeSelectTag.options.length = 0;
 		Object.keys(this.areaCodeOptionTagObject).forEach(areaCode => {
 			let selectTagValue = document.getElementById("states").value;
 			if (selectTagValue === 'all' || selectTagValue === this.areaCodeOptionTagObject[areaCode]['state']) {

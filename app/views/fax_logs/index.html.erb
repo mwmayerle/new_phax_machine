@@ -2,7 +2,7 @@
 	<link href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" rel="stylesheet" type="text/css">
 </head>
 
-<body data-page="fax-logs">
+<body data-page="fax-logs" data-components="calendar fax-log-dropdowns">
 
 	<% if is_admin? %>
 		<h1>Fax Logs</h1>
@@ -11,13 +11,14 @@
 	<% else %>
 			<h1>Fax Logs - <%= current_user.email %></h1>
 	<% end %>
+	<div id="perm" data-perm="<%= current_user.user_permission.permission %>"></div>
 
 	<div id="filtering-form">
 		<%= form_with(url: fax_logs_path, class:"form" ) do |f| %>
 			<div class="row">
 				<div class="form-group col">
 					<%= f.label :status, "Fax Status:", class: "control-label" %>
-					<select id="status" class="form-control"  name="fax_log[status]">
+					<select id="status-select" class="form-control"  name="fax_log[status]">
 						<option id="all" name="fax_log[status]" value="all" selected>All</option>
 						<option id="success" name="fax_log[status]" value="success">Success</option>
 						<option id="failure" name="fax_log[status]" value="failure">Failure</option>

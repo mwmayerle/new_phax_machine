@@ -4,7 +4,7 @@
 
 const dragOverColor = '#e0e0e0';
 const dragLeaveColor = '#fafafa';
-const alertMessage = 'File limit exceeded. A maximum of 20 files per fax may be attached.'
+const alertMessage = 'File limit exceeded. A maximum of 20 files per fax may be attached.';
 
 phaxMachine.pages['send-fax'] = {
 	render: function() {
@@ -29,9 +29,9 @@ class DragDropFileBox {
 	dragOverEventColorChange(event) { event.target.style.backgroundColor = dragOverColor; };
 	dragLeaveEventColorChange(event) { event.target.style.backgroundColor = dragLeaveColor; };
 	
-	addRemoveFiles() {
+	addRemoveFiles(event) {
 		if (this.closeButtonIDs.length < 20) {
-			this.createNewButtoninAttachedFilesRow();// Add the trashcan icon and the filename under drag/drop box
+			this.createNewButtoninAttachedFilesRow(event);// Add the trashcan icon and the filename under drag/drop box
 			this.closeButtonIDs = this.updateCloseButtonIDs();// Update closeButtonIDs in the object with newly added buttons
 			this.fileCounter++; // Update fileCounter
 			this.createAndAppendNewDiv(); // Add a new drag and drop div based on updated fileCounter
@@ -117,13 +117,12 @@ class DragDropFileBox {
 		pTagTD.appendChild(pTag);
 	};
 
-	createNewButtoninAttachedFilesRow() {
+	createNewButtoninAttachedFilesRow(event) {
 		// Create the row we're inserting into
 		let amountFiles = document.getElementsByClassName('fa-trash-o').length;
 
 		let newRow = this.createRowElement(amountFiles);
 		newRow.id = `faxFile${this.fileCounter}tr`;
-
 		// Create the 1.), 2.), 3.), etc part before button
 		this.createAndAppendPTagElement(amountFiles, newRow);
 

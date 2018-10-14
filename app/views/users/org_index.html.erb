@@ -6,7 +6,7 @@
 	<div class="col">
 		<ul class="list-unstyled">
 			<% @organizations.each do |organization| %>
-			<div class="col-lg-8 my-auto">
+			<div class="col-lg-6 my-auto">
 				<li class="user-list-box user-list-text">
 					<%= link_to "#{organization.label}", users_path(organization_id: organization.id) %>
 				</li>

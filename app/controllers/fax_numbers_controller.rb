@@ -25,7 +25,7 @@ class FaxNumbersController < ApplicationController
 		api_response = FaxNumber.provision(provision_number_params[:area_code])
 		if api_response.phone_number
 			FaxNumber.create!(fax_number: api_response.phone_number, has_webhook_url: false)
-			flash[:notice] = "Number Provisioned Successfully"
+			flash[:notice] = "Fax number provisioned successfully. Your new number is #{FaxNumber.format_pretty_fax_number(api_response.phone_number)}."
 
 			# Adds fax number to the organization immediately 
 			if provision_number_params[:organization_id]
