@@ -10,6 +10,7 @@ class FaxesController < ApplicationController
 
 	# POST for sending a fax via the internal view
 	def create(attached_files = [])
+		p fax_params
 		if current_user.fax_numbers.present?
 			fax_params[:files].each { |file_in_params| attached_files << file_in_params[1].tempfile } # No .map() for ActionCont. params
 			options = {
@@ -37,7 +38,7 @@ class FaxesController < ApplicationController
 
 	private
 		def fax_params
-			params.require(:fax).permit(:id, :fax_id, :to, { files: [:file1, :file2, :file3, :file4, :file5, :file6, :file7, :file8, :file9, :file10] })
+			params.require(:fax).permit(:id, :fax_id, :to, { files: (1..20).map { |num| "file#{num}".to_sym } })
 		end
 
 		def verify_user_signed_in

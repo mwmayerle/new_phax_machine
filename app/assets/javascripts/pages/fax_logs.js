@@ -4,14 +4,8 @@ const	endButtonText = '>>';
 const	beginningButtonText = '<<';
 
 phaxMachine.pages['fax-logs'] = {
-
 	render: function() {
-
-		organizationOptions = $("#org-select option"),
-		userOptions = $("#user-select option"),
-		faxNumberOptions = $("#fax-select option"),
 		currentPageNumber = 1;
-
 		$("#load-icon").hide();
 
 		$("#filter-button").on('click', function(event) {
@@ -19,77 +13,6 @@ phaxMachine.pages['fax-logs'] = {
 			$("tbody").empty();
 			$("#pagination-ul").empty();
 			$("#load-icon").show();
-		});
-
-	  $('.datepicker-inline').flatpickr({
-    	enableTime: true,
-    	dateFormat: 'Y-m-d h:iK',
-    	altInput: true,
-    	altFormat: 'm-d-Y h:i K',
-	    maxDate: new Date(),
-	    autoclose: true
-		});
-
-		$("#org-select").change((event) => {
-			event.stopPropagation();
-
-			let organizationClass = $("#org-select option:selected").attr('class');
-			let $faxSelect = $("#fax-select");
-			let $orgSelect = $("#org-select");
-
-			$faxSelect.empty();
-
-			if (organizationClass === "all-org") {
-				$orgSelect.empty();
-				restoreSelectTag(organizationOptions, $orgSelect);
-				restoreSelectTag(faxNumberOptions, $faxSelect);
-			} else {
-			 	$faxSelect.append(`<option class="all-linked" name="fax_log[fax_number]" value="all-linked">All Linked Numbers</option>`);
-				createSelectTagMultipleConditionals(faxNumberOptions, $faxSelect, [organizationClass, 'all-fax']);
-			 	$("#fax-select option").first().prop('selected', 'selected');
-			}
-		});
-
-		$("#fax-select").change((event) => {
-			event.stopPropagation();
-
-			let organizationClass = $("#org-select option:selected").attr('class');
-			let faxNumberClass = $("#fax-select option:selected").attr('class');
-			let userClass = $("#user-select option:selected").attr('class');
-			let $userSelect = $("#user-select");
-			let $orgSelect = $("#org-select");
-
-			if (userClass === 'all-user') {
-				let = desiredOptionId = $("#user-select option:selected").attr('id');
-				$($userSelect).empty();
-				$userSelect.append(`<option class="all-linked" name="fax_log[user]" value="all-linked">All Linked Users</option>`);
-				createSelectTagMultipleConditionals(userOptions, $userSelect, [faxNumberClass, 'all-user']);
-				$("#user-select option").first().prop('selected', 'selected');
-			} else if (userClass === 'all-linked' || faxNumberClass === 'all-linked') {
-				// do nothing
-			} else if (faxNumberClass === 'all-fax') {
-				$($orgSelect).empty();
-				restoreSelectTag(organizationOptions, $orgSelect);
-			} else if (organizationClass === 'all-org' || faxNumberClass !== organizationClass) {
-				$($orgSelect).empty();
-				createSelectTagMultipleConditionals(organizationOptions, $orgSelect, [faxNumberClass, 'all-org']);
-				$("#org-select option").first().prop('selected', 'selected');
-			}
-		});
-
-		$("#user-select").change((event) => {
-			event.stopPropagation();
-
-			let userClass = $("#user-select option:selected").attr('class');
-			let $userSelect = $("#user-select");
-			let $faxSelect = $("#fax-select");
-
-			if (userClass === "all-user") {
-				$faxSelect.empty();
-				$($userSelect).empty();
-				restoreSelectTag(faxNumberOptions, $faxSelect);
-				restoreSelectTag(userOptions, $userSelect);
-			}
 		});
 		changeStatusColor();
 		downloadCursorChange();
@@ -108,8 +31,8 @@ function buildTableRows(faxData, pageNumberDisplay) {
 
 			if (faxData[faxDatum].from_number === null) { faxData[faxDatum].from_number = "Restricted"; };
 
-			if (faxData[faxDatum].from_number === undefined) { faxData[faxDatum].from_number = "Released Number"; };
-			if (faxData[faxDatum].to_number === undefined) { faxData[faxDatum].to_number = "Released Number"; };
+			if (faxData[faxDatum].from_number === undefined) { faxData[faxDatum].from_number = ""; };
+			if (faxData[faxDatum].to_number === undefined) { faxData[faxDatum].to_number = ""; };
 
 			let head = `<tr id="${faxDatum}">
 				<td class="text-center"> ${ (faxData[faxDatum].direction === "Sent") ? sentIcon : receivedIcon } </td>`;
@@ -174,15 +97,11 @@ function changeStatusColor() {
 	});
 };
 
-function restoreSelectTag(originalTagData, tagBeingRestored) {
-	$.each(originalTagData, function() { tagBeingRestored.append($(this)); });
-};
+function restoreSelectTag(originalTagData, tagBeingRestored) { $.each(originalTagData, function() { tagBeingRestored.append($(this)); }); };
 
 function createSelectTagMultipleConditionals(originalTagData, tagBeingRestored, addIfClasses) {
 	addIfClasses.forEach((addIfClass) => {
-		$.each(originalTagData, function() {
-			if ($(this).hasClass(addIfClass)) { tagBeingRestored.append($(this)); }
-		});
+		$.each(originalTagData, function() { if ($(this).hasClass(addIfClass)) { tagBeingRestored.append($(this)); }});
 	});
 };
 

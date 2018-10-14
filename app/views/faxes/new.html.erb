@@ -1,4 +1,4 @@
-<body data-page="send-fax">
+<body data-page="send-fax" data-components="alerts">
 	<h1>Send a Fax</h1>
 	<div class="row">
 		<div class="col">
@@ -14,10 +14,10 @@
 					</div>
 				</div>
 	      <div class="col indent-me"> 
-					<p>Upload up to ten files or drag and drop them in the order you would like them sent into the box below:</p>
+					<p>Upload up to twenty files or drag and drop them in the order you would like them sent into the box below:</p>
 				</div>
 		    <div id="all-files">
-					<div id="faxFile1" class="form-group col-lg-8 files">
+					<div id="faxFile1" class="form-group col-lg-8 files" style="background-color:#fafafa">
 						<input id="file1" class="drag-drop-input" name="fax[files][file1]" type="file" required>
 					</div>
 				</div>
@@ -27,12 +27,22 @@
 	</div>
 
 	<div class="row">
-		<div class="col-lg-8 indent-me">
-			<p id="attached-file-counter">Attached Files:</p>
-			<table class="table-sm">
-				<tbody class="added-files">
-				</tbody>
-			</table>
+		<div class="col-lg-10 indent-me">
+			<p id="attached-file-counter">Attached Files: 0</p>
+			<div class="row">
+				<div class="col-lg-4">
+					<table id="file-table-odd" class="table-sm">
+						<tbody class="added-files">
+						</tbody>
+					</table>
+				</div>
+				<div class="col-lg-4">
+					<table id="file-table-even" class="table-sm">
+						<tbody class="added-files">
+						</tbody>
+					</table>
+				</div>
+			</div>
 		</div>
 	</div>
 </body>
