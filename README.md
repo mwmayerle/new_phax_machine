@@ -16,7 +16,7 @@ The application utilizes the [Phaxio API](https://www.phaxio.com/) for faxing, t
 	* [Manager Functions](#manager-functions)  
 		* [Users](#managing-users)  
 		* [Manager Dashboard](#manager-dashboard)  
-	* [General Use](#all-user-functions)  
+	* [General Use](#general-use)  
 		* [Email Templates](#email-templates)
 		* [Fax Portal](#fax-portal)  
 		* [Fax Logs](#fax-logs)  
