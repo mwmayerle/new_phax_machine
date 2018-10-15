@@ -162,7 +162,7 @@ The Dashboard provides the manager with a summary of all fax numbers and their l
 
 If the manager is not allowed to provision fax numbers (default when an admin creates an organization), the button to provision fax numbers will not be present.
 
-## All User Functions
+## General Use
 ### Email Templates
 Phax Machine's email templates are simple and easily customized. All templates and their locations are listed below for easy customization if desired:
 * Password reset --> app/views/devise/mailer/password_reset_instructions.html.erb
