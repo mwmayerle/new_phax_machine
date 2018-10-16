@@ -176,7 +176,7 @@ Phax Machine's email templates are simple and easily customized. All templates a
 ### Fax Portal
 The fax portal allows users to send a fax from within Phax Machine. Simply enter the number you'd like to send a fax to in E.164 format (12225554444), and attach up to twenty files. Files will be attached in the order they're uploaded. In the example below, 'firstfax.odt' will be the first file, 'secondfax.odt', the second file, and so on. Users may remove a file by clicking the red trashcan icon. A maximum of 20 files per fax may be attached totaling 200 pages maximum. 
 
-![FaxPortal](https://raw.githubusercontent.com/mwmayerle/new_phax_machine/master/app/assets/images/faxportal.png)
+![FaxPortal](https://raw.githubusercontent.com/mwmayerle/new_phax_machine/master/app/assets/images/faxportal2.png)
 
 ### Fax Logs
 Fax Logs display different information depending on the user's permission level. All permission levels may filter faxes by status and within a time range. If the "Start Time" field is left empty, it defaults to one week ago. If the "End Time" field is left empty, it defaults to the moment in time the "Filter" button is clicked. Please note that both Start Time and end time calendars have a time that defaults to noon of the current day, which will need to be adjusted. All fax results regardless of permission level are limited to a maximum of 1000 results. Results are paginated with 20 results per page, starting at the beginning of the time range. For example, if a user searches for November 1st to December 1st, page 1 will be the November 1st faxes, and the last page will be fax data from December 1st. 
