@@ -160,7 +160,7 @@ class DragDropFileBox {
 				'originalID': childTD.firstChild.id,
 				'html': childTD.innerHTML
 			});
-			tableRow.parentNode.removeChild(tableRow)
+			tableRow.parentNode.removeChild(tableRow);
 		});
 
 		// Rebuild them with shifted objects
