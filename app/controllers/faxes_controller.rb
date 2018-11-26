@@ -10,7 +10,6 @@ class FaxesController < ApplicationController
 
 	# POST for sending a fax via the internal view
 	def create(attached_files = [])
-		p fax_params
 		if current_user.fax_numbers.present?
 			fax_params[:files].each { |file_in_params| attached_files << file_in_params[1].tempfile } # No .map() for ActionCont. params
 			options = {
