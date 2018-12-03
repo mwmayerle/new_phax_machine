@@ -5,6 +5,7 @@ class Fax < ApplicationRecord
 		end
 
 		def create_fax(options)
+			ENV.fetch('PHAXIO_API_KEY')
 			if options[:caller_id].nil?
 				sent_fax_response = "Your caller ID number is not set."
 			else
