@@ -66,6 +66,11 @@ class MailgunFaxesController < ApplicationController
 	    end
 	  end
 
+	  p "==========="
+	  p user
+	  p user.fax_numbers
+	  p "==========="
+
     if user && user.fax_numbers.present? && !params['attachment-count'].nil?
 	 		sent_fax_object = Fax.create_fax_from_email(sender, params['recipient'], files, user)
 	 	else
