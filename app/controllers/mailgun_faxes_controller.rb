@@ -54,24 +54,20 @@ class MailgunFaxesController < ApplicationController
     user = User.includes(:fax_numbers).find_by(email: sender)
 
     # Currently fails if user is not in the DB
-    if params['attachment-count'].nil?
-	    attachment_count = params['attachment-count'].to_i
-	    i = 1
-	    while i <= attachment_count do
-	      output_file = "/tmp/#{Time.now.to_i}-#{rand(200)}-" + params["attachment-#{i}"].original_filename
-	      file_data = File.binread(params["attachment-#{i}"].tempfile.path)
-	      IO.binwrite(output_file, file_data)
-	      files.push(output_file)
-	      i += 1
-	    end
-	  end
+    attachment_count = params['attachment-count'].to_i
+    i = 1
+    while i <= attachment_count do
+      output_file = "/tmp/#{Time.now.to_i}-#{rand(200)}-" + params["attachment-#{i}"].original_filename
+      file_data = File.binread(params["attachment-#{i}"].tempfile.path)
+      IO.binwrite(output_file, file_data)
+      files.push(output_file)
+      i += 1
+    end
 
-    if user && user.fax_numbers.present? && !params['attachment-count'].nil?
+    if user && user.fax_numbers.present?
 	 		sent_fax_object = Fax.create_fax_from_email(sender, params['recipient'], files, user)
 	 	else
-	 		sent_fax_object = ''
-	 		sent_fax_object += "Only attached files may be sent as a fax. Please add an attachment. " if params['attachment-count'].nil?
-	 		sent_fax_object += "You are not linked to the fax number you attempted to fax. " if !user && !user.fax_numbers.present?
+	 		sent_fax_object = "You are not linked to the fax number you attempted to fax. " if !user && !user.fax_numbers.present?
 	 	end
 
  		if sent_fax_object.class != String && user.fax_numbers.present?
