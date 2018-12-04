@@ -90,8 +90,8 @@ Skip to section 2 below.
 ### Setting up Fax --> Email
 1. Head to the [Callback URL's page in Phaxio](https://console.phaxio.com/user/callbacks/edit).
 2. In the second field which says "POST (or send email) to the above URL when a fax has been received," enter your application url followed by '/fax_received' (e.g. If you're using a quick and dirty Heroku installation, this url might look something like https://WHATYOUNAMEDYOURAPP.herokuapp.com/fax_received. *Note:* if you're using the quick and dirty setup, your faxing emails might be in your spam folder! )
-
-3. (Optional) Test the everything is working correctly by sending a fax to your Phaxio number and and seeing if it shows up in your email inbox! Note: make sure to check your spam folder!
+3. Ensure your account's Webhook version is set to "Version 1".
+4. (Optional) Test the everything is working correctly by sending a fax to your Phaxio number and and seeing if it shows up in your email inbox! Note: make sure to check your spam folder!
 
 ## Updating an app deployed using the "Deploy" button
 
