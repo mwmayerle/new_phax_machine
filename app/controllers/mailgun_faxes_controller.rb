@@ -2,15 +2,14 @@ class MailgunFaxesController < ApplicationController
 	skip_before_action :verify_authenticity_token
 
 	def fax_received
-		p "FAX_RECEIVED"
 		p params
 		@fax = JSON.parse(params['fax'])
 		p "FAX RECEIVED @FAX"
 		p @fax
-    p recipient_number = Phonelib.parse(@fax['to_number']).e164
-    p fax_number = FaxNumber.find_by(fax_number: recipient_number)
+    recipient_number = Phonelib.parse(@fax['to_number']).e164
+    fax_number = FaxNumber.find_by(fax_number: recipient_number)
 
-    p email_addresses = UserFaxNumber.where(fax_number_id: fax_number.id).all.map do |fax_num_email_obj|
+    email_addresses = UserFaxNumber.where(fax_number_id: fax_number.id).all.map do |fax_num_email_obj|
     	fax_num_email_obj.user.email
     end
 
@@ -23,7 +22,8 @@ class MailgunFaxesController < ApplicationController
 		##############################################################
 
 		###################### V1 WEBHOOK CODE HERE ###################
-	  p fax_from = @fax['from_number']
+	  fax_from = @fax['from_number']
+	  p "FILENAME FILENAME"
     p fax_file_name = params['filename']['filename']
     p fax_file_contents = params['filename']['tempfile'].read
     ###############################################################
