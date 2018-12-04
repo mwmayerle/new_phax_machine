@@ -47,7 +47,7 @@ class MailgunFaxesController < ApplicationController
 	    	p email_subject = "Your fax was sent successfully"
 	    else
 	    	p @fax["most_common_error"] = Fax.most_common_error(@fax)
-	    	p email_subject = "Your fax failed because: #{@fax["most_common_error"]}"
+	    	p email_subject = "Your fax was not delivered because: #{@fax["most_common_error"]}"
 	    end
 
 			MailgunMailer.fax_email(email_addresses, email_subject, @fax).deliver_now
