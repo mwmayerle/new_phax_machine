@@ -5,19 +5,21 @@ class MailgunFaxesController < ApplicationController
 		p "FAX_RECEIVED"
 		p params
 		@fax = JSON.parse(params['fax'])
-    recipient_number = Phonelib.parse(@fax['to_number']).e164
-    fax_number = FaxNumber.find_by(fax_number: recipient_number)
+		p "FAX RECEIVED @FAX"
+		p @fax
+    p recipient_number = Phonelib.parse(@fax['to_number']).e164
+    p fax_number = FaxNumber.find_by(fax_number: recipient_number)
 
-    email_addresses = UserFaxNumber.where(fax_number_id: fax_number.id).all.map do |fax_num_email_obj|
+    p email_addresses = UserFaxNumber.where(fax_number_id: fax_number.id).all.map do |fax_num_email_obj|
     	fax_num_email_obj.user.email
     end
 
     if email_addresses.present? # requires the User to be linked to a fax number
-	    fax_from = @fax['from_number']
-	  	fax_file_name = params['file'].original_filename
-	    fax_file_contents = params['file'].read
+	    p fax_from = @fax['from_number']
+	  	p fax_file_name = params['file'].original_filename
+	    p fax_file_contents = params['file'].read
 
-	    email_subject = "Fax received from #{fax_from}"
+	    p email_subject = "Fax received from #{fax_from}"
 			MailgunMailer.fax_email(email_addresses, email_subject, @fax, fax_file_name, fax_file_contents).deliver_now
 		end
 	end
@@ -26,11 +28,13 @@ class MailgunFaxesController < ApplicationController
 		p "FAX SENT"
 		p params
 		@fax = JSON.parse(params['fax'])
-		email_addresses = User.includes(:fax_numbers).find_by(fax_tag: @fax['tags']['sender_email_fax_tag']).email
+		p "FAX SENT @FAX"
+		p @fax
+		p email_addresses = User.includes(:fax_numbers).find_by(fax_tag: @fax['tags']['sender_email_fax_tag']).email
 
 		if email_addresses.present? # requires the User to be linked to a fax number
 	    if @fax["status"] == "success"
-	    	email_subject = "Your fax was sent successfully"
+	    	p email_subject = "Your fax was sent successfully"
 	    else
 	    	@fax["most_common_error"] = Fax.most_common_error(@fax)
 	    	email_subject = "Your fax failed because: #{@fax["most_common_error"]}"
@@ -44,8 +48,8 @@ class MailgunFaxesController < ApplicationController
 	def mailgun(files = [])
 		p "MAILGUN"
 		p params
-    sender = Mail::AddressList.new(params['from']).addresses.first.address
-    user = User.includes(:fax_numbers).find_by(email: sender)
+    p sender = Mail::AddressList.new(params['from']).addresses.first.address
+    p user = User.includes(:fax_numbers).find_by(email: sender)
 
     # Currently fails if user is not in the DB
     attachment_count = params['attachment-count'].to_i
@@ -60,13 +64,13 @@ class MailgunFaxesController < ApplicationController
     end
 
     if user && user.fax_numbers.present?
-	 		sent_fax_object = Fax.create_fax_from_email(sender, params['recipient'], files, user)
+	 		p sent_fax_object = Fax.create_fax_from_email(sender, params['recipient'], files, user)
 	 	else
-	 		sent_fax_object = "You are not currently linked to the fax number you attempted to fax."
+	 		p sent_fax_object = "You are not currently linked to the fax number you attempted to fax."
 	 	end
 
  		if sent_fax_object.class != String && user.fax_numbers.present?
-			api_response = Fax.get_fax_information(sent_fax_object.id)
+			p api_response = Fax.get_fax_information(sent_fax_object.id)
 		else
 			MailgunMailer.failed_email_to_fax_email(sender, sent_fax_object).deliver_now
 		end
