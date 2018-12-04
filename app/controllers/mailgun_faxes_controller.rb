@@ -2,10 +2,7 @@ class MailgunFaxesController < ApplicationController
 	skip_before_action :verify_authenticity_token
 
 	def fax_received
-		p params
 		@fax = JSON.parse(params['fax'])
-		p "FAX RECEIVED @FAX"
-		p @fax
     recipient_number = Phonelib.parse(@fax['to_number']).e164
     fax_number = FaxNumber.find_by(fax_number: recipient_number)
 
@@ -14,40 +11,37 @@ class MailgunFaxesController < ApplicationController
     end
 
     if email_addresses.present? # requires the User to be linked to a fax number
+		  fax_from = @fax['from_number']
+	  	##################### V2.1 WEBHOOK CODE HERE #################
+	  	###  fax_file_name = params['file'].original_filename
+	    ###  fax_file_contents = params['file'].read
+			##############################################################
 
-  	##################### V2.1 WEBHOOK CODE HERE #################
-    ###  fax_from = @fax['from_number']
-  	###  fax_file_name = params['file'].original_filename
-    ###  fax_file_contents = params['file'].read
-		##############################################################
+			# IF YOU SWITCH TO VERSION 2.1 EDIT
+			# MAILER TEMPLATE IN VIEWS. V1 DIFFERENT
+			# KEYS ARE USED IN PARAMS. ALSO EDIT THE
+			# 'MOST_COMMOM_ERROR' METHOD IN THE FAX MODEL
 
-		###################### V1 WEBHOOK CODE HERE ###################
-	  fax_from = @fax['from_number']
-	  p "FILENAME FILENAME"
-    p fax_file_name = params['filename'].original_filename
-    p fax_file_contents = params['filename'].tempfile.read
-    ###############################################################
+			###################### V1 WEBHOOK CODE HERE ###################
+	    fax_file_name = params['filename'].original_filename
+	    fax_file_contents = params['filename'].tempfile.read
+	    ###############################################################
 
-
-	    p email_subject = "Fax received from #{fax_from}"
+	    email_subject = "Fax received from #{fax_from}"
 			MailgunMailer.fax_email(email_addresses, email_subject, @fax, fax_file_name, fax_file_contents).deliver_now
 		end
 	end
 
 	def fax_sent
-		p "FAX SENT"
-		p params
 		@fax = JSON.parse(params['fax'])
-		p "FAX SENT @FAX"
-		p @fax
-		p email_addresses = User.includes(:fax_numbers).find_by(fax_tag: @fax['tags']['sender_email_fax_tag']).email
+		email_addresses = User.includes(:fax_numbers).find_by(fax_tag: @fax['tags']['sender_email_fax_tag']).email
 
 		if email_addresses.present? # requires the User to be linked to a fax number
 	    if @fax["status"] == "success"
-	    	p email_subject = "Your fax was sent successfully"
+	    	email_subject = "Your fax was sent successfully"
 	    else
-	    	p @fax["most_common_error"] = Fax.most_common_error(@fax)
-	    	p email_subject = "Your fax was not delivered because: #{@fax["most_common_error"]}"
+	    	@fax["most_common_error"] = Fax.most_common_error(@fax)
+	    	email_subject = "Your fax was not delivered because: #{@fax["most_common_error"]}"
 	    end
 
 			MailgunMailer.fax_email(email_addresses, email_subject, @fax).deliver_now
@@ -56,14 +50,12 @@ class MailgunFaxesController < ApplicationController
 	end
 
 	def mailgun(files = [])
-		p "MAILGUN"
-		p params
-    p sender = Mail::AddressList.new(params['from']).addresses.first.address
-    p user = User.includes(:fax_numbers).find_by(email: sender)
-
+    sender = Mail::AddressList.new(params['from']).addresses.first.address
+    user = User.includes(:fax_numbers).find_by(email: sender)
+    p "55"
     # Currently fails if user is not in the DB
+    p "57"
     attachment_count = params['attachment-count'].to_i
-
     i = 1
     while i <= attachment_count do
       output_file = "/tmp/#{Time.now.to_i}-#{rand(200)}-" + params["attachment-#{i}"].original_filename
@@ -72,15 +64,15 @@ class MailgunFaxesController < ApplicationController
       files.push(output_file)
       i += 1
     end
-
+    p "67"
     if user && user.fax_numbers.present?
-	 		p sent_fax_object = Fax.create_fax_from_email(sender, params['recipient'], files, user)
+	 		sent_fax_object = Fax.create_fax_from_email(sender, params['recipient'], files, user)
 	 	else
-	 		p sent_fax_object = "You are not currently linked to the fax number you attempted to fax."
+	 		sent_fax_object = "You are not currently linked to the fax number you attempted to fax."
 	 	end
-
+	 	p "73"
  		if sent_fax_object.class != String && user.fax_numbers.present?
-			p api_response = Fax.get_fax_information(sent_fax_object.id)
+			api_response = Fax.get_fax_information(sent_fax_object.id)
 		else
 			MailgunMailer.failed_email_to_fax_email(sender, sent_fax_object).deliver_now
 		end
