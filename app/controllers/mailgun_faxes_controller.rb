@@ -52,9 +52,10 @@ class MailgunFaxesController < ApplicationController
 	def mailgun(files = [])
     sender = Mail::AddressList.new(params['from']).addresses.first.address
     user = User.includes(:fax_numbers).find_by(email: sender)
-    p "55"
+
     # Currently fails if user is not in the DB
-    p "57"
+    p "============================================================="
+    p params['attachment-count']
     attachment_count = params['attachment-count'].to_i
     i = 1
     while i <= attachment_count do
@@ -64,13 +65,14 @@ class MailgunFaxesController < ApplicationController
       files.push(output_file)
       i += 1
     end
-    p "67"
+
+
     if user && user.fax_numbers.present?
 	 		sent_fax_object = Fax.create_fax_from_email(sender, params['recipient'], files, user)
 	 	else
 	 		sent_fax_object = "You are not currently linked to the fax number you attempted to fax."
 	 	end
-	 	p "73"
+
  		if sent_fax_object.class != String && user.fax_numbers.present?
 			api_response = Fax.get_fax_information(sent_fax_object.id)
 		else
