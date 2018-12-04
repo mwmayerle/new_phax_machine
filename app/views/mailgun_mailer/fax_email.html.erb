@@ -33,10 +33,12 @@
 	  <h2>Recipients</h2>
 	  <% @fax["recipients"].each do |recipient| %>
 	    <div class="recipient">
-	      <p><b>Number:</b> <%= recipient["phone_number"] %></p>
+	      <!-- <p><b>Number:</b> --> <%#= recipient["phone_number"] %><!-- </p> -->
+	      <p><b>Number:</b> <%= recipient["number"] %></p>
 	      <p><b>Status:</b> <%= recipient["status"] %></p>
 	      <% if @fax["status"] != "success" %>
-					<p><b>Error Message:</b> <%= recipient["error_message"] %></p>
+					<!-- <p><b>Error Message:</b> --> <%#= recipient["error_message"] %><!-- </p> -->
+					<p><b>Error Message:</b> <%= recipient["error_code"] %></p>
 				<% end %>
 	    </div>
 	  <% end %>
