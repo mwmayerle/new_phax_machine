@@ -69,7 +69,7 @@ class MailgunFaxesController < ApplicationController
     if user && user.fax_numbers.present? && !params['attachment-count'].nil?
 	 		sent_fax_object = Fax.create_fax_from_email(sender, params['recipient'], files, user)
 	 	else
-	 		sent_fax_object = params['attachment-count'].nil?
+	 		sent_fax_object = ""
 	 		sent_fax_object += "Only attachments may be sent as a fax. Please add an attachment. " if params['attachment-count'].nil?
 	 		sent_fax_object += "You are not linked to the fax number you attempted to fax. " if !user || !user.fax_numbers.present?
 	 	end
