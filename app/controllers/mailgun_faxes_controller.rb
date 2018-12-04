@@ -24,8 +24,8 @@ class MailgunFaxesController < ApplicationController
 		###################### V1 WEBHOOK CODE HERE ###################
 	  fax_from = @fax['from_number']
 	  p "FILENAME FILENAME"
-    p fax_file_name = params['filename']['filename']
-    p fax_file_contents = params['filename']['tempfile'].read
+    p fax_file_name = params['filename'].original_filename
+    p fax_file_contents = params['filename'].tempfile.read
     ###############################################################
 
 
