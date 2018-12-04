@@ -42,13 +42,18 @@ class Fax < ApplicationRecord
 
 		# if there are two error_codes with the same frequency, the error found first (first recipient) takes precedence
 		def most_common_error(fax, errors = {})
-			p "================================ MOST COMMON ERROR METHOD HERE ============================="
-			p fax
-			fax["recipients"].each do |recipient|
-		  	p key = recipient["error_message"]
+			########## V2.1 WEBHOOK CODE HERE#######################
+			# fax["recipients"].each do |recipient|
+		 #  	key = recipient["error_message"]
+		 #  	errors.has_key?(key) ? errors[key]["frequency"] += 1 : errors[key] = { "frequency" => 1 }
+			# end
+	  # 	errors.max_by { |error_code, amount| amount["frequency"] }.shift
+	  ##########################################################
+
+	  	fax["recipients"].each do |recipient|
+		  	key = recipient["error_code"]
 		  	errors.has_key?(key) ? errors[key]["frequency"] += 1 : errors[key] = { "frequency" => 1 }
 			end
-			p errors.max_by { |error_code, amount| amount["frequency"] }.shift
 	  	errors.max_by { |error_code, amount| amount["frequency"] }.shift
 		end
 
