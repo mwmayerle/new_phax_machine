@@ -5,7 +5,6 @@ class Fax < ApplicationRecord
 		end
 
 		def create_fax(options)
-			ENV.fetch('PHAXIO_API_KEY')
 			if options[:caller_id].nil?
 				sent_fax_response = "Your caller ID number is not set."
 			else
@@ -43,10 +42,12 @@ class Fax < ApplicationRecord
 
 		# if there are two error_codes with the same frequency, the error found first (first recipient) takes precedence
 		def most_common_error(fax, errors = {})
+			p fax
 			fax["recipients"].each do |recipient|
-		  	key = recipient["error_message"]
+		  	p key = recipient["error_message"]
 		  	errors.has_key?(key) ? errors[key]["frequency"] += 1 : errors[key] = { "frequency" => 1 }
 			end
+			p errors.max_by { |error_code, amount| amount["frequency"] }.shift
 	  	errors.max_by { |error_code, amount| amount["frequency"] }.shift
 		end
 
