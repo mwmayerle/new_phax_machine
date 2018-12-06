@@ -3,7 +3,11 @@
 	<img src="<%= @logo_link %>" alt="Logo" width="200">
 	<div style="width: 100%;margin-top: 20px;margin-bottom: 20px;border-bottom: 1px solid darkgrey;"></div>
 	<% if @fax["direction"] == "received" %>
-	  <h1>You've received a new fax!</h1>
+		<% if @fax["status"] == "success" %>
+	  	<h1>You've received a new fax!</h1>
+	  <% else %>
+	  	<h1><%= @fax['from_number'] %> attempted to fax <%= @fax['to_number'] %>
+	  <% end %>
 	<% else %>
 		<% if @fax["status"] == "success" %>
 	  	<h1>Your fax was sent successfully</h1>
@@ -27,7 +31,7 @@
 	<% if @fax["status"] != "success" %>
 		<p><b>Most Common Error:</b> <%= @fax["most_common_error"] %></p>
 	<% end %>
-	<% if @fax["direction"] == "received" %>
+	<% if @fax["direction"] == "received" && @fax['status'] == "success" %>
 	  <p>The document has been attached to this email.</p>
 	<% else %>
 	  <h2>Recipients</h2>
