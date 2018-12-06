@@ -30,6 +30,9 @@ class MailgunFaxesController < ApplicationController
 			if params['filename']
 	    	fax_file_name = params['filename'].original_filename
 	    	fax_file_contents = params['filename'].tempfile.read
+	    else
+	    	fax_file_name = ''
+	    	fax_file_contents = ''
 	   	end
 	    ###############################################################
 
