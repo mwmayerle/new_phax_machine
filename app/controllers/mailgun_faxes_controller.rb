@@ -12,9 +12,13 @@ class MailgunFaxesController < ApplicationController
 
     if email_addresses.present? # requires the User to be linked to a fax number
 		  fax_from = @fax['from_number']
+
+
 	  	##################### V2.1 WEBHOOK CODE HERE #################
+	  	###if params['filename']
 	  	###  fax_file_name = params['file'].original_filename
 	    ###  fax_file_contents = params['file'].read
+	    ###end
 			##############################################################
 
 			# IF YOU SWITCH TO VERSION 2.1 EDIT THE
@@ -23,8 +27,10 @@ class MailgunFaxesController < ApplicationController
 			# 'MOST_COMMOM_ERROR' METHOD IN THE FAX MODEL
 
 			###################### V1 WEBHOOK CODE HERE ###################
-	    fax_file_name = params['filename'].original_filename
-	    fax_file_contents = params['filename'].tempfile.read
+			if params['filename']
+	    	fax_file_name = params['filename'].original_filename
+	    	fax_file_contents = params['filename'].tempfile.read
+	   	end
 	    ###############################################################
 
 	    email_subject = "Fax received from #{fax_from}"
