@@ -1,18 +1,19 @@
 class MailgunMailer < ApplicationMailer
 	default from: ENV["FROM_EMAIL"]
+	ALTERNATE_LOGO_PATH = 'https://t3com.com/wp-content/uploads/2016/05/t3comm-process-colors.jpg'.freeze
 
 	def fax_email(email_addresses, email_subject, fax, fax_file_name = '', fax_file_contents = '')
   	@email_addresses = email_addresses
   	@fax = fax
   	@email_subject = email_subject
-  	@logo_link = LogoLink.first ? LogoLink.first.logo_url : 'https://assets.voyant.com/logos/voyant-logo.png'
+  	@logo_link = LogoLink.first ? LogoLink.first.logo_url : ALTERNATE_LOGO_PATH
   	mail.attachments[fax_file_name] = fax_file_contents if fax_file_name != ''
   	mail(to: @email_addresses, subject: @email_subject)
   end
 
   def failed_email_to_fax_email(sender, sent_fax_object)
 		@sender = sender
-		@logo_link = LogoLink.first ? LogoLink.first.logo_url : 'https://assets.voyant.com/logos/voyant-logo.png'
+		@logo_link = LogoLink.first ? LogoLink.first.logo_url : ALTERNATE_LOGO_PATH
 		@sent_fax_object = sent_fax_object
   	mail(to: @sender, subject: "There was a problem delivering your fax")
   end
