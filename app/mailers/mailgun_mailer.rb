@@ -7,7 +7,9 @@ class MailgunMailer < ApplicationMailer
   	@fax = fax
   	@email_subject = email_subject
   	@logo_link = LogoLink.first ? LogoLink.first.logo_url : ALTERNATE_LOGO_PATH
-  	mail.attachments[fax_file_name] = fax_file_contents if fax_file_name != ''
+  	if fax_file_name != '' && fax_file_contents != ''
+  		mail.attachments[fax_file_name] = fax_file_contents
+  	end
   	mail(to: @email_addresses, subject: @email_subject)
   end
 
