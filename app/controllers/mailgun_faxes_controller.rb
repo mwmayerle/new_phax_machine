@@ -17,7 +17,7 @@ class MailgunFaxesController < ApplicationController
 	    ###  fax_file_contents = params['file'].read
 			##############################################################
 
-			# IF YOU SWITCH TO VERSION 2.1 EDIT
+			# IF YOU SWITCH TO VERSION 2.1 EDIT THE
 			# MAILER TEMPLATE IN VIEWS. V1 DIFFERENT
 			# KEYS ARE USED IN PARAMS. ALSO EDIT THE
 			# 'MOST_COMMOM_ERROR' METHOD IN THE FAX MODEL
@@ -67,7 +67,7 @@ class MailgunFaxesController < ApplicationController
     if user && user.fax_numbers.present?
 	 		sent_fax_object = Fax.create_fax_from_email(sender, params['recipient'], files, user)
 	 	else
-	 		sent_fax_object = "You are not linked to the fax number you attempted to fax. " if !user && !user.fax_numbers.present?
+	 		sent_fax_object = "You are not linked to the fax number you attempted to fax. "
 	 	end
 
  		if sent_fax_object.class != String && user.fax_numbers.present?
