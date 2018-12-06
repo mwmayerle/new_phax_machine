@@ -6,7 +6,7 @@
 		<% if @fax["status"] == "success" %>
 	  	<h1>You've received a new fax!</h1>
 	  <% else %>
-	  	<h1><%= @fax['from_number'] %> attempted to fax <%= @fax['to_number'] %>
+	  	<h1><%= @fax['from_number'] %> attempted to fax <%= @fax['to_number'] %></h1>
 	  <% end %>
 	<% else %>
 		<% if @fax["status"] == "success" %>
