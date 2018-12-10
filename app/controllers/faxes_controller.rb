@@ -26,11 +26,11 @@ class FaxesController < ApplicationController
 				flash[:alert] = "Error: ".concat(sent_fax_response.to_s)
 			else
 				api_response = Fax.get_fax_information(sent_fax_response.id)
-				api_response.status == 'queued' ? flash[:notice] = 'Fax queued for sending' : flash[:alert] = api_respons.eerror_message
+				api_response.status == 'queued' ? flash[:notice] = 'Fax queued for sending' : flash[:alert] = api_response.error_message
 			end
 
 		else
-			flash[:notice] = "Faxing not allowed. You are not currently linked to any fax numbers. Contact Phax Machine's manager."
+			flash[:notice] = "Faxing not allowed. You are not currently linked to any fax numbers."
 		end
 		redirect_to new_fax_path
 	end

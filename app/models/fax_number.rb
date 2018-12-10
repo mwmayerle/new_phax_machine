@@ -7,7 +7,7 @@ class FaxNumber < ApplicationRecord
 		'Alberta'=>'AB', 'British Columbia' => 'BC', 'Manitoba' => 'MB', 'New Brunswick' => 'NB', 'Newfoundland and Labrador' => 'NL', 'Nova Scotia, Prince Edward Island' => 'NS', 'Northwest Territories, Nunavut, Yukon' => 'NT', 'Ontario' => 'ON', 'Quebec' => 'QC', 'Saskatchewan' => 'SK'
 	}.freeze
 	FAX_NUMBER_CHARACTER_LIMIT = 36
-	FAX_NUMBER_DIGIT_LIMIT = 60 # Took this value from Phax Machine, is it real?
+	FAX_NUMBER_DIGIT_LIMIT = 60
 
 	attr_accessor :unassigned_organization_users
 
