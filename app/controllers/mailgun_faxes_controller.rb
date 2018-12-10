@@ -16,8 +16,11 @@ class MailgunFaxesController < ApplicationController
 
 	  	##################### V2.1 WEBHOOK CODE HERE #################
 	  	###if params['filename']
+	  	###  email_subject = "Fax received from #{fax_from}"
 	  	###  fax_file_name = params['file'].original_filename
 	    ###  fax_file_contents = params['file'].read
+	    ###else
+	    ###  The rest of the else here
 	    ###end
 			##############################################################
 
@@ -28,15 +31,16 @@ class MailgunFaxesController < ApplicationController
 
 			###################### V1 WEBHOOK CODE HERE ###################
 			if params['filename']
+		    email_subject = "Fax received from #{fax_from}"
 	    	fax_file_name = params['filename'].original_filename
 	    	fax_file_contents = params['filename'].tempfile.read
 	    else
+	    	email_subject = "#{fax_from} attempted to fax #{recipient_number}"
 	    	fax_file_name = ''
 	    	fax_file_contents = ''
 	   	end
 	    ###############################################################
 
-	    email_subject = "Fax received from #{fax_from}"
 			MailgunMailer.fax_email(email_addresses, email_subject, @fax, fax_file_name, fax_file_contents).deliver_now
 		end
 	end
