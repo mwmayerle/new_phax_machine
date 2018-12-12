@@ -22,7 +22,7 @@ class PhaxMachineMailer < Devise::Mailer
   end
 
   def admin_welcome_invite(record, token, opts = {})
-  	opts[:subject] = "You've been invited to be the administer of Phax Machine"
+  	opts[:subject] = "You've been invited to be the administrator of Phax Machine"
     @token = token
     @logo_link = LogoLink.first ? LogoLink.first.logo_url : ALTERNATE_LOGO_PATH
     devise_mail(record, :admin_welcome_invite, opts)

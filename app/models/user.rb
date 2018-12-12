@@ -43,11 +43,11 @@ class User < ApplicationRecord
 		    user.save(validate: false)
 		    @raw = raw
 		    if permission == UserPermission::MANAGER
-		    	# PhaxMachineMailer.manager_welcome_invite(user, @raw).deliver_now
+		    	PhaxMachineMailer.manager_welcome_invite(user, @raw).deliver_now
 		    elsif permission == UserPermission::USER
-		    	# PhaxMachineMailer.user_welcome_invite(user, @raw).deliver_now
+		    	PhaxMachineMailer.user_welcome_invite(user, @raw).deliver_now
 		    else
-		    	PhaxMachineMailer.admin_welcome_invite(user, @raw).deliver_now if user.email == ENV.fetch('ADMIN_EMAIL')
+		    	PhaxMachineMailer.admin_welcome_invite(user, @raw).deliver_now
 		    end
 		  end
 		end
