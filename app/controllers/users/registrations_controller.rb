@@ -11,9 +11,9 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   # POST /resource
   def create
-  	# Restores soft-deleted user and associations. See Paranoia gem docs
+  	# Restores soft-deleted user and associations. Searches thru deleted users. See Paranoia gem docs.
   	possible_user = User.only_deleted.select { |user| user.email == sign_up_params[:email] }
-  	if possible_user != []
+  	if possible_user != [] # <-- Found a soft-deleted user
   		possible_user = possible_user.pop
   		possible_user.restore(:recursive => true)
 
@@ -31,10 +31,13 @@ class Users::RegistrationsController < Devise::RegistrationsController
   		UserPermission.find_by(user_id: possible_user.id).update_attributes(permission: sign_up_params[:permission])
 
   		if sign_up_params[:permission] == UserPermission::MANAGER
+  			# This is triggered if the user is reinvited thru the organizations index view
   			Organization.find(sign_up_params[:organization_id]).update_attributes(manager_id: possible_user.id)
   		end
-  		
-  		flash[:notice] = "Access has been reinstated for #{possible_user.email}"
+
+  		User.welcome(possible_user.id, sign_up_params[:permission]) # <-- Resends user invite email
+
+  		flash[:notice] = "Access has been reinstated for #{possible_user.email}. Don't forget to link #{possible_user.email} to a fax number, otherwise they cannot send or receive faxes."
 
   	else
 	    build_resource(sign_up_params)
@@ -52,7 +55,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 		    end
 		    
 	      if resource.active_for_authentication?
-	        flash[:notice] = "#{resource.email} has been invited."
+	        flash[:notice] = "#{resource.email} has been invited. Don't forget to link #{resource.email} to a fax number, otherwise they cannot send or receive faxes."
 	      else
 	        flash[:notice] = "signed_up_but_#{resource.inactive_message}"
 	        expire_data_after_sign_in!
@@ -105,10 +108,15 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # DELETE /resource
   def destroy
   	resource = User.find(params[:id])
+
   	organization = Organization.find(resource.organization.id)
 
-		# Removes Manager privileges if admin is revoking their access
-		organization.update_attributes(manager_id: nil) if resource.user_permission.permission == UserPermission::MANAGER
+		if resource.user_permission.permission == UserPermission::MANAGER
+		# Removes the manager_id from the organization the user is a part of
+			organization.update_attributes(manager_id: nil)
+  	# Removes manager permission from deleted user and resets it to generic
+  		UserPermission.find_by(user_id: resource.id).update_attributes(permission: UserPermission::USER)
+  	end
 
     resource.destroy
     flash[:notice] = "Access for #{resource.email} revoked"

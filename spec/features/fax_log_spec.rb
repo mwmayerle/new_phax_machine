@@ -141,5 +141,14 @@ RSpec.feature "Fax Logs", :type => :feature do
 				expect(page).to have_text("File")
 			end
 		end
+
+		it "when not logged in redirects to the sign-in page" do
+			visit(fax_logs_path)
+			expect(page).to have_button("Log In")
+			expect(page).to have_field("user[email]")
+			expect(page).to have_field("user[password]")
+			expect(page).to have_current_path("http://www.example.com/users/sign_in")
+			expect(page).to have_link('Log In', href: new_user_session_path)
+		end
 	end
 end

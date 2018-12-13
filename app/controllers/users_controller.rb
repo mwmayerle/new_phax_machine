@@ -10,7 +10,7 @@ class UsersController < ApplicationController
 	
 	# Get list of organizations for the Admin, after an org is selected, it goes to the Index route in this controller
 	def org_index
-		@organizations = Organization.all
+		@organizations = Organization.all.order(:label)
 	end
 
 	def index # with_deleted is a Paranoia gem method that includes soft-deleted users
@@ -66,7 +66,7 @@ class UsersController < ApplicationController
 			# For the rare edge case when a User object has no permission object associated with it
 			if @user.user_permission.nil?
 				UserPermission.create!(permission: UserPermission::USER, user_id: @user.id)
-				@user.includes(:user_permission).reload
+				@user.reload
 			end
 		end
 

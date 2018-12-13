@@ -35,5 +35,4 @@ class Users::PasswordsController < Devise::PasswordsController
     	redirect_to(users_password_set_new_user_password_path(:reset_password_token => params[:user][:reset_password_token], :new_user => true))
     end
   end
-
 end

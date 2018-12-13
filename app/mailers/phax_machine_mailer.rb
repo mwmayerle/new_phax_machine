@@ -6,7 +6,7 @@ class PhaxMachineMailer < Devise::Mailer
   ALTERNATE_LOGO_PATH = 'https://t3com.com/wp-content/uploads/2016/05/t3comm-process-colors.jpg'.freeze
 
   def manager_welcome_invite(record, token, opts = {})
-  	opts[:from] = ENV.fetch('ADMIN_EMAIL')
+  	opts[:from] = ENV["FROM_EMAIL"]
   	opts[:subject] = "You've been invited to manage #{record.organization.label}."
     @token = token
     @logo_link = LogoLink.first ? LogoLink.first.logo_url : ALTERNATE_LOGO_PATH

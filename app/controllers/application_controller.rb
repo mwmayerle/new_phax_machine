@@ -1,8 +1,8 @@
 class ApplicationController < ActionController::Base
 	include SessionsHelper
-
 	before_action :authenticate_user!, if: :devise_controller?
 	before_action :configure_permitted_parameters, if: :devise_controller?
+
 	DENIED = "Permission denied.".freeze
 
   protected

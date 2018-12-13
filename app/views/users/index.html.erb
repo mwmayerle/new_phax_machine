@@ -1,53 +1,67 @@
-<body data-page="user-table" class="bg-dark coverup">
+<body data-components="confirmationMessage" data-page="user-table" class="bg-dark coverup">
   <div class="container coverup">
     <div class="card card-login mx-auto mt-5">
       <div class="card-header"><%= @organization.label %></div>
       <div class="card-body">
         <div class="mb-8">
 					<% if @users %>
-					<div class="container-fluid user-form form-group">
-						<div class="row">
-							<div class="inline-input-margin col-lg-12">
-								<%= form_for :user, url: "/users", method: :post, class: "form-inline" do |f| %>
-									<%= f.hidden_field :organization_id, value: "#{@organization.id}" %>
-									<%= f.hidden_field :permission, value: "#{UserPermission::USER}" %>
-									<div class="row justify-content-center">
-										<div class="form-group col-lg-4">
-											<strong><%= f.label :email, "Email:", class: "pull-left" %></strong>
-											<%= f.email_field :email, class: "form-control" %>
+						<div class="container-fluid user-form form-group">
+							<div class="row">
+								<div class="inline-input-margin col-lg-12">
+									<%= form_for :user, url: "/users", method: :post, class: "form-inline" do |f| %>
+										<%= f.hidden_field :organization_id, value: "#{@organization.id}" %>
+										<%= f.hidden_field :permission, value: "#{UserPermission::USER}" %>
+										<div class="row justify-content-center">
+											<div class="form-group col-lg-4">
+												<strong><%= f.label :email, "Email:", class: "pull-left" %></strong>
+												<%= f.email_field :email, class: "form-control" %>
+											</div>
+											<div class="form-group col-lg-4">
+												<strong><%= f.label :caller_id_number, "Caller ID Number:", class: "pull-left" %></strong>
+												<select id="caller-id-select" class="form-control form-inline" name="user[caller_id_number]">
+													<% @organization.fax_numbers.each do |organization_fax_number| %>
+														<option name="user[caller_id_number]" value="<%= organization_fax_number.fax_number %>" selected="selected">
+															<%= FaxNumber.format_pretty_fax_number(organization_fax_number.fax_number) %>
+															<% if organization_fax_number.manager_label.present? %>
+														 		- <%= organization_fax_number.manager_label %>
+														 	<% end %>
+														</option>
+													<% end %>
+												</select>
+											</div>
+											<div class="col-lg-2 form-group force-down-button">
+												<%= f.submit "Invite User", class: "btn btn-success" %>
+											</div>
 										</div>
-										<div class="form-group col-lg-4">
-											<strong><%= f.label :caller_id_number, "Caller ID Number:", class: "pull-left" %></strong>
-											<select id="caller-id-select" class="form-control form-inline" name="user[caller_id_number]">
-												<% @organization.fax_numbers.each do |organization_fax_number| %>
-													<option name="user[caller_id_number]" value="<%= organization_fax_number.fax_number %>" selected="selected">
-														<%= FaxNumber.format_pretty_fax_number(organization_fax_number.fax_number) %>
-														<% if organization_fax_number.manager_label.present? %>
-													 		- <%= organization_fax_number.manager_label %>
-													 	<% end %>
-													 </option>
-												<% end %>
-											</select>
-										</div>
-										<div class="col-lg-2 form-group force-down-button">
-											<%= f.submit "Invite New User", class: "btn btn-success" %>
-										</div>
-									</div>
-								<% end %>
+									<% end %>
+								</div>
 							</div>
 						</div>
-					</div>
+						<div style="height:30px;" class="row">
 
-						<div class="col-lg-5">
-							<p><span style="color:green"><i class="fa fa-fw fa-check" aria-hidden="true"></i></span><i> Indicates the user is <%= @organization.label %>'s manager </i></p>
+							<div class="col-lg-5">
+								<p>
+									<span style="color:green;margin-left:30px;">
+										<i class="fa fa-fw fa-check" aria-hidden="true"></i>
+									</span>
+									<i><%= @organization.label %>'s manager</i>
+								</p>
+							</div>
+
+							<div class="col-lg-6">
+								<p class="pull-right">
+									<i>To reinvite an inactive user, use the form above</i>
+								</p>
+							</div>
+
 						</div>
 						<table id="user-table" class="table table-sm table-hover">
 							<thead class="thead-dark">
 								<tr>
-									<th></th>
+									<th><!-- Manager checkbox here--></th>
 									<th class="text-center">Email Address:</th>
-									<th class="text-center">Caller ID</th>
-									<th class="text-center">Active</th>
+									<th class="text-center">Caller ID:</th>
+									<th class="text-center">Active:</th>
 									<th></th>
 								</tr>
 							</thead>
@@ -57,15 +71,18 @@
 									<% if user.user_permission && user.user_permission.permission == UserPermission::MANAGER %>
 										<td class="text-center align-middle"><span style="color:green"><i class="fa fa-check" aria-hidden="true"></i></span></td>
 									<% else %>
-									<td></td>
+										<td></td>
 									<% end %>
 									<td class="text-center"><%= user.email %></td>
 									<td class="text-center"><%= FaxNumber.format_pretty_fax_number(user.caller_id_number) if user.caller_id_number %></td>
 									<% if user.deleted_at.nil? %>
 										<td class="text-center" style="color:green;"><i class="fa fa-fw fa-check-circle" aria-hidden="true"></i></td>
-										<td class="text-center"><%= link_to "Edit", edit_user_path(user), class: "btn btn-sm btn-success" %></td>
+										<td class="text-center">
+											<%= link_to "<i class='fa fa-pencil fa-fw' aria-hidden='true'></i>&nbsp;&nbsp;Edit&nbsp;".html_safe, edit_user_path(user), class: "btn btn-sm btn-success" %>
+										</td>&nbsp;
 									<% else %>
 										<td class="text-center" style="color:crimson;"><i class="fa fa-fw fa-times-circle" aria-hidden="true"></i></td>
+										<td></td>
 										<td></td>
 									<% end %>
 								<tr>
