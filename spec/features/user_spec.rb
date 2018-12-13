@@ -55,7 +55,7 @@ RSpec.feature "User Pages", :type => :feature do
 			expect(page).to have_current_path("/users?organization_id=#{org.id}")
 			expect(page).to have_field("user[email]")
 			expect(page).to have_field("user[caller_id_number]")
-			expect(page).to have_text("Indicates the user is #{org.label}'s manager")
+			expect(page).to have_text("#{org.label}'s manager")
 			expect(page).to have_table("user-table")
 			within_table("user-table") do
 				expect(page).to have_text("Email Address")
@@ -276,7 +276,7 @@ RSpec.feature "User Pages", :type => :feature do
 			visit(users_path)
 			fill_in("user[email]", with: "#{user1.email}")
 			select("(773) 867-5308", from: "user[caller_id_number]", match: :first)
-			click_on("Invite New User")
+			click_on("Invite User")
 			expect(page).to have_text("Access has been reinstated for #{user1.email}")
 			expect(page).to have_current_path(users_path)
 		end
@@ -288,7 +288,7 @@ RSpec.feature "User Pages", :type => :feature do
 			visit(users_path)
 			fill_in("user[email]", with: "mr.saturn@aol.com")
 			select("(773) 867-5308", from: "user[caller_id_number]", match: :first)
-			click_on("Invite New User")
+			click_on("Invite User")
 			expect(page).to have_text("mr.saturn@aol.com has been invited.")
 		end
 
@@ -298,7 +298,7 @@ RSpec.feature "User Pages", :type => :feature do
 			click_link("Phaxio Test Company")
 			fill_in("user[email]", with: "mr.saturn@aol.com")
 			select("(773) 867-5308", from: "user[caller_id_number]", match: :first)
-			click_on("Invite New User")
+			click_on("Invite User")
 			expect(page).to have_text("mr.saturn@aol.com has been invited.")
 		end
 
@@ -312,7 +312,7 @@ RSpec.feature "User Pages", :type => :feature do
 
 			fill_in("user[email]", with: "mr.saturn1@aol.com")
 			select("(773) 867-5307", from: "user[caller_id_number]", match: :first)
-			click_on("Invite New User")
+			click_on("Invite User")
 			expect(page).to have_current_path("http://www.example.com/")
 			expect(page).to have_text(ApplicationController::DENIED)
 		end
