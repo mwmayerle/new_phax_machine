@@ -37,7 +37,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   		User.welcome(possible_user.id, sign_up_params[:permission]) # <-- Resends user invite email
 
-  		flash[:notice] = "Access has been reinstated for #{possible_user.email}"
+  		flash[:notice] = "Access has been reinstated for #{possible_user.email}. Don't forget to link #{possible_user.email} to a fax number, otherwise they cannot send or receive faxes."
 
   	else
 	    build_resource(sign_up_params)
@@ -55,7 +55,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 		    end
 		    
 	      if resource.active_for_authentication?
-	        flash[:notice] = "#{resource.email} has been invited."
+	        flash[:notice] = "#{resource.email} has been invited. Don't forget to link #{resource.email} to a fax number, otherwise they cannot send or receive faxes."
 	      else
 	        flash[:notice] = "signed_up_but_#{resource.inactive_message}"
 	        expire_data_after_sign_in!

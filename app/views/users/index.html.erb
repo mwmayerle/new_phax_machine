@@ -25,7 +25,7 @@
 															<% if organization_fax_number.manager_label.present? %>
 														 		- <%= organization_fax_number.manager_label %>
 														 	<% end %>
-														 </option>
+														</option>
 													<% end %>
 												</select>
 											</div>
@@ -37,23 +37,24 @@
 								</div>
 							</div>
 						</div>
+						<div style="height:30px;" class="row">
 
-						<div class="row" style="height:10px">
-							<div class="col-lg-6">
+							<div class="col-lg-5">
 								<p>
-									<span style="color:green;margin-left:30px">
+									<span style="color:green;margin-left:30px;">
 										<i class="fa fa-fw fa-check" aria-hidden="true"></i>
 									</span>
 									<i><%= @organization.label %>'s manager</i>
 								</p>
 							</div>
+
 							<div class="col-lg-6">
-								<p style="margin-right:70px" class="pull-right">
+								<p class="pull-right">
 									<i>To reinvite an inactive user, use the form above</i>
 								</p>
 							</div>
-						</div>
 
+						</div>
 						<table id="user-table" class="table table-sm table-hover">
 							<thead class="thead-dark">
 								<tr>

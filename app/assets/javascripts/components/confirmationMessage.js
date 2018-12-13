@@ -1,7 +1,6 @@
 const deleteOrganizationMessage = 'Deleting this organization will permanently remove all of its users and other data. This cannot be restored. Are you sure you want to do that?';
 const provisionNumberMessage = 'Purchasing this number will charge $2.00 to your account. Are you sure you want to do that?';
 const userRevokeAccess = "Revoking this user's access will forbid them from logging in or sending/receiving faxes through email.Users with revoked access can be invited again at any time later.  Are you sure you want to do that?";
-const userResetPassword = "This user will be unable to log in until they reset their password using this email address, however email-to-fax and fax-to-email functionality will continue. Are you sure you want to do that?";
 
 phaxMachine.components['confirmationMessage'] = {
 	render: function() {
@@ -23,12 +22,6 @@ phaxMachine.components['confirmationMessage'] = {
 				for (let i = 0; i < allRevokeAccessButtons.length; i++) {
 					new ConfirmationMessage(userRevokeAccess, allRevokeAccessButtons[i]);
 				}
-			case 'user-table':
-				let allResetPasswordButtons = document.getElementsByClassName("reset-password");
-				for (let i = 0; i < allResetPasswordButtons.length; i++) {
-					new ConfirmationMessage(userResetPassword, allResetPasswordButtons[i]);
-				}
-				break;
 		}
 	}
 };
