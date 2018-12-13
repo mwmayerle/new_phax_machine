@@ -66,7 +66,7 @@ class UsersController < ApplicationController
 			# For the rare edge case when a User object has no permission object associated with it
 			if @user.user_permission.nil?
 				UserPermission.create!(permission: UserPermission::USER, user_id: @user.id)
-				@user.includes(:user_permission).reload
+				@user.reload
 			end
 		end
 
