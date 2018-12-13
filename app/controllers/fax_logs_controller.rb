@@ -96,6 +96,9 @@ class FaxLogsController < ApplicationController
 
 		# Create a hash of Organization object data to reference later. Prevents program from querying the database constantly
 		def set_organization_or_organizations
+			# Sends logged out user to root if they access /fax_logs while logged out.
+			redirect_to(root_path) and return if !user_signed_in?
+
 			@organizations = {}
 			if is_admin?
 				if is_all_or_is_nil?(filtering_params[:organization])
