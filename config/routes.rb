@@ -21,6 +21,7 @@ Rails.application.routes.draw do
 	resources :organizations
   resources :fax_numbers, only: [:index, :edit, :update, :new, :create]
   resources :fax_logs, only: [:index, :create, :download]
+  resources :readmes, only: [:show]
 
   root to: "faxes#new"
 
@@ -31,4 +32,6 @@ Rails.application.routes.draw do
   post "/mailgun", to: "mailgun_faxes#mailgun"
 
   get "/download/:fax_id", to: "fax_logs#download"
+
+  get "/readme", to: "readmes#show"
 end
