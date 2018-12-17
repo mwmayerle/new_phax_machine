@@ -23,15 +23,17 @@
 		<li><a href="#changing-logo">Changing the Logo</a></li>
 		<li><a href="#admin-emails">Email Templates</a></li>
 	</ul>
-	<p style="margin-bottom: -10px;">Manager and Administrator Functions:</p>
+	<p style="margin-bottom: -10px;"><a href="#manager-intro">Manager and Administrator Functions:</a></p>
 		<ul>
 			<li><a href="#manager-dashboard">Manager Dashboard</a></li>
 			<li><a href="#linking-unlinking-users">Linking/Unlinking Users</a></li>
 			<li><a href="#managing-users">Managing Users</a></li>
 		</ul>
-	<p style="margin-bottom: -10px;">Fax Logs:</p>
+	<p style="margin-bottom: -10px;"><a href="#fax-logs-general">Fax Logs:</a></p>
 		<ul>
 			<li><a href="#fax-logs-general">Fax Logs</a></li>
+			<li><a href="#fax-logs-download-file">Downloading a File</a></li>
+			<li><a href="#fax-logs-search">Searching</a></li>
 			<li><a href="#fax-logs-limitations">Fax Log Limitations</a></li>
 			<li><a href="#fax-logs-admin">Fax Logs As Administrator</a></li>
 			<li><a href="#fax-logs-manager">Fax Logs As a Manager</a></li>
@@ -40,10 +42,10 @@
 	<p style="margin-bottom: -10px;">General Use:</p>
 		<ul>
 			<li><a href="#general-use">Fax Portal</a></li>
-			<li><a href="#change-password">Changing Your Password</a></li>
+			<li><a href="#change-password">Changing or Reset Your Password</a></li>
 		</ul>
 </div>
-<!-- #95, #102-->
+
 <div class="underline"></div>
 
 <div id="managing-fax-numbers" class="col readme-block">
@@ -125,7 +127,7 @@
 
 <div id="admin-emails" class="col readme-block">
 	<h2>Email Templates</h2>
-	<p style="margin-bottom: 0px">
+	<p style="margin-bottom: -10px">
 		Phax Machine's email templates are simple and easily customized. All templates and their locations are listed below for easy customization by a developer if desired:
 		<ul>
 			<li>Password Reset Form --> app/views/devise/mailer/password_reset_instructions.html.erb</li>
@@ -143,14 +145,14 @@
 <div id="manager-intro" class="col readme-block">
 	<h2>Manager Functions</h2>
 	<p>
-		Managers are invited by the Administrator via email to manage an organization. Each organization may only have one manager, or an organization can function without a manager. An organization's manager or the Administer links users to fax numbers and assigns the users caller ID numbers. A user/manager's caller ID number will be the caller ID number used on all faxes sent out by that user, regardless of what other numbers the user is linked to. If the Administrator allows it, a manager may also provision additional fax numbers to the organization they control. Managers should first invite users and then link them to fax numbers. Users who are not linked to a fax number by the manager will be able to log in, however <b>they will be unable to send or receive faxes by email nor will they be able to send a fax using the fax portal until they are linked to at least one fax number</b>.
+		Managers are invited by the Administrator via email to manage an organization. Each organization may only have one manager, or an organization can function without a manager. An organization's manager or the Administrator links users to fax numbers and assigns the users caller ID numbers. A user/manager's caller ID number will be the caller ID number used on all faxes sent out by that user, regardless of what other numbers the user is linked to. Managers should first invite users and then link them to fax numbers. Users who are not linked to a fax number by the manager will be able to log in, however <b>they will be unable to send or receive faxes by email nor will they be able to send a fax using the fax portal until they are linked to at least one fax number</b>. How to link and unlink users to a fax number is <a href="#linking-unlinking-users">described below</a>.
 	</p>
 </div>
 
 <div id="manager-dashboard" class="col readme-block">
 	<h2>Manager Dashboard</h2>
 	<p>
-		The Dashboard provides the manager with a summary of all fax numbers and their linked users. Managers link/unlink users to a fax numbers by clicking on the "Link/Unlink Users" button under each fax number. A table of all users currently linked to a fax number is shown next to each fax number. Managers may also add a label to their fax numbers by clicking on the fax number and entering a label. Below is the manager's view of Great Plains LLC.
+		The Dashboard provides the manager with a summary of all fax numbers and their linked users. Managers link/unlink users to fax numbers by clicking on the "Link/Unlink Users" button under each fax number. A table of all users currently linked to a fax number is shown next to each fax number. Managers may also add a label to their fax numbers by clicking on the fax number and entering a label. Below is the manager's view of Great Plains LLC.
 	</p>
 
 	<div class="readme-image">
@@ -175,8 +177,16 @@
 	</div>
 
 	<p>
-		In the above example, Saul Goodman hasn't shown his face around the office for a year and has been terminated, so his access has been revoked by the manager. Users with revoked access cannot send/receive faxes by email and cannot log in to use the portal. They will not receive a notification indicating their access has been revoked. When a user's access is revoked, the user is not notified. In situations where a user is for instance transitioning into a new position and being replaced by another user, it is better to edit that user's email address and then have the user reset their password through the "Forgot Password?" link on the login screen than to revoke the account's access.
+		In the above example, Saul Goodman hasn't shown his face around the office for a year and has been terminated, so his access has been revoked by the manager. Users with revoked access cannot send/receive faxes by email and cannot log in to use the portal. They will not receive a notification indicating their access has been revoked. In situations where a user is for instance transitioning into a new position and being replaced by another user, it is better to edit that user's email address and then have the user reset their password through the "Forgot Password?" link on the login screen than to revoke the account's access.
 	</p>
+
+	<p>
+		The edit page for 'holly@cas.org' is shown below. If a user's email address is edited, they will not be notified of the edit via email, be sure the sure is aware their email was changed.
+	</p>
+
+	<div class="readme-image">
+		<%= image_tag("edituser.png", width: 800) %>
+	</div>
 
 	<p>
 		When a user's access is revoked, they're unlinked from fax numbers. This will remove them from the "received" data in fax logs. The manager will still be able to see the faxes that were sent by the revoked user in the past, but not any faxes received by the user in the past.
@@ -221,19 +231,31 @@
 <div id="fax-logs-general" class="col readme-block">
 	<h2>Fax Logs</h2>
 	<p>
-		Fax Logs display different information depending on the user's permission level. All permission levels may filter faxes by status and within a time range. If the "Start Time" field is left empty, it defaults to one week ago. If the "End Time" field is left empty, it defaults to the moment in time the "Filter" button is clicked. Please note that both Start Time and End Time calendars have a time that defaults to noon of the current day, which will need to be adjusted. The total fax results regardless of permission level are limited to a maximum of 1000 results. Results are paginated with 20 results per page, starting at the beginning of the time range. For example, if a user searches for November 1st to December 1st, page 1 will be the November 1st faxes, and the last page will be fax data from December 1st.
+		Fax Logs display different information depending on the user's permission level. All permission levels may filter faxes by status and within a time range. If the "Start Time" field is left empty, it defaults to one week ago. If the "End Time" field is left empty, it defaults to the user's system clock time. Please note that both Start Time and End Time calendars have a time that defaults to noon of the current day, which will need to be adjusted when searching by dates. The total fax results regardless of permission level are limited to a maximum of 1000 results. Results are paginated with 20 results per page, starting at the beginning of the time range. For example, if a user searches for November 1st to December 1st, page 1 will be the November 1st faxes, and the last page will be fax data from December 1st.
 	</p>
+</div>
 
+<div class="underline"></div>
+
+<div id="fax-logs-download-file" class="col readme-block">
+	<h2>Downloading Files</h2>
 	<p>
 		When a user clicks the download button, Phax Machine will attempt to download the fax as a PDF file if the file exists (it was converted properly and the user has not disabled storage). If the file cannot be found, the user will be notified in message at the top of the page.
 	</p>
 
 	<p>
-		When searching Fax Logs as a Manager, the 'Start Time' is automatically limited to when the organization was created. When searching as a user, the Start Time is automatically limited to when the organization was created. For example, if a user registered on March 11th, 2018 and tries to search for faxes from January of 2018, Phax Machine will automatically adjust the Start Time to March 11th, 2018 silently in the background.
+		The Administrator may download all faxes. A manager may download all faxes that were sent or received by users within their organization. A user may only download faxes sent or received to fax numbers they're currently linked to.
 	</p>
 </div>
 
 <div class="underline"></div>
+
+<div id="fax-logs-search" class="col readme-block">
+	<h2>Searching</h2>
+		<p>
+		When searching Fax Logs as a Manager or a generic user, the 'Start Time' is automatically limited to when the organization was created. For example, if a user registered on March 11th, 2018 and tries to search for faxes from January of 2018, Phax Machine will automatically adjust the Start Time to March 11th, 2018 silently in the background. The Administrator may search for faxes from any time range.
+	</p>
+</div>
 
 <div id="fax-logs-limitations" class="col readme-block">	
 	<h2>Fax Log Limitations</h2>
@@ -255,7 +277,7 @@
 <div id="fax-logs-admin" class="col readme-block">	
 	<h2>Fax Logs as an Admin</h2>
 	<p>
-		When the fax log page loads, the first 20 faxes within the past week are loaded (if they exist). The Administrator may search for faxes over any time period, and may search by an individual organization, an individual fax number, or a combination of the two. Clicking "All" in either the Fax Number or Organization dropdown menus will reset both menus to include everything. If the user can be found, Phax Machine will display the user that sent a fax and the organization the fax was sent from or the organization the fax was sent to. Unfortunately on the received end, it is not currently possible to narrow down exactly what user received a fax, as each fax number may have multiple users linked to it, and because the same caller ID number may be assigned to multiple users.
+		When the fax log page loads, the first 20 faxes within the past week are loaded (if they exist). The Administrator may search for faxes over any time period, and may search by an individual organization, an individual fax number, or a combination of the two. Clicking "All" in either the Fax Number or Organization dropdown menus will reset both menus to include everything.  Within each fax log entry, if the user can be found, Phax Machine will display the user that sent a fax and the organization the fax was sent from or the organization the fax was sent to. Unfortunately on the received end, it is not currently possible to narrow down exactly what user received a fax, as each fax number may have multiple users linked to it, and because the same caller ID number may be assigned to multiple users.
 	</p>
 
 	<div class="readme-image">
@@ -271,9 +293,11 @@
 		Managers may only search for faxes within their organization. Managers may search by fax number, user, or a combination of both. Please note that when viewing received faxes in fax logs, if a fax number has multiple users linked to it, it will only show up once in the fax logs, not once for each user linked to the number.
 	</p>
 
-	<p>For example the following users are linked to the fax number with an 847 area code:
-		- harvey.birdman@sebbenandsebben.com
-		- bob.loblaw@greatplainsllc.com
+	<p style="margin-bottom: -10px;">For example, the following users are linked to the fax number with an 847 area code:
+		<ul>
+			<li>harvey.birdman@sebbenandsebben.com</li>
+			<li>bob.loblaw@greatplainsllc.com</li>
+		</ul>
 	</p>
 
 	<p>
@@ -306,10 +330,10 @@
 <div class="underline"></div>
 
 <div id="change-password" class="col readme-block"> 
-	<h2>Change Your Password</h2>
+	<h2>Change or Reset Your Password</h2>
 	<p>
 		Any user may change their password by clicking on the "Profile" link in the navigation bar on the left of the screen. Password resets and forgotten logins are handled via email using Devise. A user is required to enter their current password to change their password. If a user forgets their password, a password reset option via email is available from Phax Machine's login screen.
 	</p>
 </div>
 
-<div class="underline" style="margin-bottom:200px;"></div>
+<div class="underline" style="margin-bottom:300px;"></div>

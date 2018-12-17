@@ -1,5 +1,6 @@
 # go to /users/registrations_controller.rb for create and destroy methods
 class UsersController < ApplicationController
+	include ApplicationHelper
 	include SessionsHelper
 
 	before_action :verify_is_admin, only: [:org_index]
@@ -14,6 +15,7 @@ class UsersController < ApplicationController
 	end
 
 	def index # with_deleted is a Paranoia gem method that includes soft-deleted users
+		check_for_revoked_caller_id_numbers_and_unlinked_users # ApplicationHelper
 		@users = User.includes(:user_permission).with_deleted.where(organization_id: @organization.id).order(:email)
 	end
 
