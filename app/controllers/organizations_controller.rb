@@ -1,5 +1,6 @@
 class OrganizationsController < ApplicationController
 	include SessionsHelper
+	include ApplicationHelper
 
 	before_action :verify_is_admin, except: [:show, :edit_logo, :update_logo]
 	before_action :set_organization, only: [:show, :edit, :update, :destroy, :edit_logo, :update_logo]
@@ -34,8 +35,8 @@ class OrganizationsController < ApplicationController
 	end
 
 	def show
-		@user = User.new
 		if authorized?(@organization, :manager_id)
+			check_for_revoked_caller_id_numbers_and_unlinked_users # ApplicationHelper
 			if @organization.fax_numbers_purchasable
 				@area_codes = FaxNumber.get_area_code_list
 				@states = FaxNumber.create_states_for_numbers(@area_codes)

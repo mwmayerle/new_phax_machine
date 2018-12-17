@@ -22,7 +22,7 @@ class FaxesController < ApplicationController
 				},
 			}
 			sent_fax_response = Fax.create_fax(options)
-			if sent_fax_response.is_a?(Phaxio::Error::PhaxioError)
+			if sent_fax_response.is_a?(Phaxio::Error::PhaxioError) || sent_fax_response.is_a?(String)
 				flash[:alert] = "Error: ".concat(sent_fax_response.to_s)
 			else
 				api_response = Fax.get_fax_information(sent_fax_response.id)
