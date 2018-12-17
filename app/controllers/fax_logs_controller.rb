@@ -70,7 +70,9 @@ class FaxLogsController < ApplicationController
 	   		flash[:alert] = api_response
 	   		redirect_to(fax_logs_path)
 	   	else
-	   		send_file(api_response.path, filename: "Fax-#{params[:fax_id]}.pdf", type: :pdf, disposition: "attachment")
+	   		filepath = api_response.path
+	   		filename = "Fax-#{download_fax_params}.pdf"
+	   		send_file(filepath, filename: filename, type: :pdf, disposition: "attachment")
 	   	end
 		else
 			render :body => nil, :status => :unauthorized
