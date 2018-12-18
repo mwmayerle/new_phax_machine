@@ -23,11 +23,12 @@ class FaxLog < ApplicationRecord
 			p fax_numbers
 			p organizations
 			p users
-			p options
 			p "+++++++++++++++++++++++++++++++++++++++++++++++++"
 			# options[:tag] will contain a specific desired organization or user. Managers will always have an organization
 			if options[:tag].nil? # Admin gets everything unless they specify an organization
 				initial_data = Phaxio::Fax.list({
+					p options
+					p "IN INITIAL DATA"
 					created_before: options[:end_time],
 					created_after: options[:start_time],
 					per_page: options[:per_page],
@@ -47,6 +48,8 @@ class FaxLog < ApplicationRecord
 				# First search for faxes via organization fax tag or user's fax tag and insert these faxes. If I try to include the desired
 				# fax number(s) in this API call as well, it will only return received faxes b/c those will have the tags on them.
 				tag_data = Phaxio::Fax.list(
+					p options
+					p "IN TAG DATA"
 					created_before: options[:end_time],
 					created_after: options[:start_time],
 					tag: options[:tag],
@@ -65,6 +68,8 @@ class FaxLog < ApplicationRecord
 
 				# Then search for faxes using each fax_number associated with the Organization
 				fax_numbers.keys.each do |fax_number|
+					p options
+					p "IN FAX_NUMBER"
 					options[:fax_number] = fax_number
 					current_data = Phaxio::Fax.list(
 						created_before: options[:end_time],
