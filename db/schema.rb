@@ -24,7 +24,9 @@ ActiveRecord::Schema.define(version: 2018_12_18_043113) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "deleted_at"
+    t.datetime "org_switched_at"
     t.index ["deleted_at"], name: "index_fax_numbers_on_deleted_at"
+    t.index ["org_switched_at"], name: "index_fax_numbers_on_org_switched_at"
   end
 
   create_table "logo_links", force: :cascade do |t|

@@ -101,6 +101,7 @@ class FaxLog < ApplicationRecord
 					fax_data.push(filtered_data) if filtered_data != nil
 				end
 			end
+			p fax_numbers
 			fax_data
 		end
 
