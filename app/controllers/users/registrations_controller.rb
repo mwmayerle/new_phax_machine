@@ -17,6 +17,9 @@ class Users::RegistrationsController < Devise::RegistrationsController
   		possible_user = possible_user.pop
   		possible_user.restore(:recursive => true)
 
+  		p possible_user.organization_id
+  		p sign_up_params
+  		
   		if possible_user.organization_id != sign_up_params[:organization_id]
   			# If a user is reinstated in a different organization, their fax_tag is changed so that the logs don't dig up
   			#  previous faxes from when the user was in a different organization.
