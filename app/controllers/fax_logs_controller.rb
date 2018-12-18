@@ -45,19 +45,21 @@ class FaxLogsController < ApplicationController
 
 	def download
 		options = FaxLog.build_options(current_user, filtering_params, @organizations, @users, @fax_numbers)
-		p info = Fax.get_fax_information(download_fax_params)
+		info = Fax.get_fax_information(download_fax_params)
+		p "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+		p info.completed_at.to_datetime
 		if is_admin?
 			can_download = true
 		elsif is_manager?
 			if info.direction == 'received'
-				# fax_nums = current_user.organization.user_fax_numbers.map { |user_fax_num| user_fax_num.fax_number.fax_number }.uniq
-				p "****************************************************************"
-				p valid_user_fax_nums = current_user.organization.user_fax_numbers.to_a.select do |user_fax_num| 
-					user_fax_num.created_at.to_datetime > info.completed_at.to_datetime
-				end
 
-				p fax_nums = valid_user_fax_nums.map { |user_fax_num| user_fax_num.fax_number.fax_number }.uniq
-				p can_download = fax_nums.include?(info.to_number) || fax_nums.include?(info.from_number)
+				valid_fax_nums = current_user.organization.user_fax_numbers.select do |user_fax_num| 
+					user_fax_num.created_at.to_datetime < info.completed_at.to_datetime
+				end
+				p "************************************************************************"
+				p valid_fax_nums
+				fax_nums = valid_fax_nums.map { |user_fax_num| user_fax_num.fax_number.fax_number }.uniq
+				can_download = fax_nums.include?(info.to_number) || fax_nums.include?(info.from_number)
 			else
 				can_download = current_user.organization.fax_tag == info.tags[:sender_organization_fax_tag]
 			end
