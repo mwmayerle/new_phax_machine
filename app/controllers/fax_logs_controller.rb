@@ -46,16 +46,14 @@ class FaxLogsController < ApplicationController
 	def download
 		options = FaxLog.build_options(current_user, filtering_params, @organizations, @users, @fax_numbers)
 		info = Fax.get_fax_information(download_fax_params)
-		p "====================================="
-		p info.completed_at.to_datetime
 		if is_admin?
 			can_download = true
 		elsif is_manager?
 			if info.direction == 'received'
-				p fax_nums = current_user.organization.user_fax_numbers.map { |user_fax_num| user_fax_num.fax_number }.uniq
-				p fax_nums = fax_nums.select { |fax_num| fax_num.org_switched_at.to_datetime < info.completed_at.to_datetime }
-					.map {|fax_number| fax_number.fax_number }
-				p can_download = fax_nums.include?(info.to_number) || fax_nums.include?(info.from_number)
+				fax_nums = current_user.organization.user_fax_numbers.map { |user_fax_num| user_fax_num.fax_number }.uniq
+				fax_nums = fax_nums.select { |fax_num| fax_num.org_switched_at.to_datetime < info.completed_at.to_datetime }
+					.map { |fax_number| fax_number.fax_number }
+				can_download = fax_nums.include?(info.to_number) || fax_nums.include?(info.from_number)
 			else
 				can_download = current_user.organization.fax_tag == info.tags[:sender_organization_fax_tag]
 			end
@@ -63,7 +61,7 @@ class FaxLogsController < ApplicationController
 			if info.direction == 'received'
 				p fax_nums = current_user.user_fax_numbers.map { |user_fax_num| user_fax_num.fax_number }.uniq
 				p fax_nums = fax_nums.select { |fax_num| fax_num.org_switched_at.to_datetime < info.completed_at.to_datetime }
-					.map {|fax_number| fax_number.fax_number }
+					.map { |fax_number| fax_number.fax_number }
 				p can_download = fax_nums.include?(info.to_number) || fax_nums.include?(info.from_number)
 			else
 				can_download = current_user.fax_tag == info.tags[:sender_email_fax_tag]
@@ -82,7 +80,7 @@ class FaxLogsController < ApplicationController
 	   	end
 		else
 			flash[:alert] = "Problem accessing file"
-			render :body => nil, :status => :unauthorized
+			# render :body => nil, :status => :unauthorized
 		end
 	end
 
@@ -132,7 +130,7 @@ class FaxLogsController < ApplicationController
 			if is_admin?
 				# Get every fax number in the database
 				if is_all_or_is_nil?(filtering_params[:fax_number])
-					fax_num_from_db = FaxNumber.with_deleted.includes(:organization).where.not(organization_id: nil)
+					p fax_num_from_db = FaxNumber.with_deleted.includes(:organization).where.not(organization_id: nil)
 				# Get every fax number linked to a specified organization
 				elsif filtering_params[:fax_number] == "all-linked"
 					fax_num_from_db = FaxNumber.with_deleted.includes(:organization)
