@@ -125,24 +125,24 @@ class FaxLogsController < ApplicationController
 			if is_admin?
 				# Get every fax number in the database
 				if is_all_or_is_nil?(filtering_params[:fax_number])
-					fax_num_from_db = FaxNumber.includes(:organization).where.not(organization_id: nil)
+					fax_num_from_db = FaxNumber.with_deleted.includes(:organization).where.not(organization_id: nil)
 				# Get every fax number linked to a specified organization
 				elsif filtering_params[:fax_number] == "all-linked"
-					fax_num_from_db = FaxNumber.includes(:organization)
+					fax_num_from_db = FaxNumber.with_deleted.includes(:organization)
 						.where(organization_id: @organizations[filtering_params[:organization]][:org_id])
 				# Get a specific fax number
 				else
-					fax_num_from_db = FaxNumber.includes(:organization).where(fax_number: filtering_params[:fax_number])
+					fax_num_from_db = FaxNumber.with_deleted.includes(:organization).where(fax_number: filtering_params[:fax_number])
 				end
 				fax_num_from_db.each { |fax_number_obj| FaxLog.create_fax_nums_hash(@fax_numbers, fax_number_obj) }
 
 			elsif is_manager?
 				# Isolate Fax Numbers w/the found organization's ID
 				if is_all_or_is_nil?(filtering_params[:fax_number])
-					fax_num_from_db = FaxNumber.includes(:organization).where({ organization_id: current_user.organization_id })
+					fax_num_from_db = FaxNumber.with_deleted.includes(:organization).where({ organization_id: current_user.organization_id })
 				# Isolate a specific fax number
 				else
-					fax_num_from_db = FaxNumber.includes(:organization).where(fax_number: filtering_params[:fax_number])
+					fax_num_from_db = FaxNumber.with_deleted.includes(:organization).where(fax_number: filtering_params[:fax_number])
 				end
 
 				fax_num_from_db.each { |fax_number_obj| FaxLog.create_fax_nums_hash(@fax_numbers, fax_number_obj) }

@@ -1,4 +1,5 @@
 class FaxNumber < ApplicationRecord
+	acts_as_paranoid
 	include FaxTags
 
 	STATE_AND_PROVINCE_NAME_TO_ABBR = {
