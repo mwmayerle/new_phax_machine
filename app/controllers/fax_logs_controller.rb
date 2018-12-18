@@ -6,6 +6,7 @@ class FaxLogsController < ApplicationController
 	def index
 		options = FaxLog.build_options(current_user, filtering_params, @organizations, @users, @fax_numbers)
 		options[:per_page] = 20
+		options[:fax_number] = 'all'
 
 		if is_admin?
 			initial_fax_data = FaxLog.get_faxes(current_user, options, filtering_params)
@@ -59,10 +60,10 @@ class FaxLogsController < ApplicationController
 			end
 		else #generic user
 			if info.direction == 'received'
-				p fax_nums = current_user.user_fax_numbers.map { |user_fax_num| user_fax_num.fax_number }.uniq
-				p fax_nums = fax_nums.select { |fax_num| fax_num.org_switched_at.to_datetime < info.completed_at.to_datetime }
+				fax_nums = current_user.user_fax_numbers.map { |user_fax_num| user_fax_num.fax_number }.uniq
+				fax_nums = fax_nums.select { |fax_num| fax_num.org_switched_at.to_datetime < info.completed_at.to_datetime }
 					.map { |fax_number| fax_number.fax_number }
-				p can_download = fax_nums.include?(info.to_number) || fax_nums.include?(info.from_number)
+				can_download = fax_nums.include?(info.to_number) || fax_nums.include?(info.from_number)
 			else
 				can_download = current_user.fax_tag == info.tags[:sender_email_fax_tag]
 			end
