@@ -64,10 +64,10 @@ class FaxLog < ApplicationRecord
 				# Then search for faxes using each fax_number associated with the Organization
 				fax_numbers.keys.each do |fax_number|
 					options[:fax_number] = fax_number
-					
+
 					current_data = Phaxio::Fax.list(
 						created_before: options[:end_time],
-						created_after: fax_numbers[fax_number][:org_switched_at].to_datetime.rfc3339,
+						created_after: fax_numbers[fax_number][:org_switched_at].to_datetime.rfc3339 ||= options[:start_time],
 						# created_after: options[:start_time],
 						created_after: options[:created_after],
 						phone_number: options[:fax_number],
