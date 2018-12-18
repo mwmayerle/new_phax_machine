@@ -142,8 +142,8 @@ class FaxLog < ApplicationRecord
 					p new_data.length
 					if fax_object[:to_number] == fax_num_key || fax_object[:from_number] == fax_num_key
 						p fax_object[:completed_at].to_datetime
-						p fax_num_key[:org_switched_at].to_datetime
-						new_data[fax_object].delete if fax_object[:completed_at].to_datetime < fax_num_key[:org_switched_at].to_datetime
+						p fax_numbers[fax_num_key][:org_switched_at].to_datetime
+						new_data[fax_object].delete if fax_object[:completed_at].to_datetime < fax_numbers[fax_num_key][:org_switched_at].to_datetime
 						p new_data.length
 					end
 				end
