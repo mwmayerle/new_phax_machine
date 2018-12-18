@@ -50,7 +50,7 @@ class FaxLogsController < ApplicationController
 			can_download = true
 		elsif is_manager?
 			if info.direction == 'received'
-				p fax_nums = current_user.organization.user_fax_numbers.map { |user_fax_num| user_fax_num.fax_number }
+				p fax_nums = current_user.organization.user_fax_numbers.map { |user_fax_num| user_fax_num.fax_number }.uniq
 				p fax_nums = fax_nums.select { |fax_num| fax_num.org_switched_at.to_datetime < info.completed_at.to_datetime }
 				can_download = fax_nums.include?(info.to_number) || fax_nums.include?(info.from_number)
 			else
@@ -58,7 +58,8 @@ class FaxLogsController < ApplicationController
 			end
 		else #generic user
 			if info.direction == 'received'
-				fax_nums = current_user.user_fax_numbers.map { |user_fax_num| user_fax_num.fax_number.fax_number }.uniq
+				p fax_nums = current_user.user_fax_numbers.map { |user_fax_num| user_fax_num.fax_number }.uniq
+				p fax_nums = fax_nums.select { |fax_num| fax_num.org_switched_at.to_datetime < info.completed_at.to_datetime }
 				can_download = fax_nums.include?(info.to_number) || fax_nums.include?(info.from_number)
 			else
 				can_download = current_user.fax_tag == info.tags[:sender_email_fax_tag]
