@@ -112,7 +112,7 @@ class FaxLogsController < ApplicationController
 			@organizations = {}
 			if is_admin?
 				if is_all_or_is_nil?(filtering_params[:organization])
-					organization_objects = Organization.all.with_deleted
+					organization_objects = Organization.with_deleted
 				else
 					organization_objects = Organization.with_deleted.where(fax_tag: filtering_params[:organization])
 				end
