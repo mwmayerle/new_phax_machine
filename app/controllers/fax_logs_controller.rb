@@ -45,16 +45,14 @@ class FaxLogsController < ApplicationController
 
 	def download
 		options = FaxLog.build_options(current_user, filtering_params, @organizations, @users, @fax_numbers)
-		p "====================================================================="
 		p info = Fax.get_fax_information(download_fax_params)
 		if is_admin?
 			can_download = true
 		elsif is_manager?
 			if info.direction == 'received'
 				# fax_nums = current_user.organization.user_fax_numbers.map { |user_fax_num| user_fax_num.fax_number.fax_number }.uniq
-				p current_user.organization.user_fax_numbers
 				p "****************************************************************"
-				p valid_user_fax_nums = current_user.organization.user_fax_numbers.to_a.select do |user_fax_num| 
+				p current_user.organization.user_fax_numbers.to_a.each do |user_fax_num| 
 					p user_fax_num.created_at.to_time
 					p info.completed_at.to_time
 					user_fax_num.created_at.to_time < info.completed_at.to_time
