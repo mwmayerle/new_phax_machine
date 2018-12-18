@@ -52,9 +52,11 @@ class FaxLogsController < ApplicationController
 		elsif is_manager?
 			if info.direction == 'received'
 				# fax_nums = current_user.organization.user_fax_numbers.map { |user_fax_num| user_fax_num.fax_number.fax_number }.uniq
+				p current_user.organization.user_fax_numbers
 				p valid_user_fax_nums = current_user.organization.user_fax_numbers.select do |user_fax_num| 
 					user_fax_num.created_at.to_time > info.completed_at.to_time
 				end
+
 				p fax_nums = valid_user_fax_nums.map { |user_fax_num| user_fax_num.fax_number.fax_number }.uniq
 				can_download = fax_nums.include?(info.to_number) || fax_nums.include?(info.from_number)
 			else
