@@ -66,7 +66,7 @@ class FaxLog < ApplicationRecord
 						created_before: options[:end_time],
 						# created_after: fax_numbers[fax_number][:org_switched_at].to_datetime.rfc3339,
 						# created_after: options[:start_time],
-						created_after: options[:created_after]
+						created_after: options[:created_after],
 						phone_number: options[:fax_number],
 						per_page: options[:per_page],
 						status: options[:status]
