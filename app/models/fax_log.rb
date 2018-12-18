@@ -15,6 +15,7 @@ class FaxLog < ApplicationRecord
 
 			options[:start_time] = add_start_time(current_user, filtered_params, organizations, users)
 			options[:end_time] = add_end_time(filtered_params[:end_time])
+			p options
 			options
 		end
 
@@ -172,7 +173,6 @@ class FaxLog < ApplicationRecord
 				}
 
 				if fax_object[:direction] == 'received'
-					
 					# if fax_numbers[fax_object[:to_number]] && fax_object_is_younger?(fax_object[:created_at], fax_numbers[fax_object[:to_number]][:org_created_at])
 					if fax_numbers[fax_object[:to_number]] && fax_object_is_younger?(fax_object[:created_at], fax_numbers[fax_object[:to_number]][:org_switched_at])
 						# NOTE 'label' on the line below is the organization the fax number is associated with. See 'created_fax_nums_hash' method
@@ -187,7 +187,7 @@ class FaxLog < ApplicationRecord
 					fax_data[fax_object[:id]][:to_number] = FaxNumber.format_pretty_fax_number(fax_object[:to_number])
 					fax_data[fax_object[:id]][:from_number] = FaxNumber.format_pretty_fax_number(fax_object[:from_number])
 
-				else # fax_object.direction == "sent"
+				else # fax_object[:direction] == "sent"
 
 					if is_admin?(current_user)
 						# Checks if fax_object has a fax tag that matches an existing organization's fax tag
