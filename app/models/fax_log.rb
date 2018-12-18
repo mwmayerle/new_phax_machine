@@ -76,7 +76,6 @@ class FaxLog < ApplicationRecord
 							filtered_data = filter_faxes_by_fax_number(options, current_data.raw_data, fax_numbers)
 							if options[:tag][:sender_organization_fax_tag] && filtered_data != nil
 								filtered_data = filter_faxes_by_org_date(options, filtered_data, organizations[options[:tag][:sender_organization_fax_tag]])
-
 								# This prevents sent faxes from other organizations from appearing when they shouldn't
 								filtered_data = filtered_data.select { |fax_object| fax_numbers.keys.include?(fax_object[:to_number]) }
 							end
@@ -101,7 +100,6 @@ class FaxLog < ApplicationRecord
 					fax_data.push(filtered_data) if filtered_data != nil
 				end
 			end
-			p fax_numbers
 			fax_data
 		end
 
@@ -137,6 +135,7 @@ class FaxLog < ApplicationRecord
 			end
 
 			new_data = from_number_data + to_number_data + caller_id_data + recipients_data
+			p new_data
 			new_data = new_data.uniq
 		end
 
