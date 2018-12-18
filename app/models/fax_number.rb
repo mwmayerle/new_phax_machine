@@ -96,7 +96,11 @@ class FaxNumber < ApplicationRecord
 					db_number = all_current_db_fax_numbers.find { |db_number| db_number.fax_number == api_fax_number[:phone_number] }
 
 					if db_number.nil?
-						db_number = FaxNumber.create!(fax_number: api_fax_number[:phone_number], has_webhook_url: !!api_fax_number[:callback_url])
+						db_number = FaxNumber.create!(
+							fax_number: api_fax_number[:phone_number],
+							has_webhook_url: !!api_fax_number[:callback_url],
+							org_switched_at: Time.now
+							)
 					else
 						if db_number.has_webhook_url != !!api_fax_number[:callback_url]
 							db_number.update_attributes(has_webhook_url: !!api_fax_number[:callback_url])

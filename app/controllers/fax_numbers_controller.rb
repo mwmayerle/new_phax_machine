@@ -24,7 +24,7 @@ class FaxNumbersController < ApplicationController
 	def create
 		api_response = FaxNumber.provision(provision_number_params[:area_code])
 		if api_response.phone_number
-			FaxNumber.create!(fax_number: api_response.phone_number, has_webhook_url: false)
+			FaxNumber.create!(fax_number: api_response.phone_number, has_webhook_url: false, org_switched_at: Time.now)
 			flash[:notice] = "Fax number provisioned successfully. Your new number is #{FaxNumber.format_pretty_fax_number(api_response.phone_number)}."
 
 			# Adds fax number to the organization immediately 
@@ -54,7 +54,7 @@ class FaxNumbersController < ApplicationController
 		if @fax_number.update_attributes(param_filter_type)
 			# this if block spoofs the "user[:to_remove]" portion of params by creating and passing in a similar hash
 			if original_organization && original_organization != @fax_number.organization
-				@fax_number.update_attributes(manager_label: nil)
+				@fax_number.update_attributes(manager_label: nil, org_switched_at: Time.now)
 				original_organization_user_ids = {}
 				original_organization.users.each { |user| original_organization_user_ids[user.id] = 'on' }
 				remove_user_associations(original_organization_user_ids, @fax_number)
