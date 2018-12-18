@@ -23,10 +23,11 @@ class FaxLog < ApplicationRecord
 			p fax_numbers
 			p organizations
 			p users
+			p options
+			p "+++++++++++++++++++++++++++++++++++++++++++++++++"
 			# options[:tag] will contain a specific desired organization or user. Managers will always have an organization
 			if options[:tag].nil? # Admin gets everything unless they specify an organization
 				p "IN OPTIONS[:TAG].NIL?"
-				p options
 				initial_data = Phaxio::Fax.list({
 					created_before: options[:end_time],
 					created_after: options[:start_time],
@@ -67,10 +68,11 @@ class FaxLog < ApplicationRecord
 				# Then search for faxes using each fax_number associated with the Organization
 				fax_numbers.keys.each do |fax_number|
 					options[:fax_number] = fax_number
-
+					p "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+					p fax_numbers[fax_number][:org_switched_at].to_time
 					current_data = Phaxio::Fax.list(
 						created_before: options[:end_time],
-						created_after: fax_numbers[fax_number][:org_switched_at].to_datetime.rfc3339 ||= options[:start_time],
+						created_after: fax_numbers[fax_number][:org_switched_at].to_time,
 						# created_after: options[:start_time],
 						created_after: options[:created_after],
 						phone_number: options[:fax_number],
