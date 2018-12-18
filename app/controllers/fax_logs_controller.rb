@@ -4,17 +4,20 @@ class FaxLogsController < ApplicationController
 
 	# this method is for the initial page load 
 	def index
+
+		initial_filtering_params = filtering_params
+		initial_filtering_params[:fax_number] = 'all'
 		options = FaxLog.build_options(current_user, filtering_params, @organizations, @users, @fax_numbers)
 		options[:per_page] = 20
 
 		if is_admin?
-			initial_fax_data = FaxLog.get_faxes(current_user, options, filtering_params)
+			initial_fax_data = FaxLog.get_faxes(current_user, options, initial_filtering_params)
 			FaxLog.add_all_attribute_to_hashes( [@fax_numbers, @organizations] )
 			all_faxes = FaxLog.sort_faxes(initial_fax_data) if initial_fax_data != []
 			@sorted_faxes = FaxLog.format_faxes(current_user, all_faxes.take(20), @organizations, @fax_numbers, @users)
 		else
 			options[:tag] = is_manager? ? { sender_organization_fax_tag: @organizations.keys[0] } : { sender_email_fax_tag: current_user.fax_tag }
-			initial_fax_data = FaxLog.get_faxes(current_user, options, filtering_params, @users, @fax_numbers, @organizations)
+			initial_fax_data = FaxLog.get_faxes(current_user, options, initial_filtering_params, @users, @fax_numbers, @organizations)
 			FaxLog.add_all_attribute_to_hashes( [@users, @fax_numbers] )
 			all_faxes = FaxLog.sort_faxes(initial_fax_data)
 			@sorted_faxes = FaxLog.format_faxes(current_user, all_faxes.take(20), @fax_numbers, @organizations, @users)
@@ -50,14 +53,18 @@ class FaxLogsController < ApplicationController
 			can_download = true
 		elsif is_manager?
 			if info.direction == 'received'
-				fax_nums = current_user.organization.user_fax_numbers.map { |user_fax_num| user_fax_num.fax_number.fax_number }.uniq
+				fax_nums = current_user.organization.user_fax_numbers.map { |user_fax_num| user_fax_num.fax_number }.uniq
+				fax_nums = fax_nums.select { |fax_num| fax_num.org_switched_at.to_datetime < info.completed_at.to_datetime }
+					.map { |fax_number| fax_number.fax_number }
 				can_download = fax_nums.include?(info.to_number) || fax_nums.include?(info.from_number)
 			else
 				can_download = current_user.organization.fax_tag == info.tags[:sender_organization_fax_tag]
 			end
 		else #generic user
 			if info.direction == 'received'
-				fax_nums = current_user.user_fax_numbers.map { |user_fax_num| user_fax_num.fax_number.fax_number }.uniq
+				fax_nums = current_user.user_fax_numbers.map { |user_fax_num| user_fax_num.fax_number }.uniq
+				fax_nums = fax_nums.select { |fax_num| fax_num.org_switched_at.to_datetime < info.completed_at.to_datetime }
+					.map { |fax_number| fax_number.fax_number }
 				can_download = fax_nums.include?(info.to_number) || fax_nums.include?(info.from_number)
 			else
 				can_download = current_user.fax_tag == info.tags[:sender_email_fax_tag]
@@ -75,7 +82,8 @@ class FaxLogsController < ApplicationController
 	   		send_file(filepath, filename: filename, type: :pdf, disposition: "attachment")
 	   	end
 		else
-			render :body => nil, :status => :unauthorized
+			flash[:alert] = "Problem accessing file"
+			# render :body => nil, :status => :unauthorized
 		end
 	end
 
@@ -92,7 +100,7 @@ class FaxLogsController < ApplicationController
 			if params[:fax_log]
 				params.require(:fax_log).permit(:start_time, :end_time, :fax_number, :organization, :user, :status)
 			else
-				params = { :fax_log => {} } # creates an empty hash when none are supplied on first request
+				params = { :fax_log => {} } # for the first request on page load
 			end
 		end
 
@@ -125,24 +133,24 @@ class FaxLogsController < ApplicationController
 			if is_admin?
 				# Get every fax number in the database
 				if is_all_or_is_nil?(filtering_params[:fax_number])
-					fax_num_from_db = FaxNumber.includes(:organization).where.not(organization_id: nil)
+					fax_num_from_db = FaxNumber.with_deleted.includes(:organization).where.not(organization_id: nil)
 				# Get every fax number linked to a specified organization
 				elsif filtering_params[:fax_number] == "all-linked"
-					fax_num_from_db = FaxNumber.includes(:organization)
+					fax_num_from_db = FaxNumber.with_deleted.includes(:organization)
 						.where(organization_id: @organizations[filtering_params[:organization]][:org_id])
 				# Get a specific fax number
 				else
-					fax_num_from_db = FaxNumber.includes(:organization).where(fax_number: filtering_params[:fax_number])
+					fax_num_from_db = FaxNumber.with_deleted.includes(:organization).where(fax_number: filtering_params[:fax_number])
 				end
 				fax_num_from_db.each { |fax_number_obj| FaxLog.create_fax_nums_hash(@fax_numbers, fax_number_obj) }
 
 			elsif is_manager?
 				# Isolate Fax Numbers w/the found organization's ID
 				if is_all_or_is_nil?(filtering_params[:fax_number])
-					fax_num_from_db = FaxNumber.includes(:organization).where({ organization_id: current_user.organization_id })
+					fax_num_from_db = FaxNumber.with_deleted.includes(:organization).where({ organization_id: current_user.organization_id })
 				# Isolate a specific fax number
 				else
-					fax_num_from_db = FaxNumber.includes(:organization).where(fax_number: filtering_params[:fax_number])
+					fax_num_from_db = FaxNumber.with_deleted.includes(:organization).where(fax_number: filtering_params[:fax_number])
 				end
 
 				fax_num_from_db.each { |fax_number_obj| FaxLog.create_fax_nums_hash(@fax_numbers, fax_number_obj) }

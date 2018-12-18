@@ -61,8 +61,9 @@ class FaxLog < ApplicationRecord
 				fax_numbers.keys.each do |fax_number|
 					options[:fax_number] = fax_number
 					current_data = Phaxio::Fax.list(
+						created_after: fax_numbers[fax_number][:org_switched_at],
 						created_before: options[:end_time],
-						created_after: options[:start_time],
+						# created_after: options[:start_time],
 						phone_number: options[:fax_number],
 						per_page: options[:per_page],
 						status: options[:status]
@@ -75,7 +76,9 @@ class FaxLog < ApplicationRecord
 						else
 							filtered_data = filter_faxes_by_fax_number(options, current_data.raw_data, fax_numbers)
 							if options[:tag][:sender_organization_fax_tag] && filtered_data != nil
-								filtered_data = filter_faxes_by_org(options, filtered_data, organizations[options[:tag][:sender_organization_fax_tag]])
+								filtered_data = filter_faxes_by_org_date(options, filtered_data, organizations[options[:tag][:sender_organization_fax_tag]])
+								# This prevents sent faxes from other organizations from appearing when they shouldn't
+								filtered_data = filtered_data.select { |fax_object| fax_numbers.keys.include?(fax_object[:to_number]) }
 							end
 						end
 
@@ -134,9 +137,16 @@ class FaxLog < ApplicationRecord
 
 			new_data = from_number_data + to_number_data + caller_id_data + recipients_data
 			new_data = new_data.uniq
+
+			# results = []
+			# fax_numbers.each do |fn_key, fn_value|
+
+			# end
+
+			new_data
 		end
 
-		def filter_faxes_by_org(options, filtered_data, organizations)
+		def filter_faxes_by_org_date(options, filtered_data, organizations)
 			filtered_data.select { |fax_object| fax_object_is_younger?(fax_object[:created_at], organizations[:org_created_at]) }
 		end
 
@@ -298,7 +308,6 @@ class FaxLog < ApplicationRecord
 					all_faxes.push(fax_object)
 				end
 			end
-
 			all_faxes.sort_by { |fax| fax[:created_at] }.reverse!
 		end
 
@@ -326,6 +335,7 @@ class FaxLog < ApplicationRecord
 				:label => fax_number_object.organization.label,
 				:org_created_at => fax_number_object.organization.created_at,
 				:org_id => fax_number_object.organization.id,
+				:org_switched_at => fax_number_object.org_switched_at
 			}
 		end
 
