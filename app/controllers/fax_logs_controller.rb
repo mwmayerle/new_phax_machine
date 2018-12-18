@@ -6,7 +6,6 @@ class FaxLogsController < ApplicationController
 	def index
 		options = FaxLog.build_options(current_user, filtering_params, @organizations, @users, @fax_numbers)
 		options[:per_page] = 20
-		options[:fax_number] = 'all'
 
 		if is_admin?
 			initial_fax_data = FaxLog.get_faxes(current_user, options, filtering_params)
@@ -98,7 +97,7 @@ class FaxLogsController < ApplicationController
 			if params[:fax_log]
 				params.require(:fax_log).permit(:start_time, :end_time, :fax_number, :organization, :user, :status)
 			else
-				params = { :fax_log => {} } # creates an empty hash when none are supplied on first request
+				params = { :fax_log => {:fax_number => 'all'} } # for the first request on page load
 			end
 		end
 
@@ -131,7 +130,7 @@ class FaxLogsController < ApplicationController
 			if is_admin?
 				# Get every fax number in the database
 				if is_all_or_is_nil?(filtering_params[:fax_number])
-					p fax_num_from_db = FaxNumber.with_deleted.includes(:organization).where.not(organization_id: nil)
+					fax_num_from_db = FaxNumber.with_deleted.includes(:organization).where.not(organization_id: nil)
 				# Get every fax number linked to a specified organization
 				elsif filtering_params[:fax_number] == "all-linked"
 					fax_num_from_db = FaxNumber.with_deleted.includes(:organization)
