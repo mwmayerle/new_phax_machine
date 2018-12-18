@@ -16,11 +16,11 @@ class Users::RegistrationsController < Devise::RegistrationsController
   	if possible_user != [] # <-- Found a soft-deleted user
   		possible_user = possible_user.pop
   		possible_user.restore(:recursive => true)
-  		p "==================================================================================="
+  		p "========================================"
   		p possible_user.organization_id
-  		p sign_up_params
+  		p sign_up_params[:organization_id].to_i
 
-  		if possible_user.organization_id != sign_up_params[:organization_id]
+  		if possible_user.organization_id != sign_up_params[:organization_id].to_i
   			# If a user is reinstated in a different organization, their fax_tag is changed so that the logs don't dig up
   			#  previous faxes from when the user was in a different organization.
   			possible_user.update_attributes(organization_id: sign_up_params[:organization_id], fax_tag: possible_user.generate_fax_tag)
