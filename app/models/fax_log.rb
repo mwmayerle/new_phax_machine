@@ -27,7 +27,6 @@ class FaxLog < ApplicationRecord
 			p "+++++++++++++++++++++++++++++++++++++++++++++++++"
 			# options[:tag] will contain a specific desired organization or user. Managers will always have an organization
 			if options[:tag].nil? # Admin gets everything unless they specify an organization
-				p "IN OPTIONS[:TAG].NIL?"
 				initial_data = Phaxio::Fax.list({
 					created_before: options[:end_time],
 					created_after: options[:start_time],
@@ -47,7 +46,6 @@ class FaxLog < ApplicationRecord
 
 				# First search for faxes via organization fax tag or user's fax tag and insert these faxes. If I try to include the desired
 				# fax number(s) in this API call as well, it will only return received faxes b/c those will have the tags on them.
-				p "TAG_DATA"
 				tag_data = Phaxio::Fax.list(
 					created_before: options[:end_time],
 					created_after: options[:start_time],
@@ -68,8 +66,6 @@ class FaxLog < ApplicationRecord
 				# Then search for faxes using each fax_number associated with the Organization
 				fax_numbers.keys.each do |fax_number|
 					options[:fax_number] = fax_number
-					p "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-					p fax_numbers[fax_number][:org_switched_at].to_time
 					current_data = Phaxio::Fax.list(
 						created_before: options[:end_time],
 						created_after: fax_numbers[fax_number][:org_switched_at].to_time,
@@ -79,8 +75,7 @@ class FaxLog < ApplicationRecord
 						per_page: options[:per_page],
 						status: options[:status]
 					)
-					p "CURRENT DATA #{fax_numbers[fax_number]}"
-					p current_data.raw_data
+
 					if current_data.total > 0 # <-- no result catch
 						# Filter by fax number if a specific fax number exists and it isn't "all" or "all-linked"
 						if options[:fax_number].nil?
@@ -263,7 +258,7 @@ class FaxLog < ApplicationRecord
 			if is_user?(current_user)
 				filtered_params[:start_time] = current_user.created_at if timestamp_is_older?(filtered_params[:start_time], current_user.created_at)
 			end
-
+			p filtered_params[:start_time].rfc3339
 			filtered_params[:start_time].rfc3339
 		end
 
@@ -273,7 +268,7 @@ class FaxLog < ApplicationRecord
 		end
 
 		def add_end_time(input_time)
-			input_time.to_s == "" ? Time.now.to_datetime.rfc3339 : input_time.to_time.to_datetime.rfc3339
+			input_time.to_s == "" ? Time.now.to_datetime.rfc3339 : input_time.to_datetime.rfc3339
 		end
 		
 		def set_status_in_options(filtered_params, options)
