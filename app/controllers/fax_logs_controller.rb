@@ -125,7 +125,6 @@ class FaxLogsController < ApplicationController
 				organization_objects << Organization.find(current_user.organization_id)
 			end
 			organization_objects.each { |organization_obj| FaxLog.create_orgs_hash(@organizations, organization_obj) }
-			p @organizations
 		end
 
 		# Get a hash of Fax Number object data based on permissions and filtering requests
