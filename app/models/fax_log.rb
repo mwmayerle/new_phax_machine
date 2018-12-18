@@ -77,11 +77,9 @@ class FaxLog < ApplicationRecord
 							filtered_data = filter_faxes_by_fax_number(options, current_data.raw_data, fax_numbers)
 							if options[:tag][:sender_organization_fax_tag] && filtered_data != nil
 								filtered_data = filter_faxes_by_org_date(options, filtered_data, organizations[options[:tag][:sender_organization_fax_tag]])
+
 								# This prevents sent faxes from other organizations from appearing when they shouldn't
-								p "===================================================================================================="
-								p fax_numbers.keys
 								filtered_data = filtered_data.select { |fax_object| fax_numbers.keys.include?(fax_object[:to_number]) }
-								p filtered_data
 							end
 						end
 
@@ -175,10 +173,12 @@ class FaxLog < ApplicationRecord
 
 				if fax_object[:direction] == 'received'
 					
-					if fax_numbers[fax_object[:to_number]] && fax_object_is_younger?(fax_object[:created_at], fax_numbers[fax_object[:to_number]][:org_created_at])
-				# NOTE 'label' on the line below is the organization the fax number is associated with. See 'created_fax_nums_hash' method
+					# if fax_numbers[fax_object[:to_number]] && fax_object_is_younger?(fax_object[:created_at], fax_numbers[fax_object[:to_number]][:org_created_at])
+					if fax_numbers[fax_object[:to_number]] && fax_object_is_younger?(fax_object[:created_at], fax_numbers[fax_object[:to_number]][:org_switched_at])
+						# NOTE 'label' on the line below is the organization the fax number is associated with. See 'created_fax_nums_hash' method
 						fax_data[fax_object[:id]][:organization] = fax_numbers[fax_object[:to_number]][:label]
-					elsif fax_numbers[fax_object[:from_number]] && fax_object_is_younger?(fax_object[:created_at], fax_numbers[fax_object[:from_number]][:org_created_at])
+					# elsif fax_numbers[fax_object[:from_number]] && fax_object_is_younger?(fax_object[:created_at], fax_numbers[fax_object[:from_number]][:org_created_at])
+					elsif fax_numbers[fax_object[:from_number]] && fax_object_is_younger?(fax_object[:created_at], fax_numbers[fax_object[:from_number]][:org_switched_at])
 						fax_data[fax_object[:id]][:organization] = fax_numbers[fax_object[:from_number]][:label]
 					else
 						fax_data[fax_object[:id]][:organization] = ""
