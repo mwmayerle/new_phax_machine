@@ -21,7 +21,7 @@ class FaxLog < ApplicationRecord
 
 		def get_faxes(current_user, options, filtered_params, users = nil, fax_numbers = nil, organizations = nil, fax_data = [])
 			# options[:tag] will contain a specific desired organization or user. Managers will always have an organization
-			if options[:tag].nil? # Admin gets everything unless they specify and organization
+			if options[:tag].nil? # Admin gets everything unless they specify an organization
 				initial_data = Phaxio::Fax.list({
 					created_before: options[:end_time],
 					created_after: options[:start_time],
@@ -29,7 +29,8 @@ class FaxLog < ApplicationRecord
 					status: options[:status]
 				})
 				fax_data.push(initial_data.raw_data)
-
+				p "INITIAL DATA"
+				p initial_data
 			else
 				begin
 					# There will be an unknown amount of fax objects returned per number, so this will get
@@ -48,7 +49,8 @@ class FaxLog < ApplicationRecord
 					per_page: options[:per_page],
 					status: options[:status]
 				)
-
+				p "TAG DATA"
+				p tag_data
 				if options[:tag].has_key?(:sender_organization_fax_tag) && !!/all/.match(filtered_params[:fax_number])
 					new_data = tag_data.raw_data
 				elsif options[:tag].has_key?(:sender_email_fax_tag) && !!/all/.match(filtered_params[:fax_number])
@@ -60,8 +62,6 @@ class FaxLog < ApplicationRecord
 
 				# Then search for faxes using each fax_number associated with the Organization
 				fax_numbers.keys.each do |fax_number|
-					p options[:end_time]
-					p fax_numbers[fax_number][:org_switched_at].to_datetime.rfc3339
 					options[:fax_number] = fax_number
 					current_data = Phaxio::Fax.list(
 						created_before: options[:end_time],
@@ -71,7 +71,8 @@ class FaxLog < ApplicationRecord
 						per_page: options[:per_page],
 						status: options[:status]
 					)
-
+					p "CURRENT DATA #{fax_numbers[fax_number]}"
+					p current_data
 					if current_data.total > 0 # <-- no result catch
 						# Filter by fax number if a specific fax number exists and it isn't "all" or "all-linked"
 						if options[:fax_number].nil?
