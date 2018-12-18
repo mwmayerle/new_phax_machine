@@ -55,7 +55,7 @@ class FaxLogsController < ApplicationController
 				current_user.organization.user_fax_numbers.to_a.each do |user_fax_num| 
 					p user_fax_num.created_at.to_time
 					p info.completed_at.to_time
-					user_fax_num.created_at.to_time < info.completed_at.to_time
+					p user_fax_num.created_at.to_time > info.completed_at.to_time
 				end
 				p "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 				p fax_nums = valid_user_fax_nums.map { |user_fax_num| user_fax_num.fax_number.fax_number }.uniq
