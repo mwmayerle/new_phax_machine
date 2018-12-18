@@ -8,13 +8,13 @@
 						<div class="row">
 						  <div class="form-group col">
 						    <strong><%= f.label :email, "Email:"%></strong>
-						    <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control" %>
+						    <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control" required: true %>
 						  </div>
 						</div>
 						<div class="row">
 						  <div class="form-group col">
 						    <strong><%= f.label :password, "Password:" %></strong>
-						    <%= f.password_field :password, autocomplete: "off", class: "form-control" %>
+						    <%= f.password_field :password, autocomplete: "off", class: "form-control", required: true% >
 						  </div>
 						</div>
 						  <% if devise_mapping.rememberable? -%>
