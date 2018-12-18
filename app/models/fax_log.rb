@@ -15,7 +15,6 @@ class FaxLog < ApplicationRecord
 
 			options[:start_time] = add_start_time(current_user, filtered_params, organizations, users)
 			options[:end_time] = add_end_time(filtered_params[:end_time])
-			p options
 			options
 		end
 

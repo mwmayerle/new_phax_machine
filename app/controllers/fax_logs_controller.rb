@@ -4,12 +4,12 @@ class FaxLogsController < ApplicationController
 
 	# this method is for the initial page load 
 	def index
-		p params
-		p initial_filtering_params = filtering_params
+
+		initial_filtering_params = filtering_params
 		initial_filtering_params[:fax_number] = 'all'
 		options = FaxLog.build_options(current_user, filtering_params, @organizations, @users, @fax_numbers)
 		options[:per_page] = 20
-		p options
+
 		if is_admin?
 			initial_fax_data = FaxLog.get_faxes(current_user, options, initial_filtering_params)
 			FaxLog.add_all_attribute_to_hashes( [@fax_numbers, @organizations] )
