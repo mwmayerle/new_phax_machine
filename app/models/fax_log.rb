@@ -15,12 +15,15 @@ class FaxLog < ApplicationRecord
 
 			options[:start_time] = add_start_time(current_user, filtered_params, organizations, users)
 			options[:end_time] = add_end_time(filtered_params[:end_time])
+			p "================================================"
+			p options
 			options
 		end
 
 		def get_faxes(current_user, options, filtered_params, users = nil, fax_numbers = nil, organizations = nil, fax_data = [])
 			# options[:tag] will contain a specific desired organization or user. Managers will always have an organization
 			if options[:tag].nil? # Admin gets everything unless they specify an organization
+				p "IN OPTIONS[:TAG].NIL?"
 				initial_data = Phaxio::Fax.list({
 					created_before: options[:end_time],
 					created_after: options[:start_time],
@@ -40,6 +43,7 @@ class FaxLog < ApplicationRecord
 
 				# First search for faxes via organization fax tag or user's fax tag and insert these faxes. If I try to include the desired
 				# fax number(s) in this API call as well, it will only return received faxes b/c those will have the tags on them.
+				p "TAG_DATA"
 				tag_data = Phaxio::Fax.list(
 					created_before: options[:end_time],
 					created_after: options[:start_time],
@@ -59,12 +63,11 @@ class FaxLog < ApplicationRecord
 
 				# Then search for faxes using each fax_number associated with the Organization
 				fax_numbers.keys.each do |fax_number|
-					options[:created_after] = !is_admin? ? fax_numbers[fax_number][:org_switched_at].to_datetime.rfc3339 : options[:start_time]
-
 					options[:fax_number] = fax_number
+					
 					current_data = Phaxio::Fax.list(
 						created_before: options[:end_time],
-						# created_after: fax_numbers[fax_number][:org_switched_at].to_datetime.rfc3339,
+						created_after: fax_numbers[fax_number][:org_switched_at].to_datetime.rfc3339,
 						# created_after: options[:start_time],
 						created_after: options[:created_after],
 						phone_number: options[:fax_number],
