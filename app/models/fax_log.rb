@@ -61,9 +61,9 @@ class FaxLog < ApplicationRecord
 				fax_numbers.keys.each do |fax_number|
 					options[:fax_number] = fax_number
 					current_data = Phaxio::Fax.list(
+						# created_after: options[:start_time],
 						created_after: fax_numbers[fax_number][:org_switched_at],
 						created_before: options[:end_time],
-						# created_after: options[:start_time],
 						phone_number: options[:fax_number],
 						per_page: options[:per_page],
 						status: options[:status]
@@ -81,6 +81,7 @@ class FaxLog < ApplicationRecord
 								p "===================================================================================================="
 								p fax_numbers.keys
 								filtered_data = filtered_data.select { |fax_object| fax_numbers.keys.include?(fax_object[:to_number]) }
+								p filtered_data
 							end
 						end
 
