@@ -136,16 +136,16 @@ class FaxLog < ApplicationRecord
 
 			new_data = from_number_data + to_number_data + caller_id_data + recipients_data
 			new_data = new_data.uniq
-			new_data = new_data.each do |fax_object| 
-				fax_numbers.each do |fax_num_key, fax_num_value|
+			fax_numbers.each do |fax_num_key, fax_num_value|
+				new_data = new_data.each do |fax_object| 
 					p "------------------------------------------"
 					p fax_num_key
 					p new_data.length
-					if fax_object[:to_number] == fax_num_key || fax_object[:from_number] == fax_num_key
+					if fax_object[:to_number] == fax_num_key && fax_object[:direction] == 'received' || fax_object[:from_number] == fax_num_key && fax_object[:direction] == 'received'
 						p fax_object[:completed_at].to_datetime
 						p fax_numbers[fax_num_key][:org_switched_at].to_datetime
-						delete_index = new_data.index(fax_object)
 						if fax_object[:completed_at].to_datetime < fax_numbers[fax_num_key][:org_switched_at].to_datetime
+						delete_index = new_data.index(fax_object)
 							p fax_object
 							new_data.delete_at(delete_index)
 						end
