@@ -32,6 +32,15 @@ class FaxLog < ApplicationRecord
 				p "INITIAL DATA"
 				p initial_data.raw_data
 			else
+				############################################
+				initial_data = Phaxio::Fax.list({
+					created_before: options[:end_time],
+					created_after: options[:start_time],
+					per_page: options[:per_page],
+					status: options[:status]
+				})
+				fax_data.push(initial_data.raw_data)
+				#############################################
 				begin
 					# There will be an unknown amount of fax objects returned per number, so this will get
 					#  around 20 results on this initial page load. Afterwards it'll be limited to 1000
