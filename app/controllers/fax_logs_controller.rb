@@ -53,7 +53,7 @@ class FaxLogsController < ApplicationController
 			if info.direction == 'received'
 				# fax_nums = current_user.organization.user_fax_numbers.map { |user_fax_num| user_fax_num.fax_number.fax_number }.uniq
 				p current_user.organization.user_fax_numbers
-				p valid_user_fax_nums = current_user.organization.user_fax_numbers.select do |user_fax_num| 
+				p valid_user_fax_nums = current_user.organization.user_fax_numbers.to_a.select do |user_fax_num| 
 					user_fax_num.created_at.to_time > info.completed_at.to_time
 				end
 
