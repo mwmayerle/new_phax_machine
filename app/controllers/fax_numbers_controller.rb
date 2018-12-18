@@ -54,7 +54,7 @@ class FaxNumbersController < ApplicationController
 		if @fax_number.update_attributes(param_filter_type)
 			# this if block spoofs the "user[:to_remove]" portion of params by creating and passing in a similar hash
 			if original_organization && original_organization != @fax_number.organization
-				User.where(caller_id_number: @fax_number.fax_number).update_attributes(caller_id_number: nil)
+				User.where(caller_id_number: @fax_number.fax_number).all.each { |user| user.update_attributes(caller_id_number: nil) }
 				@fax_number.update_attributes(manager_label: nil, org_switched_at: Time.now)
 				original_organization_user_ids = {}
 				original_organization.users.each { |user| original_organization_user_ids[user.id] = 'on' }
