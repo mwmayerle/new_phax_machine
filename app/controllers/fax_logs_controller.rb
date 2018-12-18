@@ -4,6 +4,7 @@ class FaxLogsController < ApplicationController
 
 	# this method is for the initial page load 
 	def index
+		p params
 		options = FaxLog.build_options(current_user, filtering_params, @organizations, @users, @fax_numbers)
 		options[:per_page] = 20
 		p options
