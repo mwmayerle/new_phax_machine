@@ -15,7 +15,6 @@ class FaxLog < ApplicationRecord
 
 			options[:start_time] = add_start_time(current_user, filtered_params, organizations, users)
 			options[:end_time] = add_end_time(filtered_params[:end_time])
-			p options
 			options
 		end
 
@@ -29,18 +28,8 @@ class FaxLog < ApplicationRecord
 					status: options[:status]
 				})
 				fax_data.push(initial_data.raw_data)
-				p "INITIAL DATA"
-				p initial_data.raw_data
+
 			else
-				############################################
-				initial_data = Phaxio::Fax.list({
-					created_before: options[:end_time],
-					created_after: options[:start_time],
-					per_page: options[:per_page],
-					status: options[:status]
-				})
-				fax_data.push(initial_data.raw_data)
-				#############################################
 				begin
 					# There will be an unknown amount of fax objects returned per number, so this will get
 					#  around 20 results on this initial page load. Afterwards it'll be limited to 1000
@@ -58,8 +47,7 @@ class FaxLog < ApplicationRecord
 					per_page: options[:per_page],
 					status: options[:status]
 				)
-				p "TAG DATA"
-				p tag_data.raw_data
+
 				if options[:tag].has_key?(:sender_organization_fax_tag) && !!/all/.match(filtered_params[:fax_number])
 					new_data = tag_data.raw_data
 				elsif options[:tag].has_key?(:sender_email_fax_tag) && !!/all/.match(filtered_params[:fax_number])
@@ -71,11 +59,14 @@ class FaxLog < ApplicationRecord
 
 				# Then search for faxes using each fax_number associated with the Organization
 				fax_numbers.keys.each do |fax_number|
+					options[:created_after] = !is_admin? ? fax_numbers[fax_number][:org_switched_at].to_datetime.rfc3339 : options[:start_time]
+
 					options[:fax_number] = fax_number
 					current_data = Phaxio::Fax.list(
 						created_before: options[:end_time],
-						created_after: fax_numbers[fax_number][:org_switched_at].to_datetime.rfc3339,
+						# created_after: fax_numbers[fax_number][:org_switched_at].to_datetime.rfc3339,
 						# created_after: options[:start_time],
+						created_after: options[:created_after]
 						phone_number: options[:fax_number],
 						per_page: options[:per_page],
 						status: options[:status]
