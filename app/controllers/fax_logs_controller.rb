@@ -112,7 +112,7 @@ class FaxLogsController < ApplicationController
 			@organizations = {}
 			if is_admin?
 				if is_all_or_is_nil?(filtering_params[:organization])
-					organization_objects = Organization.with_deleted
+					organization_objects = Organization.all.with_deleted
 				else
 					organization_objects = Organization.with_deleted.where(fax_tag: filtering_params[:organization])
 				end
@@ -125,6 +125,7 @@ class FaxLogsController < ApplicationController
 				organization_objects << Organization.find(current_user.organization_id)
 			end
 			organization_objects.each { |organization_obj| FaxLog.create_orgs_hash(@organizations, organization_obj) }
+			p @organizations
 		end
 
 		# Get a hash of Fax Number object data based on permissions and filtering requests
