@@ -54,7 +54,7 @@ class FaxLogsController < ApplicationController
 			if info.direction == 'received'
 
 				valid_fax_nums = UserFaxNumber.where({user_id: current_user.id}).all.select do |user_fax_num| 
-					user_fax_num.created_at.to_datetime > info.completed_at.to_datetime
+					user_fax_num.created_at.to_datetime < info.completed_at.to_datetime
 				end
 				p "************************************************************************"
 				p valid_fax_nums
