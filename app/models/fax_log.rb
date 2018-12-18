@@ -135,8 +135,20 @@ class FaxLog < ApplicationRecord
 			end
 
 			new_data = from_number_data + to_number_data + caller_id_data + recipients_data
-			p new_data
 			new_data = new_data.uniq
+			new_data = new_data.each do |fax_object| 
+				fax_numbers.each do |fax_num_key, fax_num_value|
+					p fax_num_key
+					p new_data.length
+					if fax_object[:to_number] == fax_num_key || fax_object[:from_number] == fax_num_key
+						p fax_object[:completed_at].to_datetime
+						p fax_num_key[:org_switched_at].to_datetime
+						new_data[fax_object].delete if fax_object[:completed_at].to_datetime < fax_num_key[:org_switched_at].to_datetime
+						p new_data.length
+					end
+				end
+			end
+			new_data
 		end
 
 		def filter_faxes_by_org_date(options, filtered_data, organizations)
