@@ -5,17 +5,19 @@ class FaxLogsController < ApplicationController
 	# this method is for the initial page load 
 	def index
 		p params
+		p initial_filtering_params = filtering_params
+		initial_filtering_params[:fax_number] = 'all'
 		options = FaxLog.build_options(current_user, filtering_params, @organizations, @users, @fax_numbers)
 		options[:per_page] = 20
 		p options
 		if is_admin?
-			initial_fax_data = FaxLog.get_faxes(current_user, options, filtering_params)
+			initial_fax_data = FaxLog.get_faxes(current_user, options, initial_filtering_params)
 			FaxLog.add_all_attribute_to_hashes( [@fax_numbers, @organizations] )
 			all_faxes = FaxLog.sort_faxes(initial_fax_data) if initial_fax_data != []
 			@sorted_faxes = FaxLog.format_faxes(current_user, all_faxes.take(20), @organizations, @fax_numbers, @users)
 		else
 			options[:tag] = is_manager? ? { sender_organization_fax_tag: @organizations.keys[0] } : { sender_email_fax_tag: current_user.fax_tag }
-			initial_fax_data = FaxLog.get_faxes(current_user, options, filtering_params, @users, @fax_numbers, @organizations)
+			initial_fax_data = FaxLog.get_faxes(current_user, options, initial_filtering_params, @users, @fax_numbers, @organizations)
 			FaxLog.add_all_attribute_to_hashes( [@users, @fax_numbers] )
 			all_faxes = FaxLog.sort_faxes(initial_fax_data)
 			@sorted_faxes = FaxLog.format_faxes(current_user, all_faxes.take(20), @fax_numbers, @organizations, @users)
@@ -98,7 +100,7 @@ class FaxLogsController < ApplicationController
 			if params[:fax_log]
 				params.require(:fax_log).permit(:start_time, :end_time, :fax_number, :organization, :user, :status)
 			else
-				params = { :fax_log => {:fax_number => 'all'} } # for the first request on page load
+				params = { :fax_log => {} } # for the first request on page load
 			end
 		end
 
