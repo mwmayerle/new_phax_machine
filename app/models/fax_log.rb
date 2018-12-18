@@ -30,7 +30,7 @@ class FaxLog < ApplicationRecord
 				})
 				fax_data.push(initial_data.raw_data)
 				p "INITIAL DATA"
-				p initial_data
+				p initial_data.raw_data
 			else
 				begin
 					# There will be an unknown amount of fax objects returned per number, so this will get
@@ -50,7 +50,7 @@ class FaxLog < ApplicationRecord
 					status: options[:status]
 				)
 				p "TAG DATA"
-				p tag_data
+				p tag_data.raw_data
 				if options[:tag].has_key?(:sender_organization_fax_tag) && !!/all/.match(filtered_params[:fax_number])
 					new_data = tag_data.raw_data
 				elsif options[:tag].has_key?(:sender_email_fax_tag) && !!/all/.match(filtered_params[:fax_number])
@@ -72,7 +72,7 @@ class FaxLog < ApplicationRecord
 						status: options[:status]
 					)
 					p "CURRENT DATA #{fax_numbers[fax_number]}"
-					p current_data
+					p current_data.raw_data
 					if current_data.total > 0 # <-- no result catch
 						# Filter by fax number if a specific fax number exists and it isn't "all" or "all-linked"
 						if options[:fax_number].nil?
