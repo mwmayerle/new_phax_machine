@@ -328,6 +328,7 @@ class FaxLog < ApplicationRecord
 				:label => fax_number_object.organization.label,
 				:org_created_at => fax_number_object.organization.created_at,
 				:org_id => fax_number_object.organization.id,
+				:org_switched_at => fax_number_object.org_switched_at
 			}
 		end
 

@@ -46,13 +46,15 @@ class FaxLogsController < ApplicationController
 	def download
 		options = FaxLog.build_options(current_user, filtering_params, @organizations, @users, @fax_numbers)
 		info = Fax.get_fax_information(download_fax_params)
+		p "====================================="
+		p info.completed_at.to_datetime
 		if is_admin?
 			can_download = true
 		elsif is_manager?
 			if info.direction == 'received'
 				p fax_nums = current_user.organization.user_fax_numbers.map { |user_fax_num| user_fax_num.fax_number }.uniq
 				p fax_nums = fax_nums.select { |fax_num| fax_num.org_switched_at.to_datetime < info.completed_at.to_datetime }
-				can_download = fax_nums.include?(info.to_number) || fax_nums.include?(info.from_number)
+				p can_download = fax_nums.include?(info.to_number) || fax_nums.include?(info.from_number)
 			else
 				can_download = current_user.organization.fax_tag == info.tags[:sender_organization_fax_tag]
 			end
@@ -60,7 +62,7 @@ class FaxLogsController < ApplicationController
 			if info.direction == 'received'
 				p fax_nums = current_user.user_fax_numbers.map { |user_fax_num| user_fax_num.fax_number }.uniq
 				p fax_nums = fax_nums.select { |fax_num| fax_num.org_switched_at.to_datetime < info.completed_at.to_datetime }
-				can_download = fax_nums.include?(info.to_number) || fax_nums.include?(info.from_number)
+				p can_download = fax_nums.include?(info.to_number) || fax_nums.include?(info.from_number)
 			else
 				can_download = current_user.fax_tag == info.tags[:sender_email_fax_tag]
 			end
@@ -77,6 +79,7 @@ class FaxLogsController < ApplicationController
 	   		send_file(filepath, filename: filename, type: :pdf, disposition: "attachment")
 	   	end
 		else
+			flash[:alert] = "Problem accessing file"
 			render :body => nil, :status => :unauthorized
 		end
 	end
