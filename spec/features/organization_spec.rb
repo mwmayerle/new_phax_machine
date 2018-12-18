@@ -197,7 +197,7 @@ RSpec.feature "Organization Pages", :type => :feature do
 	end
 
 	describe "organization show page functions" do
-		#manager controls this org. Manager1 and user3 have no linked fax numbers
+		# manager controls this org. Manager1 and user3 have no linked fax numbers
 		it "informs the admin that users have no caller_id_number and/or that they're unlinked to a fax number in a flash message" do
 			login_as(admin)
 			user1.update_attributes(caller_id_number: nil)
