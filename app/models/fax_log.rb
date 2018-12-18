@@ -47,9 +47,9 @@ class FaxLog < ApplicationRecord
 
 				# First search for faxes via organization fax tag or user's fax tag and insert these faxes. If I try to include the desired
 				# fax number(s) in this API call as well, it will only return received faxes b/c those will have the tags on them.
+				p "IN TAG DATA"
+				p options
 				tag_data = Phaxio::Fax.list(
-					p options
-					p "IN TAG DATA"
 					created_before: options[:end_time],
 					created_after: options[:start_time],
 					tag: options[:tag],
@@ -75,7 +75,6 @@ class FaxLog < ApplicationRecord
 						created_before: options[:end_time],
 						created_after: fax_numbers[fax_number][:org_switched_at].to_time,
 						# created_after: options[:start_time],
-						created_after: options[:created_after],
 						phone_number: options[:fax_number],
 						per_page: options[:per_page],
 						status: options[:status]
