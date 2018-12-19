@@ -28,10 +28,10 @@ class FaxLog < ApplicationRecord
 					status: options[:status]
 				}
 				initial_data = Phaxio::Fax.list(initial_options)
-				p initial_data.raw_data
 				fax_data.push(initial_data.raw_data)
 
 			else
+				p "DID NOT ENTER DAT ELSE"
 				begin
 					# There will be an unknown amount of fax objects returned per number, so this will get
 					#  around 20 results on this initial page load. Afterwards it'll be limited to 1000
