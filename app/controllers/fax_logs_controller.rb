@@ -27,9 +27,10 @@ class FaxLogsController < ApplicationController
 	def create
 		p "*" * 50
 		p params
-		p "*" * 50
 		options = FaxLog.build_options(current_user, filtering_params, @organizations, @users, @fax_numbers)
 		options[:per_page] = 1000
+		p options
+		p "*" * 50
 		initial_fax_data = FaxLog.get_faxes(current_user, options, filtering_params, @users, @fax_numbers, @organizations)
 		if is_admin?
 			FaxLog.add_all_attribute_to_hashes( [@fax_numbers, @organizations] )
@@ -56,7 +57,7 @@ class FaxLogsController < ApplicationController
 		elsif is_manager?
 			if info.direction == 'received'
 				fax_nums = current_user.organization.user_fax_numbers.map { |user_fax_num| user_fax_num.fax_number }.uniq
-				fax_nums = fax_nums.select { |fax_num| fax_num.org_switched_at.to_datetime < info.completed_at.to_datetime }
+				fax_nums = fax_nums.select { |fax_num| fax_num.org_switched_at.to_datetime.utc < info.completed_at.to_datetime.utc }
 					.map { |fax_number| fax_number.fax_number }
 				can_download = fax_nums.include?(info.to_number) || fax_nums.include?(info.from_number)
 			else
@@ -65,7 +66,7 @@ class FaxLogsController < ApplicationController
 		else #generic user
 			if info.direction == 'received'
 				fax_nums = current_user.user_fax_numbers.map { |user_fax_num| user_fax_num.fax_number }.uniq
-				fax_nums = fax_nums.select { |fax_num| fax_num.org_switched_at.to_datetime < info.completed_at.to_datetime }
+				fax_nums = fax_nums.select { |fax_num| fax_num.org_switched_at.to_datetime.utc < info.completed_at.to_datetime.utc }
 					.map { |fax_number| fax_number.fax_number }
 				can_download = fax_nums.include?(info.to_number) || fax_nums.include?(info.from_number)
 			else
@@ -99,7 +100,7 @@ class FaxLogsController < ApplicationController
 
 		def filtering_params
 			if params[:fax_log]
-				params.require(:fax_log).permit(:start_time, :end_time, :fax_number, :organization, :user, :status, :timezone_offset)
+				params.require(:fax_log).permit(:start_time, :end_time, :fax_number, :organization, :user, :status)
 			else
 				params = { :fax_log => {} } # for the first request on page load
 			end

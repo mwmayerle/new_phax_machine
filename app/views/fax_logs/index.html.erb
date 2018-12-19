@@ -88,8 +88,6 @@
 					<%= f.text_field :end_time, data:{ provide: 'datepicker' }, class: 'datepicker-inline form-control', id: "end-date-field", name: "fax_log[end_time]" %>
 				</div>
 
-				<%= f.hidden_field :timezone_offset, id: "timezone-offset", name: "fax_log[timezone_offset]", value: "" %>
-
 				<div class="form-group col">
 					<button type="submit" id="filter-button" value="Filter" class="btn btn-success force-down-button">
 						<i class="fa fa-fw fa-search" aria-hidden="true"></i>&nbsp;&nbsp;Filter
