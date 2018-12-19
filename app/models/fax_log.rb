@@ -22,15 +22,12 @@ class FaxLog < ApplicationRecord
 			# options[:tag] will contain a specific desired organization or user. Managers will always have an organization
 			if options[:tag].nil? # Admin gets everything unless they specify an organization
 				initial_options = {
-					# created_before: options[:end_time],
-					# created_after: options[:start_time],
-					created_after: "2018-12-18T12:00:00-06:00",
-					created_before: "2018-12-18T16:00:00-06:00",
+					created_before: options[:end_time],
+					created_after: options[:start_time],
 					per_page: options[:per_page],
 					status: options[:status]
 				}
 				initial_data = Phaxio::Fax.list(initial_options)
-				p initial_data.raw_data
 				fax_data.push(initial_data.raw_data)
 
 			else
