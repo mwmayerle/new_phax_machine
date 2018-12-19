@@ -237,7 +237,7 @@ class FaxLog < ApplicationRecord
 			if filtered_params[:start_time].to_s == ""
 				filtered_params[:start_time] = (DateTime.now.utc - 7.days) - filtered_params[:timezone_offset].to_i.hours
 			else
-				filtered_params[:start_time] = filtered_params[:start_time].to_time.utc
+				filtered_params[:start_time] = filtered_params[:start_time].to_datetime.utc
 			end
 
 			if is_manager?(current_user)
@@ -269,7 +269,7 @@ class FaxLog < ApplicationRecord
 			if filtered_params[:end_time].to_s == ""
 				filtered_params[:end_time] = Time.now.to_datetime.utc.rfc3339
 			else
-				filtered_params[:end_time] = (filtered_params[:end_time] - filtered_params[:timezone_offset].to_i.hours).to_datetime.utc.rfc3339
+				filtered_params[:end_time] = (filtered_params[:end_time].to_datetime.utc - filtered_params[:timezone_offset].to_i.hours).to_datetime.utc.rfc3339
 			end
 			filtered_params[:end_time]
 		end
