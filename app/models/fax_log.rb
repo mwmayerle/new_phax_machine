@@ -235,7 +235,7 @@ class FaxLog < ApplicationRecord
 		#   the API for data from a huge time range that predates what the user wants
 		def add_start_time(current_user, filtered_params, organizations, users)
 			if filtered_params[:start_time].to_s == ""
-				filtered_params[:start_time] = DateTime.now.utc - 7.days
+				filtered_params[:start_time] = (DateTime.now.utc - 7.days) - filtered_params[:timezone_offset].to_i.hours
 			else
 				filtered_params[:start_time] = filtered_params[:start_time].to_time.utc
 			end
@@ -266,7 +266,12 @@ class FaxLog < ApplicationRecord
 		end
 
 		def add_end_time(input_time)
-			input_time.to_s == "" ? Time.now.to_datetime.utc.rfc3339 : input_time.to_datetime.utc.rfc3339
+			if input_time.to_s == ""
+				input_time = Time.now.to_datetime.utc.rfc3339
+			else
+				input_time = (input_time - filtered_params[:timezone_offset].to_i.hours).to_datetime.utc.rfc3339
+			end
+			input_time
 		end
 		
 		def set_status_in_options(filtered_params, options)
