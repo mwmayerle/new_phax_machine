@@ -238,11 +238,13 @@ class FaxLog < ApplicationRecord
 				# Time.now.utc needs to offset of the client-side user's clock
 				filtered_params[:start_time] = (Time.now.utc - 7.days) + filtered_params[:timezone_offset].to_i.hours
 			else
-				p "GOT HERE!"
 				filtered_params[:start_time] = filtered_params[:start_time].to_time.utc + filtered_params[:timezone_offset].to_i.hours
 			end
 
 			if is_manager?(current_user)
+				p "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+				p filtering_params
+				p !!/all/.match(filtered_params[:user])
 				if !!/all/.match(filtered_params[:user]) && timestamp_is_older?(filtered_params[:start_time], current_user.organization.created_at)
 					filtered_params[:start_time] = current_user.organization.created_at
 				else
@@ -263,13 +265,8 @@ class FaxLog < ApplicationRecord
 		end
 
 		def timestamp_is_older?(param_start_time, comparison_obj_time)
-			p param_start_time
-			p comparison_obj_time
-			p param_start_time.to_time.utc
-			p comparison_obj_time.to_time.utc
 			return if param_start_time.nil?
-			## Newer object
-			param_start_time.to_time.utc < comparison_obj_time.to_time.utc
+			param_start_time.to_time.utc > comparison_obj_time.to_time.utc
 		end
 
 		def add_end_time(filtered_params)
