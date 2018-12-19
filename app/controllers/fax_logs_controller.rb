@@ -32,6 +32,7 @@ class FaxLogsController < ApplicationController
 		p filtering_params
 		options = FaxLog.build_options(current_user, filtering_params, @organizations, @users, @fax_numbers)
 		options[:per_page] = 1000
+		p options
 		initial_fax_data = FaxLog.get_faxes(current_user, options, filtering_params, @users, @fax_numbers, @organizations)
 		if is_admin?
 			FaxLog.add_all_attribute_to_hashes( [@fax_numbers, @organizations] )
@@ -86,8 +87,7 @@ class FaxLogsController < ApplicationController
 	   		send_file(filepath, filename: filename, type: :pdf, disposition: "attachment")
 	   	end
 		else
-			flash[:alert] = "Problem accessing file"
-			# render :body => nil, :status => :unauthorized
+			render :body => nil, :status => :unauthorized
 		end
 	end
 
