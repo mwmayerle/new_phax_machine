@@ -16,6 +16,7 @@ phaxMachine.pages['fax-logs'] = {
 		});
 		changeStatusColor();
 		downloadCursorChange();
+		timeZoneOffset();
 	}
 };
 
@@ -23,7 +24,8 @@ let timeZoneOffset = function() {
 	$("#filtering-form").on('click', () => {
 		let date = new Date();
 		let userOffset = date.getTimezoneOffset();
-		alert(userOffset)
+		console.log(userOffset);
+		alert(userOffset);
 	});
 }
 
