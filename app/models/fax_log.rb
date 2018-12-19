@@ -19,18 +19,14 @@ class FaxLog < ApplicationRecord
 		end
 
 		def get_faxes(current_user, options, filtered_params, users = nil, fax_numbers = nil, organizations = nil, fax_data = [])
-			p "================================================"
 			# options[:tag] will contain a specific desired organization or user. Managers will always have an organization
 			if options[:tag].nil? # Admin gets everything unless they specify an organization
-				p options
-				p "IN INITIAL DATA"
 				initial_options = {
 					created_before: options[:end_time].to_datetime.rfc3339,
 					created_after: options[:start_time].to_datetime.rfc3339,
 					per_page: options[:per_page],
 					status: options[:status]
 				}
-				p initial_options
 				initial_data = Phaxio::Fax.list(initial_options)
 				fax_data.push(initial_data.raw_data)
 
@@ -45,8 +41,6 @@ class FaxLog < ApplicationRecord
 
 				# First search for faxes via organization fax tag or user's fax tag and insert these faxes. If I try to include the desired
 				# fax number(s) in this API call as well, it will only return received faxes b/c those will have the tags on them.
-				p "IN TAG DATA"
-				p options
 				tag_data_options = {
 					created_before: options[:end_time].to_datetime.rfc3339,
 					created_after: options[:start_time].to_datetime.rfc3339,
@@ -54,7 +48,6 @@ class FaxLog < ApplicationRecord
 					per_page: options[:per_page],
 					status: options[:status]
 				}
-				p tag_data_options
 				tag_data = Phaxio::Fax.list(tag_data_options)
 
 				if options[:tag].has_key?(:sender_organization_fax_tag) && !!/all/.match(filtered_params[:fax_number])
@@ -68,8 +61,6 @@ class FaxLog < ApplicationRecord
 
 				# Then search for faxes using each fax_number associated with the Organization
 				fax_numbers.keys.each do |fax_number|
-					p "IN FAX_NUMBER"
-					p options
 					options[:fax_number] = fax_number
 					current_data_options = {
 						created_before: options[:end_time].to_datetime.rfc3339,
@@ -79,7 +70,6 @@ class FaxLog < ApplicationRecord
 						per_page: options[:per_page],
 						status: options[:status]
 					}
-					p current_data_options
 					current_data = Phaxio::Fax.list(current_data_options)
 
 					if current_data.total > 0 # <-- no result catch
@@ -264,7 +254,6 @@ class FaxLog < ApplicationRecord
 			if is_user?(current_user)
 				filtered_params[:start_time] = current_user.created_at if timestamp_is_older?(filtered_params[:start_time], current_user.created_at)
 			end
-			p filtered_params[:start_time].rfc3339
 			filtered_params[:start_time].rfc3339
 		end
 
