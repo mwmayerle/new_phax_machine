@@ -243,7 +243,7 @@ class FaxLog < ApplicationRecord
 
 			if is_manager?(current_user)
 				p "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-				p filtering_params
+				p filtered_params
 				p !!/all/.match(filtered_params[:user])
 				if !!/all/.match(filtered_params[:user]) && timestamp_is_older?(filtered_params[:start_time], current_user.organization.created_at)
 					filtered_params[:start_time] = current_user.organization.created_at
