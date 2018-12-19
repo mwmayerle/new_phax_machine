@@ -238,6 +238,7 @@ class FaxLog < ApplicationRecord
 				# Time.now.utc needs to offset of the client-side user's clock
 				filtered_params[:start_time] = (Time.now.utc - 7.days) + filtered_params[:timezone_offset].to_i.hours
 			else
+				p "GOT HERE!"
 				filtered_params[:start_time] = filtered_params[:start_time].to_time.utc + filtered_params[:timezone_offset].to_i.hours
 			end
 
@@ -265,7 +266,7 @@ class FaxLog < ApplicationRecord
 			p param_start_time
 			p comparison_obj_time
 			return if param_start_time.nil?
-			Time.at(param_start_time) > Time.at(comparison_obj_time)
+			param_start_time > comparison_obj_time
 		end
 
 		def add_end_time(filtered_params)
