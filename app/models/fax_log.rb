@@ -20,20 +20,18 @@ class FaxLog < ApplicationRecord
 
 		def get_faxes(current_user, options, filtered_params, users = nil, fax_numbers = nil, organizations = nil, fax_data = [])
 			p "================================================"
-			p fax_numbers
-			p organizations
-			p users
-			p "+++++++++++++++++++++++++++++++++++++++++++++++++"
 			# options[:tag] will contain a specific desired organization or user. Managers will always have an organization
 			if options[:tag].nil? # Admin gets everything unless they specify an organization
 				p options
 				p "IN INITIAL DATA"
-				initial_data = Phaxio::Fax.list({
+				initial_options = {
 					created_before: options[:end_time].to_datetime.rfc3339,
 					created_after: options[:start_time].to_datetime.rfc3339,
 					per_page: options[:per_page],
 					status: options[:status]
-				})
+				}
+				p initial_options
+				initial_data = Phaxio::Fax.list(initial_options)
 				fax_data.push(initial_data.raw_data)
 
 			else
@@ -49,13 +47,15 @@ class FaxLog < ApplicationRecord
 				# fax number(s) in this API call as well, it will only return received faxes b/c those will have the tags on them.
 				p "IN TAG DATA"
 				p options
-				tag_data = Phaxio::Fax.list(
+				tag_data_options = {
 					created_before: options[:end_time].to_datetime.rfc3339,
 					created_after: options[:start_time].to_datetime.rfc3339,
 					tag: options[:tag],
 					per_page: options[:per_page],
 					status: options[:status]
-				)
+				}
+				p tag_data_options
+				tag_data = Phaxio::Fax.list(tag_data_options)
 
 				if options[:tag].has_key?(:sender_organization_fax_tag) && !!/all/.match(filtered_params[:fax_number])
 					new_data = tag_data.raw_data
@@ -71,14 +71,16 @@ class FaxLog < ApplicationRecord
 					p "IN FAX_NUMBER"
 					p options
 					options[:fax_number] = fax_number
-					current_data = Phaxio::Fax.list(
+					current_data_options = {
 						created_before: options[:end_time].to_datetime.rfc3339,
 						created_after: fax_numbers[fax_number][:org_switched_at].to_datetime.rfc3339,
 						# created_after: options[:start_time],
 						phone_number: options[:fax_number],
 						per_page: options[:per_page],
 						status: options[:status]
-					)
+					}
+					p current_data_options
+					current_data = Phaxio::Fax.list(current_data_options)
 
 					if current_data.total > 0 # <-- no result catch
 						# Filter by fax number if a specific fax number exists and it isn't "all" or "all-linked"
