@@ -4,7 +4,6 @@ class FaxLog < ApplicationRecord
 	class << self
 		# Build the options object that will be used later
 		def build_options(current_user, filtered_params, organizations, users, fax_numbers, options = {})
-			filtered_params[:timezone_offset] = 0############
 			options[:tag] = filtered_params[:tag] if !filtered_params[:tag].nil?
 			options[:fax_number] = set_fax_number_in_options(filtered_params, options)
 
@@ -65,7 +64,7 @@ class FaxLog < ApplicationRecord
 					options[:fax_number] = fax_number
 					current_data_options = {
 						created_before: options[:end_time],
-						created_after: fax_numbers[fax_number][:org_switched_at].to_datetime.rfc3339,
+						created_after: fax_numbers[fax_number][:org_switched_at].to_time.rfc3339,
 						phone_number: options[:fax_number],
 						per_page: options[:per_page],
 						status: options[:status]
@@ -238,7 +237,7 @@ class FaxLog < ApplicationRecord
 			if filtered_params[:start_time].to_s == ""
 				filtered_params[:start_time] = (Time.now.utc - 7.days) - filtered_params[:timezone_offset].to_i.hours
 			else
-				filtered_params[:start_time] = filtered_params[:start_time].to_datetime.utc
+				filtered_params[:start_time] = filtered_params[:start_time].to_time.utc
 			end
 
 			if is_manager?(current_user)
@@ -268,9 +267,9 @@ class FaxLog < ApplicationRecord
 
 		def add_end_time(filtered_params)
 			if filtered_params[:end_time].to_s == ""
-				filtered_params[:end_time] = (Time.now.to_datetime.utc - filtered_params[:timezone_offset].to_i.hours).rfc3339
+				filtered_params[:end_time] = (Time.now.to_time.utc - filtered_params[:timezone_offset].to_i.hours).rfc3339
 			else
-				filtered_params[:end_time] = (filtered_params[:end_time].to_datetime.utc - filtered_params[:timezone_offset].to_i.hours).to_datetime.utc.rfc3339
+				filtered_params[:end_time] = (filtered_params[:end_time].to_time.utc - filtered_params[:timezone_offset].to_i.hours).to_time.utc.rfc3339
 			end
 			filtered_params[:end_time]
 		end
