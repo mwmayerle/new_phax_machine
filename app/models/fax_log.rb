@@ -22,8 +22,10 @@ class FaxLog < ApplicationRecord
 			# options[:tag] will contain a specific desired organization or user. Managers will always have an organization
 			if options[:tag].nil? # Admin gets everything unless they specify an organization
 				initial_options = {
-					created_before: options[:end_time],
-					created_after: options[:start_time],
+					# created_before: options[:end_time],
+					# created_after: options[:start_time],
+					created_before: "2018-12-18T12:00:00+00:00",
+					created_after: "2018-12-18T16:00:00+00:00",
 					per_page: options[:per_page],
 					status: options[:status]
 				}
