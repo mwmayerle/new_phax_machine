@@ -19,6 +19,14 @@ phaxMachine.pages['fax-logs'] = {
 	}
 };
 
+let timeZoneOffset = function() {
+	$("#filtering-form").on('click', () => {
+		let date = new Date();
+		let userOffset = date.getTimezoneOffset();
+		alert(userOffset)
+	});
+}
+
 function buildTableRows(faxData, pageNumberDisplay) {
 	let sentIcon = `<i style="color:green" class="fa fa-fw fa-arrow-circle-right" aria-hidden="true"></i>`;
 	let receivedIcon = `<i style="color:darkblue" class="fa fa-fw fa-arrow-circle-left" aria-hidden="true"></i>`;
