@@ -242,7 +242,7 @@ class FaxLog < ApplicationRecord
 			end
 
 			if is_manager?(current_user)
-				if !!/all/.match(filtered_params[:user]) && timestamp_is_older?(filtered_params[:start_time].to_time.utc + filtered_params[:timezone_offset].to_i.hours, current_user.organization.created_at)
+				if !!/all/.match(filtered_params[:user]) && timestamp_is_older?(filtered_params[:start_time], current_user.organization.created_at)
 					filtered_params[:start_time] = current_user.organization.created_at
 				else
 					# User objects in the hash look like:
@@ -256,7 +256,7 @@ class FaxLog < ApplicationRecord
 			end
 
 			if is_user?(current_user)
-				filtered_params[:start_time] = current_user.created_at if timestamp_is_older?(filtered_params[:start_time].to_time.utc + filtered_params[:timezone_offset].to_i.hours, current_user.created_at)
+				filtered_params[:start_time] = current_user.created_at if timestamp_is_older?(filtered_params[:start_time], current_user.created_at)
 			end
 			filtered_params[:start_time].rfc3339
 		end
