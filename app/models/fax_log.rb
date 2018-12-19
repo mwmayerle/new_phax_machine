@@ -271,7 +271,8 @@ class FaxLog < ApplicationRecord
 			p comparison_obj_time.to_time
 			p comparison_obj_time.to_time.utc
 			return if param_start_time.nil?
-			param_start_time.to_time.utc > comparison_obj_time.to_time.utc
+			#I SWITCHED THE SIGN LOOK HERE FOR BUGS
+			param_start_time.to_time.utc < comparison_obj_time.to_time.utc
 		end
 
 		def add_end_time(filtered_params)
