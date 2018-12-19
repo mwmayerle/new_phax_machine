@@ -11,7 +11,7 @@ class FaxLogsController < ApplicationController
 		options[:per_page] = 20
 
 		if is_admin?
-			p initial_fax_data = FaxLog.get_faxes(current_user, options, initial_filtering_params)
+			initial_fax_data = FaxLog.get_faxes(current_user, options, initial_filtering_params)
 			FaxLog.add_all_attribute_to_hashes( [@fax_numbers, @organizations] )
 			all_faxes = FaxLog.sort_faxes(initial_fax_data) if initial_fax_data != []
 			@sorted_faxes = FaxLog.format_faxes(current_user, all_faxes.take(20), @organizations, @fax_numbers, @users)
@@ -28,7 +28,7 @@ class FaxLogsController < ApplicationController
 	def create
 		options = FaxLog.build_options(current_user, filtering_params, @organizations, @users, @fax_numbers)
 		options[:per_page] = 1000
-		p initial_fax_data = FaxLog.get_faxes(current_user, options, filtering_params, @users, @fax_numbers, @organizations)
+		initial_fax_data = FaxLog.get_faxes(current_user, options, filtering_params, @users, @fax_numbers, @organizations)
 		if is_admin?
 			FaxLog.add_all_attribute_to_hashes( [@fax_numbers, @organizations] )
 			all_faxes = FaxLog.sort_faxes(initial_fax_data)

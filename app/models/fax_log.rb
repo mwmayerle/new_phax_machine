@@ -20,6 +20,8 @@ class FaxLog < ApplicationRecord
 
 		def get_faxes(current_user, options, filtered_params, users = nil, fax_numbers = nil, organizations = nil, fax_data = [])
 			# options[:tag] will contain a specific desired organization or user. Managers will always have an organization
+			p options
+			p options[:tag]
 			if options[:tag].nil? # Admin gets everything unless they specify an organization
 				initial_options = {
 					created_before: options[:end_time],
