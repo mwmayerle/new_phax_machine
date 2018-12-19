@@ -16,17 +16,8 @@ phaxMachine.pages['fax-logs'] = {
 		});
 		changeStatusColor();
 		downloadCursorChange();
-		timeZoneOffset();
 	}
 };
-
-// Sends the hour offset of the timezone
-function timeZoneOffset() {
-	let date = new Date();
-	let userOffsetHours = date.getTimezoneOffset() / 60;
-	$("#timezone-offset").val(userOffsetHours);
-};
-
 
 function buildTableRows(faxData, pageNumberDisplay) {
 	let sentIcon = `<i style="color:green" class="fa fa-fw fa-arrow-circle-right" aria-hidden="true"></i>`;
