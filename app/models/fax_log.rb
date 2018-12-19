@@ -70,7 +70,7 @@ class FaxLog < ApplicationRecord
 					options[:fax_number] = fax_number
 					current_data_options = {
 						created_before: options[:end_time],
-						created_after: fax_numbers[fax_number][:org_switched_at].to_time.rfc3339,
+						created_after: fax_number_time(options[:start_time], fax_numbers[fax_number][:org_switched_at]) 
 						phone_number: options[:fax_number],
 						per_page: options[:per_page],
 						status: options[:status]
@@ -111,6 +111,16 @@ class FaxLog < ApplicationRecord
 				end
 			end
 			fax_data
+		end
+
+		def fax_number_time(start_time, fax_number_org_switched_time)
+			if start_time.to_time > fax_number_org_switched_time.to_time
+				p "START TIME IS YOUNGER!"
+				return start_time
+			else
+				p "FAX NUMBER IS YOUNGER!"
+				return fax_number_org_switched_time
+			end
 		end
 
 		def filter_for_desired_fax_number(tag_data, fax_numbers)
