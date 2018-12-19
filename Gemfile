@@ -47,7 +47,7 @@ gem 'bootstrap'
 gem 'flatpickr'
 
 # Telephony/faxing goodies
-gem 'phaxio', github: 'phaxio/phaxio-ruby'
+gem 'phaxio'
 gem 'phonelib'
 
 # Reduces boot times through caching; required in config/boot.rb
