@@ -44,7 +44,7 @@ class FaxLog < ApplicationRecord
 				tag_data_options = {
 					created_before: options[:end_time],
 					created_after: options[:start_time],
-					# tag: options[:tag],
+					tag: options[:tag],
 					per_page: options[:per_page],
 					status: options[:status]
 				}
