@@ -65,6 +65,8 @@ class FaxLog < ApplicationRecord
 
 				# Then search for faxes using each fax_number associated with the Organization
 				fax_numbers.keys.each do |fax_number|
+					p "org_switched_at"
+					puts fax_numbers[fax_number][:org_switched_at].to_time.rfc3339
 					options[:fax_number] = fax_number
 					current_data_options = {
 						created_before: options[:end_time],
