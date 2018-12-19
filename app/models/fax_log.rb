@@ -4,6 +4,7 @@ class FaxLog < ApplicationRecord
 	class << self
 		# Build the options object that will be used later
 		def build_options(current_user, filtered_params, organizations, users, fax_numbers, options = {})
+			filtered_params[:timezone_offset] = 0############
 			options[:tag] = filtered_params[:tag] if !filtered_params[:tag].nil?
 			options[:fax_number] = set_fax_number_in_options(filtered_params, options)
 
