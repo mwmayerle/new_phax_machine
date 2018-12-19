@@ -251,6 +251,7 @@ class FaxLog < ApplicationRecord
 					#   {1=>{:email=>"org_one_user@aol.com", :caller_id_number=>"+15555834355", :user_created_at=>Wed, 19 Sep 2018 18:22:04 UTC +00:00, :fax_tag=>"sdfg2776-d2be-0000-a6fb-58a12345ea2c", :org_id=>1}}
 					#   This returns the key in the hash (e.g. [1])
 					user_key = users.select { |user_key, user_data| user_data[:email] == filtered_params[:user] }.keys.pop
+					p "WE'RE IN THE ELSE PORTION"
 					if (user_key && timestamp_is_older?(filtered_params[:start_time], users[user_key][:user_created_at])) || (user_key && timestamp_is_older?(current_user.organization.created_at, users[user_key][:user_created_at]))
 						filtered_params[:start_time] = current_user.organization.created_at
 					end
