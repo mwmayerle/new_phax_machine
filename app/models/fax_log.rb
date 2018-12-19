@@ -15,6 +15,7 @@ class FaxLog < ApplicationRecord
 
 			options[:start_time] = add_start_time(current_user, filtered_params, organizations, users)
 			options[:end_time] = add_end_time(filtered_params)
+			p "THE FINAL OPTIONS"
 			p options
 			options
 		end
@@ -255,7 +256,7 @@ class FaxLog < ApplicationRecord
 					user_key = users.select { |user_key, user_data| user_data[:email] == filtered_params[:user] }.keys.pop
 					p "WE'RE IN THE ELSE PORTION"
 					p filtered_params
-					if (user_key && timestamp_is_older?(filtered_params[:start_time], users[user_key][:user_created_at])) || (user_key && timestamp_is_older?(current_user.organization.created_at, users[user_key][:user_created_at]))
+					if (user_key && timestamp_is_older?(filtered_params[:start_time], users[user_key][:user_created_at])) || (user_key && timestamp_is_older?(current_user.organization.created_at.utc, users[user_key][:user_created_at].utc))
 						p "IT GOT SET AT THE BOTTOM"
 						filtered_params[:start_time] = current_user.organization.created_at
 					end
@@ -271,6 +272,8 @@ class FaxLog < ApplicationRecord
 		def timestamp_is_older?(time_a, time_b)
 			# The one on the left is younger
 			return if time_a.nil? || time_b.nil?
+			p time_a
+			p time_b
 			time_a > time_b
 		end
 
