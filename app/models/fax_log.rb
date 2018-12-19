@@ -66,15 +66,19 @@ class FaxLog < ApplicationRecord
 				# Then search for faxes using each fax_number associated with the Organization
 				fax_numbers.keys.each do |fax_number|
 					p "org_switched_at"
-					puts fax_numbers[fax_number][:org_switched_at].to_time.rfc3339
+					p fax_numbers[fax_number][:org_switched_at].to_time.rfc3339
+					p fax_number_time(options[:start_time], fax_numbers[fax_number][:org_switched_at])
+
 					options[:fax_number] = fax_number
 					current_data_options = {
 						created_before: options[:end_time],
-						created_after: fax_number_time(options[:start_time], fax_numbers[fax_number][:org_switched_at]) ,
+						created_after: fax_number_time(options[:start_time], fax_numbers[fax_number][:org_switched_at]),
 						phone_number: options[:fax_number],
 						per_page: options[:per_page],
 						status: options[:status]
 					}
+					p "current options"
+					p current_data_options
 					current_data = Phaxio::Fax.list(current_data_options)
 
 					if current_data.total > 0 # <-- no result catch
@@ -106,7 +110,7 @@ class FaxLog < ApplicationRecord
 						end
 					else
 						filtered_data = current_data.raw_data
-					end #current_data.total
+					end # current_data.total end
 					fax_data.push(filtered_data) if filtered_data != nil
 				end
 			end
@@ -116,9 +120,11 @@ class FaxLog < ApplicationRecord
 		def fax_number_time(start_time, fax_number_org_switched_time)
 			if start_time.to_time > fax_number_org_switched_time.to_time
 				p "START TIME IS YOUNGER!"
+				p start_time
 				return start_time
 			else
 				p "FAX NUMBER IS YOUNGER!"
+				p fax_number_org_switched_time
 				return fax_number_org_switched_time
 			end
 		end
