@@ -22,12 +22,13 @@ class FaxLog < ApplicationRecord
 			# options[:tag] will contain a specific desired organization or user. Managers will always have an organization
 			if options[:tag].nil? # Admin gets everything unless they specify an organization
 				initial_options = {
-					created_before: options[:end_time].to_datetime.rfc3339,
-					created_after: options[:start_time].to_datetime.rfc3339,
+					created_before: options[:end_time],
+					created_after: options[:start_time],
 					per_page: options[:per_page],
 					status: options[:status]
 				}
 				initial_data = Phaxio::Fax.list(initial_options)
+				p initial_data.raw_data
 				fax_data.push(initial_data.raw_data)
 
 			else
@@ -42,8 +43,8 @@ class FaxLog < ApplicationRecord
 				# First search for faxes via organization fax tag or user's fax tag and insert these faxes. If I try to include the desired
 				# fax number(s) in this API call as well, it will only return received faxes b/c those will have the tags on them.
 				tag_data_options = {
-					created_before: options[:end_time].to_datetime.rfc3339,
-					created_after: options[:start_time].to_datetime.rfc3339,
+					created_before: options[:end_time],
+					created_after: options[:start_time],
 					tag: options[:tag],
 					per_page: options[:per_page],
 					status: options[:status]
