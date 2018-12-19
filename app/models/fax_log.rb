@@ -24,8 +24,8 @@ class FaxLog < ApplicationRecord
 				initial_options = {
 					# created_before: options[:end_time],
 					# created_after: options[:start_time],
-					created_before: "2018-12-18T12:00:00+00:00",
-					created_after: "2018-12-18T16:00:00+00:00",
+					created_after: "2018-12-18T12:00:00+00:00",
+					created_before: "2018-12-18T16:00:00+00:00",
 					per_page: options[:per_page],
 					status: options[:status]
 				}
