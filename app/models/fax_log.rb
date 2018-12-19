@@ -28,6 +28,7 @@ class FaxLog < ApplicationRecord
 					status: options[:status]
 				}
 				initial_data = Phaxio::Fax.list(initial_options)
+				p initial_data.raw_data
 				fax_data.push(initial_data.raw_data)
 
 			else
