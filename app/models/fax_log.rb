@@ -272,9 +272,9 @@ class FaxLog < ApplicationRecord
 		def timestamp_is_older?(time_a, time_b)
 			# The one on the left is younger
 			return if time_a.nil? || time_b.nil?
-			p time_a
-			p time_b
-			time_a > time_b
+			p time_a.to_time
+			p time_b.to_time
+			time_a.to_time > time_b.to_time
 		end
 
 		def add_end_time(filtered_params)
