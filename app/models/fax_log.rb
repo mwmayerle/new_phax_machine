@@ -14,7 +14,7 @@ class FaxLog < ApplicationRecord
 			set_organization_in_options(filtered_params, organizations, options) if filtered_params[:organization]
 
 			options[:start_time] = add_start_time(current_user, filtered_params, organizations, users)
-			options[:end_time] = add_end_time(filtered_params[:end_time])
+			options[:end_time] = add_end_time(filtered_params)
 			options
 		end
 
@@ -265,13 +265,13 @@ class FaxLog < ApplicationRecord
 			Time.at(param_start_time.to_time.utc) > Time.at(comparison_obj_time.to_time.utc)
 		end
 
-		def add_end_time(input_time)
-			if input_time.to_s == ""
-				input_time = Time.now.to_datetime.utc.rfc3339
+		def add_end_time(filtered_params)
+			if filtered_params[:end_time].to_s == ""
+				filtered_params[:end_time] = Time.now.to_datetime.utc.rfc3339
 			else
-				input_time = (input_time - filtered_params[:timezone_offset].to_i.hours).to_datetime.utc.rfc3339
+				filtered_params[:end_time] = (filtered_params[:end_time] - filtered_params[:timezone_offset].to_i.hours).to_datetime.utc.rfc3339
 			end
-			input_time
+			filtered_params[:end_time]
 		end
 		
 		def set_status_in_options(filtered_params, options)
