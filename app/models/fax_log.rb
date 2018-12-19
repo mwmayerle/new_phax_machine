@@ -29,8 +29,8 @@ class FaxLog < ApplicationRecord
 				p options
 				p "IN INITIAL DATA"
 				initial_data = Phaxio::Fax.list({
-					created_before: options[:end_time],
-					created_after: options[:start_time],
+					created_before: options[:end_time].to_datetime.rfc3339,
+					created_after: options[:start_time].to_datetime.rfc3339,
 					per_page: options[:per_page],
 					status: options[:status]
 				})
@@ -50,8 +50,8 @@ class FaxLog < ApplicationRecord
 				p "IN TAG DATA"
 				p options
 				tag_data = Phaxio::Fax.list(
-					created_before: options[:end_time].to_s,
-					created_after: options[:start_time].to_s,
+					created_before: options[:end_time],
+					created_after: options[:start_time],
 					tag: options[:tag],
 					per_page: options[:per_page],
 					status: options[:status]
@@ -68,12 +68,12 @@ class FaxLog < ApplicationRecord
 
 				# Then search for faxes using each fax_number associated with the Organization
 				fax_numbers.keys.each do |fax_number|
-					p options
 					p "IN FAX_NUMBER"
+					p options
 					options[:fax_number] = fax_number
 					current_data = Phaxio::Fax.list(
 						created_before: options[:end_time],
-						created_after: fax_numbers[fax_number][:org_switched_at].to_datetime.rfc3339.to_s,
+						created_after: fax_numbers[fax_number][:org_switched_at].to_datetime.rfc3339,
 						# created_after: options[:start_time],
 						phone_number: options[:fax_number],
 						per_page: options[:per_page],
