@@ -20,14 +20,10 @@ class FaxLog < ApplicationRecord
 
 		def get_faxes(current_user, options, filtered_params, users = nil, fax_numbers = nil, organizations = nil, fax_data = [])
 			# options[:tag] will contain a specific desired organization or user. Managers will always have an organization
-			p options
-			p options[:tag]
-			p options[:tag].nil?
 			if options[:tag].nil? # Admin gets everything unless they specify an organization
 				initial_options = {
 					created_before: options[:end_time],
 					created_after: options[:start_time],
-					tag: nil,
 					per_page: options[:per_page],
 					status: options[:status]
 				}
@@ -35,7 +31,7 @@ class FaxLog < ApplicationRecord
 				fax_data.push(initial_data.raw_data)
 
 			else
-				p "DID NOT ENTER DAT ELSE"
+				p "ENTER DAT ELSE"
 				begin
 					# There will be an unknown amount of fax objects returned per number, so this will get
 					#  around 20 results on this initial page load. Afterwards it'll be limited to 1000
@@ -68,9 +64,8 @@ class FaxLog < ApplicationRecord
 				fax_numbers.keys.each do |fax_number|
 					options[:fax_number] = fax_number
 					current_data_options = {
-						created_before: options[:end_time].to_datetime.rfc3339,
-						created_after: fax_numbers[fax_number][:org_switched_at].to_datetime.rfc3339,
-						# created_after: options[:start_time],
+						created_before: options[:end_time],
+						# created_after: fax_numbers[fax_number][:org_switched_at].to_datetime.rfc3339,
 						phone_number: options[:fax_number],
 						per_page: options[:per_page],
 						status: options[:status]
