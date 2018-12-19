@@ -70,7 +70,7 @@ class FaxLog < ApplicationRecord
 					options[:fax_number] = fax_number
 					current_data_options = {
 						created_before: options[:end_time],
-						created_after: fax_number_time(options[:start_time], fax_numbers[fax_number][:org_switched_at]) 
+						created_after: fax_number_time(options[:start_time], fax_numbers[fax_number][:org_switched_at]) ,
 						phone_number: options[:fax_number],
 						per_page: options[:per_page],
 						status: options[:status]
