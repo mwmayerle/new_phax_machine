@@ -65,10 +65,6 @@ class FaxLog < ApplicationRecord
 
 				# Then search for faxes using each fax_number associated with the Organization
 				fax_numbers.keys.each do |fax_number|
-					p "org_switched_at"
-					p fax_numbers[fax_number][:org_switched_at].to_time.rfc3339
-					p fax_number_time(options[:start_time], fax_numbers[fax_number][:org_switched_at])
-
 					options[:fax_number] = fax_number
 					current_data_options = {
 						created_before: options[:end_time],
@@ -77,8 +73,6 @@ class FaxLog < ApplicationRecord
 						per_page: options[:per_page],
 						status: options[:status]
 					}
-					p "current options"
-					p current_data_options
 					current_data = Phaxio::Fax.list(current_data_options)
 
 					if current_data.total > 0 # <-- no result catch
@@ -119,12 +113,8 @@ class FaxLog < ApplicationRecord
 
 		def fax_number_time(start_time, fax_number_org_switched_time)
 			if start_time.to_time > fax_number_org_switched_time.to_time
-				p "START TIME IS YOUNGER!"
-				p start_time
 				return start_time
 			else
-				p "FAX NUMBER IS YOUNGER!"
-				p fax_number_org_switched_time
 				return fax_number_org_switched_time
 			end
 		end
@@ -265,38 +255,29 @@ class FaxLog < ApplicationRecord
 
 			if is_manager?(current_user)
 				# if users key in params is 'all' or 'all-linked' and start time is more recent that the creation of the organization
-				if !!/all/.match(filtered_params[:user]) && timestamp_is_older?(current_user.organization.created_at.utc, filtered_params[:start_time])
-					filtered_params[:start_time] = current_user.organization.created_at
+				if !!/all/.match(filtered_params[:user]) && first_arg_more_recent?(current_user.organization.created_at.utc, filtered_params[:start_time])
+					filtered_params[:start_time] = current_user.organization.created_at.utc
 				else
 					# User objects in the hash look like:
 					#   {1=>{:email=>"org_one_user@aol.com", :caller_id_number=>"+15555834355", :user_created_at=>Wed, 19 Sep 2018 18:22:04 UTC +00:00, :fax_tag=>"sdfg2776-d2be-0000-a6fb-58a12345ea2c", :org_id=>1}}
 					#   This returns the key in the hash (e.g. [1])
 					user_key = users.select { |user_key, user_data| user_data[:email] == filtered_params[:user] }.keys.pop
-					p "WE'RE IN THE ELSE PORTION"
-					p filtered_params
-					p "PARAMS START TIME-A > USER CREATED_AT-B reversed"
-					p timestamp_is_older?(users[user_key][:user_created_at], filtered_params[:start_time]) if user_key
-					p "ORGANIZATION CREATED_AT-A > USER CREATED_AT-B"
-					p timestamp_is_older?(current_user.organization.created_at.utc, users[user_key][:user_created_at].utc) if user_key
 
-					if (user_key && timestamp_is_older?(users[user_key][:user_created_at].utc, filtered_params[:start_time])) || (user_key && timestamp_is_older?(current_user.organization.created_at.utc, users[user_key][:user_created_at].utc))
-						p "IT GOT SET AT THE BOTTOM"
-						filtered_params[:start_time] = current_user.organization.created_at
+					if (user_key && first_arg_more_recent?(users[user_key][:user_created_at].utc, filtered_params[:start_time])) || (user_key && first_arg_more_recent?(current_user.organization.created_at.utc, users[user_key][:user_created_at].utc))
+						filtered_params[:start_time] = current_user.organization.created_at.utc
 					end
 				end
 			end
 
 			if is_user?(current_user)
-				filtered_params[:start_time] = current_user.created_at if timestamp_is_older?(filtered_params[:start_time], current_user.created_at)
+				filtered_params[:start_time] = current_user.created_at if first_arg_more_recent?(filtered_params[:start_time], current_user.created_at)
 			end
 			filtered_params[:start_time].rfc3339
 		end
 
-		def timestamp_is_older?(time_a, time_b)
-			# The one on the left is younger
+		def first_arg_more_recent?(time_a, time_b)
+			# The one on the left is younger/more recent because it has more seconds
 			return if time_a.nil? || time_b.nil?
-			p time_a.to_time
-			p time_b.to_time
 			time_a.to_time > time_b.to_time
 		end
 
