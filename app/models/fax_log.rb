@@ -31,7 +31,6 @@ class FaxLog < ApplicationRecord
 				fax_data.push(initial_data.raw_data)
 
 			else
-				p "ENTER DAT ELSE"
 				begin
 					# There will be an unknown amount of fax objects returned per number, so this will get
 					#  around 20 results on this initial page load. Afterwards it'll be limited to 1000
@@ -65,7 +64,7 @@ class FaxLog < ApplicationRecord
 					options[:fax_number] = fax_number
 					current_data_options = {
 						created_before: options[:end_time],
-						# created_after: fax_numbers[fax_number][:org_switched_at].to_datetime.rfc3339,
+						created_after: fax_numbers[fax_number][:org_switched_at].to_datetime.rfc3339,
 						phone_number: options[:fax_number],
 						per_page: options[:per_page],
 						status: options[:status]

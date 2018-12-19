@@ -9,7 +9,7 @@ class FaxLogsController < ApplicationController
 
 		options = FaxLog.build_options(current_user, filtering_params, @organizations, @users, @fax_numbers)
 		options[:per_page] = 20
-
+		p options
 		if is_admin?
 			initial_fax_data = FaxLog.get_faxes(current_user, options, initial_filtering_params)
 			FaxLog.add_all_attribute_to_hashes( [@fax_numbers, @organizations] )
@@ -27,6 +27,7 @@ class FaxLogsController < ApplicationController
 	# create method in this controller is for user-designated filtering after the initial page load
 	def create
 		options = FaxLog.build_options(current_user, filtering_params, @organizations, @users, @fax_numbers)
+		p options
 		options[:per_page] = 1000
 		initial_fax_data = FaxLog.get_faxes(current_user, options, filtering_params, @users, @fax_numbers, @organizations)
 		if is_admin?
