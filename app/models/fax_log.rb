@@ -235,9 +235,10 @@ class FaxLog < ApplicationRecord
 		#   the API for data from a huge time range that predates what the user wants
 		def add_start_time(current_user, filtered_params, organizations, users)
 			if filtered_params[:start_time].to_s == ""
-				filtered_params[:start_time] = (Time.now.utc - 7.days) - filtered_params[:timezone_offset].to_i.hours
+				# Time.now.utc needs to offset of the client-side user's clock
+				filtered_params[:start_time] = (Time.now.utc - 7.days) + filtered_params[:timezone_offset].to_i.hours
 			else
-				filtered_params[:start_time] = filtered_params[:start_time].to_time.utc - filtered_params[:timezone_offset].to_i.hours
+				filtered_params[:start_time] = filtered_params[:start_time].to_time.utc + filtered_params[:timezone_offset].to_i.hours
 			end
 
 			if is_manager?(current_user)
@@ -267,9 +268,9 @@ class FaxLog < ApplicationRecord
 
 		def add_end_time(filtered_params)
 			if filtered_params[:end_time].to_s == ""
-				filtered_params[:end_time] = (Time.now.to_time.utc - filtered_params[:timezone_offset].to_i.hours).rfc3339
+				filtered_params[:end_time] = (Time.now.to_time.utc + filtered_params[:timezone_offset].to_i.hours).rfc3339
 			else
-				filtered_params[:end_time] = (filtered_params[:end_time].to_time.utc - filtered_params[:timezone_offset].to_i.hours).to_time.utc.rfc3339
+				filtered_params[:end_time] = (filtered_params[:end_time].to_time.utc + filtered_params[:timezone_offset].to_i.hours).to_time.utc.rfc3339
 			end
 			filtered_params[:end_time]
 		end
