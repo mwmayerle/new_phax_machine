@@ -262,6 +262,8 @@ class FaxLog < ApplicationRecord
 		end
 
 		def timestamp_is_older?(param_start_time, comparison_obj_time)
+			p param_start_time
+			p comparison_obj_time
 			return if param_start_time.nil?
 			Time.at(param_start_time) > Time.at(comparison_obj_time)
 		end
