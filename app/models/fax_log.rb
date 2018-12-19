@@ -54,6 +54,8 @@ class FaxLog < ApplicationRecord
 
 				if options[:tag].has_key?(:sender_organization_fax_tag) && !!/all/.match(filtered_params[:fax_number])
 					new_data = tag_data.raw_data
+					p "NEW DATA"
+					p new_data
 				elsif options[:tag].has_key?(:sender_email_fax_tag) && !!/all/.match(filtered_params[:fax_number])
 					new_data = tag_data.raw_data
 				else
@@ -244,7 +246,7 @@ class FaxLog < ApplicationRecord
 			end
 
 			if is_manager?(current_user)
-				p filtered_params
+				# p filtered_params
 				# if users key in params is 'all' or 'all-linked' and start time is more recent that the creation of the organization
 				if !!/all/.match(filtered_params[:user]) && timestamp_is_older?(current_user.organization.created_at.utc, filtered_params[:start_time])
 					p "IT GOT SET"
@@ -254,13 +256,13 @@ class FaxLog < ApplicationRecord
 					#   {1=>{:email=>"org_one_user@aol.com", :caller_id_number=>"+15555834355", :user_created_at=>Wed, 19 Sep 2018 18:22:04 UTC +00:00, :fax_tag=>"sdfg2776-d2be-0000-a6fb-58a12345ea2c", :org_id=>1}}
 					#   This returns the key in the hash (e.g. [1])
 					user_key = users.select { |user_key, user_data| user_data[:email] == filtered_params[:user] }.keys.pop
-					p "WE'RE IN THE ELSE PORTION"
-					p filtered_params
-					p "PARAMS START TIME-A > USER CREATED_AT-B"
-					p timestamp_is_older?(filtered_params[:start_time], users[user_key][:user_created_at]) if user_key
-					p "ORGANIZATION CREATED_AT-A > USER CREATED_AT-B"
-					p timestamp_is_older?(current_user.organization.created_at.utc, users[user_key][:user_created_at].utc) if user_key
-					
+					# p "WE'RE IN THE ELSE PORTION"
+					# p filtered_params
+					# p "PARAMS START TIME-A > USER CREATED_AT-B"
+					# p timestamp_is_older?(filtered_params[:start_time], users[user_key][:user_created_at]) if user_key
+					# p "ORGANIZATION CREATED_AT-A > USER CREATED_AT-B"
+					# p timestamp_is_older?(current_user.organization.created_at.utc, users[user_key][:user_created_at].utc) if user_key
+
 					if (user_key && timestamp_is_older?(filtered_params[:start_time], users[user_key][:user_created_at])) || (user_key && timestamp_is_older?(current_user.organization.created_at.utc, users[user_key][:user_created_at].utc))
 						p "IT GOT SET AT THE BOTTOM"
 						filtered_params[:start_time] = current_user.organization.created_at
