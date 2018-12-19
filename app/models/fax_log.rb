@@ -256,6 +256,10 @@ class FaxLog < ApplicationRecord
 					user_key = users.select { |user_key, user_data| user_data[:email] == filtered_params[:user] }.keys.pop
 					p "WE'RE IN THE ELSE PORTION"
 					p filtered_params
+					p "PARAMS START TIME-A > USER CREATED_AT-B"
+					p timestamp_is_older?(filtered_params[:start_time], users[user_key][:user_created_at])
+					p "ORGANIZATION CREATED_AT-A > USER CREATED_AT-B"
+					p timestamp_is_older?(current_user.organization.created_at.utc, users[user_key][:user_created_at].utc)
 					if (user_key && timestamp_is_older?(filtered_params[:start_time], users[user_key][:user_created_at])) || (user_key && timestamp_is_older?(current_user.organization.created_at.utc, users[user_key][:user_created_at].utc))
 						p "IT GOT SET AT THE BOTTOM"
 						filtered_params[:start_time] = current_user.organization.created_at
