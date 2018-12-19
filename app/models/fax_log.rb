@@ -263,10 +263,12 @@ class FaxLog < ApplicationRecord
 		end
 
 		def timestamp_is_older?(param_start_time, comparison_obj_time)
-			p param_start_time.to_time
-			p comparison_obj_time.to_time
+			p param_start_time
+			p comparison_obj_time
+			p param_start_time.to_time.utc
+			p comparison_obj_time.to_time.utc
 			return if param_start_time.nil?
-			param_start_time.to_time > comparison_obj_time.to_time
+			param_start_time.to_time.utc > comparison_obj_time.to_time.utc
 		end
 
 		def add_end_time(filtered_params)
