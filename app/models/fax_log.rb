@@ -242,9 +242,7 @@ class FaxLog < ApplicationRecord
 			end
 
 			if is_manager?(current_user)
-				p "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-				p filtered_params
-				p !!/all/.match(filtered_params[:user])
+				# if users key in params is 'all' or 'all-linked' and start time is more recent that the creation of the organization
 				if !!/all/.match(filtered_params[:user]) && timestamp_is_older?(filtered_params[:start_time], current_user.organization.created_at)
 					filtered_params[:start_time] = current_user.organization.created_at
 				else
@@ -265,6 +263,13 @@ class FaxLog < ApplicationRecord
 		end
 
 		def timestamp_is_older?(param_start_time, comparison_obj_time)
+			p param_start_time
+			p param_start_time.to_time
+			p param_start_time.to_time.utc
+
+			p comparison_obj_time
+			p comparison_obj_time.to_time
+			p comparison_obj_time.to_time.utc
 			return if param_start_time.nil?
 			param_start_time.to_time.utc > comparison_obj_time.to_time.utc
 		end
