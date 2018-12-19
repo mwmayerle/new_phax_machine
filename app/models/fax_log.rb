@@ -234,10 +234,15 @@ class FaxLog < ApplicationRecord
 		# This method modifies the user-submitted start time to whenever the desired parameter was created to avoid asking
 		#   the API for data from a huge time range that predates what the user wants
 		def add_start_time(current_user, filtered_params, organizations, users)
-			filtered_params[:start_time] = filtered_params[:start_time].to_s == "" ? (DateTime.now - 7) : filtered_params[:start_time].to_time
+			if filtered_params[:start_time].to_s == ""
+				filtered_params[:start_time] = DateTime.now.utc - 7.days
+			else
+				filtered_params[:start_time].to_time.utc
+			end
+
 			if is_manager?(current_user)
 				if !!/all/.match(filtered_params[:user]) && timestamp_is_older?(filtered_params[:start_time], current_user.organization.created_at)
-					filtered_params[:start_time] = current_user.organization.created_at 
+					filtered_params[:start_time] = current_user.organization.created_at
 				else
 					# User objects in the hash look like:
 					#   {1=>{:email=>"org_one_user@aol.com", :caller_id_number=>"+15555834355", :user_created_at=>Wed, 19 Sep 2018 18:22:04 UTC +00:00, :fax_tag=>"sdfg2776-d2be-0000-a6fb-58a12345ea2c", :org_id=>1}}
@@ -247,7 +252,6 @@ class FaxLog < ApplicationRecord
 						filtered_params[:start_time] = current_user.organization.created_at
 					end
 				end
-
 			end
 
 			if is_user?(current_user)
@@ -258,11 +262,11 @@ class FaxLog < ApplicationRecord
 
 		def timestamp_is_older?(param_start_time, comparison_obj_time)
 			return if param_start_time.nil?
-			Time.at(param_start_time.to_time) > Time.at(comparison_obj_time.to_time)
+			Time.at(param_start_time.to_time.utc) > Time.at(comparison_obj_time.to_time.utc)
 		end
 
 		def add_end_time(input_time)
-			input_time.to_s == "" ? Time.now.to_datetime.rfc3339 : input_time.to_datetime.rfc3339
+			input_time.to_s == "" ? Time.now.to_datetime.utc.rfc3339 : input_time.to_datetime.utc.rfc3339
 		end
 		
 		def set_status_in_options(filtered_params, options)
@@ -309,7 +313,7 @@ class FaxLog < ApplicationRecord
 		end
 
 		def fax_object_is_younger?(fax_object_timestamp, comparison_obj_timestamp)
-			Time.at(fax_object_timestamp.to_time) > Time.at(comparison_obj_timestamp.to_time)
+			Time.at(fax_object_timestamp.to_time.utc) > Time.at(comparison_obj_timestamp.to_time.utc)
 		end
 
 		def format_initial_fax_data_time(time)

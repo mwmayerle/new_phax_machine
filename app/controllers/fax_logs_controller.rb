@@ -99,7 +99,7 @@ class FaxLogsController < ApplicationController
 
 		def filtering_params
 			if params[:fax_log]
-				params.require(:fax_log).permit(:start_time, :end_time, :fax_number, :organization, :user, :status)
+				params.require(:fax_log).permit(:start_time, :end_time, :fax_number, :organization, :user, :status, :timezone_offset)
 			else
 				params = { :fax_log => {} } # for the first request on page load
 			end
