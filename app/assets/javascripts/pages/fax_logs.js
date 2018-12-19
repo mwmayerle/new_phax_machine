@@ -20,13 +20,10 @@ phaxMachine.pages['fax-logs'] = {
 	}
 };
 
-let timeZoneOffset = function() {
-	$("#filtering-form").on('click', () => {
-		let date = new Date();
-		let userOffset = date.getTimezoneOffset();
-		console.log(userOffset);
-		alert(userOffset);
-	});
+function timeZoneOffset {
+	let date = new Date();
+	let userOffsetHours = date.getTimezoneOffset() / 60;
+	$("#timezone-offset").value(userOffsetHours);
 }
 
 function buildTableRows(faxData, pageNumberDisplay) {
