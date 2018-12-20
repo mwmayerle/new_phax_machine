@@ -108,11 +108,6 @@ class FaxLog < ApplicationRecord
 		end
 
 		def fax_number_time(start_time, fax_number_org_switched_time)
-			p "===="
-			p start_time.to_time.utc
-			p fax_number_org_switched_time.to_time.utc
-			p start_time.to_time > fax_number_org_switched_time.to_time
-			p "===="
 			if start_time.to_time > fax_number_org_switched_time.to_time
 				return start_time
 			else
