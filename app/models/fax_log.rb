@@ -59,7 +59,7 @@ class FaxLog < ApplicationRecord
 				end
 				fax_data.push(new_data) if !new_data.nil?
 
-				if fax_numbers
+				if fax_numbers != nil
 					# Then search for faxes using each fax_number associated with the Organization
 					fax_numbers.keys.each do |fax_number|
 						options[:fax_number] = fax_number
