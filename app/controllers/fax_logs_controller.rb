@@ -64,7 +64,7 @@ class FaxLogsController < ApplicationController
 				fax_nums = current_user.user_fax_numbers.map { |user_fax_num| user_fax_num.fax_number }.uniq
 				fax_nums = fax_nums.select { |fax_num| fax_num.org_switched_at.to_datetime.utc < info.completed_at.to_datetime.utc }
 					.map { |fax_number| fax_number.fax_number }
-				can_download = fax_nums.include?(info.to_number) || fax_nums.include?(info.from_number)
+				can_download = fax_nums.include?(info.to_number) #|| fax_nums.include?(info.from_number)
 			else
 				can_download = current_user.fax_tag == info.tags[:sender_email_fax_tag]
 			end
