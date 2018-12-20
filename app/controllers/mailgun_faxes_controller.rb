@@ -13,7 +13,6 @@ class MailgunFaxesController < ApplicationController
     if email_addresses.present? # requires the User to be linked to a fax number
 		  fax_from = @fax['from_number']
 
-
 	  	##################### V2.1 WEBHOOK CODE HERE #################
 	  	###if params['filename']
 	  	###  email_subject = "Fax received from #{fax_from}"
@@ -79,8 +78,8 @@ class MailgunFaxesController < ApplicationController
 
     if user && user.fax_numbers.present?
 	 		sent_fax_object = Fax.create_fax_from_email(sender, params['recipient'], files, user)
-	 	else
-	 		sent_fax_object = "You are not linked to the fax number you attempted to fax. "
+	 	# else
+	 	# 	sent_fax_object = "You are not linked to the fax number you attempted to fax. "
 	 	end
 
  		if sent_fax_object.class != String && user.fax_numbers.present?
