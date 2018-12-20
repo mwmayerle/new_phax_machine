@@ -34,7 +34,7 @@
 							<% @organizations.each do |organization_fax_tag, organization_data| %>
 								<% if organization_fax_tag == 'all' %>
 									<option id="all-org" class="all-org" name="fax_log[organization]" value="all" selected="selected">All</option>
-								<% elsif organization_data[:soft_deleted] == false %>
+								<% else %>
 									<option id="<%= organization_data[:label] %>" class="<%= organization_data[:org_id] %>" name="fax_log[organization]" value="<%= organization_fax_tag %>"><%= organization_data[:label] %></option>
 								<% end %>
 							<% end %>
