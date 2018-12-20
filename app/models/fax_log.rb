@@ -59,49 +59,51 @@ class FaxLog < ApplicationRecord
 				end
 				fax_data.push(new_data) if !new_data.nil?
 
-				# Then search for faxes using each fax_number associated with the Organization
-				fax_numbers.keys.each do |fax_number|
-					options[:fax_number] = fax_number
-					current_data_options = {
-						created_before: options[:end_time],
-						created_after: fax_number_time(options[:start_time], fax_numbers[fax_number][:org_switched_at]),
-						phone_number: options[:fax_number],
-						per_page: options[:per_page],
-						status: options[:status]
-					}
-					current_data = Phaxio::Fax.list(current_data_options)
+				if fax_numbers
+					# Then search for faxes using each fax_number associated with the Organization
+					fax_numbers.keys.each do |fax_number|
+						options[:fax_number] = fax_number
+						current_data_options = {
+							created_before: options[:end_time],
+							created_after: fax_number_time(options[:start_time], fax_numbers[fax_number][:org_switched_at]),
+							phone_number: options[:fax_number],
+							per_page: options[:per_page],
+							status: options[:status]
+						}
+						current_data = Phaxio::Fax.list(current_data_options)
 
-					if current_data.total > 0 # <-- no result catch
-						# Filter by fax number if a specific fax number exists and it isn't "all" or "all-linked"
-						if options[:fax_number].nil?
-							filtered_data = current_data.raw_data
-						else
-							filtered_data = filter_faxes_by_fax_number(options, current_data.raw_data, fax_numbers)
-							if options[:tag][:sender_organization_fax_tag] && filtered_data != nil
-								filtered_data = filter_faxes_by_org_date(options, filtered_data, organizations[options[:tag][:sender_organization_fax_tag]])
+						if current_data.total > 0 # <-- no result catch
+							# Filter by fax number if a specific fax number exists and it isn't "all" or "all-linked"
+							if options[:fax_number].nil?
+								filtered_data = current_data.raw_data
+							else
+								filtered_data = filter_faxes_by_fax_number(options, current_data.raw_data, fax_numbers)
+								if options[:tag][:sender_organization_fax_tag] && filtered_data != nil
+									filtered_data = filter_faxes_by_org_date(options, filtered_data, organizations[options[:tag][:sender_organization_fax_tag]])
 
-								# This prevents sent faxes from other organizations from appearing when they shouldn't
-								filtered_data = filtered_data.select { |fax_object| fax_numbers.keys.include?(fax_object[:to_number]) }
+									# This prevents sent faxes from other organizations from appearing when they shouldn't
+									filtered_data = filtered_data.select { |fax_object| fax_numbers.keys.include?(fax_object[:to_number]) }
+								end
 							end
-						end
 
-						# Filter by user if a user-specific tag exists
-						# NOTE 'users' when filtering by a single user will be a single object from the set_users method, despite
-						#   having a plural name. This is for code re-use.
-						if options[:tag][:sender_email_fax_tag]
-							user_key = users.select { |user_key, user_data| user_data[:fax_tag] == options[:tag][:sender_email_fax_tag] }.keys.pop
-							user_fax_numbers = UserFaxNumber.where(user_id: users[user_key][:user_id])
-								.map { |user_fax_number| user_fax_number.fax_number }
-								.map { |fax_number| fax_number.fax_number }
+							# Filter by user if a user-specific tag exists
+							# NOTE 'users' when filtering by a single user will be a single object from the set_users method, despite
+							#   having a plural name. This is for code re-use.
+							if options[:tag][:sender_email_fax_tag]
+								user_key = users.select { |user_key, user_data| user_data[:fax_tag] == options[:tag][:sender_email_fax_tag] }.keys.pop
+								user_fax_numbers = UserFaxNumber.where(user_id: users[user_key][:user_id])
+									.map { |user_fax_number| user_fax_number.fax_number }
+									.map { |fax_number| fax_number.fax_number }
 
-							filtered_sent_data = filter_faxes_by_user_sent(options, filtered_data, users[user_key])
-							filtered_received_data = filter_faxes_by_user_received(options, filtered_data, users[user_key], user_fax_numbers)
-							filtered_data = filtered_received_data + filtered_sent_data
-						end
-					else
-						filtered_data = current_data.raw_data
-					end # current_data.total end
-					fax_data.push(filtered_data) if filtered_data != nil
+								filtered_sent_data = filter_faxes_by_user_sent(options, filtered_data, users[user_key])
+								filtered_received_data = filter_faxes_by_user_received(options, filtered_data, users[user_key], user_fax_numbers)
+								filtered_data = filtered_received_data + filtered_sent_data
+							end
+						else
+							filtered_data = current_data.raw_data
+						end # current_data.total end
+						fax_data.push(filtered_data) if filtered_data != nil
+					end
 				end
 			end
 			fax_data
