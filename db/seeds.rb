@@ -7,7 +7,7 @@ admin = User.create!(
 # Add all fax numbers from the Phaxio account
 FaxNumber.format_and_retrieve_fax_numbers_from_api
 
-CSV.foreach('./db/phaxmachine.csv', {headers: true}) do |row|
+CSV.foreach('./db/NAME_HERE', {headers: true}) do |row|
   current_org = Organization.find_or_create_by!(
   	label: row[0],
   	admin_id: admin.id
