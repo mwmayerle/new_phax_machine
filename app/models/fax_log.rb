@@ -15,8 +15,6 @@ class FaxLog < ApplicationRecord
 
 			options[:start_time] = add_start_time(current_user, filtered_params, organizations, users)
 			options[:end_time] = add_end_time(filtered_params)
-			p "THE FINAL OPTIONS"
-			p options
 			options
 		end
 
@@ -54,8 +52,6 @@ class FaxLog < ApplicationRecord
 
 				if options[:tag].has_key?(:sender_organization_fax_tag) && !!/all/.match(filtered_params[:fax_number])
 					new_data = tag_data.raw_data
-					p "NEW DATA"
-					p new_data
 				elsif options[:tag].has_key?(:sender_email_fax_tag) && !!/all/.match(filtered_params[:fax_number])
 					new_data = tag_data.raw_data
 				else
@@ -112,6 +108,11 @@ class FaxLog < ApplicationRecord
 		end
 
 		def fax_number_time(start_time, fax_number_org_switched_time)
+			p "===="
+			p start_time
+			p fax_number_org_switched_time
+			p start_time.to_time > fax_number_org_switched_time.to_time
+			p "===="
 			if start_time.to_time > fax_number_org_switched_time.to_time
 				return start_time
 			else
