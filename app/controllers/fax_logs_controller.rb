@@ -25,12 +25,8 @@ class FaxLogsController < ApplicationController
 
 	# create method in this controller is for user-designated filtering after the initial page load
 	def create
-		p "*" * 50
-		p params
 		options = FaxLog.build_options(current_user, filtering_params, @organizations, @users, @fax_numbers)
 		options[:per_page] = 1000
-		p options
-		p "*" * 50
 		initial_fax_data = FaxLog.get_faxes(current_user, options, filtering_params, @users, @fax_numbers, @organizations)
 		if is_admin?
 			FaxLog.add_all_attribute_to_hashes( [@fax_numbers, @organizations] )
@@ -59,7 +55,7 @@ class FaxLogsController < ApplicationController
 				fax_nums = current_user.organization.user_fax_numbers.map { |user_fax_num| user_fax_num.fax_number }.uniq
 				fax_nums = fax_nums.select { |fax_num| fax_num.org_switched_at.to_datetime.utc < info.completed_at.to_datetime.utc }
 					.map { |fax_number| fax_number.fax_number }
-				can_download = fax_nums.include?(info.to_number) || fax_nums.include?(info.from_number)
+				can_download = fax_nums.include?(info.to_number) #|| fax_nums.include?(info.from_number)
 			else
 				can_download = current_user.organization.fax_tag == info.tags[:sender_organization_fax_tag]
 			end
