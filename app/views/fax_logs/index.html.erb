@@ -34,7 +34,7 @@
 							<% @organizations.each do |organization_fax_tag, organization_data| %>
 								<% if organization_fax_tag == 'all' %>
 									<option id="all-org" class="all-org" name="fax_log[organization]" value="all" selected="selected">All</option>
-								<% elsif organization_data[:soft_deleted] == false %>
+								<% else %>
 									<option id="<%= organization_data[:label] %>" class="<%= organization_data[:org_id] %>" name="fax_log[organization]" value="<%= organization_fax_tag %>"><%= organization_data[:label] %></option>
 								<% end %>
 							<% end %>
@@ -87,6 +87,8 @@
 					<%= f.label :end_time, 'End Time:', class: 'control-label' %>
 					<%= f.text_field :end_time, data:{ provide: 'datepicker' }, class: 'datepicker-inline form-control', id: "end-date-field", name: "fax_log[end_time]" %>
 				</div>
+
+				<%= f.hidden_field :timezone_offset, id: "timezone-offset", name: "fax_log[timezone_offset]", value: "" %>
 
 				<div class="form-group col">
 					<button type="submit" id="filter-button" value="Filter" class="btn btn-success force-down-button">

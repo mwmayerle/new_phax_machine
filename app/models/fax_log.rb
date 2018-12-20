@@ -14,19 +14,20 @@ class FaxLog < ApplicationRecord
 			set_organization_in_options(filtered_params, organizations, options) if filtered_params[:organization]
 
 			options[:start_time] = add_start_time(current_user, filtered_params, organizations, users)
-			options[:end_time] = add_end_time(filtered_params[:end_time])
+			options[:end_time] = add_end_time(filtered_params)
 			options
 		end
 
 		def get_faxes(current_user, options, filtered_params, users = nil, fax_numbers = nil, organizations = nil, fax_data = [])
 			# options[:tag] will contain a specific desired organization or user. Managers will always have an organization
-			if options[:tag].nil? # Admin gets everything unless they specify and organization
-				initial_data = Phaxio::Fax.list({
+			if options[:tag].nil? # Admin gets everything unless they specify an organization
+				initial_options = {
 					created_before: options[:end_time],
 					created_after: options[:start_time],
 					per_page: options[:per_page],
 					status: options[:status]
-				})
+				}
+				initial_data = Phaxio::Fax.list(initial_options)
 				fax_data.push(initial_data.raw_data)
 
 			else
@@ -40,13 +41,14 @@ class FaxLog < ApplicationRecord
 
 				# First search for faxes via organization fax tag or user's fax tag and insert these faxes. If I try to include the desired
 				# fax number(s) in this API call as well, it will only return received faxes b/c those will have the tags on them.
-				tag_data = Phaxio::Fax.list(
+				tag_data_options = {
 					created_before: options[:end_time],
 					created_after: options[:start_time],
 					tag: options[:tag],
 					per_page: options[:per_page],
 					status: options[:status]
-				)
+				}
+				tag_data = Phaxio::Fax.list(tag_data_options)
 
 				if options[:tag].has_key?(:sender_organization_fax_tag) && !!/all/.match(filtered_params[:fax_number])
 					new_data = tag_data.raw_data
@@ -60,14 +62,14 @@ class FaxLog < ApplicationRecord
 				# Then search for faxes using each fax_number associated with the Organization
 				fax_numbers.keys.each do |fax_number|
 					options[:fax_number] = fax_number
-					current_data = Phaxio::Fax.list(
-						created_after: fax_numbers[fax_number][:org_switched_at],
+					current_data_options = {
 						created_before: options[:end_time],
-						# created_after: options[:start_time],
+						created_after: fax_number_time(options[:start_time], fax_numbers[fax_number][:org_switched_at]),
 						phone_number: options[:fax_number],
 						per_page: options[:per_page],
 						status: options[:status]
-					)
+					}
+					current_data = Phaxio::Fax.list(current_data_options)
 
 					if current_data.total > 0 # <-- no result catch
 						# Filter by fax number if a specific fax number exists and it isn't "all" or "all-linked"
@@ -77,6 +79,7 @@ class FaxLog < ApplicationRecord
 							filtered_data = filter_faxes_by_fax_number(options, current_data.raw_data, fax_numbers)
 							if options[:tag][:sender_organization_fax_tag] && filtered_data != nil
 								filtered_data = filter_faxes_by_org_date(options, filtered_data, organizations[options[:tag][:sender_organization_fax_tag]])
+
 								# This prevents sent faxes from other organizations from appearing when they shouldn't
 								filtered_data = filtered_data.select { |fax_object| fax_numbers.keys.include?(fax_object[:to_number]) }
 							end
@@ -97,11 +100,19 @@ class FaxLog < ApplicationRecord
 						end
 					else
 						filtered_data = current_data.raw_data
-					end #current_data.total
+					end # current_data.total end
 					fax_data.push(filtered_data) if filtered_data != nil
 				end
 			end
 			fax_data
+		end
+
+		def fax_number_time(start_time, fax_number_org_switched_time)
+			if start_time.to_time > fax_number_org_switched_time.to_time
+				return start_time
+			else
+				return fax_number_org_switched_time
+			end
 		end
 
 		def filter_for_desired_fax_number(tag_data, fax_numbers)
@@ -137,12 +148,6 @@ class FaxLog < ApplicationRecord
 
 			new_data = from_number_data + to_number_data + caller_id_data + recipients_data
 			new_data = new_data.uniq
-
-			# results = []
-			# fax_numbers.each do |fn_key, fn_value|
-
-			# end
-
 			new_data
 		end
 
@@ -177,11 +182,12 @@ class FaxLog < ApplicationRecord
 				}
 
 				if fax_object[:direction] == 'received'
-					
-					if fax_numbers[fax_object[:to_number]] && fax_object_is_younger?(fax_object[:created_at], fax_numbers[fax_object[:to_number]][:org_created_at])
-				# NOTE 'label' on the line below is the organization the fax number is associated with. See 'created_fax_nums_hash' method
+					# if fax_numbers[fax_object[:to_number]] && fax_object_is_younger?(fax_object[:created_at], fax_numbers[fax_object[:to_number]][:org_created_at])
+					if fax_numbers[fax_object[:to_number]] && fax_object_is_younger?(fax_object[:created_at], fax_numbers[fax_object[:to_number]][:org_switched_at])
+						# NOTE 'label' on the line below is the organization the fax number is associated with. See 'created_fax_nums_hash' method
 						fax_data[fax_object[:id]][:organization] = fax_numbers[fax_object[:to_number]][:label]
-					elsif fax_numbers[fax_object[:from_number]] && fax_object_is_younger?(fax_object[:created_at], fax_numbers[fax_object[:from_number]][:org_created_at])
+					# elsif fax_numbers[fax_object[:from_number]] && fax_object_is_younger?(fax_object[:created_at], fax_numbers[fax_object[:from_number]][:org_created_at])
+					elsif fax_numbers[fax_object[:from_number]] && fax_object_is_younger?(fax_object[:created_at], fax_numbers[fax_object[:from_number]][:org_switched_at])
 						fax_data[fax_object[:id]][:organization] = fax_numbers[fax_object[:from_number]][:label]
 					else
 						fax_data[fax_object[:id]][:organization] = ""
@@ -190,7 +196,7 @@ class FaxLog < ApplicationRecord
 					fax_data[fax_object[:id]][:to_number] = FaxNumber.format_pretty_fax_number(fax_object[:to_number])
 					fax_data[fax_object[:id]][:from_number] = FaxNumber.format_pretty_fax_number(fax_object[:from_number])
 
-				else # fax_object.direction == "sent"
+				else # fax_object[:direction] == "sent"
 
 					if is_admin?(current_user)
 						# Checks if fax_object has a fax tag that matches an existing organization's fax tag
@@ -236,36 +242,48 @@ class FaxLog < ApplicationRecord
 		# This method modifies the user-submitted start time to whenever the desired parameter was created to avoid asking
 		#   the API for data from a huge time range that predates what the user wants
 		def add_start_time(current_user, filtered_params, organizations, users)
-			filtered_params[:start_time] = filtered_params[:start_time].to_s == "" ? (DateTime.now - 7) : filtered_params[:start_time].to_time
+			if filtered_params[:start_time].to_s == ""
+				# Time.now.utc needs to offset the client-side user's clock
+				filtered_params[:start_time] = (Time.now.utc - 7.days) + filtered_params[:timezone_offset].to_i.hours
+			else
+				filtered_params[:start_time] = filtered_params[:start_time].to_time.utc + filtered_params[:timezone_offset].to_i.hours
+			end
+
 			if is_manager?(current_user)
-				if !!/all/.match(filtered_params[:user]) && timestamp_is_older?(filtered_params[:start_time], current_user.organization.created_at)
-					filtered_params[:start_time] = current_user.organization.created_at 
+				# if users key in params is 'all' or 'all-linked' and start time is more recent that the creation of the organization
+				if !!/all/.match(filtered_params[:user]) && first_arg_more_recent?(current_user.organization.created_at.utc, filtered_params[:start_time])
+					filtered_params[:start_time] = current_user.organization.created_at.utc
 				else
 					# User objects in the hash look like:
 					#   {1=>{:email=>"org_one_user@aol.com", :caller_id_number=>"+15555834355", :user_created_at=>Wed, 19 Sep 2018 18:22:04 UTC +00:00, :fax_tag=>"sdfg2776-d2be-0000-a6fb-58a12345ea2c", :org_id=>1}}
 					#   This returns the key in the hash (e.g. [1])
 					user_key = users.select { |user_key, user_data| user_data[:email] == filtered_params[:user] }.keys.pop
-					if (user_key && timestamp_is_older?(filtered_params[:start_time], users[user_key][:user_created_at])) || (user_key && timestamp_is_older?(current_user.organization.created_at, users[user_key][:user_created_at]))
-						filtered_params[:start_time] = current_user.organization.created_at
+
+					if (user_key && first_arg_more_recent?(users[user_key][:user_created_at].utc, filtered_params[:start_time])) || (user_key && first_arg_more_recent?(current_user.organization.created_at.utc, users[user_key][:user_created_at].utc))
+						filtered_params[:start_time] = current_user.organization.created_at.utc
 					end
 				end
-
 			end
 
 			if is_user?(current_user)
-				filtered_params[:start_time] = current_user.created_at if timestamp_is_older?(filtered_params[:start_time], current_user.created_at)
+				filtered_params[:start_time] = current_user.created_at if first_arg_more_recent?(filtered_params[:start_time], current_user.created_at)
 			end
-
 			filtered_params[:start_time].rfc3339
 		end
 
-		def timestamp_is_older?(param_start_time, comparison_obj_time)
-			return if param_start_time.nil?
-			Time.at(param_start_time.to_time) > Time.at(comparison_obj_time.to_time)
+		def first_arg_more_recent?(time_a, time_b)
+			# The one on the left is younger/more recent because it has more seconds
+			return if time_a.nil? || time_b.nil?
+			time_a.to_time > time_b.to_time
 		end
 
-		def add_end_time(input_time)
-			input_time.to_s == "" ? Time.now.to_datetime.rfc3339 : input_time.to_time.to_datetime.rfc3339
+		def add_end_time(filtered_params)
+			if filtered_params[:end_time].to_s == ""
+				filtered_params[:end_time] = (Time.now.to_time.utc + filtered_params[:timezone_offset].to_i.hours).rfc3339
+			else
+				filtered_params[:end_time] = (filtered_params[:end_time].to_time.utc + filtered_params[:timezone_offset].to_i.hours).to_time.utc.rfc3339
+			end
+			filtered_params[:end_time]
 		end
 		
 		def set_status_in_options(filtered_params, options)
@@ -312,7 +330,7 @@ class FaxLog < ApplicationRecord
 		end
 
 		def fax_object_is_younger?(fax_object_timestamp, comparison_obj_timestamp)
-			Time.at(fax_object_timestamp.to_time) > Time.at(comparison_obj_timestamp.to_time)
+			Time.at(fax_object_timestamp.to_time.utc) > Time.at(comparison_obj_timestamp.to_time.utc)
 		end
 
 		def format_initial_fax_data_time(time)

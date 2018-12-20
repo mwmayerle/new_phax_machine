@@ -6,7 +6,7 @@ function loadCalendar() {
   	altInput: true,
   	altFormat: 'm-d-Y h:i K',
     maxDate: new Date(),
-    autoclose: true
+    autoclose: true,
 	});
 	return calendar;
 };
@@ -16,3 +16,4 @@ phaxMachine.components['calendar'] = {
 		loadCalendar();
 	}
 };
+

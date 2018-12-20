@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/phaxio/phaxio-ruby.git
-  revision: 29487f3daa1e832732ea3aea8281211cd5336308
+  revision: cefc08ee64b2e345e90e1ab2c5c96d245b021424
   specs:
     phaxio (2.0.1)
       activesupport
@@ -81,7 +81,7 @@ GEM
     chromedriver-helper (2.1.0)
       archive-zip (~> 0.10)
       nokogiri (~> 1.8)
-    concurrent-ruby (1.1.1)
+    concurrent-ruby (1.1.4)
     crass (1.0.4)
     devise (4.5.0)
       bcrypt (~> 3.0)
@@ -97,7 +97,7 @@ GEM
       railties (>= 3.2, < 6.0)
     erubi (1.7.1)
     execjs (2.7.0)
-    faraday (0.15.3)
+    faraday (0.15.4)
       multipart-post (>= 1.2, < 3)
     ffi (1.9.25)
     flatpickr (4.5.2.0)
@@ -105,7 +105,7 @@ GEM
       activesupport (>= 4.2.0)
     httparty (0.16.2)
       multi_xml (>= 0.5.2)
-    i18n (1.1.1)
+    i18n (1.2.0)
       concurrent-ruby (~> 1.0)
     io-like (0.3.0)
     jbuilder (2.8.0)

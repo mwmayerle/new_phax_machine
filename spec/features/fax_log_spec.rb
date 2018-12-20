@@ -55,7 +55,7 @@ RSpec.feature "Fax Logs", :type => :feature do
 
 	describe "org_deleted is soft deleted" do
 		it "is soft-deleted" do
-			# Deleting the organization this way is required because deleting through the terminal does not triggered the
+			# Deleting the organization this way is required because deleting through the terminal does not trigger the
 			# ActiveRecord "before_destroy" callbacks.
 			login_as(admin)
 			visit(organizations_path)
@@ -94,53 +94,53 @@ RSpec.feature "Fax Logs", :type => :feature do
 			end
 		end
 
-		it "when logged in as a manager" do
-			manager_fax_numbers = FaxNumber.where(organization_id: manager.organization.id)
-			fax_nums_array = manager_fax_numbers.map { |fax_num| FaxNumber.format_pretty_fax_number(fax_num.fax_number) }.push("All")
-			users_array = User.where(organization_id: manager.organization.id).select { |user| user.user_permission }.map { |user| user.email }.push("All")
-			login_as(manager)
-			visit(fax_logs_path)
-			expect(page).not_to have_select("fax_log[organization]") # admin only
+		# it "when logged in as a manager" do
+		# 	manager_fax_numbers = FaxNumber.where(organization_id: manager.organization.id)
+		# 	fax_nums_array = manager_fax_numbers.map { |fax_num| FaxNumber.format_pretty_fax_number(fax_num.fax_number) }.push("All")
+		# 	users_array = User.where(organization_id: manager.organization.id).select { |user| user.user_permission }.map { |user| user.email }.push("All")
+		# 	login_as(manager)
+		# 	visit(fax_logs_path)
+		# 	expect(page).not_to have_select("fax_log[organization]") # admin only
 
-			expect(page).to have_select("fax_log[status]", options: ["All", "Success", "Failure", "In Progress", "Queued"])
-			expect(page).to have_select("fax_log[fax_number]", options: fax_nums_array)
-			expect(page).to have_select("fax_log[user]", options: users_array)
-			expect(page).to have_field("fax_log[start_time]")
-			expect(page).to have_field("fax_log[end_time]")
+		# 	expect(page).to have_select("fax_log[status]", options: ["All", "Success", "Failure", "In Progress", "Queued"])
+		# 	expect(page).to have_select("fax_log[fax_number]", options: fax_nums_array)
+		# 	expect(page).to have_select("fax_log[user]", options: users_array)
+		# 	expect(page).to have_field("fax_log[start_time]")
+		# 	expect(page).to have_field("fax_log[end_time]")
 
-			within_table("fax-log-table") do
-				expect(page).to have_text("Path")
-				expect(page).to have_text("Sent By")
-				expect(page).to have_text("From Number")
-				expect(page).to have_text("To Number")
-				expect(page).to have_text("Status")
-				expect(page).to have_text("Time")
-				expect(page).to have_text("File")
-			end
-		end
+		# 	within_table("fax-log-table") do
+		# 		expect(page).to have_text("Path")
+		# 		expect(page).to have_text("Sent By")
+		# 		expect(page).to have_text("From Number")
+		# 		expect(page).to have_text("To Number")
+		# 		expect(page).to have_text("Status")
+		# 		expect(page).to have_text("Time")
+		# 		expect(page).to have_text("File")
+		# 	end
+		# end
 
-		it "when logged in as a generic user" do
-			user1_fax_numbers = UserFaxNumber.where(user_id: user1.id).map { |user1_fax_num| user1_fax_num.fax_number }
-			fax_nums_array = user1_fax_numbers.map { |fax_num| FaxNumber.format_pretty_fax_number(fax_num.fax_number) }.push("All")
-			login_as(user1)
-			visit(fax_logs_path)
-			expect(page).not_to have_select("fax_log[user]") # manager only
-			expect(page).not_to have_select("fax_log[organization]") # admin only
+		# it "when logged in as a generic user" do
+		# 	user1_fax_numbers = UserFaxNumber.where(user_id: user1.id).map { |user1_fax_num| user1_fax_num.fax_number }
+		# 	fax_nums_array = user1_fax_numbers.map { |fax_num| FaxNumber.format_pretty_fax_number(fax_num.fax_number) }.push("All")
+		# 	login_as(user1)
+		# 	visit(fax_logs_path)
+		# 	expect(page).not_to have_select("fax_log[user]") # manager only
+		# 	expect(page).not_to have_select("fax_log[organization]") # admin only
 
-			expect(page).to have_select("fax_log[status]", options: ["All", "Success", "Failure", "In Progress", "Queued"])
-			expect(page).to have_select("fax_log[fax_number]", options: fax_nums_array)
-			expect(page).to have_field("fax_log[start_time]")
-			expect(page).to have_field("fax_log[end_time]")
+		# 	expect(page).to have_select("fax_log[status]", options: ["All", "Success", "Failure", "In Progress", "Queued"])
+		# 	expect(page).to have_select("fax_log[fax_number]", options: fax_nums_array)
+		# 	expect(page).to have_field("fax_log[start_time]")
+		# 	expect(page).to have_field("fax_log[end_time]")
 
-			within_table("fax-log-table") do
-				expect(page).to have_text("Path")
-				expect(page).to have_text("From Number")
-				expect(page).to have_text("To Number")
-				expect(page).to have_text("Status")
-				expect(page).to have_text("Time")
-				expect(page).to have_text("File")
-			end
-		end
+		# 	within_table("fax-log-table") do
+		# 		expect(page).to have_text("Path")
+		# 		expect(page).to have_text("From Number")
+		# 		expect(page).to have_text("To Number")
+		# 		expect(page).to have_text("Status")
+		# 		expect(page).to have_text("Time")
+		# 		expect(page).to have_text("File")
+		# 	end
+		# end
 
 		it "when not logged in redirects to the sign-in page" do
 			visit(fax_logs_path)

@@ -4,12 +4,11 @@ class FaxLogsController < ApplicationController
 
 	# this method is for the initial page load 
 	def index
-
 		initial_filtering_params = filtering_params
 		initial_filtering_params[:fax_number] = 'all'
+
 		options = FaxLog.build_options(current_user, filtering_params, @organizations, @users, @fax_numbers)
 		options[:per_page] = 20
-
 		if is_admin?
 			initial_fax_data = FaxLog.get_faxes(current_user, options, initial_filtering_params)
 			FaxLog.add_all_attribute_to_hashes( [@fax_numbers, @organizations] )
@@ -54,18 +53,18 @@ class FaxLogsController < ApplicationController
 		elsif is_manager?
 			if info.direction == 'received'
 				fax_nums = current_user.organization.user_fax_numbers.map { |user_fax_num| user_fax_num.fax_number }.uniq
-				fax_nums = fax_nums.select { |fax_num| fax_num.org_switched_at.to_datetime < info.completed_at.to_datetime }
+				fax_nums = fax_nums.select { |fax_num| fax_num.org_switched_at.to_datetime.utc < info.completed_at.to_datetime.utc }
 					.map { |fax_number| fax_number.fax_number }
-				can_download = fax_nums.include?(info.to_number) || fax_nums.include?(info.from_number)
+				can_download = fax_nums.include?(info.to_number) #|| fax_nums.include?(info.from_number)
 			else
 				can_download = current_user.organization.fax_tag == info.tags[:sender_organization_fax_tag]
 			end
 		else #generic user
 			if info.direction == 'received'
 				fax_nums = current_user.user_fax_numbers.map { |user_fax_num| user_fax_num.fax_number }.uniq
-				fax_nums = fax_nums.select { |fax_num| fax_num.org_switched_at.to_datetime < info.completed_at.to_datetime }
+				fax_nums = fax_nums.select { |fax_num| fax_num.org_switched_at.to_datetime.utc < info.completed_at.to_datetime.utc }
 					.map { |fax_number| fax_number.fax_number }
-				can_download = fax_nums.include?(info.to_number) || fax_nums.include?(info.from_number)
+				can_download = fax_nums.include?(info.to_number) #|| fax_nums.include?(info.from_number)
 			else
 				can_download = current_user.fax_tag == info.tags[:sender_email_fax_tag]
 			end
@@ -82,8 +81,7 @@ class FaxLogsController < ApplicationController
 	   		send_file(filepath, filename: filename, type: :pdf, disposition: "attachment")
 	   	end
 		else
-			flash[:alert] = "Problem accessing file"
-			# render :body => nil, :status => :unauthorized
+			render :body => nil, :status => :unauthorized
 		end
 	end
 
@@ -98,7 +96,7 @@ class FaxLogsController < ApplicationController
 
 		def filtering_params
 			if params[:fax_log]
-				params.require(:fax_log).permit(:start_time, :end_time, :fax_number, :organization, :user, :status)
+				params.require(:fax_log).permit(:start_time, :end_time, :fax_number, :organization, :user, :status, :timezone_offset)
 			else
 				params = { :fax_log => {} } # for the first request on page load
 			end
