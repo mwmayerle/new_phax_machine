@@ -83,10 +83,10 @@ class FaxNumber < ApplicationRecord
 				begin
 					api_response = Phaxio::PhoneNumber.list
 				rescue Phaxio::Error::PhaxioError => error
-					return api_response = error.message
+					api_response = error.message
 				end
-				api_response = "I AM A TESTING STRING ERROR MESSAGE"
-				format_fax_numbers(api_response.raw_data) unless api_response.is_a?(String)
+				api_response = "HELLO I AM AN ERROR MESSAGE"
+				api_response.is_a?(String) ? api_response : format_fax_numbers(api_response.raw_data)
 			end
 
 			# Creates a new hash with desired data from data received from the Phaxio API
