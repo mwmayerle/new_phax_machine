@@ -19,6 +19,7 @@ class FaxNumbersController < ApplicationController
 			@area_codes = area_codes
 			@states = states
 		end
+		
 		@fax_numbers = FaxNumber.format_and_retrieve_fax_numbers_from_api
 		if @fax_numbers.is_a?(String)
 			flash[:alert] = @fax_numbers

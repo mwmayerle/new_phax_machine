@@ -57,7 +57,7 @@ class FaxNumber < ApplicationRecord
 					area_codes_from_api = error.message
 				end
 				area_codes_from_api = "I AM THE AREA CODE ERROR"
-				format_area_codes(area_codes_from_api.raw_data, options) unless area_codes_from_api.is_a?(String)
+				area_codes_from_api.is_a?(String) ? area_codes_from_api : format_area_codes(area_codes_from_api.raw_data, options)
 			end
 
 			def format_area_codes(area_codes_from_api, options, area_codes = {})
