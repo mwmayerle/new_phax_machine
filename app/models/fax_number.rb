@@ -51,8 +51,12 @@ class FaxNumber < ApplicationRecord
 			def get_area_code_list(options = {})
 				Fax.set_phaxio_creds
 				options.merge!({ country_code: 1, per_page: 1000 })
-				area_codes_from_api = Phaxio::Public::AreaCode.list(options)
-				format_area_codes(area_codes_from_api.raw_data, options)
+				begin
+					area_codes_from_api = Phaxio::Public::AreaCode.list(options)
+				rescue Phaxio::Error::PhaxioError => error
+					area_codes_from_api = error.message
+				end
+				format_area_codes(area_codes_from_api.raw_data, options) unless area_codes_from_api.is_a?(String)
 			end
 
 			def format_area_codes(area_codes_from_api, options, area_codes = {})
