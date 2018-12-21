@@ -13,7 +13,8 @@ class FaxNumbersController < ApplicationController
 		if area_codes.is_a?(String) || states.is_a?(String)
 			p "AREA CODE OR STATES ERROR"
 			flash[:alert] = "Something went wrong. Please try again later."
-			redirect_to(root_path)
+			# Weird redirect because the root path for admin is the fax_num index, so this avoids and infinite redirect loop
+			redirect_to(fax_logs_path) 
 		else
 			@area_codes = area_codes
 			@states = states
@@ -23,7 +24,7 @@ class FaxNumbersController < ApplicationController
 		if @fax_numbers.is_a?(String)
 			p "FAX NUMBER ERROR"
 			flash[:alert] = @fax_numbers
-			redirect_to(root_path)
+			redirect_to(fax_logs_path)
 		end
 	end
 
@@ -34,7 +35,7 @@ class FaxNumbersController < ApplicationController
 		states = FaxNumber.create_states_for_numbers(area_codes)
 		if area_codes.is_a?(String) || states.is_a?(String)
 			flash[:alert] = "Something went wrong. Please try again later."
-			redirect_to(root_path)
+			redirect_to(fax_logs_path)
 		else
 			@area_codes = area_codes
 			@states = states
