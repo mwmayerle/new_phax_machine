@@ -11,6 +11,7 @@ class FaxNumbersController < ApplicationController
 		area_codes = FaxNumber.get_area_code_list(list_area_code_params)
 		states = FaxNumber.create_states_for_numbers(area_codes)
 		if area_codes.is_a?(String) || states.is_a?(String)
+			p "AREA CODE OR STATES ERROR"
 			flash[:alert] = "Something went wrong. Please try again later."
 			redirect_to(root_path)
 		else
@@ -18,7 +19,12 @@ class FaxNumbersController < ApplicationController
 			@states = states
 		end
 		@fax_numbers = FaxNumber.format_and_retrieve_fax_numbers_from_api
-		flash[:alert] = @fax_numbers if @fax_numbers.is_a?(String)
+		p @fax_numbers
+		if @fax_numbers.is_a?(String)
+			p "FAX NUMBER ERROR"
+			flash[:alert] = @fax_numbers
+			redirect_to(root_path)
+		end
 	end
 
 	# Purchase Number Form page
