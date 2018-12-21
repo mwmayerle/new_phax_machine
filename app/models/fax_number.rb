@@ -77,7 +77,10 @@ class FaxNumber < ApplicationRecord
 			def format_and_retrieve_fax_numbers_from_api
 				Fax.set_phaxio_creds
 				api_response = Phaxio::PhoneNumber.list
-				format_fax_numbers(api_response.raw_data)
+				p "=" * 55
+				p api_response
+				p "=" * 55
+				format_fax_numbers(api_response.raw_data) if api_response.status
 			end
 
 			# Creates a new hash with desired data from data received from the Phaxio API
