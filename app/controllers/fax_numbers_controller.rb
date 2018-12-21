@@ -9,7 +9,7 @@ class FaxNumbersController < ApplicationController
 	# Table of all fax numbers in your account
 	def index
 		area_codes = FaxNumber.get_area_code_list(list_area_code_params)
-		states = FaxNumber.create_states_for_numbers(@area_codes)
+		states = FaxNumber.create_states_for_numbers(area_codes)
 		if area_codes.is_a?(String) || states.is_a?(String)
 			flash[:alert] = "Something went wrong. Please try again later."
 			redirect_to(root_path)
@@ -24,7 +24,7 @@ class FaxNumbersController < ApplicationController
 	def new
 		verify_is_manager_or_admin
 		area_codes = FaxNumber.get_area_code_list
-		states = FaxNumber.create_states_for_numbers(@area_codes)
+		states = FaxNumber.create_states_for_numbers(area_codes)
 		if area_codes.is_a?(String) || states.is_a?(String)
 			flash[:alert] = "Something went wrong. Please try again later."
 			redirect_to(root_path)
