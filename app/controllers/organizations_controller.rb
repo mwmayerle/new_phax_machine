@@ -9,7 +9,7 @@ class OrganizationsController < ApplicationController
 	def index
 		@user = User.new
 		@user.build_user_permission
-		FaxNumber.format_and_retrieve_fax_numbers_from_api if FaxNumber.first.nil?
+		# FaxNumber.format_and_retrieve_fax_numbers_from_api if FaxNumber.first.nil?
 		@organizations = Organization.includes([:fax_numbers, :manager]).order(label: :asc)
 	end
 
