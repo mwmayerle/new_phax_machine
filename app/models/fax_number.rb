@@ -85,6 +85,7 @@ class FaxNumber < ApplicationRecord
 				rescue Phaxio::Error::PhaxioError => error
 					api_response = error.message
 				end
+				api_response = "I AM A TESTING STRING ERROR MESSAGE"
 				format_fax_numbers(api_response.raw_data) unless api_response.is_a?(String)
 			end
 
