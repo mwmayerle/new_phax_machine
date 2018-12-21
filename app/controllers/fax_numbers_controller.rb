@@ -20,9 +20,7 @@ class FaxNumbersController < ApplicationController
 			@states = states
 		end
 		@fax_numbers = FaxNumber.format_and_retrieve_fax_numbers_from_api
-		p @fax_numbers
 		if @fax_numbers.is_a?(String)
-			p "FAX NUMBER ERROR"
 			flash[:alert] = @fax_numbers
 			redirect_to(fax_logs_path)
 		end

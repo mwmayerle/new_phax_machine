@@ -56,6 +56,7 @@ class FaxNumber < ApplicationRecord
 				rescue Phaxio::Error::PhaxioError => error
 					area_codes_from_api = error.message
 				end
+				area_codes_from_api = "I AM THE AREA CODE ERROR"
 				format_area_codes(area_codes_from_api.raw_data, options) unless area_codes_from_api.is_a?(String)
 			end
 
@@ -85,7 +86,6 @@ class FaxNumber < ApplicationRecord
 				rescue Phaxio::Error::PhaxioError => error
 					api_response = error.message
 				end
-				api_response = "HELLO I AM AN ERROR MESSAGE"
 				api_response.is_a?(String) ? api_response : format_fax_numbers(api_response.raw_data)
 			end
 
