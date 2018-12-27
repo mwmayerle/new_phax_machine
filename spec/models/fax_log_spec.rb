@@ -9,12 +9,12 @@ RSpec.describe FaxLog, type: :model do
 	let!(:org1) { Organization.create!(label: "Org One", admin_id: admin.id, fax_numbers_purchasable: true) }
 	let!(:org2) { Organization.create!(label: "Org Two", admin_id: admin.id, fax_numbers_purchasable: false) }
 
-	let!(:fax_number1) { FaxNumber.create!(fax_number: '+17738675301', organization_id: org1.id) }
-	let!(:fax_number2) { FaxNumber.create!(fax_number: '+17738675302', organization_id: org1.id) }
-	let!(:fax_number3) { FaxNumber.create!(fax_number: '+17738675303', organization_id: org1.id) }
-	let!(:fax_number4) { FaxNumber.create!(fax_number: '+17738675344', organization_id: org2.id) }
-	let!(:fax_number5) { FaxNumber.create!(fax_number: '+17738675355', organization_id: org2.id) }
-	let!(:fax_number6) { FaxNumber.create!(fax_number: '+17738675366', organization_id: org2.id) }
+	let!(:fax_number1) { FaxNumber.create!(fax_number: '+17738675301', organization_id: org1.id, org_switched_at: Time.now) }
+	let!(:fax_number2) { FaxNumber.create!(fax_number: '+17738675302', organization_id: org1.id, org_switched_at: Time.now) }
+	let!(:fax_number3) { FaxNumber.create!(fax_number: '+17738675303', organization_id: org1.id, org_switched_at: Time.now) }
+	let!(:fax_number4) { FaxNumber.create!(fax_number: '+17738675344', organization_id: org2.id, org_switched_at: Time.now) }
+	let!(:fax_number5) { FaxNumber.create!(fax_number: '+17738675355', organization_id: org2.id, org_switched_at: Time.now) }
+	let!(:fax_number6) { FaxNumber.create!(fax_number: '+17738675366', organization_id: org2.id, org_switched_at: Time.now) }
 
 	let! (:manager1) do 
 		User.create!(email: 'org_one_manager@aol.com', user_permission_attributes: { permission: UserPermission::MANAGER }, organization_id: org1.id, caller_id_number: fax_number1.fax_number)
@@ -49,69 +49,69 @@ RSpec.describe FaxLog, type: :model do
 	end # before(:each)
 
 	describe "the #build_options method" do
-		# describe "the #add_start_time method" do
-		# 	it "#add_start_time sets the start_time in the options hash to an RFC3339 time based on user input" do
-		# 		filtered_params = { :start_time => "2018-08-01 12:00PM" }
-		# 		all_orgs = Organization.all
-		# 		FaxLog.create_orgs_hash(org_hash = {}, org1)
+		describe "the #add_start_time method" do
+			it "#add_start_time sets the start_time in the options hash to an RFC3339 time based on user input" do
+				filtered_params = { :start_time => "2018-08-01 12:00PM" }
+				all_orgs = Organization.all
+				FaxLog.create_orgs_hash(org_hash = {}, org1)
 
-		# 		options = FaxLog.build_options(admin, filtered_params, org_hash, @users, @fax_numbers)
-		# 		expect(options[:start_time].to_time + 6.hours).to eq("2018-08-01 12:00PM".to_time.rfc3339)
+				options = FaxLog.build_options(admin, filtered_params, org_hash, @users, @fax_numbers)
+				expect(options[:start_time].to_time).to eq("2018-08-01 12:00PM".to_time.rfc3339)
 
-		# 		options = FaxLog.build_options(manager1, filtered_params, org_hash, @users, @fax_numbers)
-		# 		expect(options[:start_time].to_time + 6.hours).to eq("2018-08-01 12:00PM".to_time.rfc3339)
+				options = FaxLog.build_options(manager1, filtered_params, org_hash, @users, @fax_numbers)
+				expect(options[:start_time].to_time).to eq("2018-08-01 12:00PM".to_time.rfc3339)
 
-		# 		options = FaxLog.build_options(user1, filtered_params, org_hash, @users, @fax_numbers)
-		# 		expect(options[:start_time].to_time + 6.hours).to eq("2018-08-01 12:00PM".to_time.rfc3339)
-		# 	end
+				options = FaxLog.build_options(user1, filtered_params, org_hash, @users, @fax_numbers)
+				expect(options[:start_time].to_time).to eq("2018-08-01 12:00PM".to_time.rfc3339)
+			end
 
-		# 	it "#add_start_time defaults to 1 week ago if no start time is specified it is left blank (or it's the initial page load)" do
-		# 		filtered_params = { :fax_log => {} }
-		# 		all_orgs = Organization.all
-		# 		FaxLog.create_orgs_hash(org_hash = {}, org1)
+			# it "#add_start_time defaults to 1 week ago if no start time is specified it is left blank (or it's the initial page load)" do
+			# 	filtered_params = { :fax_log => {} }
+			# 	all_orgs = Organization.all
+			# 	FaxLog.create_orgs_hash(org_hash = {}, org1)
 
-		# 		options = FaxLog.build_options(admin, filtered_params, org_hash, @users, @fax_numbers)
-		# 		expect(options[:start_time]).to eq((DateTime.now - 7).rfc3339)
+			# 	options = FaxLog.build_options(admin, filtered_params, org_hash, @users, @fax_numbers)
+			# 	expect(options[:start_time]).to eq((DateTime.now) - 7.days))
 
-		# 		options = FaxLog.build_options(manager1, filtered_params, org_hash, @users, @fax_numbers)
-		# 		expect(options[:start_time]).to eq((DateTime.now - 7).rfc3339)
-		# 		options = FaxLog.build_options(user1, filtered_params, org_hash, @users, @fax_numbers)
-		# 		expect(options[:start_time]).to eq((DateTime.now - 7).rfc3339)
-		# 	end
-		# end
+			# 	options = FaxLog.build_options(manager1, filtered_params, org_hash, @users, @fax_numbers)
+			# 	expect(options[:start_time]).to eq((DateTime.now) - 7.days)
+			# 	options = FaxLog.build_options(user1, filtered_params, org_hash, @users, @fax_numbers)
+			# 	expect(options[:start_time]).to eq((DateTime.now) - 7.days)
+			# end
+		end
 
-		# describe "the #add_end_time method" do
-		# 	it "#add_end_time sets the end time in the options hash to an RFC3339 time based on user input" do
-		# 		filtered_params = { :end_time => "2018-09-02 8:58PM" }
-		# 		all_orgs = Organization.all
-		# 		FaxLog.create_orgs_hash(org_hash = {}, org1)
+		describe "the #add_end_time method" do
+			it "#add_end_time sets the end time in the options hash to an RFC3339 time based on user input" do
+				filtered_params = { :end_time => "2018-09-02 8:58PM" }
+				all_orgs = Organization.all
+				FaxLog.create_orgs_hash(org_hash = {}, org1)
 
-		# 		options = FaxLog.build_options(admin, filtered_params, all_orgs, @users, @fax_numbers)
-		# 		expect(options[:end_time]).to eq("2018-09-02T20:58:00-05:00")
+				options = FaxLog.build_options(admin, filtered_params, all_orgs, @users, @fax_numbers)
+				expect(options[:end_time].to_time).to eq(("2018-09-02T20:58:00-05:00").to_time.rfc3339)
 
-		# 		all_orgs = Organization.all
-		# 		options = FaxLog.build_options(manager1, filtered_params, org_hash, @users, @fax_numbers)
-		# 		expect(options[:end_time]).to eq("2018-09-02T20:58:00-05:00")
+				all_orgs = Organization.all
+				options = FaxLog.build_options(manager1, filtered_params, org_hash, @users, @fax_numbers)
+				expect(options[:end_time].to_time).to eq("2018-09-02T20:58:00-05:00")
 
-		# 		options = FaxLog.build_options(user1, filtered_params, org_hash, @users, @fax_numbers)
-		# 		expect(options[:end_time]).to eq("2018-09-02T20:58:00-05:00")
-		# 	end
+				options = FaxLog.build_options(user1, filtered_params, org_hash, @users, @fax_numbers)
+				expect(options[:end_time].to_time).to eq("2018-09-02T20:58:00-05:00")
+			end
 
-		# 	it "#add_end_time defaults to the current time if no end time is specified it is left blank (or it's the initial page load)" do
-		# 		filtered_params = { :fax_log=>{} }
-		# 		all_orgs = Organization.all
-		# 		FaxLog.create_orgs_hash(org_hash = {}, org1)
+			it "#add_end_time defaults to the current time if no end time is specified it is left blank (or it's the initial page load)" do
+				filtered_params = { :fax_log=>{} }
+				all_orgs = Organization.all
+				FaxLog.create_orgs_hash(org_hash = {}, org1)
 
-		# 		options = FaxLog.build_options(admin, filtered_params, all_orgs, @users, @fax_numbers)
-		# 		expect(options[:end_time]).to eq(Time.now.to_datetime.rfc3339)
+				options = FaxLog.build_options(admin, filtered_params, all_orgs, @users, @fax_numbers)
+				expect(options[:end_time].to_time).to eq(Time.now.to_datetime.rfc3339)
 
-		# 		options = FaxLog.build_options(manager1, filtered_params, org_hash, @users, @fax_numbers)
-		# 		expect(options[:end_time]).to eq(Time.now.to_datetime.rfc3339)
+				options = FaxLog.build_options(manager1, filtered_params, org_hash, @users, @fax_numbers)
+				expect(options[:end_time].to_time).to eq(Time.now.to_datetime.rfc3339)
 
-		# 		options = FaxLog.build_options(user1, filtered_params, org_hash, @users, @fax_numbers)
-		# 		expect(options[:end_time]).to eq(Time.now.to_datetime.rfc3339)
-		# 	end
-		# end
+				options = FaxLog.build_options(user1, filtered_params, org_hash, @users, @fax_numbers)
+				expect(options[:end_time].to_time).to eq(Time.now.to_datetime.rfc3339)
+			end
+		end
 
 		describe "the #set_fax_number_in_options method" do
 			it "sets the fax_number to 'all' or 'all-linked' if a fax number besides 'all' or 'all-linked' is provided" do
@@ -221,40 +221,40 @@ RSpec.describe FaxLog, type: :model do
 		end
 
 		# org1 has 3 fax numbers
-		# it "returns only faxes sent/received by a specific organization when requested (manager requesting their own organization's faxes)" do
-		# 	statuses = %w[inprogress success failure queued all]
-		# 	# FaxLog.create_orgs_hash(@organization = {}, org1)
-		# 	# 10 successful faxes sent from org1 using each fax_number, (sum of 30)
-		# 	initial_fake_data << build_successful_sent_fax_objects(111111, 4, manager1.caller_id_number, org1.fax_numbers.first.fax_number, org1, manager1)
-		# 	initial_fake_data << build_successful_sent_fax_objects(111121, 4, manager1.caller_id_number, org1.fax_numbers.second.fax_number, org1, manager1)
-		# 	initial_fake_data << build_successful_sent_fax_objects(111131, 4, manager1.caller_id_number, org1.fax_numbers.third.fax_number, org1, manager1)
+		it "returns only faxes sent/received by a specific organization when requested (manager requesting their own organization's faxes)" do
+			statuses = %w[inprogress success failure queued all]
+			# FaxLog.create_orgs_hash(@organization = {}, org1)
+			# 10 successful faxes sent from org1 using each fax_number, (sum of 30)
+			initial_fake_data << build_successful_sent_fax_objects(111111, 4, manager1.caller_id_number, org1.fax_numbers.first.fax_number, org1, manager1)
+			initial_fake_data << build_successful_sent_fax_objects(111121, 4, manager1.caller_id_number, org1.fax_numbers.second.fax_number, org1, manager1)
+			initial_fake_data << build_successful_sent_fax_objects(111131, 4, manager1.caller_id_number, org1.fax_numbers.third.fax_number, org1, manager1)
 
-		# 	# 2 failed faxes from org1 using each number
-		# 	initial_fake_data << build_failed_sent_fax_objects(111143, 2,  manager1.caller_id_number, org1.fax_numbers.first.fax_number, org1, manager1)
-		# 	initial_fake_data << build_failed_sent_fax_objects(111145, 2,  manager1.caller_id_number, org1.fax_numbers.second.fax_number, org1, manager1)
-		# 	initial_fake_data << build_failed_sent_fax_objects(111147, 2,  manager1.caller_id_number, org1.fax_numbers.third.fax_number, org1, manager1)
+			# 2 failed faxes from org1 using each number
+			initial_fake_data << build_failed_sent_fax_objects(111143, 2,  manager1.caller_id_number, org1.fax_numbers.first.fax_number, org1, manager1)
+			initial_fake_data << build_failed_sent_fax_objects(111145, 2,  manager1.caller_id_number, org1.fax_numbers.second.fax_number, org1, manager1)
+			initial_fake_data << build_failed_sent_fax_objects(111147, 2,  manager1.caller_id_number, org1.fax_numbers.third.fax_number, org1, manager1)
 
-		# 	# 10 successful faxes received by each number within org1 from '+12223334444' (sum 30)
-		# 	initial_fake_data << build_successful_received_fax_objects(111151, 4, '+12223334444', org1.fax_numbers.first.fax_number)
-		# 	initial_fake_data << build_successful_received_fax_objects(111161, 4, '+12223334444', org1.fax_numbers.second.fax_number)
-		# 	initial_fake_data << build_successful_received_fax_objects(111171, 4, '+12223334444', org1.fax_numbers.third.fax_number)
+			# 10 successful faxes received by each number within org1 from '+12223334444' (sum 30)
+			initial_fake_data << build_successful_received_fax_objects(111151, 4, '+12223334444', org1.fax_numbers.first.fax_number)
+			initial_fake_data << build_successful_received_fax_objects(111161, 4, '+12223334444', org1.fax_numbers.second.fax_number)
+			initial_fake_data << build_successful_received_fax_objects(111171, 4, '+12223334444', org1.fax_numbers.third.fax_number)
 
-		# 	# 2 failed received faxes to each number in org1 sent from '+12223334444'
-		# 	initial_fake_data << build_failed_received_fax_objects(111183, 2, '+12223334444', org1.fax_numbers.first.fax_number)
-		# 	initial_fake_data << build_failed_received_fax_objects(111185, 2, '+12223334444', org1.fax_numbers.second.fax_number)
-		# 	initial_fake_data << build_failed_received_fax_objects(111187, 2, '+12223334444', org1.fax_numbers.third.fax_number)
+			# 2 failed received faxes to each number in org1 sent from '+12223334444'
+			initial_fake_data << build_failed_received_fax_objects(111183, 2, '+12223334444', org1.fax_numbers.first.fax_number)
+			initial_fake_data << build_failed_received_fax_objects(111185, 2, '+12223334444', org1.fax_numbers.second.fax_number)
+			initial_fake_data << build_failed_received_fax_objects(111187, 2, '+12223334444', org1.fax_numbers.third.fax_number)
 
-		# 	all_faxes = FaxLog.sort_faxes(initial_fake_data)
-		# 	formatted_faxes = FaxLog.format_faxes(manager1, all_faxes, @organization, @fax_numbers, @users)
+			all_faxes = FaxLog.sort_faxes(initial_fake_data)
+			formatted_faxes = FaxLog.format_faxes(manager1, all_faxes, @organization, @fax_numbers, @users)
 
-		# 	expect(formatted_faxes.class).to eq(Hash)
-		# 	expect(formatted_faxes.keys.length).to eq(36)
+			expect(formatted_faxes.class).to eq(Hash)
+			expect(formatted_faxes.keys.length).to eq(36)
 
-		# 	formatted_faxes.each do |fax_id_key, fax_obj_info_value|
-		# 		expect(fax_obj_info_value[:status]).to eq("Failure").or eq("Success")
-		# 		expect(fax_obj_info_value[:direction]).to eq("Sent").or eq("Received")
-		# 	end
-		# end
+			formatted_faxes.each do |fax_id_key, fax_obj_info_value|
+				expect(fax_obj_info_value[:status]).to eq("Failure").or eq("Success")
+				expect(fax_obj_info_value[:direction]).to eq("Sent").or eq("Received")
+			end
+		end
 
 		it "the 'recipients' portion is set to 'multiple' if there is more than 1 recipient" do
 			initial_fake_data << build_successful_sent_fax_objects(111111, 1, manager1.caller_id_number, org1.fax_numbers.first.fax_number, org1, manager1)

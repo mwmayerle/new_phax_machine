@@ -32,8 +32,8 @@ RSpec.describe UserFaxNumber, type: :model do
 		)
 	end
 
-	let!(:fax_number1) { FaxNumber.create!(fax_number: '17738675309', organization_id: org.id, label: 'Fake Testing Number1') }
-	let!(:fax_number2) { FaxNumber.create!(fax_number: '19998675399', organization_id: org2.id, label: 'Fake Testing Number2') }
+	let!(:fax_number1) { FaxNumber.create!(fax_number: '17738675309', organization_id: org.id, label: 'Fake Testing Number1', org_switched_at: Time.now) }
+	let!(:fax_number2) { FaxNumber.create!(fax_number: '19998675399', organization_id: org2.id, label: 'Fake Testing Number2', org_switched_at: Time.now) }
 
 	let!(:user_fax_number) { UserFaxNumber.new(fax_number_id: fax_number1.id, user_id: user.id)}
 	let!(:user_fax_number2) { UserFaxNumber.new(fax_number_id: fax_number2.id, user_id: manager.id)}

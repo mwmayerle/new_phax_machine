@@ -32,7 +32,7 @@ RSpec.describe FaxNumber, type: :model do
 			organization_id: org.id
 		)
 	end
-	let!(:fax_number) { FaxNumber.new(fax_number: '17738675309', organization_id: org.id) }
+	let!(:fax_number) { FaxNumber.new(fax_number: '17738675309', organization_id: org.id, org_switched_at: Time.now) }
 
 	before(:each) { org.update(manager_id: manager.id) }
 
