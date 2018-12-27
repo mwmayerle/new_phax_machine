@@ -20,9 +20,9 @@ RSpec.feature "User Fax Number Pages", :type => :feature do
 	let!(:user3) do 
 		User.create(email: 'matt3@phaxio.com', user_permission_attributes: { permission: UserPermission::USER }, caller_id_number: '+17738675309', organization_id: org.id)
 	end
-	let!(:fax_number1) { FaxNumber.create!(fax_number: '+17738675307', organization_id: org.id) }
-	let!(:fax_number2) { FaxNumber.create!(fax_number: '+17738675308', organization_id: org.id, label: "OG Label", manager_label: "Manager-Set Label") }
-	let!(:fax_number3) { FaxNumber.create!(fax_number: '+17738675309') }
+	let!(:fax_number1) { FaxNumber.create!(fax_number: '+17738675307', organization_id: org.id, org_switched_at: Time.now) }
+	let!(:fax_number2) { FaxNumber.create!(fax_number: '+17738675308', organization_id: org.id, label: "OG Label", manager_label: "Manager-Set Label", org_switched_at: Time.now) }
+	let!(:fax_number3) { FaxNumber.create!(fax_number: '+17738675309', org_switched_at: Time.now) }
 
 	before(:each) do 
 		org.update_attributes(manager_id: manager.id)

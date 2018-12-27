@@ -31,9 +31,9 @@ RSpec.describe Organization, :type => :model do
 			organization_id: organization.id
 		)
 	end
-	let!(:fax_number1) {FaxNumber.create!(fax_number: '12025550134', label: "Fake1", organization_id: organization.id)}
-	let!(:fax_number2) {FaxNumber.create!(fax_number: '12025550121', label: "Fake2", organization_id: organization.id)}
-	let!(:fax_number3) {FaxNumber.create!(fax_number: '12025550167', label: "Fake3", organization_id: organization.id)}
+	let!(:fax_number1) {FaxNumber.create!(fax_number: '12025550134', label: "Fake1", organization_id: organization.id, org_switched_at: Time.now)}
+	let!(:fax_number2) {FaxNumber.create!(fax_number: '12025550121', label: "Fake2", organization_id: organization.id, org_switched_at: Time.now)}
+	let!(:fax_number3) {FaxNumber.create!(fax_number: '12025550167', label: "Fake3", organization_id: organization.id, org_switched_at: Time.now)}
 
 	before(:each) { organization.update(manager_id: manager.id) }
 

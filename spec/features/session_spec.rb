@@ -13,7 +13,7 @@ RSpec.feature "Sessions (Login/Logout)", :type => :feature do
 		User.create(email: 'matt@phaxio.com', user_permission_attributes: { permission: UserPermission::USER }, caller_id_number: '+17738675309', organization_id: org.id)
 	end
 	let!(:fax_number) do
-		FaxNumber.create!(fax_number: '+17738675308', organization_id: org.id, label: "OG Label", manager_label: "Manager-Set Label")
+		FaxNumber.create!(fax_number: '+17738675308', organization_id: org.id, label: "OG Label", manager_label: "Manager-Set Label", org_switched_at: Time.now)
 	end
 
 	describe "logging in" do

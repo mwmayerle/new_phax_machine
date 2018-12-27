@@ -30,11 +30,11 @@ RSpec.feature "Fax Logs", :type => :feature do
 	let!(:user_deleted) do 
 		User.create!(email: 'deleted_user@phaxio.com', caller_id_number: '+17738679999', organization_id: org_deleted.id)
 	end
-	let!(:fax_number1) { FaxNumber.create!(fax_number: '+17738675307', organization_id: org.id) }
-	let!(:fax_number2) { FaxNumber.create!(fax_number: '+17738675308', organization_id: org.id, label: "OG Label", manager_label: "Manager-Set Label") }
-	let!(:fax_number3) { FaxNumber.create!(fax_number: '+17738675309', organization_id: org2.id) }
-	let!(:fax_number4) { FaxNumber.create!(fax_number: '+17738675310', organization_id: org2.id) }
-	let!(:fax_number_deleted) { FaxNumber.create!(fax_number: '+17738679999', organization_id: org_deleted.id) }
+	let!(:fax_number1) { FaxNumber.create!(fax_number: '+17738675307', organization_id: org.id, org_switched_at: Time.now) }
+	let!(:fax_number2) { FaxNumber.create!(fax_number: '+17738675308', organization_id: org.id, label: "OG Label", manager_label: "Manager-Set Label", org_switched_at: Time.now) }
+	let!(:fax_number3) { FaxNumber.create!(fax_number: '+17738675309', organization_id: org2.id, org_switched_at: Time.now) }
+	let!(:fax_number4) { FaxNumber.create!(fax_number: '+17738675310', organization_id: org2.id, org_switched_at: Time.now) }
+	let!(:fax_number_deleted) { FaxNumber.create!(fax_number: '+17738679999', organization_id: org_deleted.id, org_switched_at: Time.now) }
 
 	before(:each) do 
 		org.update_attributes(manager_id: manager.id)
@@ -94,53 +94,53 @@ RSpec.feature "Fax Logs", :type => :feature do
 			end
 		end
 
-		# it "when logged in as a manager" do
-		# 	manager_fax_numbers = FaxNumber.where(organization_id: manager.organization.id)
-		# 	fax_nums_array = manager_fax_numbers.map { |fax_num| FaxNumber.format_pretty_fax_number(fax_num.fax_number) }.push("All")
-		# 	users_array = User.where(organization_id: manager.organization.id).select { |user| user.user_permission }.map { |user| user.email }.push("All")
-		# 	login_as(manager)
-		# 	visit(fax_logs_path)
-		# 	expect(page).not_to have_select("fax_log[organization]") # admin only
+		it "when logged in as a manager" do
+			manager_fax_numbers = FaxNumber.where(organization_id: manager.organization.id)
+			fax_nums_array = manager_fax_numbers.map { |fax_num| FaxNumber.format_pretty_fax_number(fax_num.fax_number) }.push("All")
+			users_array = User.where(organization_id: manager.organization.id).select { |user| user.user_permission }.map { |user| user.email }.push("All")
+			login_as(manager)
+			visit(fax_logs_path)
+			expect(page).not_to have_select("fax_log[organization]") # admin only
 
-		# 	expect(page).to have_select("fax_log[status]", options: ["All", "Success", "Failure", "In Progress", "Queued"])
-		# 	expect(page).to have_select("fax_log[fax_number]", options: fax_nums_array)
-		# 	expect(page).to have_select("fax_log[user]", options: users_array)
-		# 	expect(page).to have_field("fax_log[start_time]")
-		# 	expect(page).to have_field("fax_log[end_time]")
+			expect(page).to have_select("fax_log[status]", options: ["All", "Success", "Failure", "In Progress", "Queued"])
+			expect(page).to have_select("fax_log[fax_number]", options: fax_nums_array)
+			expect(page).to have_select("fax_log[user]", options: users_array)
+			expect(page).to have_field("fax_log[start_time]")
+			expect(page).to have_field("fax_log[end_time]")
 
-		# 	within_table("fax-log-table") do
-		# 		expect(page).to have_text("Path")
-		# 		expect(page).to have_text("Sent By")
-		# 		expect(page).to have_text("From Number")
-		# 		expect(page).to have_text("To Number")
-		# 		expect(page).to have_text("Status")
-		# 		expect(page).to have_text("Time")
-		# 		expect(page).to have_text("File")
-		# 	end
-		# end
+			within_table("fax-log-table") do
+				expect(page).to have_text("Path")
+				expect(page).to have_text("Sent By")
+				expect(page).to have_text("From Number")
+				expect(page).to have_text("To Number")
+				expect(page).to have_text("Status")
+				expect(page).to have_text("Time")
+				expect(page).to have_text("File")
+			end
+		end
 
-		# it "when logged in as a generic user" do
-		# 	user1_fax_numbers = UserFaxNumber.where(user_id: user1.id).map { |user1_fax_num| user1_fax_num.fax_number }
-		# 	fax_nums_array = user1_fax_numbers.map { |fax_num| FaxNumber.format_pretty_fax_number(fax_num.fax_number) }.push("All")
-		# 	login_as(user1)
-		# 	visit(fax_logs_path)
-		# 	expect(page).not_to have_select("fax_log[user]") # manager only
-		# 	expect(page).not_to have_select("fax_log[organization]") # admin only
+		it "when logged in as a generic user" do
+			user1_fax_numbers = UserFaxNumber.where(user_id: user1.id).map { |user1_fax_num| user1_fax_num.fax_number }
+			fax_nums_array = user1_fax_numbers.map { |fax_num| FaxNumber.format_pretty_fax_number(fax_num.fax_number) }.push("All")
+			login_as(user1)
+			visit(fax_logs_path)
+			expect(page).not_to have_select("fax_log[user]") # manager only
+			expect(page).not_to have_select("fax_log[organization]") # admin only
 
-		# 	expect(page).to have_select("fax_log[status]", options: ["All", "Success", "Failure", "In Progress", "Queued"])
-		# 	expect(page).to have_select("fax_log[fax_number]", options: fax_nums_array)
-		# 	expect(page).to have_field("fax_log[start_time]")
-		# 	expect(page).to have_field("fax_log[end_time]")
+			expect(page).to have_select("fax_log[status]", options: ["All", "Success", "Failure", "In Progress", "Queued"])
+			expect(page).to have_select("fax_log[fax_number]", options: fax_nums_array)
+			expect(page).to have_field("fax_log[start_time]")
+			expect(page).to have_field("fax_log[end_time]")
 
-		# 	within_table("fax-log-table") do
-		# 		expect(page).to have_text("Path")
-		# 		expect(page).to have_text("From Number")
-		# 		expect(page).to have_text("To Number")
-		# 		expect(page).to have_text("Status")
-		# 		expect(page).to have_text("Time")
-		# 		expect(page).to have_text("File")
-		# 	end
-		# end
+			within_table("fax-log-table") do
+				expect(page).to have_text("Path")
+				expect(page).to have_text("From Number")
+				expect(page).to have_text("To Number")
+				expect(page).to have_text("Status")
+				expect(page).to have_text("Time")
+				expect(page).to have_text("File")
+			end
+		end
 
 		it "when not logged in redirects to the sign-in page" do
 			visit(fax_logs_path)
