@@ -1,1 +1,43 @@
 <h1>User Guide</h1>
+
+<div id="table-contents" class="readme-block">
+	<h2>Table of Contents</h2>
+		<ul>
+			<li><a href="#fax-logs">Fax Logs:</a></li>
+			<li><a href="#general-use">Fax Portal</a></li>
+			<li><a href="#change-password">Change or Reset Your Password</a></li>
+		</ul>
+</div>
+
+<div class="underline"></div>
+
+<div id="fax-logs" class="col readme-block">	
+	<h2>Fax Logs</h2>
+	<p>
+		Users may only search for their own faxes by individual fax number or by all of the fax numbers they're linked to. If a user is unlinked from a fax number, they will be unable to search for faxes linked to that previous fax number. The ability to search fax logs is dependent on the fax numbers a particular user is linked to <b>at the given time</b>. If the linkages are changed, such as when a company switches telephone numbers, then the received fax results will not show up anymore. 
+	</p>
+</div>
+
+<div class="underline"></div>
+
+<div id="general-use" class="col readme-block"> 
+	<h2>Fax Portal</h2>
+	<p>
+		The fax portal allows users to send a fax from within Phax Machine. Simply enter the phone number you'd like to send a fax to in E.164 format (12225554444, no spaces, no dashes, no parenthesis), and attach up to twenty files. Files will be attached in the order they're uploaded. In the example below, 'firstfax.odt' will be the first file, 'secondfax.odt', the second file, and so on. Users may remove a file by clicking the red trashcan icon. A maximum of 20 files per fax may be combined into a single fax totaling 200 pages maximum. Files may be drag and dropped or uploaded by clicking the "Choose File" button. Files are numbered in the order they will appear in the final fax
+	</p>
+
+	<div class="readme-image">
+		<%= image_tag("faxportal2.png", width: 800) %>
+	</div>
+</div>
+
+<div class="underline"></div>
+
+<div id="change-password" class="col readme-block"> 
+	<h2>Change or Reset Your Password</h2>
+	<p>
+		Any user may change their password by clicking on the "Edit Profile" link in the navigation bar on the left of the screen. Password resets and forgotten logins are handled via email using Devise. A user is required to enter their current password to change their password. If a user forgets their password, a password reset option via email is available from Phax Machine's login screen.
+	</p>
+</div>
+
+<div class="underline" style="margin-bottom:300px;"></div>
