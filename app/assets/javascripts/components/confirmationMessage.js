@@ -1,6 +1,6 @@
 const deleteOrganizationMessage = 'Deleting this organization will permanently remove all of its users, connections, and other data. This cannot be restored. ALL FAX LOGS WITHIN PHAX MACHINE RELATING TO THIS ORGANIZATION WILL BE UNABLE TO FIND RECEIVED FAXES. Are you sure you want to do that?';
 const provisionNumberMessage = 'Purchasing this number will charge $2.00 to your account. Are you sure you want to do that?';
-const userRevokeAccess = "Revoking this user's access will forbid them from logging in or sending/receiving faxes through email.Users with revoked access can be invited again at any time later.  Are you sure you want to do that?";
+const userRevokeAccess = "Revoking this user's access will forbid them from logging in or sending/receiving faxes through email. Users with revoked access may be invited again at any time later.  Are you sure you want to do that?";
 
 phaxMachine.components['confirmationMessage'] = {
 	render: function() {
