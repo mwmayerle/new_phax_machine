@@ -203,7 +203,7 @@ RSpec.feature "Organization Pages", :type => :feature do
 			user1.update_attributes(caller_id_number: nil)
 
 			visit(organization_path(org))
-			expect(page).to have_text("matt@phaxio.com have no caller ID number and cannot fax. Assign a caller ID number by clicking the Phaxio Test Company Users button, and then click edit next to the user's name. manager@phaxio.com, matt3@phaxio.com are not linked to a fax number and cannot fax. Click the 'Link/Unlink Users' button on your Dashboard to link these users to a fax number.")
+			expect(page).to have_text("matt@phaxio.com have no caller ID number and cannot fax. Assign a caller ID number by clicking the #{org.label} Users button, and then click edit next to the user's name.")
 		end
 
 		it "informs the manager that users have no caller_id_number and/or that they're unlinked to a fax number in a flash message" do
@@ -212,7 +212,7 @@ RSpec.feature "Organization Pages", :type => :feature do
 			user1.reload
 
 			visit(organization_path(org))
-			expect(page).to have_text("matt@phaxio.com have no caller ID number and cannot fax. Assign a caller ID number by clicking the Phaxio Test Company Users button, and then click edit next to the user's name. manager@phaxio.com, matt3@phaxio.com are not linked to a fax number and cannot fax. Click the 'Link/Unlink Users' button on your Dashboard to link these users to a fax number.")
+			expect(page).to have_text("matt@phaxio.com have no caller ID number and cannot fax. Assign a caller ID number by clicking the Phaxio Test Company Users button, and then click edit next to the user's name.")
 		end
 
 		it "does not inform a user of unlinked fax numbers or no caller id number" do
