@@ -1,7 +1,7 @@
 <nav id="sidebar" class="fixed-top">
 	<div class="sidebar-header logo">
 		<% if current_logo == "" || current_logo.nil? %>
-				<%= image_tag 'endeavor.png', style: "background-color:fafafa"%>
+				<%= image_tag 'placeholderlogo.png', style: "background-color:fafafa"%>
 		<% else %>
 			<img src="<%= sanitize(current_logo) %>" class="logo" alt="&nbsp;&nbsp;Invalid Logo Url">
 		<% end %>
