@@ -3,7 +3,7 @@ class PhaxMachineMailer < Devise::Mailer
 	include Devise::Mailers::Helpers
   include Devise::Controllers::UrlHelpers 
   default template_path: 'devise/mailer'
-  ALTERNATE_LOGO_PATH = 'https://t3com.com/wp-content/uploads/2016/05/t3comm-process-colors.jpg'.freeze
+  ALTERNATE_LOGO_PATH = 'https://weendeavor.com/wp-content/uploads/2017/04/logo-responsive.png'.freeze
 
   def manager_welcome_invite(record, token, opts = {})
   	opts[:from] = ENV["FROM_EMAIL"]
