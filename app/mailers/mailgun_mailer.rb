@@ -1,6 +1,6 @@
 class MailgunMailer < ApplicationMailer
 	default from: ENV["FROM_EMAIL"]
-	ALTERNATE_LOGO_PATH = 'https://weendeavor.com/wp-content/uploads/2017/04/logo-responsive.png'.freeze
+	ALTERNATE_LOGO_PATH = 'https://image4.owler.com/logo/phaxio_owler_20180322_183958_original.png'.freeze
 
 	def fax_email(email_addresses, email_subject, fax, fax_file_name = '', fax_file_contents = '')
   	@email_addresses = email_addresses

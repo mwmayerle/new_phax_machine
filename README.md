@@ -139,7 +139,7 @@ In this case we'll simultaneously remove the two fax numbers that have a differe
 ![OrganizationEdit](https://raw.githubusercontent.com/mwmayerle/new_phax_machine/master/app/assets/images/organizationedit.png)
 
 ### Changing the Logo
-The Admin may change the site logo (the Voyant in all examples) by clicking "Edit Profile" in the navigation menu on the left. To change the logo, simply link to the location of the desired logo, and Phax Machine will add and resize the logo. Logos must be an image, and look best when a transparent background is used. Your current password is required to edit the logo. The logo is viewed by all users of Phax Machine and is included at the top of all emails.
+The Admin may change the site logo (the Voyant logo in all examples) by clicking "Edit Profile" in the navigation menu on the left. To change the logo, simply link to the location of the desired logo, and Phax Machine will add and resize the logo. Logos must be an image, and look best when a transparent background is used. Your current password is required to edit the logo. The logo is viewed by all users of Phax Machine and is included at the top of all emails.
 
 ## Manager Functions
 Managers are invited by the Admin via email to manage an organization. Each organization may only have one manager. Managers (and the admin if they want to) link users to fax numbers and assign them caller ID numbers. A user/manager's caller ID number will be the caller ID number used on all faxes sent out by that user, regardless of what numbers they are linked to. If the admin allows it, a manager can also provision additional fax numbers to the organization they control. Managers should first invite users and then link them to fax numbers. Users who are not linked to a fax number by the manager will be able to log in, however they will be unable to send or receive faxes by email nor will they be able to send a fax using the fax portal.
@@ -149,14 +149,14 @@ Managers may invite users to Phax Machine and revoke user access in their Users 
 
 ![UserShow](https://raw.githubusercontent.com/mwmayerle/new_phax_machine/master/app/assets/images/userspage.png)
 
-In this example, Saul Goodman hasn't showen his face around the office for a year, so his access has been revoked by the manager. Users with revoked access cannot send/receive faxes by email and cannot log in to use the portal. They will not receive a notification indicating their access has been revoked. When a user's access is revoked, the user is not notified.
+In this example, Saul Goodman hasn't shown his face around the office for a year, so his access has been revoked by the manager. Users with revoked access cannot send/receive faxes by email and cannot log in to use the portal. They will not receive a notification indicating their access has been revoked. When a user's access is revoked, the user is not notified.
 
 When a user's access is revoked, they're unlinked from fax numbers. This will remove them from the "received" data in fax logs. The manager will still be able to see the faxes that were sent by the revoked user, but not any received by the user.
 
 To reactivate a user, simply re-invite them with the same email address they used previously. A user whose access has been reinstated will not be notified they have been granted access once again. After reinstating access to a user, the manager will have to go back and link them to fax numbers once again. If a user's access is revoked and then reinstated, they will be unable to view faxes they have sent prior to being restored. While it is possible to restore a user, it is not recommended.
 
 ### Manager Dashboard
-The Dashboard provides the manager with a summary of all fax numbers and their linked users. Managers link/unlink users to a fax numbers by clicking on the "Link/Unlink Users" button under each fax number. A table of all users currently linked to a fax number is shown next to each fax number. Managers may also add a label to their fax numbers by clicking on the fax number and entering a label. Below is the manager's view of Great Plains LLC.
+The Dashboard provides the manager with a summary of all fax numbers and their linked users. Managers link/unlink users to fax numbers by clicking on the "Link/Unlink Users" button under each fax number. This step is very important. If it is not completed, then fax to email will not be possible. A table of all users currently linked to a fax number is shown next to each fax number. Managers may also add a label to their fax numbers by clicking on the fax number and entering a label. Below is the manager's view of Great Plains LLC.
 
 ![OrganzationShow](https://raw.githubusercontent.com/mwmayerle/new_phax_machine/master/app/assets/images/organizationshow.png)
 
