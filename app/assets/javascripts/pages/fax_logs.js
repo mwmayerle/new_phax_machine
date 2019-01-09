@@ -133,7 +133,7 @@ function paginateFaxes(apiResponse) {
 };
 
 function addPageNumbersToResponse($pageNumberList, pageNumber, currentPageNumber) {
-	Object.keys(apiResponse).forEach((key, counter) => {
+	Object.keys(apiResponse).reverse().forEach((key, counter) => {
 		if (counter % 20 === 0) { 
 			pageNumber += 1;
 			addPageNumber($pageNumberList, pageNumber, currentPageNumber);
