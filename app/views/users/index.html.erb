@@ -1,7 +1,7 @@
 <body data-components="confirmationMessage" data-page="user-table" class="bg-dark coverup">
   <div class="container coverup">
     <div class="card card-login mx-auto mt-5">
-      <div class="card-header"><%= @organization.label %></div>
+      <div class="card-header"><%= link_to "#{@organization.label}", organization_path(@organization) %></div>
       <div class="card-body">
         <div class="mb-8">
 					<% if @users %>
