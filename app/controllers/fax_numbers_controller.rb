@@ -18,7 +18,7 @@ class FaxNumbersController < ApplicationController
 			@states = FaxNumber.create_states_for_numbers(area_codes)
 		end
 
-		@fax_numbers = FaxNumber.format_and_retrieve_fax_numbers_from_api
+		# @fax_numbers = FaxNumber.format_and_retrieve_fax_numbers_from_api
 		if @fax_numbers.is_a?(String)
 			flash[:alert] = @fax_numbers
 			redirect_to(fax_logs_path)
