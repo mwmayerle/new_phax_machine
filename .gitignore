@@ -29,5 +29,4 @@
 /spec/.DS_STORE
 .env
 .gitigonore
-data.csv
 coverage
