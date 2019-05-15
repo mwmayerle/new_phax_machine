@@ -24,7 +24,7 @@ class User < ApplicationRecord
 	validates :email, presence: true, length: { in: 5..USER_CHARACTER_LIMIT }, uniqueness: { case_senstive: false }
 	validates :fax_tag, length: { maximum: FaxTags::FAX_TAG_LIMIT }
 
-	# after_create { User.welcome(self.id, self.permission) }
+	after_create { User.welcome(self.id, self.permission) }
 
 	accepts_nested_attributes_for :user_permission
 	
