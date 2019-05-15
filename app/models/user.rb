@@ -24,7 +24,7 @@ class User < ApplicationRecord
 	validates :email, presence: true, length: { in: 5..USER_CHARACTER_LIMIT }, uniqueness: { case_senstive: false }
 	validates :fax_tag, length: { maximum: FaxTags::FAX_TAG_LIMIT }
 
-	after_create { User.welcome(self.id, self.permission) }
+	# after_create { User.welcome(self.id, self.permission) }
 
 	accepts_nested_attributes_for :user_permission
 	
@@ -43,9 +43,9 @@ class User < ApplicationRecord
 		    user.save(validate: false)
 		    @raw = raw
 		    if permission == UserPermission::MANAGER
-		    	PhaxMachineMailer.manager_welcome_invite(user, @raw).deliver_now
+		    	# PhaxMachineMailer.manager_welcome_invite(user, @raw).deliver_now
 		    elsif permission == UserPermission::USER
-		    	PhaxMachineMailer.user_welcome_invite(user, @raw).deliver_now
+		    	# PhaxMachineMailer.user_welcome_invite(user, @raw).deliver_now
 		    else
 		    	PhaxMachineMailer.admin_welcome_invite(user, @raw).deliver_now #if user.email == ENV["ADMIN_EMAIL"]
 		    end

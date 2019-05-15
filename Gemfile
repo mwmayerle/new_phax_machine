@@ -34,7 +34,7 @@ gem 'bcrypt', '~> 3.1.7'
 # gem 'capistrano-rails', group: :development
 
 # Security/Stats
-gem 'devise'
+gem "devise", "~> 4.6.0"
 gem "paranoia"
 gem "httparty"
 
