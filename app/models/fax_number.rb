@@ -90,7 +90,6 @@ class FaxNumber < ApplicationRecord
 
 			# Creates a new hash with desired data from data received from the Phaxio API
 			def format_fax_numbers(fax_numbers_from_api, phaxio_numbers = {})
-				p fax_numbers_from_api.count
 				all_current_db_fax_numbers = FaxNumber.includes(:organization).all
 
 				fax_numbers_from_api.each do |api_fax_number|
