@@ -1,7 +1,7 @@
 # require 'csv'
 # Create the admin
 admin = User.create!(
-	email: 'mwmayerle@gmail.com',
+	email: ENV["ADMIN_EMAIL"],
 	user_permission_attributes: { permission: UserPermission::ADMIN }
 )
 
