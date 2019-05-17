@@ -81,7 +81,7 @@ class FaxNumber < ApplicationRecord
 			def format_and_retrieve_fax_numbers_from_api
 				Fax.set_phaxio_creds
 				begin
-					api_response = Phaxio::PhoneNumber.list
+					api_response = Phaxio::PhoneNumber.list({per_page: 1000})
 				rescue Phaxio::Error::PhaxioError => error
 					api_response = error.message
 				end
