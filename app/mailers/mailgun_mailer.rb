@@ -1,6 +1,6 @@
 class MailgunMailer < ApplicationMailer
 	default from: ENV["FROM_EMAIL"]
-	ALTERNATE_LOGO_PATH = 'https://image4.owler.com/logo/phaxio_owler_20180322_183958_original.png'.freeze
+	ALTERNATE_LOGO_PATH = 'https://www.globenewswire.com/Attachment/LogoDisplay/548180?lastModified=06%2F27%2F2018%2009%3A02%3A51&size=2&attachmentExternalGnwId=0'.freeze
 
 	def fax_email(email_addresses, email_subject, fax, fax_file_name = '', fax_file_contents = '')
   	@email_addresses = email_addresses
