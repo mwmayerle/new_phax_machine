@@ -14,7 +14,7 @@ class PhaxMachineMailer < Devise::Mailer
   end
 
   def user_welcome_invite(record, token, opts = {})
-  	record.manager ? opts[:from] = record.manager.email : opts[:from] = 'phax_machine@phax_machine.com'
+  	record.manager ? opts[:from] = record.manager.email : opts[:from] = ENV["FROM_EMAIL"]
   	opts[:subject] = "You've been invited to Phax Machine."
     @token = token
     @logo_link = LogoLink.first ? LogoLink.first.logo_url : ALTERNATE_LOGO_PATH
